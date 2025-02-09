@@ -57,7 +57,11 @@
           />
         </UiFormControl>
 
-        <UiFormControl label="birthdate" :errors="validatorClientForm?.errorsFormData?.birthdate?.errors">
+        <UiFormControl
+            label="birthdate"
+            @change="handleChangeBirthdate"
+            :errors="validatorClientForm?.errorsFormData?.birthdate?.errors"
+        >
           <UiDatePicker />
         </UiFormControl>
 
@@ -139,7 +143,7 @@
     <UiButtonDefault
         class="roles-panel__add-new__bottom__save-btn"
         state="secondary"
-        @click="handleSubmitForm"
+        @click="validateClientForm(handleSubmitForm)"
     >Create new & Save</UiButtonDefault>
   </div>
 </template>
@@ -149,7 +153,7 @@ import {inject} from "vue";
 import {onMounted} from "vue";
 
 import {formData, cityList, countriesList} from "~/pages/clients/composables/ClientsPabelAddNew";
-import {validatorClientForm} from "~/pages/clients/composables/ClientsPabelAddNew/validation";
+import {validateClientForm, validatorClientForm} from "~/pages/clients/composables/ClientsPabelAddNew/validation";
 
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
@@ -192,14 +196,22 @@ const handleRemoveMultiSelectPermission = (id: string) => {
   validateThisField();
 };
 
+const handleChangeBirthdate = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+
+  console.log('handleChangeBirthdate', value);
+  validatorClientForm?.doValidateField('birthdate', value)
+}
+
 const handleChangeSelectCountry = (value:string|null) => {
   console.log('handleChangeSelectCountry', value);
-  formData.country = value;
+  validatorClientForm?.doValidateField('country', value)
 }
 
 const handleChangeSelectCity = (value:string|null) => {
   console.log('handleChangeSelectCity', value);
-  formData.city = value;
+  validatorClientForm?.doValidateField('city', value)
 }
 
 const handleSubmitForm = async () => {

@@ -204,7 +204,13 @@ const handleChangeSelectCity = (value:string|null) => {
 
 const handleSubmitForm = async () => {
   try {
+    const result = validatorClientForm.doValidate();
+    console.log('result');
+    console.log(result);
+    console.log('result');
     await app.clients.post(formData);
+
+
     // closeModal();
     useEventBus.emit("loadDataForUsers");
   } catch (errorResponse) {

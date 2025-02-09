@@ -15,7 +15,7 @@ export const validatorClientForm: any = useValidation(formData, {
     address: ["required", "min:2", "max:50"],
     postal_code: ["required", "min:2", "max:10"],
     password: ["required", "min:6", "max:50"],
-    password_confirmation: ["passwordConfirmation"],
+    password_confirmation: ["required", "passwordConfirmation"],
 });
 
 export const validateClientForm: any = (doSendFormCallback: any): void =>

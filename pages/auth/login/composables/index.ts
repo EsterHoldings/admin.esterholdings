@@ -1,11 +1,11 @@
-import {Ref, ref} from "vue";
+import {reactive, Reactive} from "vue";
 
 export interface IFormDataDto {
   email: String;
   password?: String;
 }
 
-export const formData: Ref<IFormDataDto> = ref({
+export const formData: Reactive<IFormDataDto> = reactive({
   email: "",
   password: "",
 });

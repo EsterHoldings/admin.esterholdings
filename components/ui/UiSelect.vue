@@ -61,15 +61,8 @@ const isOpen = ref(false);
 
 const currentValueItemText = computed(() => {
   if (currentValue.value === null) return 'No selected...';
-
   const item = props.data.filter(x => x.value === currentValue.value)
-
-  console.log('ITEM', item, 'ITEM');
-
-  return item ? item.text : '...';
-
-  // const item = props.data[currentValue.value as keyof typeof props.data];
-  // return item && item?.text ? item.text : '---';
+  return item ? item[0].text : '...';
 });
 
 const currentValueItem = computed(() => {

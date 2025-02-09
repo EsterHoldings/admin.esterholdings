@@ -1,3 +1,5 @@
+import {useCookie} from "nuxt/app";
+
 export const setItem = (key: string, value: string) => {
   const cookie = useCookie(key);
   cookie.value = value;

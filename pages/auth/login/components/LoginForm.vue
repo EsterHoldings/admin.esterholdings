@@ -61,16 +61,19 @@
 </template>
 
 <script lang="ts" setup>
+import {ref} from "vue";
+import {useRouter} from "vue-router";
+
+import UiTextH2 from "~/components/ui/UiTextH2.vue";
+import UiFormControl from "~/components/ui/UiFormControl.vue";
+import UiInput from "~/components/ui/UiInput.vue";
+import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import { useAppCore } from "~/composables/useAppCore";
 import {
   validatorLoginForm,
   validateLoginForm,
   resetValidationLoginForm,
 } from "@/pages/auth/login/composables/validation";
-import { useAppCore } from "~/composables/useAppCore";
-import UiTextH2 from "~/components/ui/UiTextH2.vue";
-import UiFormControl from "~/components/ui/UiFormControl.vue";
-import UiInput from "~/components/ui/UiInput.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 
 const props = defineProps({ formData: { type: Object, required: true } });
 

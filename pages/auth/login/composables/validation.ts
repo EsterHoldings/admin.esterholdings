@@ -1,6 +1,6 @@
 import useValidation from "@/composables/useValidation";
 
-import { formData } from ".";
+import { formData } from "./index";
 
 export const validatorLoginForm: any = useValidation(formData, {
   email: ["required", "isEmail"],
