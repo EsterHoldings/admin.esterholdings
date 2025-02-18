@@ -15,7 +15,7 @@ export class ApiUtil implements ApiUtilInterface {
 
   constructor() {
     const axiosConfig = {
-      baseURL: process.env.NUXT_API_URL, // "http://localhost:8000/api",
+      baseURL: "http://139.59.143.82/api/",
       timeout: 30000,
       // headers: {
       //   Authorization:

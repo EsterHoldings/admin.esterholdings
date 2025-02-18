@@ -54,6 +54,7 @@ const handleClick = (): void => emit("click");
 
   &--info {
     background-color: #719edf;
+    color: white;
   }
 
   &--link {

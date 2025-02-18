@@ -5,7 +5,7 @@ export class useApi {
 
   constructor() {
     this.api = axios.create({
-      baseURL: "http://localhost:8000/api",
+      baseURL: "http://139.59.143.82/api/",
     });
 
     // this.api.interceptors.request.use((config) => {

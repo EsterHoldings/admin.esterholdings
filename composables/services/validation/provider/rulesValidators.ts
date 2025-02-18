@@ -1,4 +1,4 @@
-import { isEmailRegEx } from "@/constans/validation";
+import { isEmailRegEx } from "~/constants/validation";
 import { isRequired } from "../rules";
 
 export const isRequiredValidator = (

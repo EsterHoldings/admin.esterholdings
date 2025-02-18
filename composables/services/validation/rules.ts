@@ -1,4 +1,4 @@
-import { isEmailRegEx } from "~/constans/validation";
+import { isEmailRegEx } from "~/constants/validation";
 
 export const isRequired = (value: any): Boolean => {
   return !value;
