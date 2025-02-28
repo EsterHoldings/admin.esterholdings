@@ -17,30 +17,36 @@ interface ResponseDTO {
   errors: any;
 }
 
-export class AuthModule implements BasicModuleInterface {
+// export class AuthModule implements BasicModuleInterface {
+export class AuthModule {
   private authService: AuthService;
 
   constructor() {
     this.authService = new AuthService();
   }
   async userRegister(params: {}):Promise<any> {
-    return await this.authService.userRegister("/users/register", params);
+    // return await this.authService.userRegister("/users/register", params);
+    return new Promise((res, rej) => res(true));
   }
   async userLogin(params: {}):Promise<any> {
-    return await this.authService.userLogin("/users/login", params);
+    // return await this.authService.userLogin("/users/login", params);
+    return new Promise((res, rej) => res(true));
   }
   async userLogout(params: {}):Promise<any> {
-    return await this.authService.userLogout("/users/logout", params);
+    // return await this.authService.userLogout("/users/logout", params);
+    return new Promise((res, rej) => res(true));
   }
   async userForgotPass(params: {}):Promise<any> {
-    return await this.authService.userForgotPass("/users/forgot_pass", params);
+    // return await this.authService.userForgotPass("/users/forgot_pass", params);
+    return new Promise((res, rej) => res(true));
   }
 
   async adminLogin(params: {}):Promise<any> {
-    return await this.authService.adminLogin(`/admins/login`, params);
+    // return await this.authService.adminLogin(`/admins/login`, params);
+    return new Promise((res, rej) => res(true));
   }
   async adminLogout():Promise<any> {
-    return await this.authService.adminLogout(`/admins/logout`);
+    return await this.authService.adminLogout();
   }
 }
 
