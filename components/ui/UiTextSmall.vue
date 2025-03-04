@@ -1,52 +1,17 @@
 <template>
-  <textarea
-    :value="value"
-    :ref="resizeTextarea"
-    @focus="handleFocus"
-    @input="handleInput"
-    @blur="handleBlur"
-  ></textarea>
+  <h2 class="h2">
+    <slot />
+  </h2>
 </template>
 
-<script lang="ts" setup>
-import { onMounted } from "vue";
+<script setup lang="ts"></script>
 
-const props = defineProps({
-  value: {
-    type: String,
-    default: "",
-  },
-});
-
-const refTextarea = null;
-
-const handleFocus = () => {
-  console.log("HANDLE FOCUS");
-};
-const handleInput = () => {
-  console.log("HANDLE INPUT");
-};
-const handleBlur = () => {
-  console.log("HANDLE BLUR");
-};
-
-const resizeTextarea = () => {
-  console.log("resizeTextarea");
-  // this.$refs.textarea.style.height = "auto";
-  // this.$refs.textarea.style.height = `${this.$refs.textarea.scrollHeight}px`;
-};
-
-onMounted(() => {
-  console.log("-=-=-=-=-=-=-");
-  console.log(resizeTextarea());
-  console.log("-=-=-=-=-=-=-");
-});
-</script>
-
-<style lang="scss" scoped>
-textarea {
-  width: 100%;
-  min-height: 150px;
-  resize: vertical;
+<style scoped lang="scss">
+.h2 {
+  // font-size: 18px;
+  font-size: 12px;
+  font-weight: 300;
+  // line-height: 22px;
+  letter-spacing: 0em;
 }
 </style>

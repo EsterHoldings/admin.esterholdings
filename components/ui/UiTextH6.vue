@@ -8,9 +8,9 @@
 
 <style scoped lang="scss">
 .h6 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 300;
-  line-height: 20px;
+  // line-height: 20px;
   letter-spacing: 0em;
 }
 </style>

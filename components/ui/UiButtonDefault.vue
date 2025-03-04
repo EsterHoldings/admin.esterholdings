@@ -45,12 +45,20 @@ const handleClick = (): void => emit("click");
 
 <style lang="scss" scoped>
 .btn {
-  background-color: transparent;
-  border: 1px solid gainsboro;
-  border-radius: 5px;
-  padding: 0 20px;
-  min-width: min-content;
-  height: 50px;
+  // background-color: transparent;
+  // border: 1px solid gainsboro;
+  // border-radius: 5px;
+  // padding: 0 20px;
+  // min-width: min-content;
+  // height: 50px;
+
+  height: 46px;
+  border-radius: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 26px;
 
   &--info {
     background-color: #719edf;
@@ -60,6 +68,12 @@ const handleClick = (): void => emit("click");
   &--link {
     background-color: transparent;
     border: none;
+    color: var(--color-ui-primary-defalt);
+
+    &:hover {
+      color: var(--color-ui-warning) !important;
+      background-color: transparent !important;
+    }
   }
 
   &--danger {
@@ -73,12 +87,12 @@ const handleClick = (): void => emit("click");
   }
 
   &--primary {
-    background-color: #0d6efd;
+    background: rgb(0, 81, 255);
     color: white;
   }
 
   &--warning {
-    background-color: orange;
+    background-color: var(--color-ui-warning);
     color: white;
   }
 
@@ -89,6 +103,11 @@ const handleClick = (): void => emit("click");
 
   &--secondary {
     background-color: darkslategray;
+    color: white;
+  }
+
+  &:hover {
+    background: var(--color-ui-warning);
     color: white;
   }
 }

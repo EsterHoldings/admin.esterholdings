@@ -5,12 +5,12 @@
   // ...
   --default-transition: 0.5s;
   // ...
-  --color-background: #F7F7F7;
+  --color-background: #f7f7f7;
   --color-text: #101010;
   --color-text-muted: #626060;
   // ...
-  --color-secondary: #D1D1D1;
-  --color-contrast: #3E3939;
+  --color-secondary: #d1d1d1;
+  --color-contrast: #3e3939;
   --color-default: gainsboro;
   --color-primary: blue;
   --color-info: lightblue;
@@ -19,6 +19,23 @@
   --color-danger: #af160e;
   --color-dark: #7b7b81;
   --color-light: white;
+
+  //-------- UI -------- //
+
+  --color-ui-background: #000028;
+  --color-ui-primary: #0051ff;
+  --color-ui-primary-defalt: #ffffff;
+  --color-ui-warning: #f75709;
+  --color-sticker-ui-success: #03c11f;
+  --color-sticker-ui-danger: #d93025;
+  --color-stroke-ui-light: #1b63ff;
+  --color-stroke-ui-dark: #011644;
+  --color-stroke-ui: linear-gradient(
+    137.67deg,
+    #1b63ff 2.397%,
+    #011644 99.041%
+  );
+  --color-ui-grey: #b8b8c3;
 }
 
 // Static variables
