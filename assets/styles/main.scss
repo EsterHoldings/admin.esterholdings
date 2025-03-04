@@ -8,8 +8,11 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Muli", sans-serif;
   scroll-behavior: smooth;
+
+  // overflow: auto !important;
+  // height: auto !important;
 }
 
 body {
@@ -58,4 +61,16 @@ a {
 
 hr {
   margin: 40px 0;
+}
+
+.bold {
+  font-weight: 700 !important;
+}
+
+.semibold {
+  font-weight: 600 !important;
+}
+
+.regular {
+  font-weight: 400 !important;
 }

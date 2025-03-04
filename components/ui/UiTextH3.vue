@@ -8,9 +8,10 @@
 
 <style scoped lang="scss">
 .h3 {
-  font-size: 16px;
+  // font-size: 16px;
+  font-size: 32px;
   font-weight: 300;
-  line-height: 20px;
+  // line-height: 20px;
   letter-spacing: 0em;
 }
 </style>

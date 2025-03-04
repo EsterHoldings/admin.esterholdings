@@ -8,9 +8,10 @@
 
 <style scoped lang="scss">
 .h4 {
-  font-size: 15px;
+  // font-size: 15px;
+  font-size: 24px;
   font-weight: 300;
-  line-height: 20px;
+  // line-height: 20px;
   letter-spacing: 0em;
 }
 </style>

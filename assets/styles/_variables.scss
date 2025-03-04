@@ -25,11 +25,16 @@
   --color-ui-background: #000028;
   --color-ui-primary: #0051ff;
   --color-ui-primary-defalt: #ffffff;
-  --color-ui-primary-hover: #f75709;
-  --color-sticker-ui-green: #03c11f;
-  --color-sticker-ui-red: #d93025;
+  --color-ui-warning: #f75709;
+  --color-sticker-ui-success: #03c11f;
+  --color-sticker-ui-danger: #d93025;
   --color-stroke-ui-light: #1b63ff;
   --color-stroke-ui-dark: #011644;
+  --color-stroke-ui: linear-gradient(
+    137.67deg,
+    #1b63ff 2.397%,
+    #011644 99.041%
+  );
   --color-ui-grey: #b8b8c3;
 }
 

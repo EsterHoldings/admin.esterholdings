@@ -8,9 +8,10 @@
 
 <style scoped lang="scss">
 .h2 {
-  font-size: 18px;
+  // font-size: 18px;
+  font-size: 44px;
   font-weight: 300;
-  line-height: 22px;
+  // line-height: 22px;
   letter-spacing: 0em;
 }
 </style>
