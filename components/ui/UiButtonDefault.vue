@@ -59,6 +59,8 @@ const handleClick = (): void => emit("click");
   justify-content: center;
   align-items: center;
   padding: 16px 26px;
+  border: none;
+  font-weight: 600;
 
   &--info {
     background-color: #719edf;
