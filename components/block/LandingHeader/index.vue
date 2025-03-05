@@ -1,8 +1,5 @@
 <template>
-  <div
-      :class="{ blurred: isBlurred }"
-      class="header__wrapper"
-  >
+  <div :class="{ blurred: isBlurred }" class="header__wrapper">
     <UiContainer>
       <header class="header">
         <div class="logo">
@@ -10,10 +7,10 @@
         </div>
         <nav class="nav">
           <HeaderLink
-              v-for="link in linksList"
-              :key="link"
-              :name="link.name"
-              :path="link.path"
+            v-for="link in linksList"
+            :key="link"
+            :name="link.name"
+            :path="link.path"
           />
         </nav>
         <div class="actions-wrapper">

@@ -1,9 +1,13 @@
 <template>
   <section class="features_section">
     <div class="features_container">
-      <div class="feature_item" v-for="(feature, index) in features" :key="index">
+      <div
+        class="feature_item"
+        v-for="(feature, index) in features"
+        :key="index"
+      >
         <div class="feature_icon">
-          <img :src="feature.icon" alt="Feature Icon">
+          <img :src="feature.icon" alt="Feature Icon" />
         </div>
         <h3 class="feature_title" v-html="feature.title"></h3>
         <p class="feature_description">{{ feature.description }}</p>
@@ -16,12 +20,36 @@
 import { ref } from "vue";
 
 const features = ref([
-  { icon: "/static/landing/features/wrench.png", title: "Instruments", description: "Forex/Spot Shares/Indices" },
-  { icon: "/static/landing/features/bank.png", title: "Liquidity:<br><strong>200+ Top-Level</strong>", description: "Financial institutions" },
-  { icon: "/static/landing/features/chart.png", title: "Floating Spread", description: "from 0 pips" },
-  { icon: "/static/landing/features/wrench.png", title: "Limit and Stop Levels", description: "= 0" },
-  { icon: "/static/landing/features/server.png", title: "Fastest Server Technologies", description: "with high order processing speeds" },
-  { icon: "/static/landing/features/security.png", title: "Bank's Security", description: "of trading accounts" },
+  {
+    icon: "/static/landing/features/wrench.png",
+    title: "Instruments",
+    description: "Forex/Spot Shares/Indices",
+  },
+  {
+    icon: "/static/landing/features/bank.png",
+    title: "Liquidity:<br><strong>200+ Top-Level</strong>",
+    description: "Financial institutions",
+  },
+  {
+    icon: "/static/landing/features/chart.png",
+    title: "Floating Spread",
+    description: "from 0 pips",
+  },
+  {
+    icon: "/static/landing/features/wrench.png",
+    title: "Limit and Stop Levels",
+    description: "= 0",
+  },
+  {
+    icon: "/static/landing/features/server.png",
+    title: "Fastest Server Technologies",
+    description: "with high order processing speeds",
+  },
+  {
+    icon: "/static/landing/features/security.png",
+    title: "Bank's Security",
+    description: "of trading accounts",
+  },
 ]);
 </script>
 
@@ -51,7 +79,7 @@ const features = ref([
 }
 
 .feature_icon {
-  background-color: #0033CC;
+  background-color: #0033cc;
   width: 80px;
   height: 80px;
   display: flex;

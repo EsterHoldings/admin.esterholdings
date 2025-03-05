@@ -2,20 +2,27 @@
   <section class="banner-section">
     <UiContainer>
       <div class="banner-section__wrapper">
-
         <div class="banner-image">
           <UiImage class="banner-image__image" src="/static/banner-bg.png" />
-          <UiImage class="banner-image__image" src="/static/banner-bg-front.png" />
+          <UiImage
+            class="banner-image__image"
+            src="/static/banner-bg-front.png"
+          />
         </div>
 
         <div class="banner-content">
-          <h1 class="banner-title">Trade the Markets Like a Pro!</h1>
-          <p class="banner-subtitle">
-            Whether you're a beginner or a pro, our advanced tools and resources help you make informed trading decisions.
-          </p>
-          <button class="banner-button">Start trading today!</button>
-        </div>
+          <UiTextH3 class="bold">Trade the Markets Like a Pro!</UiTextH3>
+          <UiTextH6 class="banner-subtitle">
+            Whether you're a beginner or a pro, our advanced tools and resources
+            help you make informed trading decisions.
+          </UiTextH6>
 
+          <div>
+            <UiButtonDefault state="primary"
+              >Start trading today!</UiButtonDefault
+            >
+          </div>
+        </div>
       </div>
     </UiContainer>
   </section>
@@ -24,6 +31,9 @@
 <script lang="ts" setup>
 import UiImage from "~/components/ui/UiImage.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
+import UiTextH3 from "~/components/ui/UiTextH3.vue";
+import UiTextH6 from "~/components/ui/UiTextH6.vue";
+import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 </script>
 
 <style lang="scss" scoped>
@@ -48,34 +58,15 @@ import UiContainer from "~/components/ui/UiContainer.vue";
   position: absolute;
   left: 50%;
   transform: translate(-50%, 40px);
-}
 
-.banner-title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .banner-subtitle {
-  font-size: 16px;
-  opacity: 0.9;
-  margin-bottom: 20px;
-}
-
-.banner-button {
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-  background-color: #2a4af5;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.banner-button:hover {
-  background-color: #1b36e0;
+  color: var(--color-ui-grey);
 }
 
 .banner-image {
