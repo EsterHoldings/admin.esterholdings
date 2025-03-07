@@ -106,6 +106,7 @@ const company = [
 <style lang="scss" scoped>
 footer {
   padding: 20px 120px;
+  margin-top: 75px;
   display: flex;
   flex-direction: column;
   gap: 30px;

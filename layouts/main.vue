@@ -1,11 +1,11 @@
 <template>
   <div class="page-wrapper">
     <div class="page-content">
-      <LandingHeader class="header"/>
+      <LandingHeader class="header" />
       <div class="page">
         <slot />
       </div>
-      <LandingFooter/>
+      <LandingFooter />
     </div>
   </div>
 </template>
@@ -16,9 +16,8 @@ import LandingFooter from "~/components/block/LandingFooter";
 </script>
 
 <style lang="scss" scoped>
-
 .header {
-  z-index: 1;
+  z-index: 9999;
 }
 
 .page {

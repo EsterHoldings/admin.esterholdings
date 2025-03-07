@@ -63,12 +63,13 @@ const linksList = [
   height: 80px;
   background: transparent;
   transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
-  z-index: 9998;
+
+  z-index: 9999;
 
   &__wrapper {
     position: fixed;
-    z-index: 1;
     width: 100%;
+    z-index: 10000;
   }
 }
 

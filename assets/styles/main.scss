@@ -8,8 +8,8 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Muli", sans-serif;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
 
 body {
@@ -17,6 +17,10 @@ body {
   background: var(--color-background);
   transition: var(--default-transition);
   font-family: "Muli", sans-serif;
+
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
 }
 
 // next-link navigation

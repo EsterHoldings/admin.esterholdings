@@ -1,0 +1,52 @@
+<template>
+  <svg
+    width="16.000000"
+    height="16.000000"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+  >
+    <defs>
+      <clipPath id="clip214_1713">
+        <rect
+          id="clock"
+          rx="0.000000"
+          width="15.000000"
+          height="15.000000"
+          transform="translate(0.500000 0.500000)"
+          fill="white"
+          fill-opacity="0"
+        />
+      </clipPath>
+    </defs>
+    <rect
+      id="clock"
+      rx="0.000000"
+      width="15.000000"
+      height="15.000000"
+      transform="translate(0.500000 0.500000)"
+      fill="#FFFFFF"
+      fill-opacity="0"
+    />
+    <g clip-path="url(#clip214_1713)">
+      <path
+        id="Vector"
+        d="M8 14.66C4.31 14.66 1.33 11.68 1.33 8C1.33 4.31 4.31 1.33 8 1.33C11.68 1.33 14.66 4.31 14.66 8C14.66 11.68 11.68 14.66 8 14.66Z"
+        stroke="#B8B8C3"
+        stroke-opacity="1.000000"
+        stroke-width="1.500000"
+        stroke-linejoin="round"
+      />
+      <path
+        id="Vector"
+        d="M8 4L8 8L10.66 9.33"
+        stroke="#B8B8C3"
+        stroke-opacity="1.000000"
+        stroke-width="1.500000"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
+    </g>
+  </svg>
+</template>

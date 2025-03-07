@@ -73,7 +73,6 @@ const setActive = (index: number) => {
   padding: 40px 20px;
   display: flex;
   justify-content: center;
-  margin-bottom: 250px;
 
   &__title {
     color: white;

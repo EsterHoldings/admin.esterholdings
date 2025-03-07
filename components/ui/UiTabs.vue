@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import UiTextH4Vue from "./UiTextH4.vue";
+
+import UiTextH5 from "./UiTextH5.vue";
 
 interface Tab {
   id: string;
@@ -32,9 +33,9 @@ const setActiveTab = (tabId: string) => {
         :class="{ 'tabs__item--active': activeTab === tab.id }"
         @click="setActiveTab(tab.id)"
       >
-        <UiTextH4>
+        <UiTextH5>
           {{ tab.label }}
-        </UiTextH4>
+        </UiTextH5>
       </div>
     </div>
   </div>
@@ -43,36 +44,35 @@ const setActiveTab = (tabId: string) => {
 <style scoped lang="scss">
 .tabs {
   padding: 10px 40px;
-  background: rgba(255, 255, 255, 0.38);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .tabs__wrapper {
   display: flex;
-  gap: 50px;
+  gap: 15px;
   align-items: center;
   justify-content: center;
 }
 
 .tabs__item {
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  border-radius: 6px;
+  position: relative;
+
+  border: 1px solid rgb(27, 99, 255);
+  border-radius: 50px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 26px;
   cursor: pointer;
-  transition: background 0.2s ease-in-out, color 0.2s;
+
+  h5 {
+    color: var(--color-ui-primary-defalt);
+  }
 }
 
 .tabs__item--active {
-  background: rgba(210, 210, 210, 0.5);
-  color: #de9e48;
-
-  h4 {
-    font-weight: 500;
-  }
+  background: var(--color-ui-warning);
+  border: none;
 }
 </style>

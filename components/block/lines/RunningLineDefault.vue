@@ -1,17 +1,28 @@
 <template>
-  <div class="running-line" @mouseenter="stopAnimation" @mouseleave="startAnimation">
+  <div
+    class="running-line"
+    @mouseenter="stopAnimation"
+    @mouseleave="startAnimation"
+  >
     <div class="running-line__track" ref="track">
       <div
-          v-for="(item, index) in duplicatedItems"
-          :key="index"
-          class="running-line__item"
+        v-for="(item, index) in duplicatedItems"
+        :key="index"
+        class="running-line__item"
       >
-        <div class="ticker-block">
+        <div class="ticker-block" v-if="props.news">
+          <img :src="item.image" alt="news" class="ticker-block__image" />
+          <div class="ticker-block__info">
+            <span class="ticker-block__title">{{ item.title }}</span>
+          </div>
+        </div>
+
+        <div class="ticker-block" v-else>
           <div class="ticker-block__info">
             <span class="ticker-block__title">{{ item.name }}</span>
             <span
-                class="ticker-block__value"
-                :class="{'up': item.change > 0, 'down': item.change < 0}"
+              class="ticker-block__value"
+              :class="{ up: item.change > 0, down: item.change < 0 }"
             >
               {{ item.price }}
               <span v-if="item.change > 0">▲</span>
@@ -19,9 +30,7 @@
               {{ item.change }}
             </span>
           </div>
-          <UiButtonDefault state="success--outline">
-            Trade
-          </UiButtonDefault>
+          <UiButtonDefault state="success--outline"> Trade </UiButtonDefault>
         </div>
       </div>
     </div>
@@ -32,15 +41,12 @@
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 
-const items = ref([
-  { name: "EURUSD", price: 1.04282, change: 0.00014 },
-  { name: "GBPUSD", price: 1.25267, change: -0.00016 },
-  { name: "US30", price: 44674.97, change: 1.28 },
-  { name: "ETHUSD", price: 2655.08, change: -6.84 },
-  { name: "WTI", price: 71.11, change: 0.21 },
-]);
+const props = defineProps({
+  items: Array,
+  news: Boolean,
+});
 
-const duplicatedItems = computed(() => [...items.value, ...items.value]);
+const duplicatedItems = computed(() => [...props.items, ...props.items]);
 
 const track = ref<HTMLElement | null>(null);
 let animationFrameId: number | null = null;
@@ -146,5 +152,13 @@ onUnmounted(stopAnimation);
 .ticker-block__trade:hover {
   background: #00ff00;
   color: black;
+}
+
+.ticker-block__image {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-right: 10px;
 }
 </style>

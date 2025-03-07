@@ -45,7 +45,6 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   align-items: center;
   text-align: center;
   color: white;
-  margin-bottom: 200px;
 
   &__wrapper {
     position: relative;

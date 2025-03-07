@@ -1,11 +1,12 @@
 <template>
   <section class="welcome">
-    <SliderDefault class="welcome__slider" :autoPlayInterval="10000"/>
+    <SliderDefault class="welcome__slider" :autoPlayInterval="10000" />
     <UiContainer>
       <div class="welcome__content">
         <UiTextH1>
           Trade <span class="welcome__title--highlight">Smarter</span>, <br />
-          Trade Faster ! <img class="rocket" src="/static/rocket.png" alt="Rocket" />
+          Trade Faster !
+          <img class="rocket" src="/static/rocket.png" alt="Rocket" />
         </UiTextH1>
         <UiTextH5 class="welcome__text">
           Access global markets, including Forex, Stocks, and CFDs, with <br />
@@ -16,13 +17,14 @@
         </div>
       </div>
       <div class="welcome__running-line-default">
-        <RunningLineDefault />
+        <RunningLineDefault :items="items" />
       </div>
     </UiContainer>
   </section>
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue";
 import UiTextH1 from "~/components/ui/UiTextH1.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
@@ -31,6 +33,14 @@ import UiImage from "~/components/ui/UiImage.vue";
 import TheSlider from "~/components/block/slider/TheSlider.vue";
 import SliderDefault from "~/components/block/sliders/SliderDefault.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
+
+const items = ref([
+  { name: "EURUSD", price: 1.04282, change: 0.00014 },
+  { name: "GBPUSD", price: 1.25267, change: -0.00016 },
+  { name: "US30", price: 44674.97, change: 1.28 },
+  { name: "ETHUSD", price: 2655.08, change: -6.84 },
+  { name: "WTI", price: 71.11, change: 0.21 },
+]);
 </script>
 
 <style lang="scss" scoped>
