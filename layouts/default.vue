@@ -14,6 +14,11 @@
 <script setup lang="ts">
 import TheHeaderSideBar from "~/components/block/TheHeaderSideBar.vue";
 import TheFooter from "@/components/block/TheFooter.vue";
+
+import {useAdminAuthStore} from "~/stores/adminAuthStore";
+
+const store = useAdminAuthStore();
+store.initAuth();
 </script>
 
 <style lang="scss" scoped>

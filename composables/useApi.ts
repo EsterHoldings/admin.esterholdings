@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import {useAdminAuthStore} from "~/stores/adminAuthStore";
 
 export class useApi {
   private api: AxiosInstance;
@@ -9,13 +10,16 @@ export class useApi {
       baseURL: "http://localhost:8000/api/",
     });
 
-    // this.api.interceptors.request.use((config) => {
-    //   const token = localStorage.getItem("auth_token");
-    //   if (token) {
-    //     config.headers.Authorization = `Bearer ${token}`;
-    //   }
-    //   return config;
-    // });
+    this.api.interceptors.request.use((config) => {
+      const authStore = useAdminAuthStore();
+      const token = authStore.accessToken;
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      return config;
+    });
   }
 
   request(config: AxiosRequestConfig): Promise<AxiosResponse> {
@@ -23,9 +27,7 @@ export class useApi {
   }
 
   get(url: string, params: object = {}): Promise<AxiosResponse> {
-    return this.api.get(url, {
-      params: params,
-    });
+    return this.api.get(url, { params });
   }
 
   post(url: string, data?: object): Promise<AxiosResponse> {
@@ -41,9 +43,7 @@ export class useApi {
   }
 
   delete(url: string, params: object = {}): Promise<AxiosResponse> {
-    return this.api.delete(url, {
-      params: params,
-    });
+    return this.api.delete(url, { params });
   }
 }
 

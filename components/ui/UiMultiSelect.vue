@@ -86,8 +86,8 @@ const handleClickRemove = (id: string) => emit("remove", id)
 
 <style lang="scss" scoped>
 .multi-select {
-  border-radius: 5px;
-  border: 1px solid var(--color-text);
+  border-radius: var(--ui-input--border-radius);
+  border: 1px solid var(--color-stroke-ui-dark);
   padding: 15px;
   min-height: 40px;
 
@@ -136,15 +136,18 @@ const handleClickRemove = (id: string) => emit("remove", id)
       border: 1px solid #b4cbef;
       font-size: 12px;
       padding: 4px 6px;
-      border-radius: 4px;
+      border-radius: var(--ui-input--border-radius);
       margin-right: 4px;
       white-space: pre;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
   &.is-open {
     border-bottom: none;
-    border-radius: 5px 5px 0 0;
+    border-radius: var(--ui-input--border-radius) var(--ui-input--border-radius) 0 0;
   }
 
   &.is-invalid {
@@ -156,7 +159,7 @@ const handleClickRemove = (id: string) => emit("remove", id)
     left: 0;
     position: absolute;
     width: 100%;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 var(--ui-input--border-radius) var(--ui-input--border-radius);
     border: 1px solid var(--color-text);
     overflow: scroll;
     max-height: 200px;
@@ -166,7 +169,7 @@ const handleClickRemove = (id: string) => emit("remove", id)
     }
 
     &__item {
-      background-color: gainsboro;
+      background-color: var(--color-ui-primary);
       height: 30px;
       padding: 0 15px;
       display: flex;
@@ -177,20 +180,20 @@ const handleClickRemove = (id: string) => emit("remove", id)
       font-size: 16px;
 
       &.is-select {
-        background-color: #b3cbef !important;
+        background-color: var(--color-ui-primary) !important;
       }
 
       &:hover {
         cursor: pointer;
-        background-color: #bbd2f8 !important;
+        opacity: 0.5;
       }
 
       &:nth-child(odd) {
-        background-color: gainsboro;
+        background-color: var(--color-ui-background);
       }
 
       &:nth-child(even) {
-        background-color: lightgray;
+        background-color: var(--color-stroke-ui-dark);
       }
     }
   }

@@ -33,3 +33,10 @@ provide("modalControl", {openModal, closeModal});
 </script>
 
 <style lang="scss" scoped></style>
+
+<style lang="scss">
+svg {
+  fill: white;
+  stroke: white;
+}
+</style>

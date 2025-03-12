@@ -22,11 +22,17 @@
 </template>
 
 <script lang="ts" setup>
-import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
+import {definePageMeta} from "~/.nuxt/imports";
+
+import AdminsPanel from "~/pages/admin/access/components/AdminsPanel.vue";
 import RolesPanel from "~/pages/admin/access/components/RolesPanel.vue";
 import PermissionsPanel from "~/pages/admin/access/components/PermissionsPanel.vue";
-import AdminsPanel from "~/pages/admin/access/components/AdminsPanel.vue";
+import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
+
+definePageMeta({
+  middleware: ["admin-middleware"]
+});
 </script>
 
 <style lang="scss" scoped>

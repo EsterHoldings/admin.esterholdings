@@ -2,35 +2,40 @@
   <header class="header" :class="{ 'is-open': isOpen }">
     <div class="header__top">
       <div class="header__top-left" :class="{ 'is-not-open': !isOpen }">
-        <UiIconLogo />
+        <UiIconLogo/>
       </div>
 
       <div class="header__top-right">
         <UiIconArrowsLeft
-          :rotateToRight="!isOpen"
-          @click="handleClickOpenCloseSideBar"
+            :rotateToRight="!isOpen"
+            @click="handleClickOpenCloseSideBar"
         />
       </div>
     </div>
 
-    <TheHeaderSideBarMenu :sideBarIsOpen="isOpen" />
+    <TheHeaderSideBarMenu :sideBarIsOpen="isOpen"/>
 
     <div class="header__bottom">
       <div class="header__bottom-left" :class="{ 'is-not-open': !isOpen }">
-        <UiImageCircle />
+        <UiImageCircle/>
       </div>
 
       <div class="header__bottom-right" :class="{ 'is-not-open': !isOpen }">
-        <span>Logout</span>
-        <UiIconLogout />
+        <div class="header__bottom-right__wrapper" @click="handleClickLogoutButton">
+          <span>Logout</span>
+          <UiIconLogout/>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
+import useAppCore from "~/composables/useAppCore";
+import {ref, onMounted, computed} from "vue";
+import {useRoute} from "vue-router";
+import {navigateTo} from "nuxt/app";
+import {useAdminAuthStore} from "~/stores/adminAuthStore";
 
 import TheHeaderSideBarMenu from "~/components/block/TheHeaderSideBarMenu.vue";
 import UiIconArrowsLeft from "~/components/ui/UiIconArrowsLeft.vue";
@@ -38,7 +43,15 @@ import UiIconLogo from "~/components/ui/UiIconLogo.vue";
 import UiIconLogout from "~/components/ui/UiIconLogout.vue";
 import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 
+
+import {ROUTE_ADMIN_AUTH_LOGIN} from "~/constants/routes";
+
 const isOpen = ref(false);
+
+const appCore = useAppCore();
+const route = useRoute();
+const currentRouteName = computed(() => route.name);
+const adminAuthStore = useAdminAuthStore();
 
 onMounted(() => {
   const storedState = localStorage.getItem("sidebarIsOpen");
@@ -52,8 +65,14 @@ const handleClickOpenCloseSideBar = () => {
   localStorage.setItem("sidebarIsOpen", isOpen.value.toString());
 };
 
-const route = useRoute();
-const currentRouteName = computed(() => route.name);
+const handleClickLogoutButton = async () => {
+  // TODO :: SEND REQUEST FOR LOGOUT
+  await appCore.adminAuth.doLogout();
+  adminAuthStore.setAccessToken('');
+  adminAuthStore.setRefreshToken('');
+  navigateTo(ROUTE_ADMIN_AUTH_LOGIN)
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -140,6 +159,23 @@ const currentRouteName = computed(() => route.name);
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      &__wrapper {
+        padding: 0 20px;
+        width: auto;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        border-radius: 25px;
+
+        &:hover {
+          background-color: var(--color-ui-background);
+        }
+
+        &:active {
+          background-color: var(--color-stroke-ui-dark);
+        }
+      }
 
       &.is-not-open {
         span {

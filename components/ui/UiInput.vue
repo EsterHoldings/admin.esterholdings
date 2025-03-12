@@ -85,17 +85,17 @@ const onBlur = (event: any): void => emit("blur", event);
 <style lang="scss" scoped>
 input {
   width: 100%;
-  height: 40px;
+  height: var(--ui-input--height);
   border: none;
   outline: none;
   background-color: transparent;
-  color: wheat;
+  color: var(--color-ui-text);
 }
 
 .input {
   box-sizing: border-box;
   width: 100%;
-  height: 40px;
+  height: var(--ui-input--height);
   margin: 0;
   background-color: transparent;
   outline: none;
@@ -135,7 +135,7 @@ input {
 
   &>.border {
     border: 1px solid var(--color-stroke-ui-dark);
-    border-radius: 5px;
+    border-radius: var(--ui-input--border-radius);
   }
 
   &::placeholder {

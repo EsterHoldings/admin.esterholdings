@@ -87,6 +87,7 @@
 svg {
   width: 107px;
   height: 44px;
+  stroke: none;
 }
 </style>
 <script setup lang="ts"></script>

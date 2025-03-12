@@ -4,7 +4,7 @@
         class="admins-panel__edit__top"
         v-if="props.title"
     >
-      <UiTextH2>{{ props.title }}</UiTextH2>
+      <UiTextH4>{{ props.title }}</UiTextH4>
     </div>
 
     <div
@@ -84,6 +84,8 @@ import {validateAdminForm, validatorAdminForm} from "~/pages/admin/access/compos
 import {formData} from "~/pages/admin/access/composables/AdminsPanelAddNew";
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
+import UiTextH3 from "~/components/ui/UiTextH3.vue";
+import UiTextH4 from "~/components/ui/UiTextH4.vue";
 
 const props = defineProps({
   title: {
@@ -158,7 +160,7 @@ onMounted(async () => {
     align-items: center;
     justify-content: flex-start;
 
-    border-bottom: 1px solid gainsboro;
+    border-bottom: 1px solid var(--color-stroke-ui-dark);
   }
 
   &__content {
@@ -191,7 +193,7 @@ onMounted(async () => {
     align-items: center;
     justify-content: flex-start;
 
-    border-top: 1px solid gainsboro;
+    border-top: 1px solid var(--color-stroke-ui-dark);
 
     .btn {
       height: 40px;

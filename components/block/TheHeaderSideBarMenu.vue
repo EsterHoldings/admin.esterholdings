@@ -2,14 +2,15 @@
   <nav class="nav">
     <ul class="nav-menu">
       <TheHeaderSideBarMenuItem
-          v-for="menuItem in menuItems"
+          v-for="menuItem in menuList"
           :title="menuItem.title"
           :to="menuItem.to"
           :icon="menuItem.icon"
           :sideBarIsOpen="sideBarIsOpen"
           :key="menuItem.title"
           @click="handleClickMenuItem"
-      >{{ menuItem.icon }}</TheHeaderSideBarMenuItem>
+      >{{ menuItem.icon }}
+      </TheHeaderSideBarMenuItem>
     </ul>
   </nav>
 </template>
@@ -25,7 +26,13 @@ import UiIconProfile from "~/components/ui/UiIconProfile.vue";
 import UiIconSetting from "~/components/ui/UiIconSetting.vue";
 import UiIconKeys from "~/components/ui/UiIconKeys.vue";
 
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
+import {useAdminAuthStore} from '~/stores/adminAuthStore';
+import {computed} from "vue";
+
+const store = useAdminAuthStore();
+
+const hasPermission = (permName: string) => store.hasPermission(permName);
 
 const router = useRouter();
 
@@ -40,39 +47,57 @@ const menuItems = [
   {
     title: 'Dashboard',
     to: '/admin/dashboard',
-    icon: UiIconHome
+    icon: UiIconHome,
+    displayIfHasPermission: 'view-dashboard',
   },
   {
     title: 'Clients',
     to: '/admin/clients',
-    icon: UiIconClients
+    icon: UiIconClients,
+    displayIfHasPermission: 'view-clients',
   },
   {
     title: 'Accounts',
     to: '/admin/accounts',
-    icon: UiIconUser
+    icon: UiIconUser,
+    displayIfHasPermission: 'view-accounts',
   },
   {
     title: 'Referral system',
     to: '/admin/referral',
-    icon: UiIconReferral
+    icon: UiIconReferral,
+    displayIfHasPermission: 'view-referrals',
   },
   {
-    title: 'Profile',
-    to: '/admin/profile',
-    icon: UiIconProfile
+    title: 'Payments',
+    to: '/admin/payments',
+    icon: UiIconProfile,
+    displayIfHasPermission: 'view-payments',
   },
   {
     title: 'Settings',
     to: '/admin/settings',
-    icon: UiIconSetting
+    icon: UiIconSetting,
+    displayIfHasPermission: 'view-settings',
   },
   {
     title: 'Access',
     to: '/admin/access',
-    icon: UiIconKeys
+    icon: UiIconKeys,
+    displayIfHasPermission: 'view-admins',
   },
 ];
+
+const menuList = computed(() => {
+  const filteredMenuItems = menuItems.filter(x => hasPermission(x.displayIfHasPermission));
+  console.log('filteredMenuItems');
+  console.log(filteredMenuItems);
+  console.log('filteredMenuItems');
+  console.log('menuItems');
+  console.log(menuItems);
+  console.log('menuItems');
+  return filteredMenuItems;
+})
 
 const handleClickMenuItem = (to: string) => {
   router.push(to);

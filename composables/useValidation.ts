@@ -135,11 +135,6 @@ export const useValidation = (
       fieldName: String,
       isDirtyValue: Boolean = true,
   ): void => {
-
-    console.log('=  =  =  =  =  =  =  =');
-    console.log(errorsFormData);
-    console.log('=  =  =  =  =  =  =  =');
-
     errorsFormData[fieldName as keyof typeof errorsFormData].isDirty =
         isDirtyValue
   }

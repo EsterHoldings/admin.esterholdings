@@ -97,7 +97,7 @@ const getAdmin = async () => {
 }
 
 const getRoles = async () => {
-  const response = await app.roles.get({perPage: 20});
+  const response = await app.roles.get({perPage: 100});
   rolesData = response.data.data.data;
 };
 

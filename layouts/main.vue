@@ -22,7 +22,7 @@ import LandingFooter from "~/components/block/LandingFooter";
 
 .page {
   min-height: 100vh;
-  overflow: scroll;
+  overflow: unset;
 
   &-wrapper {
     display: flex;

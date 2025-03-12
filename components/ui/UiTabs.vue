@@ -1,56 +1,55 @@
-<script setup lang="ts">
-import { ref } from "vue";
-
-import UiTextH5 from "./UiTextH5.vue";
-
-interface Tab {
-  id: string;
-  label: string;
-}
-
-const props = defineProps<{
-  tabs: Tab[];
-}>();
-
-const emit = defineEmits(["activeTab"]);
-
-const activeTab = ref(props.tabs[0].id);
-
-const setActiveTab = (tabId: string) => {
-  activeTab.value = tabId;
-
-  emit("activeTab", tabId);
-};
-</script>
-
 <template>
   <div class="tabs">
-    <div class="tabs__wrapper">
+    <div class="tabs__list">
       <div
-        v-for="tab in props.tabs"
-        :key="tab.id"
-        class="tabs__item"
-        :class="{ 'tabs__item--active': activeTab === tab.id }"
-        @click="setActiveTab(tab.id)"
+          v-for="(tab, index) in props.tabs"
+          :key="tab.id"
+          class="tabs__item"
+          :class="{ 'tabs__item--active': activeTabIndex == index }"
+          @click="handleSetActiveTab(index)"
       >
         <UiTextH5>
           {{ tab.label }}
         </UiTextH5>
       </div>
     </div>
+    <div class="tabs__content">
+      <component :is="activeTabComponent" />
+    </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import UiTextH5 from "./UiTextH5.vue";
+import {computed, ref} from "vue";
+
+interface ITab {
+  id?: string,
+  label?: string,
+  component?: any
+}
+
+const props = defineProps<{ tabs: Array<ITab>; }>();
+const activeTabIndex = ref(0);
+
+const handleSetActiveTab = (index) => activeTabIndex.value = index;
+
+const activeTabComponent = computed(() => {
+  return props.tabs[activeTabIndex.value].component;
+})
+</script>
 
 <style scoped lang="scss">
 .tabs {
   padding: 10px 40px;
 }
 
-.tabs__wrapper {
+.tabs__list {
   display: flex;
   gap: 15px;
   align-items: center;
   justify-content: center;
+  margin-bottom: 40px;
 }
 
 .tabs__item {

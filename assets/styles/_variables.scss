@@ -5,7 +5,7 @@
   // ...
   --default-transition: 0.5s;
   // ...
-  --color-background: #f7f7f7; // TODO :: Deprecated - will remove
+  --color-background: #3b3939; // TODO :: Deprecated - will remove
   --color-text: #101010; // TODO :: Deprecated - will remove
   --color-text-muted: #9a9797; // TODO :: Deprecated - will remove
   // ...
@@ -36,6 +36,17 @@
     #011644 99.041%
   );
   --color-ui-grey: #b8b8c3;
+
+
+  // Text settings
+  --color-ui-text: #d3d3d3;
+
+  // Ui elements settings
+  // Blocks
+  // Inputs
+  --ui-input--border-radius: 25px;
+  --ui-input--height: 46px;
+  // Buttons
 }
 
 // Static variables

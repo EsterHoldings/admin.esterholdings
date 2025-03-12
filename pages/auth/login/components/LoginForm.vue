@@ -80,15 +80,6 @@
         <UiIconDeveloper/>
       </UiButtonDefault>
     </div>
-
-    <div class="login-form__forgot-link">
-      <br/>
-      <nuxt-link to="/auth/forgot">Forgot password?</nuxt-link>
-      <br/>
-
-      <br/>
-      <nuxt-link to="/auth/registration">Registration</nuxt-link>
-    </div>
   </div>
 </template>
 
@@ -121,7 +112,7 @@ const doSendForm = async () => {
   try {
     isLoading.value = true;
     const response = await appCore.auth.doLogin(props.formData);
-
+    console.log('ADMIN LOGIN RESPONSE: ', response);
     await useRouter().push({path: "/"});
   } catch (e: any) {
     console.log("LoginForm -> doSendForm -> catch", e.message);
@@ -142,12 +133,13 @@ onUnmounted(() => resetValidationLoginForm());
   display: flex;
   justify-content: center;
   flex-direction: column;
-  height: calc(100vh - 295px);
+  //height: calc(100vh - 295px);
   color: #c4c4c4;
+  background-color: red;
 
   &__title {
     text-align: center;
-    margin-top: 150px;
+    //margin-top: 100px;
   }
 
   &__field {

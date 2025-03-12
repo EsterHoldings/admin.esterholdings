@@ -1,22 +1,18 @@
 <template>
   <div class="settings">
-    <UiTextH1> Settings </UiTextH1>
+    <UiTextH3>Settings</UiTextH3>
 
     <div class="settings__tabs">
-      <UiTabs :tabs="tabs" @active-tab="setActiveTab" />
-    </div>
-
-    <div class="settings__content">
-      <component :is="activeComponent" />
+      <UiTabs :tabs="tabs" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import UiTabs from "~/components/ui/UiTabs.vue";
-import UiTextH1 from "~/components/ui/UiTextH1.vue";
+import UiTextH3 from "~/components/ui/UiTextH3.vue";
+
 import { tabs } from "./composables";
-import { activeComponent, setActiveTab } from "./composables/setup";
 </script>
 
 <style lang="scss" scoped>
@@ -27,8 +23,7 @@ import { activeComponent, setActiveTab } from "./composables/setup";
   gap: 50px;
 
   &__tabs {
-    width: 100%;
-    max-width: 800px;
+    width: 1192px;
     margin: 0 auto;
   }
 }

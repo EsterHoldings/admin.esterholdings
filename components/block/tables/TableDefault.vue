@@ -221,7 +221,7 @@ const props = defineProps({
   }
 
   &:hover {
-    background-color: #dddddd;
+    background-color: var(--color-stroke-ui-dark);
     transition: 0.1s;
   }
 }

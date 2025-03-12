@@ -16,6 +16,5 @@
 svg {
   height: 13px;
   width: 13px;
-  fill: #000000;
 }
 </style>
