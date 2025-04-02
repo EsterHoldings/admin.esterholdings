@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;700&display=swap");
+@font-face {
+  font-family: "Muli";
+  src: url("../fonts/Muli-Regular.woff2") format("woff2"),
+    url("../fonts/Muli-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Muli";
+  src: url("../fonts/Muli-SemiBold.woff2") format("woff2"),
+    url("../fonts/Muli-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Muli";
+  src: url("../fonts/Muli-Bold.woff2") format("woff2"),
+    url("../fonts/Muli-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+:root {
+  --spacer: 10px;
+  --default-transition: 0.5s;
+  --color-background: #f7f7f7;
+  --color-text: #101010;
+  --color-text-muted: #9a9797;
+  --color-secondary: #d1d1d1;
+  --color-contrast: #3e3939;
+  --color-default: gainsboro;
+  --color-primary: blue;
+  --color-info: lightblue;
+  --color-success: green;
+  --color-warning: orange;
+  --color-danger: #af160e;
+  --color-dark: #7b7b81;
+  --color-light: white;
+  --color-ui-background: #000028;
+  --color-ui-primary: #0051ff;
+  --color-ui-primary-defalt: #ffffff;
+  --color-ui-warning: #f75709;
+  --color-sticker-ui-success: #03c11f;
+  --color-sticker-ui-danger: #d93025;
+  --color-stroke-ui-light: #1b63ff;
+  --color-stroke-ui-dark: #011644;
+  --color-stroke-ui: linear-gradient(
+    137.67deg,
+    #1b63ff 2.397%,
+    #011644 99.041%
+  );
+  --color-ui-grey: #b8b8c3;
+}
+
+*,
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+
+  overflow-x: hidden;
+  overflow-y: auto !important;
+}
+
+body {
+  color: var(--color-text);
+  background: var(--color-background);
+  transition: var(--default-transition);
+  font-family: "Muli", sans-serif;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+
+  overflow-x: hidden;
+  overflow-y: auto !important;
+}
+
+a {
+  font-style: normal;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 17px;
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-text);
+}
+
+.page--min-height {
+  min-height: calc(100vh - 200px - 140px);
+}
+
+hr {
+  margin: 40px 0;
+}
+
+.bold {
+  font-weight: 700 !important;
+}
+
+.semibold {
+  font-weight: 600 !important;
+}
+
+.regular {
+  font-weight: 400 !important;
+} /*# sourceMappingURL=main.css.map */

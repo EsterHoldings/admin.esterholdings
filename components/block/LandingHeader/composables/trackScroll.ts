@@ -4,7 +4,7 @@ export default function useTrackScroll() {
   const isBlurred = ref(false);
 
   const checkScroll = () => {
-    isBlurred.value = window.scrollY > 10;
+    isBlurred.value = window.scrollY > 50;
   };
 
   onMounted(() => {

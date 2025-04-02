@@ -3,7 +3,7 @@
   // Space step (padding, margin )
   --spacer: 10px;
   // ...
-  --default-transition: 0.5s;
+  --default-transition: all 0.2s ease;
   // ...
   --color-background: #f7f7f7; // TODO :: Deprecated - will remove
   --color-text: #101010; // TODO :: Deprecated - will remove
@@ -31,9 +31,9 @@
   --color-stroke-ui-light: #1b63ff;
   --color-stroke-ui-dark: #011644;
   --color-stroke-ui: linear-gradient(
-    137.67deg,
-    #1b63ff 2.397%,
-    #011644 99.041%
+                  137.67deg,
+                  #1b63ff 2.397%,
+                  #011644 99.041%
   );
   --color-ui-grey: #b8b8c3;
 }

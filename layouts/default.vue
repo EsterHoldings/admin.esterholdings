@@ -1,10 +1,12 @@
 <template>
   <div class="container-fluid">
     <div class="page-wrapper">
-      <TheHeaderSideBar />
+      <TheHeaderSideBar/>
+
+
       <div class="page-content">
         <div class="page">
-          <slot />
+          <slot/>
         </div>
       </div>
     </div>
@@ -14,6 +16,7 @@
 <script setup lang="ts">
 import TheHeaderSideBar from "~/components/block/TheHeaderSideBar.vue";
 import TheFooter from "@/components/block/TheFooter.vue";
+import HeaderMenu from "~/components/block/LandingHeader/components/HeaderMenu.vue";
 </script>
 
 <style lang="scss" scoped>

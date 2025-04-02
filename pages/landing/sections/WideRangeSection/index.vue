@@ -3,7 +3,7 @@
     <UiTextH3>Wide Range of Products</UiTextH3>
 
     <div class="wide_range_section__tabs">
-      <UiTabs :tabs="tabs" @active-tab="setActiveTab" />
+      <UiTabs :tabs="tabs" @active-tab="setActiveTab" class="tabs" />
     </div>
 
     <div class="wide_range_section__content">

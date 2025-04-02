@@ -1,10 +1,10 @@
 <template>
   <div class="forex">
-    <UiContainer class="wrapper">
+    <UiContainer class="wrapper" :class=" { 'light-theme': themeStore.currentTheme === 'light' }">
       <div class="forex__content">
-        <UiTextH3> Forex </UiTextH3>
+        <UiTextH3 class="forex__title">Forex</UiTextH3>
         <UiTextH5 class="forex__text">
-          Trade 70 major, minor & exotic currency pairs<br />
+          Trade 70 major, minor & exotic currency pairs<br/>
           with competitive trading conditions.
         </UiTextH5>
         <div>
@@ -12,31 +12,34 @@
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.png" class="forex__img" />
+      <UiImage src="/static/forex-money.webp" class="forex__img"/>
     </UiContainer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import UiTextH1 from "~/components/ui/UiTextH1.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiImage from "~/components/ui/UiImage.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
+
+import {useThemeStore} from "~/stores/themeStore"
+
+const themeStore = useThemeStore()
 </script>
 
 <style lang="scss" scoped>
 .forex {
+  padding: 10px;
   width: 100vw;
 
   &__img {
     position: absolute;
     right: 0;
-    bottom: 0;
-    width: 648px;
-    height: 314px;
+    bottom: -30px;
+    object-fit: contain;
+    width: 585px;
     z-index: 10;
   }
 
@@ -54,10 +57,11 @@ import UiContainer from "~/components/ui/UiContainer.vue";
     padding: 98px 376px 99px 58px;
     display: flex;
     gap: 142px;
-    background: rgb(0, 0, 40);
+    background: var(--color-ui-background);
     border-radius: 15px;
-    border: 1px solid #2a4af5;
+    border: 1px solid var(--color-ui-primary);
     overflow: hidden;
+
 
     &::after {
       content: "";
@@ -65,7 +69,7 @@ import UiContainer from "~/components/ui/UiContainer.vue";
       width: 350px;
       height: 350px;
       background: rgba(247, 87, 9, 0.9);
-      filter: blur(150px);
+      filter: blur(100px);
       top: 270px;
       right: -200px;
       z-index: 1;
@@ -82,13 +86,27 @@ import UiContainer from "~/components/ui/UiContainer.vue";
       top: 140px;
       right: 260px;
       z-index: 1;
-
       animation: pulse 3s infinite alternate ease-in-out;
     }
   }
 
+  &__title {
+    color: var(--color-ui-primary-defalt);
+  }
+
+
   &__text {
     color: var(--color-ui-grey);
+  }
+
+}
+
+:deep(.light-theme.wrapper) {
+  background: var(--color-stroke-ui-light);
+
+  &::before,
+  &::after {
+    background: white;
   }
 }
 
@@ -100,6 +118,51 @@ import UiContainer from "~/components/ui/UiContainer.vue";
   100% {
     transform: scale(1.2);
     opacity: 0.4;
+  }
+}
+
+
+@media (max-width: 1199px) {
+  .wrapper {
+    padding: 40px !important;
+  }
+  .forex__img {
+    width: 68%;
+    top: 0;
+  }
+}
+
+
+@media (max-width: 991px) {
+  .forex__text {
+    br {
+      display: none;
+    }
+  }
+  .forex__content {
+    max-width: 300px;
+  }
+
+  .forex__img {
+    top: 10%;
+    width: 63%;
+  }
+}
+
+@media (max-width: 767px) {
+  .wrapper {
+    padding: 20px !important;
+  }
+
+  .forex__img {
+    top: 25%;
+    width: 50%;
+  }
+}
+
+@media (max-width: 575px) {
+  .forex__img {
+    display: none;
   }
 }
 </style>

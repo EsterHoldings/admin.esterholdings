@@ -93,11 +93,22 @@ const items = ref([
   &__text {
     color: var(--color-ui-grey);
     font-weight: 400;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
 .rocket {
   height: 48px;
   width: 48px;
+}
+
+@media (max-width: 768px) {
+  .welcome__text {
+    font-size: 14px;
+    br {
+      display: none;
+    }
+  }
 }
 </style>

@@ -3,15 +3,16 @@
     <UiTextH3 class="features_section_title">Why Choose Us?</UiTextH3>
     <div class="features_container">
       <div
-        class="feature_item"
-        v-for="(feature, index) in features"
-        :key="index"
+          class="feature_item"
+          v-for="(feature, index) in features"
+          :key="index"
       >
         <div class="feature_icon">
-          <UiIconPoligon class="feature_icon-bg" />
+          <UiIconPoligon class="feature_icon-bg"
+                         :background-fill="themeStore.currentTheme === 'light' ? '#F9F9F9' : '#031743'"/>
 
           <div class="img">
-            <img :src="feature.icon" alt="Feature Icon" />
+            <img :src="feature.icon" alt="Feature Icon"/>
           </div>
         </div>
         <h3 class="feature_title" v-html="feature.title"></h3>
@@ -20,16 +21,18 @@
     </div>
 
     <div class="features_section__running-line-default">
-      <RunningLineDefault :items="items" news />
+      <RunningLineDefault :items="items" news/>
     </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import {ref} from "vue";
+import {useThemeStore} from "~/stores/themeStore"
 import RunningLineDefault from "~/components/block/lines/RunningLineDefault.vue";
-
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
+
+const themeStore = useThemeStore()
 
 const features = ref([
   {
@@ -74,23 +77,23 @@ const items = ref([
   {
     title: "Bitcoin crashes 12% after SEC announces ban on stablecoins",
     image:
-      "https://render.fineartamerica.com/images/rendered/default/flat/beach-towel/images/artworkimages/medium/1/pixel-bitcoin-concept-allan-swart.jpg?&targetx=0&targety=-76&imagewidth=952&imageheight=628&modelwidth=952&modelheight=476&backgroundcolor=52514D&orientation=1&producttype=beachtowel-32-64",
+        "https://render.fineartamerica.com/images/rendered/default/flat/beach-towel/images/artworkimages/medium/1/pixel-bitcoin-concept-allan-swart.jpg?&targetx=0&targety=-76&imagewidth=952&imageheight=628&modelwidth=952&modelheight=476&backgroundcolor=52514D&orientation=1&producttype=beachtowel-32-64",
   },
   {
     title: "Tesla announced a 1:10 stock split – quotes rose by 12%",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4L9_huULFPV-ewqaz3Hpf9iGK0njUL-HvHQ&s",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4L9_huULFPV-ewqaz3Hpf9iGK0njUL-HvHQ&s",
   },
   {
     title:
-      "Dow Jones plummets 1,200 points after unexpected rise in US inflation",
+        "Dow Jones plummets 1,200 points after unexpected rise in US inflation",
     image:
-      "https://d1-invdn-com.investing.com/content/07858a634c1563800bd81d442dfd96cf.png",
+        "https://d1-invdn-com.investing.com/content/07858a634c1563800bd81d442dfd96cf.png",
   },
   {
     title: "NVIDIA shares soared 15% after the report",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9ecfGnvuktF2LkwRKXrzXlJfAKQ_Os9Vqrw&s",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9ecfGnvuktF2LkwRKXrzXlJfAKQ_Os9Vqrw&s",
   },
 ]);
 </script>
@@ -120,7 +123,6 @@ const items = ref([
 
 .features_container {
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
   max-width: 1200px;
   width: 100%;
@@ -163,11 +165,28 @@ const items = ref([
   margin-top: 15px;
   font-size: 20px;
   font-weight: bold;
+  color: var(--color-ui-primary-defalt);
 }
 
 .feature_description {
   margin-top: 5px;
   font-size: 16px;
   color: var(--color-ui-grey);
+}
+
+@media (max-width: 1199px) {
+  .features_section {
+    margin-top: 50px;
+  }
+}
+
+@media (max-width: 991px) {
+  .feature_title {
+    font-size: 16px;
+  }
+
+  .feature_description {
+    font-size: 13px;
+  }
 }
 </style>

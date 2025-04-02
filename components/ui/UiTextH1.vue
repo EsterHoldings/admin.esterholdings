@@ -8,13 +8,13 @@
 
 <style scoped lang="scss">
 .h1 {
-  // font-size: 21px;
-  // font-weight: 300;
-  // line-height: 26px;
-  // letter-spacing: 0;
-  // margin: 0;
-
   font-size: 60px;
   font-weight: 700;
+}
+
+@media (max-width: 991px) {
+  .h1 {
+    font-size: 35px;
+  }
 }
 </style>

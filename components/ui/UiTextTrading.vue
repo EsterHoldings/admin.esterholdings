@@ -1,6 +1,12 @@
 <template>
-  <div class="trading-wrapper" :class="{ 'with-border': hasBorder }">
-    <h2>
+  <div class="trading-wrapper"
+       :class="{
+  'light-theme': hasBorder && themeStore.currentTheme === 'light',
+  'with-border': hasBorder && themeStore.currentTheme !== 'light'
+}">
+    <h2 :class="{
+      'warning': props.color ==='warning' && themeStore.currentTheme === 'light',
+      'primary': props.color ==='primary' && themeStore.currentTheme === 'light'}">
       {{ props.title }}
     </h2>
     <p>
@@ -10,36 +16,28 @@
 </template>
 
 <script setup lang="ts">
+import {useThemeStore} from "~/stores/themeStore";
+
+const themeStore = useThemeStore();
 const props = defineProps({
   title: String,
   subTitle: String,
   hasBorder: Boolean,
+  color: String,
 });
 </script>
 
 <style lang="scss" scoped>
 .trading-wrapper {
-  width: 285px;
-  padding: 14px 28px;
+  min-width: 300px;
+  padding: 14px;
   border-radius: 15px;
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: baseline;
   gap: 5px;
 
-  //   &:before {
-  //     content: "";
-  //     position: absolute;
-  //     inset: 0;
-  //     border-radius: 12px;
-  //     padding: 2px;
-  //     background: linear-gradient(to right, rgb(27, 99, 255), rgb(1, 22, 68));
-  //     -webkit-mask: linear-gradient(white, white) content-box,
-  //       linear-gradient(white, white);
-  //     -webkit-mask-composite: xor;
-  //     mask-composite: exclude;
-  //     pointer-events: none;
-  //   }
 
   &.with-border {
     border: 2px solid transparent;
@@ -55,15 +53,24 @@ const props = defineProps({
     padding: 2px;
     background: linear-gradient(to right, rgb(27, 99, 255), rgb(1, 22, 68));
     -webkit-mask: linear-gradient(white, white) content-box,
-      linear-gradient(white, white);
+    linear-gradient(white, white);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
 
+
+  &.light-theme {
+    background: rgba(0, 0, 40, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(25px);
+    border: none;
+  }
+
+
   h2 {
     color: var(--color-ui-primary-defalt);
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
   }
 
@@ -71,6 +78,31 @@ const props = defineProps({
     color: var(--color-ui-grey);
     font-size: 14px;
     font-weight: 400;
+  }
+}
+
+
+.warning {
+  color: var(--color-ui-warning) !important;
+}
+
+.primary {
+  color: #0051ff !important;
+}
+
+
+@media (max-width: 1199px) {
+  .trading-wrapper {
+    width: 200px;
+    padding: 7px 12px;
+
+    h2 {
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 13px;
+    }
   }
 }
 </style>

@@ -11,7 +11,9 @@
         </div>
 
         <div class="banner-content">
-          <UiTextH3 class="bold">Trade the Markets Like a Pro!</UiTextH3>
+          <UiTextH3 class="banner-title bold"
+            >Trade the Markets Like a Pro!</UiTextH3
+          >
           <UiTextH6 class="banner-subtitle">
             Whether you're a beginner or a pro, our advanced tools and resources
             help you make informed trading decisions.
@@ -64,12 +66,16 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   gap: 20px;
 }
 
+.banner-title {
+  overflow-wrap: break-word;
+}
+
 .banner-subtitle {
+  overflow-wrap: break-word;
   color: var(--color-ui-grey);
 }
 
 .banner-image {
-  margin-top: 30px;
   width: 100%;
   z-index: 1;
 
@@ -83,5 +89,19 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 .banner-image img {
   width: 100%;
   border-radius: 10px;
+  object-fit: cover;
+}
+
+@media (max-width: 991px) {
+  .banner-section {
+    padding: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .banner-content {
+    padding: 10px;
+    width: 100%;
+  }
 }
 </style>

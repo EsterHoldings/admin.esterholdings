@@ -10,14 +10,13 @@ html {
   box-sizing: border-box;
   scroll-behavior: smooth;
   overscroll-behavior: none;
+  transition: var(--default-transition);
 }
 
 body {
   color: var(--color-text);
-  background: var(--color-background);
-  transition: var(--default-transition);
+  background-color: var(--color-background);
   font-family: "Muli", sans-serif;
-
   margin: 0;
   padding: 0;
   scroll-behavior: smooth;
@@ -31,8 +30,9 @@ a {
   line-height: 17px;
   text-decoration: none;
 
+
   //color: $text-color;
-  //transition: ease-in-out 0.3s;
+  transition: ease-in-out 0.1s !important;
 
   &:hover {
     // TODO :: Set disable color

@@ -1,50 +1,57 @@
 <template>
-  <section class="trading-platform">
+  <section class="trading-platform"
+           :class="['trading-platform', { 'light-theme': themeStore.currentTheme === 'light' }]">
+
     <div class="trading-platform_overlay">
+
+      <UiTextH3 class="trading-platform_title">Legendary platform for successful<br/>
+        Forex and CFD trading
+      </UiTextH3>
+
       <div class="blur-circle"></div>
       <div class="platform-title">
         <UiTextTrading
-          title="Trading Platform"
-          subTitle="Level up with our products"
+            title="Trading Platform"
+            subTitle="Level up with our products"
+            color="primary"
         />
       </div>
 
       <div class="devices">
-        <!-- Ноутбук -->
         <div class="device device-laptop">
-          <img src="/static/Macbook.png" alt="Laptop Trading" />
+          <img src="/static/Macbook.png" alt="Laptop Trading"/>
 
           <UiTextTrading
-            class="device device-laptop_position"
-            title="Ester MetaTrader 4"
-            subTitle="The popular, classic solution"
-            hasBorder
+              class="device device-laptop_position"
+              title="Mobile trading"
+              subTitle="Full control over transactions at any time."
+              hasBorder
           />
         </div>
-        <!-- Основной экран -->
+
         <div class="device device-main">
-          <img src="/static/iMac.png" alt="Trading Platform" />
+          <img src="/static/iMac.png" alt="Trading Platform"/>
 
           <UiTextTrading
-            class="device device-main_position"
-            title="Ester MetaTrader 4"
-            subTitle="The popular, classic solution"
-            hasBorder
+              class="device device-main_position"
+              title="Ester MetaTrader 4"
+              subTitle="The popular, classic solution"
+              hasBorder
           />
         </div>
 
-        <!-- Телефон -->
         <div class="device device-phone">
-          <img src="/static/iPhone.png" alt="Mobile Trading" />
+          <img src="/static/iPhone.png" alt="Mobile Trading"/>
         </div>
 
         <div class="device device-ipad">
-          <img src="/static/iPad.png" alt="Mobile Trading" />
+          <img src="/static/iPad.png" alt="Mobile Trading"/>
 
           <UiTextTrading
-            class="device device-ipad_position"
-            title="Ester MetaTrader 4"
-            subTitle="The popular, classic solution"
+              class="device device-ipad_position"
+              title="High speed and reliability"
+              subTitle="Works even on weak PCs."
+              color="warning"
           />
         </div>
       </div>
@@ -55,9 +62,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import UiImage from "~/components/ui/UiImage.vue";
+import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextTrading from "~/components/ui/UiTextTrading.vue";
+import {useThemeStore} from "~/stores/themeStore"
+
+const themeStore = useThemeStore()
 </script>
 
 <style lang="scss" scoped>
@@ -65,30 +74,36 @@ import UiTextTrading from "~/components/ui/UiTextTrading.vue";
   position: relative;
   text-align: center;
   padding: 100px 20px;
-  height: 635px;
-  background-image: url("/static/trading-platform-bg.webp");
-  background-position: left;
-  background-repeat: no-repeat;
-
-  color: white;
+  height: 800px;
+  background-color: var(--color-ui-background);
+  color: var(--color-ui-primary-defalt);
+  transition: var(--default-transition);
   overflow: hidden;
-
+  background-image: url("/static/trading-platform-bg.webp");
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: cover;
   z-index: 1;
+  box-shadow: inset 0 -200px 200px -60px var(--color-ui-background),
+  inset 0 200px 200px -60px var(--color-ui-background);
 
-  &::before {
+
+  &::after {
     content: "";
+    overflow: hidden;
     position: absolute;
+    background-color: var(--color-ui-background);
+    transition: var(--default-transition);
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 40, 1) 0%,
-      rgba(0, 0, 40, 0.95) 20%,
-      rgba(0, 0, 40, 0.8) 50%,
-      rgba(0, 0, 40, 0.95) 80%,
-      rgba(0, 0, 40, 1) 100%
-    );
-
+    opacity: 0.5;
     z-index: 1;
+
+  }
+
+
+  &_title {
+    color: var(--color-ui-primary-defalt);
+    margin-bottom: 90px;
   }
 
   &_overlay {
@@ -96,9 +111,7 @@ import UiTextTrading from "~/components/ui/UiTextTrading.vue";
     inset: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 30, -0.6);
-    backdrop-filter: blur(15px);
-    z-index: 2;
+    z-index: 3;
   }
 
   &-title {
@@ -107,53 +120,73 @@ import UiTextTrading from "~/components/ui/UiTextTrading.vue";
   }
 }
 
+
+.light-theme {
+  transition: var(--default-transition);
+  background-image: none;
+
+
+  .trading-platform::after {
+    opacity: 0;
+  }
+
+
+  .blur-circle {
+    background: transparent;
+  }
+
+
+}
+
 .devices {
   position: relative;
   display: flex;
   justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-shrink: 0;
 
   .device-main {
     &_position {
       position: absolute;
-      right: 400px;
-      top: 0;
+      left: 68%;
+      top: 20%;
       z-index: 1;
     }
   }
 
   .device-laptop {
     position: absolute;
-    left: 275px;
-    bottom: -40px;
+    right: 50%;
+    top: 50%;
 
     &_position {
       position: absolute;
-      bottom: 75px;
-      left: -125px;
+      top: 30%;
+      right: 50%;
       z-index: 1;
     }
   }
 
   .device-ipad {
     position: absolute;
-    right: 400px;
-    bottom: -80px;
+    top: 50%;
+    left: 64%;
     z-index: 1;
 
     &_position {
       position: absolute;
-      bottom: -40px;
-      right: 200px;
+      top: 100%;
+      right: 50%;
       z-index: 1;
     }
   }
 
   .device-phone {
     position: absolute;
-
-    right: 345px;
+    top: 65%;
+    left: 83%;
     z-index: 10;
-    top: 310px;
   }
 }
 
@@ -168,13 +201,16 @@ import UiTextTrading from "~/components/ui/UiTextTrading.vue";
   width: 446px;
   height: 446px;
   background: rgb(247, 87, 9);
-  filter: blur(200px);
+  filter: blur(93px);
   overflow: hidden;
   border-radius: 100%;
-  right: -350px;
-  top: 100px;
-  z-index: 1;
+  left: 95%;
+  top: 10%;
+  z-index: 100000;
   animation: pulse 5s infinite ease-in-out;
+  transition: var(--default-transition);
+
+
 }
 
 @keyframes pulse {
@@ -189,6 +225,100 @@ import UiTextTrading from "~/components/ui/UiTextTrading.vue";
   100% {
     transform: scale(1);
     opacity: 0.5;
+  }
+}
+
+@media (max-width: 1199px) {
+  .devices {
+    max-width: 991px;
+  }
+
+  .device-main {
+    &_position {
+      left: 65% !important;
+    }
+
+    img {
+      width: 75%;
+    }
+  }
+
+  .device-laptop {
+    img {
+      width: 75%;
+    }
+  }
+
+  .device-ipad {
+    left: 55% !important;
+
+    img {
+      width: 75%;
+    }
+  }
+
+  .device-phone {
+    left: 74% !important;
+
+    img {
+      width: 75%;
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .devices {
+    max-width: 767px;
+  }
+
+  .platform-title {
+    margin-right: 500px;
+  }
+
+  .device-laptop {
+    right: 40% !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .devices {
+    max-width: 565px;
+  }
+
+  .blur-circle {
+    display: none;
+  }
+
+  .platform-title {
+    margin: 0;
+    margin-bottom: 50px;
+    text-align: center;
+  }
+
+  .device-main {
+    &_position {
+      display: none;
+    }
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .device-laptop {
+    display: none;
+  }
+
+  .device-ipad {
+    img {
+      width: 100%;
+    }
+  }
+
+  .device-phone {
+    img {
+      width: 100%;
+    }
   }
 }
 </style>
