@@ -8,32 +8,30 @@
 
         <div class="four-steps__container">
           <div
-              v-for="(step, index) in steps"
-              :key="index"
-              class="four-steps__item"
+            v-for="(step, index) in steps"
+            :key="index"
+            class="four-steps__item"
           >
             <UiTextH3 class="four-steps__number">{{ index + 1 }}</UiTextH3>
             <div class="four-steps__content">
               <UiTextH4 class="four-steps__heading">{{ step.title }}</UiTextH4>
-              <UiTextH5 class="four-steps__description">{{
-                  step.description
-                }}
+              <UiTextH5 class="four-steps__description"
+                >{{ step.description }}
               </UiTextH5>
             </div>
           </div>
         </div>
 
         <UiButtonDefault state="primary" class="four-steps__button"
-        >Open account
-        </UiButtonDefault
-        >
+          >Open account
+        </UiButtonDefault>
       </div>
     </UiContainer>
   </section>
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import { ref } from "vue";
 
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
@@ -45,7 +43,7 @@ const steps = ref([
   {
     title: "Register",
     description:
-        "Choose an account type and complete our fast and secure application form",
+      "Choose an account type and complete our fast and secure application form",
   },
   {
     title: "Verify",
@@ -54,12 +52,12 @@ const steps = ref([
   {
     title: "Fund",
     description:
-        "Fund your trading account using a wide range of funding methods",
+      "Fund your trading account using a wide range of funding methods",
   },
   {
     title: "Trade",
     description:
-        "Start trading on your live account and access +2,100 instruments",
+      "Start trading on your live account and access +2,100 instruments",
   },
 ]);
 </script>
@@ -78,12 +76,12 @@ const steps = ref([
 
 .four-steps__title {
   font-weight: 700;
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
   margin-bottom: 80px;
 }
 
 .highlight {
-  color: var(--color-ui-warning);
+  color: var(--ui-primary-accent);
 }
 
 .four-steps__container {
@@ -115,7 +113,7 @@ const steps = ref([
 .four-steps__number {
   position: relative;
   font-weight: 700;
-  color: var(--color-ui-warning);
+  color: var(--ui-primary-accent);
 }
 
 .four-steps__content {
@@ -128,11 +126,11 @@ const steps = ref([
 
 .four-steps__heading {
   font-weight: 700;
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
 }
 
 .four-steps__description {
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
   text-align: left;
 }
 

@@ -1,12 +1,11 @@
 <template>
   <div class="container-fluid">
     <div class="page-wrapper">
-      <TheHeaderSideBar/>
-
+      <TheHeaderSideBar />
 
       <div class="page-content">
         <div class="page">
-          <slot/>
+          <slot />
         </div>
       </div>
     </div>
@@ -27,7 +26,7 @@ import HeaderMenu from "~/components/block/LandingHeader/components/HeaderMenu.v
 
   &-wrapper {
     display: flex;
-    background-color: var(--color-ui-background);
+    background-color: var(--ui-background);
     color: #b0b0b0;
   }
 

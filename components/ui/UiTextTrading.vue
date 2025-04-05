@@ -1,12 +1,19 @@
 <template>
-  <div class="trading-wrapper"
-       :class="{
-  'light-theme': hasBorder && themeStore.currentTheme === 'light',
-  'with-border': hasBorder && themeStore.currentTheme !== 'light'
-}">
-    <h2 :class="{
-      'warning': props.color ==='warning' && themeStore.currentTheme === 'light',
-      'primary': props.color ==='primary' && themeStore.currentTheme === 'light'}">
+  <div
+    class="trading-wrapper"
+    :class="{
+      'light-theme': hasBorder && themeStore.currentTheme === 'light',
+      'with-border': hasBorder && themeStore.currentTheme !== 'light',
+    }"
+  >
+    <h2
+      :class="{
+        warning:
+          props.color === 'warning' && themeStore.currentTheme === 'light',
+        primary:
+          props.color === 'primary' && themeStore.currentTheme === 'light',
+      }"
+    >
       {{ props.title }}
     </h2>
     <p>
@@ -16,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import {useThemeStore} from "~/stores/themeStore";
+import { useThemeStore } from "~/stores/themeStore";
 
 const themeStore = useThemeStore();
 const props = defineProps({
@@ -38,7 +45,6 @@ const props = defineProps({
   align-items: baseline;
   gap: 5px;
 
-
   &.with-border {
     border: 2px solid transparent;
     background-clip: padding-box;
@@ -53,12 +59,11 @@ const props = defineProps({
     padding: 2px;
     background: linear-gradient(to right, rgb(27, 99, 255), rgb(1, 22, 68));
     -webkit-mask: linear-gradient(white, white) content-box,
-    linear-gradient(white, white);
+      linear-gradient(white, white);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
-
 
   &.light-theme {
     background: rgba(0, 0, 40, 0.05);
@@ -67,29 +72,26 @@ const props = defineProps({
     border: none;
   }
 
-
   h2 {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
     font-size: 20px;
     font-weight: 700;
   }
 
   p {
-    color: var(--color-ui-grey);
+    color: var(--ui-text-secondary);
     font-size: 14px;
     font-weight: 400;
   }
 }
 
-
 .warning {
-  color: var(--color-ui-warning) !important;
+  color: var(--ui-primary-accent) !important;
 }
 
 .primary {
   color: #0051ff !important;
 }
-
 
 @media (max-width: 1199px) {
   .trading-wrapper {

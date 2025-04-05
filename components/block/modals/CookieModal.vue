@@ -64,7 +64,7 @@ onMounted(() => {
   transition: transform 0.3s ease-in-out;
 
   &_text {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 }
 

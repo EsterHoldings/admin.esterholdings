@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
 
 import UiTextH5 from "./UiTextH5.vue";
 
@@ -27,11 +27,11 @@ const setActiveTab = (tabId: string) => {
   <div class="tabs">
     <div class="tabs__wrapper">
       <div
-          v-for="tab in props.tabs"
-          :key="tab.id"
-          class="tabs__item"
-          :class="{ 'tabs__item--active': activeTab === tab.id }"
-          @click="setActiveTab(tab.id)"
+        v-for="tab in props.tabs"
+        :key="tab.id"
+        class="tabs__item"
+        :class="{ 'tabs__item--active': activeTab === tab.id }"
+        @click="setActiveTab(tab.id)"
       >
         <UiTextH5>
           {{ tab.label }}
@@ -68,12 +68,12 @@ const setActiveTab = (tabId: string) => {
   cursor: pointer;
 
   h5 {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 }
 
 .tabs__item--active {
-  background: var(--color-ui-warning);
+  background: var(--ui-primary-accent);
   border: none;
 
   h5 {

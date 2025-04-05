@@ -1,35 +1,30 @@
 <template>
   <div
-      class="running-line"
-      @mouseenter="stopAnimation"
-      @mouseleave="startAnimation"
+    class="running-line"
+    @mouseenter="stopAnimation"
+    @mouseleave="startAnimation"
   >
-    <div class="running-line__track" ref="track" :class="{news: props.news}">
+    <div class="running-line__track" ref="track" :class="{ news: props.news }">
       <div
-
-          v-for="(item, index) in duplicatedItems"
-          :key="index"
-          class="running-line__item"
-
-
+        v-for="(item, index) in duplicatedItems"
+        :key="index"
+        class="running-line__item"
       >
-
         <div v-if="props.news">
-          <div class="ticker-block" :class="{news: props.news}">
-            <img :src="item.image" alt="news" class="ticker-block__image"/>
+          <div class="ticker-block" :class="{ news: props.news }">
+            <img :src="item.image" alt="news" class="ticker-block__image" />
             <div class="ticker-block__info">
               <span class="ticker-block__title">{{ item.title }}</span>
             </div>
           </div>
         </div>
 
-
         <div class="ticker-block" v-else>
           <div class="ticker-block__info">
             <span class="ticker-block__title">{{ item.name }}</span>
             <span
-                class="ticker-block__value"
-                :class="{ up: item.change > 0, down: item.change < 0 }"
+              class="ticker-block__value"
+              :class="{ up: item.change > 0, down: item.change < 0 }"
             >
               {{ item.price }}
               <span v-if="item.change > 0">▲</span>
@@ -37,7 +32,10 @@
               {{ item.change }}
             </span>
           </div>
-          <UiButtonDefault state="success--outline"> Trade</UiButtonDefault>
+          <UiButtonDefault
+            :state="item.change > 0 ? 'success--outline' : 'danger--outline'"
+            >Trade</UiButtonDefault
+          >
         </div>
       </div>
     </div>
@@ -45,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, onMounted, onUnmounted, computed} from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 
 const props = defineProps({
@@ -98,7 +96,6 @@ onUnmounted(stopAnimation);
   display: flex;
   --border-width: 2px;
 
-
   &::before,
   &::after {
     content: "";
@@ -118,8 +115,6 @@ onUnmounted(stopAnimation);
   &::after {
     bottom: 0;
   }
-
-
 }
 
 .running-line__track {
@@ -138,11 +133,10 @@ onUnmounted(stopAnimation);
 .ticker-block {
   display: flex;
   align-items: center;
-  background-color: var(--color-ui-background);
+  background-color: transparent;
   padding: 10px 15px;
   border-radius: 10px;
   height: 60px;
-
 }
 
 .ticker-block__info {
@@ -154,35 +148,20 @@ onUnmounted(stopAnimation);
 .ticker-block__title {
   font-size: 14px;
   font-weight: bold;
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
 }
 
 .ticker-block__value {
   font-size: 14px;
-  color: #00ff00;
+  color: var(--ui-sticker-success);
 }
 
 .ticker-block__value.up {
-  color: #00ff00;
+  color: var(--ui-sticker-success);
 }
 
 .ticker-block__value.down {
-  color: #ff0000;
-}
-
-.ticker-block__trade {
-  background: transparent;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  padding: 5px 10px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.ticker-block__trade:hover {
-  background: #00ff00;
-  color: black;
+  color: var(--ui-sticker-danger);
 }
 
 .ticker-block__image {
@@ -193,9 +172,8 @@ onUnmounted(stopAnimation);
   margin-right: 10px;
 }
 
-
 .news {
-  background: rgb(27, 99, 255);
+  background: var(--ui-background-secondary);
 
   .ticker-block__title {
     color: white;

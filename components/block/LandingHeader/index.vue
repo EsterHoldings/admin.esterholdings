@@ -5,16 +5,22 @@
       <UiContainer>
         <header class="header">
           <div class="logo">
-            <UiIconLogo :class="{'svg-invert': uiStore.headerScrolled && themeStore.currentTheme !== 'dark'}"/>
-
-
+            <UiIconLogo
+              :class="{
+                'svg-invert':
+                  uiStore.headerScrolled && themeStore.currentTheme !== 'dark',
+              }"
+            />
           </div>
 
           <div
-              class="burger-menu"
-              :class="{ 'burger-menu--open': isMenuOpen, 'is-theme-light': uiStore.headerScrolled
-              && themeStore.currentTheme !== 'dark' }"
-              @click="toggleMenu"
+            class="burger-menu"
+            :class="{
+              'burger-menu--open': isMenuOpen,
+              'is-theme-light':
+                uiStore.headerScrolled && themeStore.currentTheme !== 'dark',
+            }"
+            @click="toggleMenu"
           >
             <span></span>
             <span></span>
@@ -23,82 +29,112 @@
 
           <nav class="nav" :class="{ 'nav--open': isMenuOpen }">
             <HeaderLink
-                v-for="link in linksList"
-                :key="link"
-                :name="link.name"
-                :path="link.path"
-                :activeLink="activeLink"
-                @mouseenter="handleMouseEnter(link.name)"
-
+              v-for="link in linksList"
+              :key="link"
+              :name="link.name"
+              :path="link.path"
+              :activeLink="activeLink"
+              @mouseenter="handleMouseEnter(link.name)"
             />
           </nav>
           <div class="actions-wrapper">
             <div class="actions">
-              <UiButtonDefault state="link" class="login" :class="{'is-theme-light': uiStore.headerScrolled
-              && themeStore.currentTheme !== 'dark'}"
-              >Log In
-              </UiButtonDefault
+              <UiButtonDefault
+                state="link"
+                class="login"
+                :class="{
+                  'is-theme-light':
+                    uiStore.headerScrolled &&
+                    themeStore.currentTheme !== 'dark',
+                }"
+                >Log In
+              </UiButtonDefault>
+
+              <UiButtonDefault
+                state="primary"
+                class="register"
+                v-if="!isMenuOpen"
+                >Register
+              </UiButtonDefault>
+
+              <div
+                class="actions-icons"
+                v-if="isMenuOpen"
+                :class="{ 'is-menu-open': isMenuOpen }"
               >
+                <UiIconGlobe
+                  class="icon"
+                  :class="{
+                    'svg-invert':
+                      uiStore.headerScrolled &&
+                      themeStore.currentTheme !== 'dark',
+                  }"
+                />
 
-              <UiButtonDefault state="primary" class="register"
-              >Register
-              </UiButtonDefault
-              >
-              <UiIconGlobe class="icon"
-                           :class="{'svg-invert': uiStore.headerScrolled && themeStore.currentTheme !== 'dark'}"/>
+                <transition name="fade" mode="out-in">
+                  <span
+                    :key="themeStore.currentTheme"
+                    @click="themeStore.toggleTheme()"
+                    class="icon"
+                  >
+                    <UiIconMoon
+                      v-if="themeStore.currentTheme === 'dark'"
+                      :class="{
+                        'svg-invert':
+                          uiStore.headerScrolled &&
+                          themeStore.currentTheme !== 'dark',
+                      }"
+                    />
 
-
-              <transition name="fade" mode="out-in">
-                  <span :key="themeStore.currentTheme" @click="themeStore.toggleTheme()" class="icon">
-                      <UiIconMoon v-if="themeStore.currentTheme === 'dark'"
-                                  :class="{'svg-invert': uiStore.headerScrolled && themeStore.currentTheme !== 'dark'}"/>
-
-                      <UiIconSun :class="{'svg-invert': uiStore.headerScrolled && themeStore.currentTheme !== 'dark'}"
-                                 v-else/>
-                 </span>
-              </transition>
+                    <UiIconSun
+                      :class="{
+                        'svg-invert':
+                          uiStore.headerScrolled &&
+                          themeStore.currentTheme !== 'dark',
+                      }"
+                      v-else
+                    />
+                  </span>
+                </transition>
+              </div>
             </div>
           </div>
         </header>
 
         <div
-            v-if="isMenuOpen"
-            :class="{ 'nav--open': isMenuOpen }"
-            class="mobile-nav"
+          v-if="isMenuOpen"
+          :class="{ 'nav--open': isMenuOpen }"
+          class="mobile-nav"
         >
           <UiContainer>
             <nav>
               <HeaderMobileLink
-                  v-for="link in linksList"
-                  :key="link"
-                  :name="link.name"
-                  :path="link.path"
+                v-for="link in linksList"
+                :key="link"
+                :name="link.name"
+                :path="link.path"
               />
             </nav>
           </UiContainer>
         </div>
-
-
       </UiContainer>
-
     </div>
 
     <transition name="fade" mode="out-in">
-      <HeaderMenu class="fixed-header-menu" v-if="uiStore.showMenu" @mouseleave="handleMouseLeave"/>
+      <HeaderMenu
+        class="fixed-header-menu"
+        v-if="uiStore.showMenu"
+        @mouseleave="handleMouseLeave"
+      />
     </transition>
-
-
   </div>
-
-
 </template>
 
 <script setup>
-import {ref} from "vue";
+import { ref } from "vue";
 import useTrackScroll from "./composables/trackScroll";
-import {useUiStore} from '~/stores/uiStore';
-import {useThemeStore} from '~/stores/themeStore.js'
-
+import { useUiStore } from "~/stores/uiStore";
+import { useThemeStore } from "~/stores/themeStore.js";
 
 import UiIconGlobe from "~/components/ui/UiIconGlobe.vue";
 import UiIconLogo from "~/components/ui/UiIconLogo.vue";
@@ -110,10 +146,10 @@ import HeaderMobileLink from "./components/HeaderMobileLink.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import HeaderMenu from "~/components/block/LandingHeader/components/HeaderMenu.vue";
 
-const themeStore = useThemeStore()
+const themeStore = useThemeStore();
 const uiStore = useUiStore();
 
-const {isBlurred} = useTrackScroll();
+const { isBlurred } = useTrackScroll();
 const isMenuOpen = ref(false);
 const activeLink = ref(null);
 
@@ -131,7 +167,6 @@ const linksList = [
     path: "#",
   },
 ];
-
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -151,7 +186,6 @@ const handleMouseLeave = () => {
   uiStore.showMenu = false;
   activeLink.value = null;
 };
-
 </script>
 
 <style lang="scss" scoped>
@@ -197,7 +231,6 @@ const handleMouseLeave = () => {
   span {
     background: #151515 !important;
   }
-
 }
 
 .nav {
@@ -252,7 +285,6 @@ const handleMouseLeave = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-
 .mobile-nav {
   position: fixed;
   top: 80px;
@@ -287,6 +319,7 @@ const handleMouseLeave = () => {
 
   .icon {
     cursor: pointer;
+    margin-right: 16px;
   }
 }
 
@@ -304,7 +337,6 @@ const handleMouseLeave = () => {
   filter: invert(1);
 }
 
-
 @media (max-width: 991px) {
   .nav {
     display: none;
@@ -319,13 +351,13 @@ const handleMouseLeave = () => {
   .logo {
     svg {
       width: auto;
-      height: 35px;
+      height: 40px;
     }
   }
 
   .login {
+    display: none;
     padding: 0;
-
   }
 
   .register {
@@ -333,9 +365,13 @@ const handleMouseLeave = () => {
   }
 
   .actions {
-    margin-right: 0;
+    margin-left: 137px;
+  }
+
+  .is-menu-open {
+    padding-left: 15px;
+    margin-left: 15px;
+    border-left: 1px solid var(--ui-gray);
   }
 }
-
-
 </style>

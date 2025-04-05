@@ -4,22 +4,22 @@
       <slot name="icon-left" />
     </div>
     <input
-        :class="{
-        'border': !borderNone,
-        'padding': !paddingNone,
+      :class="{
+        border: !borderNone,
+        padding: !paddingNone,
         'is-invalid': isDirty && isInvalid,
         'is-valid': isDirty && !isInvalid,
-        'disabled': props.disabled,
+        disabled: props.disabled,
       }"
-        :type="props.type"
-        :placeholder="props.placeholder"
-        :value="props.value"
-        :disabled="props.disabled"
-        @focus="onFocus"
-        @input="onInput"
-        @blur="onBlur"
-        readonly
-        onfocus="this.removeAttribute('readonly');"
+      :type="props.type"
+      :placeholder="props.placeholder"
+      :value="props.value"
+      :disabled="props.disabled"
+      @focus="onFocus"
+      @input="onInput"
+      @blur="onBlur"
+      readonly
+      onfocus="this.removeAttribute('readonly');"
     />
     <div v-if="isLoading" class="is-loading"><UiIconSpinnerDefault /></div>
   </div>
@@ -100,7 +100,7 @@ input {
   background-color: transparent;
   outline: none;
   // TODO :: Add disable color
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
   font-size: 14px;
   font-weight: 400;
   line-height: 17px;
@@ -129,11 +129,11 @@ input {
     width: 40px;
   }
 
-  &>.padding {
+  & > .padding {
     padding: 15px;
   }
 
-  &>.border {
+  & > .border {
     border: 1px solid var(--color-stroke-ui-dark);
     border-radius: 5px;
   }
@@ -148,7 +148,7 @@ input {
   }
 
   .is-invalid {
-    border-color: red
+    border-color: red;
   }
 
   .is-valid {

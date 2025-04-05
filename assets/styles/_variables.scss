@@ -31,11 +31,31 @@
   --color-stroke-ui-light: #1b63ff;
   --color-stroke-ui-dark: #011644;
   --color-stroke-ui: linear-gradient(
-                  137.67deg,
-                  #1b63ff 2.397%,
-                  #011644 99.041%
+    137.67deg,
+    #1b63ff 2.397%,
+    #011644 99.041%
   );
   --color-ui-grey: #b8b8c3;
+
+  //MAIN COLOR VAR-----
+  --ui-primary-main: #0051ff;
+  --ui-primary-accent: #f75709;
+  --ui-primary-neutral: #ffffff;
+
+  --ui-sticker-success: #03c11f;
+  --ui-sticker-danger: #f41112;
+
+  --ui-stroke: linear-gradient(137.67deg, #1b63ff 2.397%, #011644 99.041%);
+
+  --ui-gray: #b8b8c3;
+  --ui-background: #000028;
+  --ui-background-secondary: #031743;
+  --ui-background-card: #01014e;
+
+  --ui-text-main: #ffffff;
+  --ui-text-secondary: rgb(147, 147, 148);
+
+  //MAIN COLOR VAR-----
 }
 
 // Static variables

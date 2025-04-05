@@ -29,11 +29,11 @@ const props = defineProps({
   list-style: none;
 
   h5 {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 }
 
 .item {
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
 }
 </style>

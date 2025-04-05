@@ -1,57 +1,61 @@
 <template>
-  <section class="trading-platform"
-           :class="['trading-platform', { 'light-theme': themeStore.currentTheme === 'light' }]">
-
+  <section
+    class="trading-platform"
+    :class="[
+      'trading-platform',
+      { 'light-theme': themeStore.currentTheme === 'light' },
+    ]"
+  >
     <div class="trading-platform_overlay">
-
-      <UiTextH3 class="trading-platform_title">Legendary platform for successful<br/>
+      <UiTextH3 class="trading-platform_title"
+        >Legendary platform for successful<br />
         Forex and CFD trading
       </UiTextH3>
 
       <div class="blur-circle"></div>
       <div class="platform-title">
         <UiTextTrading
-            title="Trading Platform"
-            subTitle="Level up with our products"
-            color="primary"
+          title="Trading Platform"
+          subTitle="Level up with our products"
+          color="primary"
         />
       </div>
 
       <div class="devices">
         <div class="device device-laptop">
-          <img src="/static/Macbook.png" alt="Laptop Trading"/>
+          <img src="/static/Macbook.png" alt="Laptop Trading" />
 
           <UiTextTrading
-              class="device device-laptop_position"
-              title="Mobile trading"
-              subTitle="Full control over transactions at any time."
-              hasBorder
+            class="device device-laptop_position"
+            title="Mobile trading"
+            subTitle="Full control over transactions at any time."
+            hasBorder
           />
         </div>
 
         <div class="device device-main">
-          <img src="/static/iMac.png" alt="Trading Platform"/>
+          <img src="/static/iMac.png" alt="Trading Platform" />
 
           <UiTextTrading
-              class="device device-main_position"
-              title="Ester MetaTrader 4"
-              subTitle="The popular, classic solution"
-              hasBorder
+            class="device device-main_position"
+            title="Ester MetaTrader 4"
+            subTitle="The popular, classic solution"
+            hasBorder
           />
         </div>
 
         <div class="device device-phone">
-          <img src="/static/iPhone.png" alt="Mobile Trading"/>
+          <img src="/static/iPhone.png" alt="Mobile Trading" />
         </div>
 
         <div class="device device-ipad">
-          <img src="/static/iPad.png" alt="Mobile Trading"/>
+          <img src="/static/iPad.png" alt="Mobile Trading" />
 
           <UiTextTrading
-              class="device device-ipad_position"
-              title="High speed and reliability"
-              subTitle="Works even on weak PCs."
-              color="warning"
+            class="device device-ipad_position"
+            title="High speed and reliability"
+            subTitle="Works even on weak PCs."
+            color="warning"
           />
         </div>
       </div>
@@ -64,9 +68,9 @@
 <script lang="ts" setup>
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextTrading from "~/components/ui/UiTextTrading.vue";
-import {useThemeStore} from "~/stores/themeStore"
+import { useThemeStore } from "~/stores/themeStore";
 
-const themeStore = useThemeStore()
+const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
@@ -75,8 +79,8 @@ const themeStore = useThemeStore()
   text-align: center;
   padding: 100px 20px;
   height: 800px;
-  background-color: var(--color-ui-background);
-  color: var(--color-ui-primary-defalt);
+  background-color: var(--ui-background);
+  color: var(--ui-text-main);
   transition: var(--default-transition);
   overflow: hidden;
   background-image: url("/static/trading-platform-bg.webp");
@@ -84,25 +88,22 @@ const themeStore = useThemeStore()
   background-repeat: no-repeat;
   background-size: cover;
   z-index: 1;
-  box-shadow: inset 0 -200px 200px -60px var(--color-ui-background),
-  inset 0 200px 200px -60px var(--color-ui-background);
-
+  box-shadow: inset 0 -200px 200px -60px var(--ui-background),
+    inset 0 200px 200px -60px var(--ui-background);
 
   &::after {
     content: "";
     overflow: hidden;
     position: absolute;
-    background-color: var(--color-ui-background);
+    background-color: var(--ui-background);
     transition: var(--default-transition);
     inset: 0;
     opacity: 0.5;
     z-index: 1;
-
   }
 
-
   &_title {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
     margin-bottom: 90px;
   }
 
@@ -120,22 +121,17 @@ const themeStore = useThemeStore()
   }
 }
 
-
 .light-theme {
   transition: var(--default-transition);
   background-image: none;
-
 
   .trading-platform::after {
     opacity: 0;
   }
 
-
   .blur-circle {
     background: transparent;
   }
-
-
 }
 
 .devices {
@@ -209,8 +205,6 @@ const themeStore = useThemeStore()
   z-index: 100000;
   animation: pulse 5s infinite ease-in-out;
   transition: var(--default-transition);
-
-
 }
 
 @keyframes pulse {

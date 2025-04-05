@@ -91,7 +91,7 @@ const items = ref([
   }
 
   &__text {
-    color: var(--color-ui-grey);
+    color: var(--ui-gray);
     font-weight: 400;
     word-wrap: break-word;
     overflow-wrap: break-word;

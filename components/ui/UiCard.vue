@@ -1,13 +1,13 @@
 <template>
   <div class="card">
-    <img class="card__image" :src="src" :alt="title"/>
+    <img class="card__image" :src="src" :alt="title" />
 
     <div class="card__content">
       <h2 class="card__title">{{ title }}</h2>
       <UiTextH6 class="card__subtitle">{{ subTitle }}</UiTextH6>
 
       <div class="card__time">
-        <UiIconClock class="card__icon"/>
+        <UiIconClock class="card__icon" />
         <UiTextH6>{{ time }}</UiTextH6>
       </div>
     </div>
@@ -42,7 +42,7 @@ defineProps({
 
 <style lang="scss" scoped>
 .card {
-  background: var(--color-ui-background);
+  background: var(--ui-background);
   border-radius: 15px;
   overflow: hidden;
   width: 350px;
@@ -66,14 +66,14 @@ defineProps({
 }
 
 .card__title {
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
   font-family: Muli, sans-serif;
   font-size: 20px;
   font-weight: 700;
 }
 
 .card__subtitle {
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
   font-weight: 400;
 }
 
@@ -81,7 +81,7 @@ defineProps({
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
   font-weight: 400;
 }
 

@@ -1,10 +1,13 @@
 <template>
   <div class="forex">
-    <UiContainer class="wrapper" :class=" { 'light-theme': themeStore.currentTheme === 'light' }">
+    <UiContainer
+      class="wrapper"
+      :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
+    >
       <div class="forex__content">
         <UiTextH3 class="forex__title">Forex</UiTextH3>
         <UiTextH5 class="forex__text">
-          Trade 70 major, minor & exotic currency pairs<br/>
+          Trade 70 major, minor & exotic currency pairs<br />
           with competitive trading conditions.
         </UiTextH5>
         <div>
@@ -12,7 +15,7 @@
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img"/>
+      <UiImage src="/static/forex-money.webp" class="forex__img" />
     </UiContainer>
   </div>
 </template>
@@ -24,9 +27,9 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiImage from "~/components/ui/UiImage.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 
-import {useThemeStore} from "~/stores/themeStore"
+import { useThemeStore } from "~/stores/themeStore";
 
-const themeStore = useThemeStore()
+const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
@@ -57,11 +60,10 @@ const themeStore = useThemeStore()
     padding: 98px 376px 99px 58px;
     display: flex;
     gap: 142px;
-    background: var(--color-ui-background);
+    background: var(--ui-background);
     border-radius: 15px;
-    border: 1px solid var(--color-ui-primary);
+    border: 1px solid var(--ui-stroke);
     overflow: hidden;
-
 
     &::after {
       content: "";
@@ -91,18 +93,16 @@ const themeStore = useThemeStore()
   }
 
   &__title {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
-
 
   &__text {
-    color: var(--color-ui-grey);
+    color: var(--ui-text-secondary);
   }
-
 }
 
 :deep(.light-theme.wrapper) {
-  background: var(--color-stroke-ui-light);
+  background: var(--ui-background-card);
 
   &::before,
   &::after {
@@ -121,7 +121,6 @@ const themeStore = useThemeStore()
   }
 }
 
-
 @media (max-width: 1199px) {
   .wrapper {
     padding: 40px !important;
@@ -131,7 +130,6 @@ const themeStore = useThemeStore()
     top: 0;
   }
 }
-
 
 @media (max-width: 991px) {
   .forex__text {

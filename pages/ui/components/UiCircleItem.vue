@@ -32,14 +32,14 @@ const props = defineProps({
 const realColor = ref<string>("");
 
 const colorMap: Record<string, string> = {
-  primary: "--color-ui-primary",
-  hover: "--color-ui-warning",
-  success: "--color-sticker-ui-success",
-  danger: "--color-sticker-ui-danger",
+  primary: "--ui-primary-main",
+  hover: "--ui-primary-accent",
+  success: "--ui-sticker-success",
+  danger: "--ui-sticker-danger",
   stroke: "--color-stroke-ui",
-  default: "--color-ui-grey",
-  background: "--color-ui-background",
-  text: "--color-ui-primary-defalt",
+  default: "--ui-text-secondary",
+  background: "--ui-background",
+  text: "--ui-text-main",
 };
 
 const updateColor = () => {
@@ -64,7 +64,7 @@ onMounted(() => {
   align-items: center;
   gap: 10px;
   h6 {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 }
 .circle {
@@ -77,19 +77,19 @@ onMounted(() => {
   gap: 10px;
 
   &__primary {
-    background: var(--color-ui-primary);
+    background: var(--ui-primary-main);
   }
 
   &__hover {
-    background: var(--color-ui-warning);
+    background: var(--ui-primary-accent);
   }
 
   &__success {
-    background: var(--color-sticker-ui-success);
+    background: var(--ui-sticker-success);
   }
 
   &__danger {
-    background: var(--color-sticker-ui-danger);
+    background: var(--ui-sticker-danger);
   }
 
   &__stroke {
@@ -97,16 +97,16 @@ onMounted(() => {
   }
 
   &__default {
-    background: var(--color-ui-grey);
+    background: var(--ui-text-secondary);
   }
 
   &__background {
-    background: var(--color-ui-background);
+    background: var(--ui-background);
     border: 1px solid rgb(65, 65, 65);
   }
 
   &__text {
-    background: var(--color-ui-primary-defalt);
+    background: var(--ui-text-main);
   }
 }
 </style>

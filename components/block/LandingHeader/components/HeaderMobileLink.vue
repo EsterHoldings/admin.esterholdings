@@ -26,7 +26,7 @@ const props = defineProps({
   text-decoration: none;
 
   &:hover {
-    color: var(--color-ui-warning);
+    color: var(--ui-primary-accent);
   }
 }
 </style>
