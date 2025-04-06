@@ -3,9 +3,9 @@
   // Space step (padding, margin )
   --spacer: 10px;
   // ...
-  --default-transition: 0.5s;
+  --default-transition: all 0.2s ease;
   // ...
-  --color-background: #3b3939; // TODO :: Deprecated - will remove
+  --color-background: #f7f7f7; // TODO :: Deprecated - will remove
   --color-text: #101010; // TODO :: Deprecated - will remove
   --color-text-muted: #9a9797; // TODO :: Deprecated - will remove
   // ...
@@ -37,16 +37,25 @@
   );
   --color-ui-grey: #b8b8c3;
 
+  //MAIN COLOR VAR-----
+  --ui-primary-main: #0051ff;
+  --ui-primary-accent: #f75709;
+  --ui-primary-neutral: #ffffff;
 
-  // Text settings
-  --color-ui-text: #d3d3d3;
+  --ui-sticker-success: #03c11f;
+  --ui-sticker-danger: #f41112;
 
-  // Ui elements settings
-  // Blocks
-  // Inputs
-  --ui-input--border-radius: 25px;
-  --ui-input--height: 46px;
-  // Buttons
+  --ui-stroke: linear-gradient(137.67deg, #1b63ff 2.397%, #011644 99.041%);
+
+  --ui-gray: #b8b8c3;
+  --ui-background: #000028;
+  --ui-background-secondary: #031743;
+  --ui-background-card: #01014e;
+
+  --ui-text-main: #ffffff;
+  --ui-text-secondary: rgb(147, 147, 148);
+
+  //MAIN COLOR VAR-----
 }
 
 // Static variables

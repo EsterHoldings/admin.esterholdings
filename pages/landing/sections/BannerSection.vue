@@ -72,7 +72,7 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 
 .banner-subtitle {
   overflow-wrap: break-word;
-  color: var(--color-ui-grey);
+  color: var(--ui-gray);
 }
 
 .banner-image {

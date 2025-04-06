@@ -22,7 +22,7 @@
 }
 :root {
   --spacer: 10px;
-  --default-transition: 0.5s;
+  --default-transition: 0.2s;
   --color-background: #f7f7f7;
   --color-text: #101010;
   --color-text-muted: #9a9797;
@@ -36,12 +36,12 @@
   --color-danger: #af160e;
   --color-dark: #7b7b81;
   --color-light: white;
-  --color-ui-background: #000028;
-  --color-ui-primary: #0051ff;
-  --color-ui-primary-defalt: #ffffff;
-  --color-ui-warning: #f75709;
-  --color-sticker-ui-success: #03c11f;
-  --color-sticker-ui-danger: #d93025;
+  --ui-background: #000028;
+  --ui-primary-main: #0051ff;
+  --ui-text-main: #ffffff;
+  --ui-primary-accent: #f75709;
+  --ui-sticker-success: #03c11f;
+  --ui-sticker-danger: #d93025;
   --color-stroke-ui-light: #1b63ff;
   --color-stroke-ui-dark: #011644;
   --color-stroke-ui: linear-gradient(

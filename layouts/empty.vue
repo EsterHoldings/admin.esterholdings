@@ -6,8 +6,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style lang="scss" scoped>
 .page {
@@ -16,7 +15,7 @@
   overflow: hidden;
 
   &__wrapper {
-    background-color: var(--color-ui-background);
+    background-color: var(--ui-background);
   }
 }
 </style>

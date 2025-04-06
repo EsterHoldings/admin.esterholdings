@@ -4,8 +4,8 @@
       <div class="advantage_item">
         <UiTextH3 class="bold">10+</UiTextH3>
         <UiTextH6 class="advantage_item_subtitle"
-          >Years of experience in field</UiTextH6
-        >
+          >Years of experience in field
+        </UiTextH6>
       </div>
       <div class="divider"></div>
       <div class="advantage_item">
@@ -45,11 +45,11 @@ import UiTextH6 from "~/components/ui/UiTextH6.vue";
 
 .advantage_item {
   text-align: center;
-  color: white;
+  color: var(--ui-text-main);
   flex: 1;
 
   &_subtitle {
-    color: var(--color-ui-grey);
+    color: var(--ui-text-secondary);
   }
 }
 

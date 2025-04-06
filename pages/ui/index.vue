@@ -157,7 +157,7 @@ import LandingFooter from "~/components/block/LandingFooter";
 
 <style lang="scss" scoped>
 .ui {
-  background-color: var(--color-ui-background);
+  background-color: var(--ui-background);
   padding: 124px 85px 57px 85px;
   height: auto;
 
@@ -167,7 +167,7 @@ import LandingFooter from "~/components/block/LandingFooter";
   h4,
   h5,
   h6 {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 
   &__wrapper {
@@ -208,7 +208,7 @@ import LandingFooter from "~/components/block/LandingFooter";
           justify-content: space-between;
 
           &-hover {
-            color: var(--color-ui-warning);
+            color: var(--ui-primary-accent);
           }
 
           h6 {

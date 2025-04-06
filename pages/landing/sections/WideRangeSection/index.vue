@@ -23,7 +23,7 @@ import UiTabs from "~/components/ui/UiTabs.vue";
 <style lang="scss" scoped>
 .wide_range_section {
   h3 {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
     text-align: center;
   }
 

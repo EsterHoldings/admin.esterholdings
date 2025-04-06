@@ -8,7 +8,12 @@
         :key="index"
       >
         <div class="feature_icon">
-          <UiIconPoligon class="feature_icon-bg" />
+          <UiIconPoligon
+            class="feature_icon-bg"
+            :background-fill="
+              themeStore.currentTheme === 'light' ? '#F9F9F9' : '#031743'
+            "
+          />
 
           <div class="img">
             <img :src="feature.icon" alt="Feature Icon" />
@@ -27,9 +32,11 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useThemeStore } from "~/stores/themeStore";
 import RunningLineDefault from "~/components/block/lines/RunningLineDefault.vue";
-
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
+
+const themeStore = useThemeStore();
 
 const features = ref([
   {
@@ -114,7 +121,7 @@ const items = ref([
   }
 
   &_title {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 }
 
@@ -162,12 +169,29 @@ const items = ref([
   margin-top: 15px;
   font-size: 20px;
   font-weight: bold;
+  color: var(--ui-text-main);
 }
 
 .feature_description {
   margin-top: 5px;
   font-size: 16px;
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
+}
+
+@media (max-width: 1199px) {
+  .features_section {
+    margin-top: 50px;
+  }
+}
+
+@media (max-width: 991px) {
+  .feature_title {
+    font-size: 16px;
+  }
+
+  .feature_description {
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 1199px) {

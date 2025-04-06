@@ -42,7 +42,7 @@ defineProps({
 
 <style lang="scss" scoped>
 .card {
-  background: rgb(0, 0, 40);
+  background: var(--ui-background);
   border-radius: 15px;
   overflow: hidden;
   width: 350px;
@@ -66,14 +66,14 @@ defineProps({
 }
 
 .card__title {
-  color: rgb(255, 255, 255);
+  color: var(--ui-text-main);
   font-family: Muli, sans-serif;
   font-size: 20px;
   font-weight: 700;
 }
 
 .card__subtitle {
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
   font-weight: 400;
 }
 
@@ -81,7 +81,7 @@ defineProps({
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
   font-weight: 400;
 }
 

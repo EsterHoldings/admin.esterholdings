@@ -1,8 +1,8 @@
 <template>
   <section class="account-types__wrapper">
     <UiTextH3 class="account-types__title"
-      >Explore Our Trading Account Options</UiTextH3
-    >
+      >Explore Our Trading Account Options
+    </UiTextH3>
     <div class="account-types">
       <div class="account-container">
         <div
@@ -11,7 +11,7 @@
           class="account-card"
           :data-text="account.name"
           :class="{ active: activeIndex === index }"
-          @click="setActive(index)"
+          @mouseenter="setActive(index)"
         >
           <div class="account-content">
             <UiTextH3 v-if="activeIndex === index" class="account-title bold">
@@ -46,7 +46,6 @@
 import { ref } from "vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
-
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiIconArrowRight from "~/components/ui/UiIconArrowRight.vue";
 
@@ -75,7 +74,7 @@ const setActive = (index: number) => {
   justify-content: center;
 
   &__title {
-    color: white;
+    color: var(--ui-text-main);
     text-align: center;
     margin-bottom: 70px;
   }
@@ -92,7 +91,7 @@ const setActive = (index: number) => {
   flex: 1;
   height: 385px;
   border-radius: 15px;
-  border: 1px solid #2a4af5;
+  border: 1px solid var(--ui-stroke);
   cursor: pointer;
   transition: flex 0.3s ease-in-out, transform 0.1s ease;
   display: flex;
@@ -103,9 +102,8 @@ const setActive = (index: number) => {
 
 .account-card.active {
   flex: 2;
-  background-color: #081850;
+  background-color: var(--ui-background-card);
   transform: scale(1.05);
-
   position: relative;
   overflow: hidden;
 
@@ -135,7 +133,7 @@ const setActive = (index: number) => {
   align-items: center;
   gap: 47px;
   width: 80%;
-  color: white;
+  color: var(--ui-text-main);
 }
 
 .account-title {
@@ -144,12 +142,12 @@ const setActive = (index: number) => {
 
 .account-subtitle {
   margin-top: 5px;
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
 }
 
 .account-description {
   margin-top: 10px;
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
 }
 
 .account-mini {
@@ -158,7 +156,7 @@ const setActive = (index: number) => {
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: white;
+  color: var(--ui-text-main);
 
   &_title {
     writing-mode: vertical-rl;

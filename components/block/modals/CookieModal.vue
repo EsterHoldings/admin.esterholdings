@@ -18,15 +18,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onMounted } from "vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 
 const showCookieModal = ref(false);
 
+const checkScroll = () => {
+  if (window.scrollY > 80) {
+    showCookieModal.value = true;
+    window.removeEventListener("scroll", checkScroll);
+  }
+};
+
 const acceptCookies = () => {
   showCookieModal.value = false;
-  localStorage.setItem("cookiesAccepted", JSON.stringify(true));
+  localStorage.setItem("cookiesAccepted", true);
 };
 
 const declineCookies = () => {
@@ -34,10 +41,8 @@ const declineCookies = () => {
 };
 
 onMounted(() => {
-  if (JSON.parse(localStorage.getItem("cookiesAccepted")) === true) {
-    showCookieModal.value = false;
-  } else {
-    showCookieModal.value = true;
+  if (!localStorage.getItem("cookiesAccepted")) {
+    window.addEventListener("scroll", checkScroll);
   }
 });
 </script>
@@ -54,13 +59,12 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
   gap: 50px;
   z-index: 10001;
   transition: transform 0.3s ease-in-out;
 
   &_text {
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 }
 

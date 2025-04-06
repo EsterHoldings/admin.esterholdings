@@ -11,9 +11,10 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, provide} from "vue";
+import {ref, provide, onMounted} from "vue";
 
 import ModalRightSideDefault from "./components/block/modals/ModalRightSideDefault.vue";
+import {useThemeStore} from './stores/themeStore'
 
 const modalRef = ref();
 const modalContent = ref(null);
@@ -30,6 +31,11 @@ const openModal = (component: any, props = {}) => {
 const closeModal = () => modalRef.value?.closeModal()
 
 provide("modalControl", {openModal, closeModal});
+
+onMounted(() => {
+  const themeStore = useThemeStore()
+  themeStore.initTheme()
+})
 </script>
 
 <style lang="scss" scoped></style>

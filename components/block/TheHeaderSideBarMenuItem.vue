@@ -1,49 +1,53 @@
 <template>
-  <li class="item" :class="{'active': isActive}" @click="handleClickMenuItem($event)">
-    <div class="item__indicator" :class="{'active': isActive}"></div>
+  <li
+    class="item"
+    :class="{ active: isActive }"
+    @click="handleClickMenuItem($event)"
+  >
+    <div class="item__indicator" :class="{ active: isActive }"></div>
     <div class="item__icon">
-<!--      <NuxtLink :to="to">-->
-        <component :is="icon"></component>
-<!--      </NuxtLink>-->
+      <!--      <NuxtLink :to="to">-->
+      <component :is="icon"></component>
+      <!--      </NuxtLink>-->
     </div>
-    <div class="item__title" :class="{'hide': !props.sideBarIsOpen}">
-<!--      <NuxtLink :to="to">-->
-        {{ title }}
-<!--      </NuxtLink>-->
+    <div class="item__title" :class="{ hide: !props.sideBarIsOpen }">
+      <!--      <NuxtLink :to="to">-->
+      {{ title }}
+      <!--      </NuxtLink>-->
     </div>
   </li>
 </template>
 
 <script lang="ts" setup>
-import {computed} from "vue";
-import {useRoute} from 'vue-router';
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(["click"]);
 
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   to: {
     type: String,
-    required: true
+    required: true,
   },
   icon: {
     type: Object,
-    default: ""
+    default: "",
   },
   sideBarIsOpen: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const route = useRoute()
+const route = useRoute();
 
-const isActive = computed(() => route.path === props.to)
+const isActive = computed(() => route.path === props.to);
 
-const handleClickMenuItem = (event: Event) => emit('click', props.to)
+const handleClickMenuItem = (event: Event) => emit("click", props.to);
 </script>
 
 <style scoped lang="scss">
@@ -57,15 +61,15 @@ const handleClickMenuItem = (event: Event) => emit('click', props.to)
 
   background-color: transparent;
 
-  transition: .3s;
+  transition: 0.3s;
 
   &:hover {
-    transition: .3s;
+    transition: 0.3s;
     background-color: var(--color-stroke-ui-dark);
   }
 
   &.active {
-    border-right: 1px solid var(--color-ui-primary);
+    border-right: 1px solid var(--ui-stroke);
   }
 
   &__indicator {
@@ -76,7 +80,7 @@ const handleClickMenuItem = (event: Event) => emit('click', props.to)
     background-color: var(--color-stroke-ui-dark);
 
     &.active {
-      background-color: var(--color-ui-primary);
+      background-color: var(--ui-primary-main);
     }
   }
 
@@ -105,7 +109,7 @@ const handleClickMenuItem = (event: Event) => emit('click', props.to)
     }
 
     &.hide {
-      transition: .1s;
+      transition: 0.1s;
       opacity: 0;
       width: 0;
       overflow: hidden;

@@ -3,35 +3,51 @@
     <div class="pagination__column pagination__column-left">
       <span>Per page:</span>
       <select class="custom-select" @change="handleOnChangePerPage">
-        <option v-for="itemValue in perPageData" :key="itemValue" :selected="perPage === itemValue">
+        <option
+          v-for="itemValue in perPageData"
+          :key="itemValue"
+          :selected="perPage === itemValue"
+        >
           {{ itemValue }}
         </option>
       </select>
     </div>
     <div class="pagination__items pagination__column" v-if="!isLoading">
       <div v-if="totalPages > 1" class="pagination__items">
-        <div class="pagination__item" @click="goToFirstPage" :class="{ disabled: page === 1 }"><<</div>
-        <div class="pagination__item" @click="goToPreviousPage" :class="{ disabled: page === 1 }"><</div>
         <div
-            class="pagination__item"
-            v-for="pageNumber in visiblePages"
-            :key="pageNumber"
-            @click="goToPage(pageNumber)"
-            :class="{ active: page === pageNumber }"
+          class="pagination__item"
+          @click="goToFirstPage"
+          :class="{ disabled: page === 1 }"
+        >
+          <<
+        </div>
+        <div
+          class="pagination__item"
+          @click="goToPreviousPage"
+          :class="{ disabled: page === 1 }"
+        >
+          <
+        </div>
+        <div
+          class="pagination__item"
+          v-for="pageNumber in visiblePages"
+          :key="pageNumber"
+          @click="goToPage(pageNumber)"
+          :class="{ active: page === pageNumber }"
         >
           {{ pageNumber }}
         </div>
         <div
-            class="pagination__item"
-            @click="goToNextPage"
-            :class="{ disabled: page === totalPages }"
+          class="pagination__item"
+          @click="goToNextPage"
+          :class="{ disabled: page === totalPages }"
         >
           >
         </div>
         <div
-            class="pagination__item"
-            @click="goToLastPage"
-            :class="{ disabled: page === totalPages }"
+          class="pagination__item"
+          @click="goToLastPage"
+          :class="{ disabled: page === totalPages }"
         >
           >>
         </div>
@@ -47,25 +63,25 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-const emit = defineEmits(['pageChange', 'perPageChange']);
+const emit = defineEmits(["pageChange", "perPageChange"]);
 
 const props = defineProps({
   isLoading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   page: {
     type: Number,
-    default: 1
+    default: 1,
   },
   perPage: {
     type: Number,
-    default: 10
+    default: 10,
   },
   totalRows: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 const perPageData = [3, 5, 10, 15, 20, 25, 50, 100];
@@ -83,41 +99,43 @@ const visiblePages = computed(() => {
 });
 
 const currentStartRow = computed(() => (props.page - 1) * props.perPage + 1);
-const currentEndRow = computed(() => Math.min(props.page * props.perPage, props.totalRows));
+const currentEndRow = computed(() =>
+  Math.min(props.page * props.perPage, props.totalRows)
+);
 
 const goToPage = (pageNumber: number) => {
   if (pageNumber !== props.page) {
-    emit('pageChange', pageNumber);
+    emit("pageChange", pageNumber);
   }
 };
 
 const goToFirstPage = () => {
   if (props.page > 1) {
-    emit('pageChange', 1);
+    emit("pageChange", 1);
   }
 };
 
 const goToPreviousPage = () => {
   if (props.page > 1) {
-    emit('pageChange', props.page - 1);
+    emit("pageChange", props.page - 1);
   }
 };
 
 const goToNextPage = () => {
   if (props.page < totalPages.value) {
-    emit('pageChange', props.page + 1);
+    emit("pageChange", props.page + 1);
   }
 };
 
 const goToLastPage = () => {
   if (props.page < totalPages.value) {
-    emit('pageChange', totalPages.value);
+    emit("pageChange", totalPages.value);
   }
 };
 
 const handleOnChangePerPage = (event: any) => {
   const newPerPage = parseInt(event.target.value, 10);
-  emit('perPageChange', newPerPage);
+  emit("perPageChange", newPerPage);
 };
 </script>
 
@@ -126,7 +144,7 @@ const handleOnChangePerPage = (event: any) => {
   padding: 5px;
   border: 1px solid var(--color-stroke-ui-dark);
   border-radius: 3px;
-  background-color: var(--color-ui-background);
+  background-color: var(--ui-background);
   color: #b0b0b0;
 }
 

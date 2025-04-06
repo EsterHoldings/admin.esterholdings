@@ -1,21 +1,28 @@
 <template>
   <main class="landing">
-    <WelcomeSection />
-    <AdvantagesSection />
-    <TradingPlatformSection />
-    <FeaturesSection />
-    <AccountTypesSection />
-    <WideRangeSection />
-    <FourStepsSection />
-    <BannerSection />
-    <LatestUpdatesSection />
+    <!--    <WelcomeSection />-->
 
-    <CookieModal />
+
+    <div ref="welcomeRef">
+      <WelcomeSection/>
+    </div>
+    <AdvantagesSection/>
+    <TradingPlatformSection/>
+    <FeaturesSection/>
+    <AccountTypesSection/>
+    <WideRangeSection/>
+    <FourStepsSection/>
+    <BannerSection/>
+    <LatestUpdatesSection/>
+
+    <CookieModal/>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { definePageMeta } from "~/.nuxt/imports";
+import {definePageMeta} from "~/.nuxt/imports";
+import {ref, onMounted, onUnmounted} from 'vue';
+import {useUiStore} from '~/stores/uiStore';
 
 import WelcomeSection from "~/pages/landing/sections/WelcomeSection.vue";
 import AdvantagesSection from "~/pages/landing/sections/AdvantagesSection.vue";
@@ -28,9 +35,31 @@ import TradingPlatformSection from "~/pages/landing/sections/TradingPlatformSect
 import LatestUpdatesSection from "~/pages/landing/sections/LatestUpdatesSection.vue";
 import CookieModal from "~/components/block/modals/CookieModal.vue";
 
+
 definePageMeta({
   middleware: ["not-auth"],
   layout: "main",
+});
+
+const uiStore = useUiStore();
+const welcomeRef = ref<HTMLElement | null>(null);
+
+const handleScroll = () => {
+  if (!welcomeRef.value) return;
+
+  const rect = welcomeRef.value.getBoundingClientRect();
+  const scrolledPast = rect.bottom <= 210;
+
+  uiStore.headerScrolled = scrolledPast;
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+  handleScroll();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 

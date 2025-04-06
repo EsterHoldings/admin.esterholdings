@@ -4,16 +4,18 @@
     @mouseenter="stopAnimation"
     @mouseleave="startAnimation"
   >
-    <div class="running-line__track" ref="track">
+    <div class="running-line__track" ref="track" :class="{ news: props.news }">
       <div
         v-for="(item, index) in duplicatedItems"
         :key="index"
         class="running-line__item"
       >
-        <div class="ticker-block" v-if="props.news">
-          <img :src="item.image" alt="news" class="ticker-block__image" />
-          <div class="ticker-block__info">
-            <span class="ticker-block__title">{{ item.title }}</span>
+        <div v-if="props.news">
+          <div class="ticker-block" :class="{ news: props.news }">
+            <img :src="item.image" alt="news" class="ticker-block__image" />
+            <div class="ticker-block__info">
+              <span class="ticker-block__title">{{ item.title }}</span>
+            </div>
           </div>
         </div>
 
@@ -30,7 +32,10 @@
               {{ item.change }}
             </span>
           </div>
-          <UiButtonDefault state="success--outline"> Trade </UiButtonDefault>
+          <UiButtonDefault
+            :state="item.change > 0 ? 'success--outline' : 'danger--outline'"
+            >Trade</UiButtonDefault
+          >
         </div>
       </div>
     </div>
@@ -89,6 +94,27 @@ onUnmounted(stopAnimation);
   height: 80px;
   position: relative;
   display: flex;
+  --border-width: 2px;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-stroke-ui);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
 }
 
 .running-line__track {
@@ -107,11 +133,10 @@ onUnmounted(stopAnimation);
 .ticker-block {
   display: flex;
   align-items: center;
-  background-color: #000d33;
+  background-color: transparent;
   padding: 10px 15px;
   border-radius: 10px;
   height: 60px;
-  //border: 1px solid #00ff00;
 }
 
 .ticker-block__info {
@@ -123,35 +148,20 @@ onUnmounted(stopAnimation);
 .ticker-block__title {
   font-size: 14px;
   font-weight: bold;
-  color: white;
+  color: var(--ui-text-main);
 }
 
 .ticker-block__value {
   font-size: 14px;
-  color: #00ff00;
+  color: var(--ui-sticker-success);
 }
 
 .ticker-block__value.up {
-  color: #00ff00;
+  color: var(--ui-sticker-success);
 }
 
 .ticker-block__value.down {
-  color: #ff0000;
-}
-
-.ticker-block__trade {
-  background: transparent;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  padding: 5px 10px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.ticker-block__trade:hover {
-  background: #00ff00;
-  color: black;
+  color: var(--ui-sticker-danger);
 }
 
 .ticker-block__image {
@@ -160,5 +170,18 @@ onUnmounted(stopAnimation);
   border-radius: 10px;
   object-fit: cover;
   margin-right: 10px;
+}
+
+.news {
+  background: var(--ui-background-secondary);
+
+  .ticker-block__title {
+    color: white;
+  }
+}
+
+.running-line.news::before,
+.running-line.news::after {
+  display: none;
 }
 </style>

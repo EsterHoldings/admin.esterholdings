@@ -31,7 +31,7 @@ import LandingFooter from "~/components/block/LandingFooter";
 
   &-content {
     width: 100%;
-    background-color: var(--color-ui-background);
+    background-color: var(--ui-background);
   }
 }
 </style>

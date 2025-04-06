@@ -15,16 +15,16 @@
             <UiTextH3 class="four-steps__number">{{ index + 1 }}</UiTextH3>
             <div class="four-steps__content">
               <UiTextH4 class="four-steps__heading">{{ step.title }}</UiTextH4>
-              <UiTextH5 class="four-steps__description">{{
-                step.description
-              }}</UiTextH5>
+              <UiTextH5 class="four-steps__description"
+                >{{ step.description }}
+              </UiTextH5>
             </div>
           </div>
         </div>
 
         <UiButtonDefault state="primary" class="four-steps__button"
-          >Open account</UiButtonDefault
-        >
+          >Open account
+        </UiButtonDefault>
       </div>
     </UiContainer>
   </section>
@@ -76,12 +76,12 @@ const steps = ref([
 
 .four-steps__title {
   font-weight: 700;
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
   margin-bottom: 80px;
 }
 
 .highlight {
-  color: var(--color-ui-warning);
+  color: var(--ui-primary-accent);
 }
 
 .four-steps__container {
@@ -106,18 +106,14 @@ const steps = ref([
     top: 0;
     width: 2px;
     height: 100%;
-    background: linear-gradient(
-      to bottom,
-      rgb(27, 99, 255),
-      rgba(1, 22, 68, 0.5)
-    );
+    background: var(--color-stroke-ui);
   }
 }
 
 .four-steps__number {
   position: relative;
   font-weight: 700;
-  color: var(--color-ui-warning);
+  color: var(--ui-primary-accent);
 }
 
 .four-steps__content {
@@ -130,11 +126,11 @@ const steps = ref([
 
 .four-steps__heading {
   font-weight: 700;
-  color: var(--color-ui-primary-defalt);
+  color: var(--ui-text-main);
 }
 
 .four-steps__description {
-  color: var(--color-ui-grey);
+  color: var(--ui-text-secondary);
   text-align: left;
 }
 

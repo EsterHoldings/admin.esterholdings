@@ -60,7 +60,7 @@ const theNews = ref([
 .lates_updates {
   &_title {
     text-align: center;
-    color: var(--color-ui-primary-defalt);
+    color: var(--ui-text-main);
   }
 
   &_cards {
@@ -76,10 +76,8 @@ const theNews = ref([
   justify-content: center;
   align-items: center;
   height: 80px;
-
   background: transparent;
   padding: 10px 20px;
-
   text-align: center;
   position: relative;
   width: 100%;
@@ -89,7 +87,7 @@ const theNews = ref([
   border-radius: 15px;
 
   h4 {
-    color: white;
+    color: var(--ui-text-main);
     font-weight: 700;
   }
 

@@ -81,7 +81,7 @@ const handleClickLogoutButton = async () => {
 }
 
 .header {
-  background-color: var(--color-ui-background);
+  background-color: var(--ui-background);
   height: 100vh;
   border-right: 1px solid var(--color-stroke-ui-dark);
   min-width: 60px;

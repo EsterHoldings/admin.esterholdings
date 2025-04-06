@@ -1,8 +1,11 @@
 <template>
   <div class="forex">
-    <UiContainer class="wrapper">
+    <UiContainer
+      class="wrapper"
+      :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
+    >
       <div class="forex__content">
-        <UiTextH3> Forex </UiTextH3>
+        <UiTextH3 class="forex__title">Forex</UiTextH3>
         <UiTextH5 class="forex__text">
           Trade 70 major, minor & exotic currency pairs<br />
           with competitive trading conditions.
@@ -12,19 +15,21 @@
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.png" class="forex__img" />
+      <UiImage src="/static/forex-money.webp" class="forex__img" />
     </UiContainer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import UiTextH1 from "~/components/ui/UiTextH1.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiImage from "~/components/ui/UiImage.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
+
+import { useThemeStore } from "~/stores/themeStore";
+
+const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
@@ -37,7 +42,7 @@ import UiContainer from "~/components/ui/UiContainer.vue";
     right: 0;
     bottom: -30px;
     object-fit: contain;
-    width: 648px;
+    width: 585px;
     z-index: 10;
   }
 
@@ -55,9 +60,9 @@ import UiContainer from "~/components/ui/UiContainer.vue";
     padding: 98px 376px 99px 58px;
     display: flex;
     gap: 142px;
-    background: rgb(0, 0, 40);
+    background: var(--ui-background);
     border-radius: 15px;
-    border: 1px solid #2a4af5;
+    border: 1px solid var(--ui-stroke);
     overflow: hidden;
 
     &::after {
@@ -66,7 +71,7 @@ import UiContainer from "~/components/ui/UiContainer.vue";
       width: 350px;
       height: 350px;
       background: rgba(247, 87, 9, 0.9);
-      filter: blur(150px);
+      filter: blur(100px);
       top: 270px;
       right: -200px;
       z-index: 1;
@@ -83,13 +88,25 @@ import UiContainer from "~/components/ui/UiContainer.vue";
       top: 140px;
       right: 260px;
       z-index: 1;
-
       animation: pulse 3s infinite alternate ease-in-out;
     }
   }
 
+  &__title {
+    color: var(--ui-text-main);
+  }
+
   &__text {
-    color: var(--color-ui-grey);
+    color: var(--ui-text-secondary);
+  }
+}
+
+:deep(.light-theme.wrapper) {
+  background: var(--ui-background-card);
+
+  &::before,
+  &::after {
+    background: white;
   }
 }
 
