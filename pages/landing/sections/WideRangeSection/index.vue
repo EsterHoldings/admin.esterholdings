@@ -1,9 +1,13 @@
 <template>
   <section class="wide_range_section">
-    <UiTextH3>Wide Range of Products</UiTextH3>
+    <UiTextH3>{{ t("wide_range__title") }}</UiTextH3>
 
     <div class="wide_range_section__tabs">
-      <UiTabs :tabs="tabs" @active-tab="setActiveTab" class="tabs" />
+      <UiTabs
+        :tabs="tabsList.tabs.value"
+        @active-tab="setActiveTab"
+        class="tabs"
+      />
     </div>
 
     <div class="wide_range_section__content">
@@ -13,11 +17,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { tabs } from "./composables/index";
+import { useI18n } from "vue-i18n";
+import { useTabs } from "./composables/index";
+const { t } = useI18n();
 import { activeComponent, setActiveTab } from "./composables/setup";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTabs from "~/components/ui/UiTabs.vue";
+
+const tabsList = useTabs();
 </script>
 
 <style lang="scss" scoped>

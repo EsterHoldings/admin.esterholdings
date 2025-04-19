@@ -11,17 +11,16 @@
         </div>
 
         <div class="banner-content">
-          <UiTextH3 class="banner-title bold"
-            >Trade the Markets Like a Pro!</UiTextH3
+          <UiTextH3 class="banner-title bold">
+            {{ t("banner_section.title") }}</UiTextH3
           >
           <UiTextH6 class="banner-subtitle">
-            Whether you're a beginner or a pro, our advanced tools and resources
-            help you make informed trading decisions.
+            {{ t("banner_section.subtitle") }}
           </UiTextH6>
 
           <div>
-            <UiButtonDefault state="primary"
-              >Start trading today!</UiButtonDefault
+            <UiButtonDefault state="primary">
+              {{ t("banner_section.button") }}</UiButtonDefault
             >
           </div>
         </div>
@@ -31,11 +30,14 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n";
 import UiImage from "~/components/ui/UiImage.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH6 from "~/components/ui/UiTextH6.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+
+const { t, tm } = useI18n();
 </script>
 
 <style lang="scss" scoped>

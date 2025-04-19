@@ -2,23 +2,28 @@
   <ul class="footer-list">
     <li>
       <UiTextH5>
-        {{ props.title }}
+        {{ t(`${basePath}.title`) }}
       </UiTextH5>
     </li>
 
-    <li class="item" v-for="item in props.items" :key="item">
-      <UiTextH6>{{ item }}</UiTextH6>
+    <li
+      class="item"
+      v-for="(item, index) in tm(`${basePath}.items`)"
+      :key="index"
+    >
+      <UiTextH6>{{ item.body.static }}</UiTextH6>
     </li>
   </ul>
 </template>
 
 <script setup>
+import { useI18n } from "vue-i18n";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiTextH6 from "~/components/ui/UiTextH6.vue";
 const props = defineProps({
-  title: String,
-  items: Array,
+  basePath: String,
 });
+const { t, tm } = useI18n();
 </script>
 
 <style lang="scss" scoped>

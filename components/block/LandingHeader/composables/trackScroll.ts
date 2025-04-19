@@ -9,8 +9,6 @@ export default function useTrackScroll() {
 
   onMounted(() => {
     window.addEventListener("scroll", checkScroll);
-
-    console.log(" window.scrollY", window.scrollY);
   });
 
   onBeforeUnmount(() => {

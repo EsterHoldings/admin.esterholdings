@@ -17,9 +17,7 @@
       v-for="link in props.items"
       :key="link.name"
     >
-      <NuxtLink :to="link.path">
-        {{ link.name }}
-      </NuxtLink>
+      <NuxtLink :to="link.path"> {{ link.name }}, {{ link.path }} </NuxtLink>
     </UiTextH5>
   </div>
 </template>

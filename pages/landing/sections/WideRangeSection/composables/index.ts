@@ -1,18 +1,29 @@
-import { ref } from "vue";
-import Forex from "../components/Forex.vue";
+import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
 
-export const tabs = ref([
-  { id: "forex", label: "Forex" },
-  { id: "metals", label: "Metals" },
-  { id: "cryptocurrency CDs", label: "Cryptocurrency CDs" },
-  { id: "indices", label: "Indices" },
-  { id: "shares", label: "Shares" },
-  { id: "energy", label: "Energy" },
-  { id: "ETFS", label: "ETFS" },
-]);
+import Forex from "../components/Forex.vue";
 
 export const currentTab = ref("forex");
 
 export const currentTabContent = {
   forex: Forex,
 };
+
+export function useTabs() {
+  const { tm } = useI18n();
+
+  const raw = tm("wide_range__categories");
+
+  const tabs = ref(
+    Array.isArray(raw)
+      ? raw.map((item: any) => ({
+          id: item?.id?.body?.static ?? item?.id,
+          label: item?.label?.body?.static ?? item?.label,
+        }))
+      : []
+  );
+
+  return {
+    tabs,
+  };
+}

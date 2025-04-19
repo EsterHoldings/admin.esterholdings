@@ -48,6 +48,7 @@ import UiImage from "~/components/ui/UiImage.vue";
 import TheSlider from "~/components/block/slider/TheSlider.vue";
 import SliderDefault from "~/components/block/sliders/SliderDefault.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
+import UiQRCode from "~/components/ui/UiQRCode.vue";
 
 const items = ref([
   { name: "EURUSD", price: 1.04282, change: 0.00014 },

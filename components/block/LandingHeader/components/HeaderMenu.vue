@@ -39,6 +39,8 @@ const props = defineProps({
     default: false,
   },
 });
+
+console.log("headerItems", props.headerItems);
 </script>
 
 <style lang="scss" scoped>

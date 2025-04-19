@@ -47,14 +47,16 @@
                 :class="{
                   'is-theme-light': isThemeLight,
                 }"
-                >Log In
+              >
+                {{ t("header.auth.login") }}
               </UiButtonDefault>
 
               <UiButtonDefault
                 state="primary"
                 class="register"
                 v-if="!isMenuOpen"
-                >Register
+              >
+                {{ t("header.auth.register") }}
               </UiButtonDefault>
 
               <div class="actions-icons">
@@ -108,16 +110,20 @@
             />
 
             <div class="mobile-acions">
-              <UiButtonDefault state="primary" class="register"
-                >Register
+              <UiButtonDefault
+                state="primary"
+                class="register"
+                v-if="!isMenuOpen"
+              >
+                {{ t("header.auth.register") }}
               </UiButtonDefault>
 
               <UiButtonDefault
                 state="link"
-                :class="{
-                  'is-theme-light': isThemeLight,
-                }"
-                >Log In
+                class="login"
+                :class="{ 'is-theme-light': isThemeLight }"
+              >
+                {{ t("header.auth.login") }}
               </UiButtonDefault>
             </div>
 
@@ -131,9 +137,9 @@
 
     <transition name="fade" mode="out-in">
       <HeaderMenu
-        v-if="uiStore.showMenu && headerItems[activeLink]"
+        v-if="uiStore.showMenu"
         :key="activeLink"
-        :headerItems="headerItems[activeLink]"
+        :headerItems="headerItems"
         class="fixed-header-menu"
         @mouseleave="handleMouseLeave"
       />
@@ -142,6 +148,7 @@
 </template>
 
 <script setup>
+import { useI18n } from "vue-i18n";
 import { ref, computed } from "vue";
 import useTrackScroll from "./composables/trackScroll";
 import { useUiStore } from "~/stores/uiStore";
@@ -162,67 +169,76 @@ const themeStore = useThemeStore();
 const uiStore = useUiStore();
 
 const { isBlurred } = useTrackScroll();
+const { t, tm } = useI18n();
 const isMenuOpen = ref(false);
 const activeLink = ref("");
 
+// const linksList = [
+//   {
+//     name: "Trading",
+//     path: "#",
+//   },
+//   {
+//     name: "Partnership",
+//     path: "#",
+//   },
+//   {
+//     name: "Company",
+//     path: "#",
+//   },
+// ];
+
 const linksList = [
-  {
-    name: "Trading",
-    path: "#",
-  },
-  {
-    name: "Partnership",
-    path: "#",
-  },
-  {
-    name: "Company",
-    path: "#",
-  },
+  { name: t("header.nav.trading"), path: "#" },
+  { name: t("header.nav.partnership"), path: "#" },
+  { name: t("header.nav.company"), path: "#" },
 ];
 
-const headerItems = {
-  Trading: {
-    "Account overview": [
-      { name: "Standard", path: "#" },
-      { name: "Pro", path: "#" },
-      { name: "Islamic", path: "#" },
-      { name: "Demo", path: "#" },
-    ],
+const headerItems = ref();
 
-    "Market Instruments": [
-      { name: "Forex", path: "#" },
-      { name: "Metals", path: "#" },
-      { name: "Stock CFDs", path: "#" },
-      { name: "Crypto CFDs", path: "#" },
-      { name: "Commodities", path: "#" },
-      { name: "Indices", path: "#" },
-      { name: "ETFs", path: "#" },
-    ],
-    Platform: [
-      { name: "MT4 Desktop", path: "#" },
-      { name: "MT 4 Mobile", path: "#" },
-    ],
+// const headerItems = {
+//   Trading: {
+//     "Account overview": [
+//       { name: "Standard", path: "#" },
+//       { name: "Pro", path: "#" },
+//       { name: "Islamic", path: "#" },
+//       { name: "Demo", path: "#" },
+//     ],
 
-    "Trading conditions": [
-      { name: "Account replenishment", path: "#" },
-      { name: "Withdrawal of funds", path: "#" },
-    ],
+//     "Market Instruments": [
+//       { name: "Forex", path: "#" },
+//       { name: "Metals", path: "#" },
+//       { name: "Stock CFDs", path: "#" },
+//       { name: "Crypto CFDs", path: "#" },
+//       { name: "Commodities", path: "#" },
+//       { name: "Indices", path: "#" },
+//       { name: "ETFs", path: "#" },
+//     ],
+//     Platform: [
+//       { name: "MT4 Desktop", path: "#" },
+//       { name: "MT 4 Mobile", path: "#" },
+//     ],
 
-    "Trader's HUB": [
-      { name: "Trader's blog", path: "#" },
-      { name: "Economic calendar", path: "#" },
-      { name: "Market news", path: "#" },
-    ],
-    "TANDEM trading": [
-      { name: "For trader", path: "#" },
-      { name: "For investor", path: "#" },
-    ],
-  },
+//     "Trading conditions": [
+//       { name: "Account replenishment", path: "#" },
+//       { name: "Withdrawal of funds", path: "#" },
+//     ],
 
-  Partnership: {},
+//     "Trader's HUB": [
+//       { name: "Trader's blog", path: "#" },
+//       { name: "Economic calendar", path: "#" },
+//       { name: "Market news", path: "#" },
+//     ],
+//     "TANDEM trading": [
+//       { name: "For trader", path: "#" },
+//       { name: "For investor", path: "#" },
+//     ],
+//   },
 
-  Company: {},
-};
+//   Partnership: {},
+
+//   Company: {},
+// };
 
 const isThemeLight = computed(() => {
   return (
@@ -246,10 +262,29 @@ const toggleMenu = () => {
   }
 };
 
+function normalizeHeaderItems(raw) {
+  const result = {};
+
+  for (const section in raw) {
+    result[section] = raw[section].map((item) => ({
+      name:
+        typeof item.name === "string"
+          ? item.name
+          : item.name?.body?.static ?? "",
+
+      path: typeof item.path === "string" ? "#" : item.path?.body?.static,
+    }));
+  }
+
+  return result;
+}
+
 const handleMouseEnter = (name) => {
   if (activeLink.value !== name) {
     activeLink.value = name;
     uiStore.showMenu = true;
+    const raw = tm(`header.megaMenu.${activeLink.value}`);
+    headerItems.value = normalizeHeaderItems(raw);
   } else {
     activeLink.value = "";
     uiStore.showMenu = false;

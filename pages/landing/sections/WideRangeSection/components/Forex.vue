@@ -5,13 +5,16 @@
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
       <div class="forex__content">
-        <UiTextH3 class="forex__title">Forex</UiTextH3>
+        <UiTextH3 class="forex__title">
+          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+        >
         <UiTextH5 class="forex__text">
-          Trade 70 major, minor & exotic currency pairs<br />
-          with competitive trading conditions.
+          {{ t("wide_range_tabs.Forex.description") }}
         </UiTextH5>
         <div>
-          <UiButtonDefault state="primary">Trade Forex</UiButtonDefault>
+          <UiButtonDefault state="primary">
+            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+          >
         </div>
       </div>
 
@@ -27,7 +30,9 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiImage from "~/components/ui/UiImage.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 
+import { useI18n } from "vue-i18n";
 import { useThemeStore } from "~/stores/themeStore";
+const { t } = useI18n();
 
 const themeStore = useThemeStore();
 </script>

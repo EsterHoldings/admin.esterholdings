@@ -1,0 +1,248 @@
+{
+  "header": {
+    "nav": {
+      "trading": "Trading",
+      "partnership": "Partnership",
+      "company": "Company"
+    },
+    "auth": {
+      "login": "Log In",
+      "register": "Register"
+    },
+    "megaMenu": {
+      "Trading": {
+        "Account overview": [
+          { "name": "Standard", "path": "#" },
+          { "name": "Pro", "path": "#" },
+          { "name": "Islamic", "path": "#" },
+          { "name": "Demo", "path": "#" }
+        ],
+        "Market Instruments": [
+          { "name": "Forex", "path": "#" },
+          { "name": "Metals", "path": "#" },
+          { "name": "Stock CFDs", "path": "#" },
+          { "name": "Crypto CFDs", "path": "#" },
+          { "name": "Commodities", "path": "#" },
+          { "name": "Indices", "path": "#" },
+          { "name": "ETFs", "path": "#" }
+        ],
+        "Platform": [
+          { "name": "MT4 Desktop", "path": "#" },
+          { "name": "MT 4 Mobile", "path": "#" }
+        ],
+        "Trading conditions": [
+          { "name": "Account replenishment", "path": "#" },
+          { "name": "Withdrawal of funds", "path": "#" }
+        ],
+        "Trader's HUB": [
+          { "name": "Trader's blog", "path": "#" },
+          { "name": "Economic calendar", "path": "#" },
+          { "name": "Market news", "path": "#" }
+        ],
+        "TANDEM trading": [
+          { "name": "For trader", "path": "#" },
+          { "name": "For investor", "path": "#" }
+        ]
+      },
+      "Partnership": {},
+      "Company": {}
+    }
+  },
+
+  "welcome-title": {
+    "before": "Trade",
+    "highlight": "Smarter",
+    "after": "Trade Faster!"
+  },
+
+  "welcome__text": "Access global markets, including Forex, Stocks, and CFDs, with \nfast execution, low spreads, and real-time market analysis.",
+
+  "welcome-btn": "Trade Now",
+
+  "running-line-btn": "Trade",
+
+  "advantages": [
+    {
+      "value": "10+",
+      "label": "Years of experience in field"
+    },
+    {
+      "value": "1,160,000+",
+      "label": "Clients"
+    },
+    {
+      "value": "5* Rated",
+      "label": "Customer service"
+    }
+  ],
+
+  "platform__title": "Legendary platform for successful\nForex and CFD trading",
+
+  "platform__features": [
+    {
+      "title": "Trading Platform",
+      "text": "Level up with our products"
+    },
+    {
+      "title": "Mobile trading",
+      "text": "Full control over transactions at any time."
+    },
+    {
+      "title": "Ester MetaTrader 4",
+      "text": "The popular, classic solution"
+    },
+    {
+      "title": "High speed and reliability",
+      "text": "Works even on weak PCs."
+    }
+  ],
+
+  "feature__title": "Why Choose Us?",
+  "features__items": [
+    {
+      "title": "Instruments",
+      "text": "Forex/Spot\nShares/Indices",
+      "icon": "/static/F-Wrench & Screwdriver.png"
+    },
+    {
+      "title": "Liquidity:\n200+ Top-Level",
+      "text": "Financial institutions",
+      "icon": "/static/F-Building Library.png"
+    },
+    {
+      "title": "Floating Spread",
+      "text": "from 0 pips",
+      "icon": "/static/F-Money.png"
+    },
+    {
+      "title": "Limit and Stop Levels",
+      "text": "= 0",
+      "icon": "/static/LIMIT AND STOP LEVELS.png"
+    },
+    {
+      "title": "Fastest Server Technologies",
+      "text": "with high order processing speeds",
+      "icon": "/static/F-Rocket.png"
+    },
+    {
+      "title": "Bank's Security",
+      "text": "of trading accounts",
+      "icon": "/static/L-Shield Done.png"
+    }
+  ],
+
+  "accounts__title": "Explore Our Trading Account Options",
+  "accounts__btn": "Open Account",
+  "accounts__options": [
+    {
+      "title": "Standard",
+      "label": "account",
+      "description": "Test trading strategies risk-free."
+    },
+    {
+      "title": "Pro",
+      "label": "account",
+      "description": "Test trading strategies risk-free."
+    },
+    {
+      "title": "Islamic",
+      "label": "account",
+      "description": "Test trading strategies risk-free."
+    },
+    {
+      "title": "Demo",
+      "label": "account",
+      "description": "Test trading strategies risk-free."
+    }
+  ],
+
+  "wide_range__title": "Wide Range of Products",
+  "wide_range__categories": [
+    { "id": "forex", "label": "Forex" },
+    { "id": "metals", "label": "Metals" },
+    { "id": "cryptocurrency CDs", "label": "Cryptocurrency CDs" },
+    { "id": "indices", "label": "Indices" },
+    { "id": "shares", "label": "Shares" },
+    { "id": "energy", "label": "Energy" },
+    { "id": "ETFS", "label": "ETFS" }
+  ],
+  "wide_range_tabs": {
+    "Forex": {
+      "title": "Forex",
+      "description": "Trade 70 major, minor & exotic currency pairs with competitive trading conditions.",
+      "btn": "Trade Forex"
+    }
+  },
+
+  "four_steps_section": {
+    "title": {
+      "before": "Open an account in",
+      "highlight": "4 simple steps"
+    },
+    "button": "Open account",
+    "items": [
+      {
+        "title": "Register",
+        "text": "Choose an account type and complete our fast and secure application form"
+      },
+      {
+        "title": "Verify",
+        "text": "Use our digital onboarding system for fast verification"
+      },
+      {
+        "title": "Fund",
+        "text": "Fund your trading account using a wide range of funding methods"
+      },
+      {
+        "title": "Trade",
+        "text": "Start trading on your live account and access +2,100 instruments"
+      }
+    ]
+  },
+
+  "banner_section": {
+    "title": "Trade the Markets Like a Pro!",
+    "subtitle": "Whether you're a beginner or a pro, our advanced tools and resources help you make informed trading decisions.",
+    "button": "Start trading today!"
+  },
+
+  "helpSection": "Need Help? Visit our",
+  "helpLinkText": "Help Section",
+
+  "footer": {
+    "description": "The main goal of Ester is to create the best and most transparent conditions for retail and corporate traders.",
+    "trading": {
+      "title": "Trading",
+      "items": [
+        "Account overview",
+        "Markets",
+        "Platform",
+        "Terms of trade",
+        "Tandem trading"
+      ]
+    },
+    "partnership": {
+      "title": "Partnership",
+      "items": ["Register IB/ Partnership", "How IB generate income"]
+    },
+    "company": {
+      "title": "Company",
+      "items": [
+        "About the company",
+        "Documents",
+        "Company news",
+        "Contacts",
+        "Career"
+      ]
+    },
+    "legal": {
+      "regulated": "Ester is the official trading name which is regulated by the Seychelles Financial Services Authority (FSA) and holds a Securities Dealer License No. SD018.",
+      "risk": "Risk Warning: and CFD trading carries a high level of risk and can result in the loss of capital. You should only invest with money you can afford to lose. Trading live instruments cannot be stopped under any circumstances, so it is important that you fully understand the risks involved and seek independent advice if necessary. Please read our risk disclosure and ensure you fully understand it.",
+      "restricted": "Restricted Countries: Raw Trading Ltd does not provide its services to residents of a number of countries, including the United States, Canada, Israel, New Zealand, Iran and North Korea (Democratic People's Republic of Korea), as well as other jurisdictions where such activities are contrary to local law.",
+      "age": "To register an account with Ester, you must be at least 18 years old or have reached the age of majority in accordance with the laws of your country. By creating an account, you confirm that you are registering on your own initiative, without any solicitation or offer from Ester.",
+      "compliance": "Ester does not direct its services or website content to users in countries where their use is prohibited by local laws. If you access this website from a restricted country, you are responsible for compliance with local laws. The Company also does not warrant that the information provided complies with the requirements of all jurisdictions.",
+      "copyrightStart": "© 2025 Ester",
+      "copyrightEnd": "All rights reserved."
+    }
+  }
+}

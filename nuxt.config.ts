@@ -22,24 +22,25 @@ export default defineNuxtConfig({
     strategy: "prefix",
     locales: [
       {
-        code: "en-US",
+        code: "en",
         iso: "en-US",
         name: "English",
-        file: "en-US.json",
+        file: "en.json",
       },
 
       {
-        code: "ru-RU",
+        code: "ru",
         iso: "ru-RU",
         name: "Russian",
-        file: "ru-RU.json",
+        file: "ru.json",
       },
     ],
 
-    defaultLocale: "en-US",
+    defaultLocale: "en",
     experimental: {
-      jsTsFormatResource: true,
+      jsTsFormatResource: false,
     },
+    escapeParameterHtml: false,
   },
 
   vite: {

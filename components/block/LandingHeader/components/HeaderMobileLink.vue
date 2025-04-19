@@ -14,10 +14,8 @@
     <div class="header__underline"></div>
 
     <HeaderMenu
-      v-if="
-        props.headerItems[props.activeLink] && props.name === props.activeLink
-      "
-      :headerItems="props.headerItems[props.activeLink]"
+      v-if="props.headerItems && props.name === props.activeLink"
+      :headerItems="props.headerItems"
       isMobile
       class="header-mobile_menu"
     />
