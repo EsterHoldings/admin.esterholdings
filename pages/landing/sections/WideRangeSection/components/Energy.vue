@@ -1,24 +1,24 @@
 <template>
-  <div class="forex">
+  <div class="energy">
     <UiContainer
       class="wrapper"
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
-      <div class="forex__content">
-        <UiTextH3 class="forex__title">
-          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+      <div class="energy__content">
+        <UiTextH3 class="energy__title">
+          {{ t("wide_range_tabs.Energy.title") }}</UiTextH3
         >
-        <UiTextH5 class="forex__text">
-          {{ t("wide_range_tabs.Forex.description") }}
+        <UiTextH5 class="energy__text">
+          {{ t("wide_range_tabs.Energy.description") }}
         </UiTextH5>
         <div>
           <UiButtonDefault state="primary">
-            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+            {{ t("wide_range_tabs.Energy.btn") }}</UiButtonDefault
           >
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img" />
+      <UiImage src="static/energy_image.webp" class="energy__img" />
     </UiContainer>
   </div>
 </template>
@@ -38,17 +38,18 @@ const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.forex {
+.energy {
   padding: 10px;
   width: 100vw;
 
   &__img {
     position: absolute;
-    right: 0;
+    right: -140px;
     bottom: -30px;
     object-fit: contain;
-    width: 585px;
+    width: 575px;
     z-index: 10;
+    transform: scale(1.7);
   }
 
   &__content {
@@ -140,20 +141,19 @@ const themeStore = useThemeStore();
   .forex__img {
     width: 68%;
     top: 0;
-    right: -50px;
   }
 }
 
 @media (max-width: 991px) {
-  .forex {
+  .energy {
     padding: 0 !important;
   }
 
-  .forex__title {
+  .energy__title {
     font-size: 26px;
   }
 
-  .forex__text {
+  .energy__text {
     br {
       display: none;
     }
@@ -177,11 +177,11 @@ const themeStore = useThemeStore();
     }
   }
 
-  .forex__content {
+  .energy__content {
     order: 2;
   }
 
-  .forex__img {
+  .energy__img {
     position: static;
     order: 1;
     width: 100%;

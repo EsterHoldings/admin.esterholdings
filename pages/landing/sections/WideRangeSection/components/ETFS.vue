@@ -1,24 +1,24 @@
 <template>
-  <div class="forex">
+  <div class="etfs">
     <UiContainer
       class="wrapper"
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
-      <div class="forex__content">
-        <UiTextH3 class="forex__title">
-          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+      <div class="etfs__content">
+        <UiTextH3 class="ETFS__title">
+          {{ t("wide_range_tabs.ETFS.title") }}</UiTextH3
         >
         <UiTextH5 class="forex__text">
-          {{ t("wide_range_tabs.Forex.description") }}
+          {{ t("wide_range_tabs.ETFS.description") }}
         </UiTextH5>
         <div>
           <UiButtonDefault state="primary">
-            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+            {{ t("wide_range_tabs.etfs.btn") }}</UiButtonDefault
           >
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img" />
+      <UiImage src="static/etf_image.webp" class="etfs__img" />
     </UiContainer>
   </div>
 </template>
@@ -38,7 +38,7 @@ const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.forex {
+.etfs {
   padding: 10px;
   width: 100vw;
 
@@ -47,7 +47,7 @@ const themeStore = useThemeStore();
     right: 0;
     bottom: -30px;
     object-fit: contain;
-    width: 585px;
+    width: 478px;
     z-index: 10;
   }
 
@@ -137,23 +137,21 @@ const themeStore = useThemeStore();
   .wrapper {
     padding: 40px !important;
   }
-  .forex__img {
-    width: 68%;
-    top: 0;
+  .etfs__img {
     right: -50px;
   }
 }
 
 @media (max-width: 991px) {
-  .forex {
+  .etfs {
     padding: 0 !important;
   }
 
-  .forex__title {
+  .etfs__title {
     font-size: 26px;
   }
 
-  .forex__text {
+  .etfs__text {
     br {
       display: none;
     }
@@ -177,11 +175,11 @@ const themeStore = useThemeStore();
     }
   }
 
-  .forex__content {
+  .etfs__content {
     order: 2;
   }
 
-  .forex__img {
+  .etfs__img {
     position: static;
     order: 1;
     width: 100%;

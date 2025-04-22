@@ -1,24 +1,27 @@
 <template>
-  <div class="forex">
+  <div class="cryptocurrency-CDs">
     <UiContainer
       class="wrapper"
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
-      <div class="forex__content">
-        <UiTextH3 class="forex__title">
-          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+      <div class="cryptocurrency-CDs__content">
+        <UiTextH3 class="cryptocurrency-CDs__title">
+          {{ t("wide_range_tabs.CryptocurrencyCDs.title") }}</UiTextH3
         >
-        <UiTextH5 class="forex__text">
-          {{ t("wide_range_tabs.Forex.description") }}
+        <UiTextH5 class="cryptocurrency-CDs__text">
+          {{ t("wide_range_tabs.CryptocurrencyCDs.description") }}
         </UiTextH5>
         <div>
           <UiButtonDefault state="primary">
-            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+            {{ t("wide_range_tabs.CryptocurrencyCDs.btn") }}</UiButtonDefault
           >
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img" />
+      <UiImage
+        src="static/bitcion_image.webp"
+        class="cryptocurrency-CDs__img"
+      />
     </UiContainer>
   </div>
 </template>
@@ -38,7 +41,7 @@ const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.forex {
+.cryptocurrency-CDs {
   padding: 10px;
   width: 100vw;
 
@@ -47,7 +50,7 @@ const themeStore = useThemeStore();
     right: 0;
     bottom: -30px;
     object-fit: contain;
-    width: 585px;
+    width: 405px;
     z-index: 10;
   }
 
@@ -137,27 +140,20 @@ const themeStore = useThemeStore();
   .wrapper {
     padding: 40px !important;
   }
-  .forex__img {
-    width: 68%;
-    top: 0;
+  .cryptocurrency-CDs__img {
     right: -50px;
   }
 }
 
 @media (max-width: 991px) {
-  .forex {
+  .cryptocurrency-CDs {
     padding: 0 !important;
   }
 
-  .forex__title {
+  .cryptocurrency-CDs__title {
     font-size: 26px;
   }
 
-  .forex__text {
-    br {
-      display: none;
-    }
-  }
   .wrapper {
     padding: 0 !important;
     display: flex;
@@ -177,14 +173,13 @@ const themeStore = useThemeStore();
     }
   }
 
-  .forex__content {
+  .cryptocurrency-CDs__content {
     order: 2;
   }
 
-  .forex__img {
+  .cryptocurrency-CDs__img {
     position: static;
     order: 1;
-    width: 100%;
     margin: 0 auto;
   }
 }

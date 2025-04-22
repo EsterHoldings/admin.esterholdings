@@ -11,7 +11,9 @@
     </div>
 
     <div class="wide_range_section__content">
-      <component :is="activeComponent" />
+      <Transition name="tab-fade" mode="out-in">
+        <component :is="activeComponent" :key="activeComponent" />
+      </Transition>
     </div>
   </section>
 </template>
@@ -41,6 +43,22 @@ const tabsList = useTabs();
   &__content {
     margin-top: 29px;
   }
+}
+
+.tab-fade-enter-active,
+.tab-fade-leave-active {
+  transition: all 0.3s ease-in-out;
+  will-change: transform, opacity;
+}
+
+.tab-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tab-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 @media (max-width: 991px) {

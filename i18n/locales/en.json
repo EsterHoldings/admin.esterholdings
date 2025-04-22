@@ -169,8 +169,44 @@
   "wide_range_tabs": {
     "Forex": {
       "title": "Forex",
-      "description": "Trade 70 major, minor & exotic currency pairs with competitive trading conditions.",
+      "description": "Trade 70 major, minor & exotic currency pairs\n with competitive trading conditions.",
       "btn": "Trade Forex"
+    },
+
+    "Metals": {
+      "title": "Metals",
+      "description": "Trade metal commodities such as Gold,\n Silver & Platinum.",
+      "btn": "Trade Metals"
+    },
+
+    "CryptocurrencyCDs": {
+      "title": "Cryptocurrency CDs",
+      "description": "Trade Bitcoin CFD, Ether CFD, Doge CFD\n & more crypto CDs & altcoin CFDs ",
+      "btn": "Trade Cryptocurrency CFDs"
+    },
+
+    "Indices": {
+      "title": "Indices",
+      "description": "Trade major and minor Index CDs Spot and\nFutures from around the globe.",
+      "btn": "Trade Indices"
+    },
+
+    "Shares": {
+      "title": "Shares",
+      "description": "Thousands of public companies from the US,\n UK & EU available to trade.",
+      "btn": "Trade Shares"
+    },
+
+    "Energy": {
+      "title": "Energy",
+      "description": "Discover opportunities on UK & US Crude Oil\n and Natural Gas Spot and Future contracts.",
+      "btn": "Trade Energy"
+    },
+
+    "ETFS": {
+      "title": "ETFs",
+      "description": "Access a World of Markets with ETF CFDs-From\n Bonds to Commodities, Real Estate to Volatility.",
+      "btn": "Trade ETFs"
     }
   },
 

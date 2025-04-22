@@ -1,5 +1,4 @@
-import { resolve } from 'path';
-import { defineNuxtConfig } from 'nuxt/config';
+import { defineNuxtConfig } from "nuxt/config";
 
 // @ts-ignore
 export default defineNuxtConfig({
@@ -18,7 +17,7 @@ export default defineNuxtConfig({
   // @ts-ignore
   i18n: {
     lazy: true,
-    langDir: resolve(__dirname, './locales'),
+    langDir: "locales",
 
     strategy: "prefix",
     locales: [
@@ -52,7 +51,7 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/**': { ssr: false } as any,
+    "/**": { ssr: false } as any,
     // '/': { ssr: true },
-  }
+  },
 });

@@ -1,24 +1,24 @@
 <template>
-  <div class="forex">
+  <div class="shares">
     <UiContainer
       class="wrapper"
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
-      <div class="forex__content">
+      <div class="shares__content">
         <UiTextH3 class="forex__title">
-          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+          {{ t("wide_range_tabs.Shares.title") }}</UiTextH3
         >
-        <UiTextH5 class="forex__text">
-          {{ t("wide_range_tabs.Forex.description") }}
+        <UiTextH5 class="shares__text">
+          {{ t("wide_range_tabs.Shares.description") }}
         </UiTextH5>
         <div>
           <UiButtonDefault state="primary">
-            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+            {{ t("wide_range_tabs.Shares.btn") }}</UiButtonDefault
           >
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img" />
+      <UiImage src="static/shares_image.webp" class="shares__img" />
     </UiContainer>
   </div>
 </template>
@@ -38,16 +38,15 @@ const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.forex {
+.shares {
   padding: 10px;
   width: 100vw;
 
   &__img {
     position: absolute;
-    right: 0;
-    bottom: -30px;
+    right: -130px;
     object-fit: contain;
-    width: 585px;
+    width: 643px;
     z-index: 10;
   }
 
@@ -137,23 +136,18 @@ const themeStore = useThemeStore();
   .wrapper {
     padding: 40px !important;
   }
-  .forex__img {
-    width: 68%;
-    top: 0;
-    right: -50px;
-  }
 }
 
 @media (max-width: 991px) {
-  .forex {
+  .shares {
     padding: 0 !important;
   }
 
-  .forex__title {
+  .shares__title {
     font-size: 26px;
   }
 
-  .forex__text {
+  .shares__text {
     br {
       display: none;
     }
@@ -177,11 +171,11 @@ const themeStore = useThemeStore();
     }
   }
 
-  .forex__content {
+  .shares__content {
     order: 2;
   }
 
-  .forex__img {
+  .shares__img {
     position: static;
     order: 1;
     width: 100%;
