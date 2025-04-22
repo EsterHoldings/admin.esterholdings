@@ -1,24 +1,24 @@
 <template>
-  <div class="forex">
+  <div class="indices">
     <UiContainer
       class="wrapper"
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
-      <div class="forex__content">
-        <UiTextH3 class="forex__title">
-          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+      <div class="indices__content">
+        <UiTextH3 class="indices__title">
+          {{ t("wide_range_tabs.Indices.title") }}</UiTextH3
         >
-        <UiTextH5 class="forex__text">
-          {{ t("wide_range_tabs.Forex.description") }}
+        <UiTextH5 class="indices__text">
+          {{ t("wide_range_tabs.Indices.description") }}
         </UiTextH5>
         <div>
           <UiButtonDefault state="primary">
-            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+            {{ t("wide_range_tabs.Indices.btn") }}</UiButtonDefault
           >
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img" />
+      <UiImage src="static/globe_image.webp" class="indices__img" />
     </UiContainer>
   </div>
 </template>
@@ -38,7 +38,7 @@ const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.forex {
+.indices {
   padding: 10px;
   width: 100vw;
 
@@ -47,7 +47,7 @@ const themeStore = useThemeStore();
     right: 0;
     bottom: -30px;
     object-fit: contain;
-    width: 585px;
+    width: 446px;
     z-index: 10;
   }
 
@@ -137,27 +137,20 @@ const themeStore = useThemeStore();
   .wrapper {
     padding: 40px !important;
   }
-  .forex__img {
-    width: 68%;
-    top: 0;
-    right: -50px;
+  .indices__img {
+    right: -60px;
   }
 }
 
 @media (max-width: 991px) {
-  .forex {
+  .indices {
     padding: 0 !important;
   }
 
-  .forex__title {
+  .indices__title {
     font-size: 26px;
   }
 
-  .forex__text {
-    br {
-      display: none;
-    }
-  }
   .wrapper {
     padding: 0 !important;
     display: flex;
@@ -177,11 +170,11 @@ const themeStore = useThemeStore();
     }
   }
 
-  .forex__content {
+  .indices__content {
     order: 2;
   }
 
-  .forex__img {
+  .indices__img {
     position: static;
     order: 1;
     width: 100%;

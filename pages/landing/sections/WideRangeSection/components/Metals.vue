@@ -1,24 +1,24 @@
 <template>
-  <div class="forex">
+  <div class="metals">
     <UiContainer
       class="wrapper"
       :class="{ 'light-theme': themeStore.currentTheme === 'light' }"
     >
-      <div class="forex__content">
-        <UiTextH3 class="forex__title">
-          {{ t("wide_range_tabs.Forex.title") }}</UiTextH3
+      <div class="metals__content">
+        <UiTextH3 class="metals__title">
+          {{ t("wide_range_tabs.Metals.title") }}</UiTextH3
         >
-        <UiTextH5 class="forex__text">
-          {{ t("wide_range_tabs.Forex.description") }}
+        <UiTextH5 class="metals__text">
+          {{ t("wide_range_tabs.Metals.description") }}
         </UiTextH5>
         <div>
           <UiButtonDefault state="primary">
-            {{ t("wide_range_tabs.Forex.btn") }}</UiButtonDefault
+            {{ t("wide_range_tabs.Metals.btn") }}</UiButtonDefault
           >
         </div>
       </div>
 
-      <UiImage src="/static/forex-money.webp" class="forex__img" />
+      <UiImage src="static/metals_image.webp" class="metals__img" />
     </UiContainer>
   </div>
 </template>
@@ -38,17 +38,18 @@ const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>
-.forex {
+.metals {
   padding: 10px;
   width: 100vw;
 
   &__img {
     position: absolute;
-    right: 0;
-    bottom: -30px;
+    right: -100px;
+    bottom: -90px;
     object-fit: contain;
     width: 585px;
     z-index: 10;
+    transform: scale(1.4);
   }
 
   &__content {
@@ -137,23 +138,21 @@ const themeStore = useThemeStore();
   .wrapper {
     padding: 40px !important;
   }
-  .forex__img {
-    width: 68%;
-    top: 0;
-    right: -50px;
+  .metals__img {
+    transform: scale(1.3);
   }
 }
 
 @media (max-width: 991px) {
-  .forex {
+  .metals {
     padding: 0 !important;
   }
 
-  .forex__title {
+  .metals__title {
     font-size: 26px;
   }
 
-  .forex__text {
+  .metals__text {
     br {
       display: none;
     }
@@ -177,13 +176,14 @@ const themeStore = useThemeStore();
     }
   }
 
-  .forex__content {
+  .metals__content {
     order: 2;
   }
 
-  .forex__img {
+  .metals__img {
     position: static;
     order: 1;
+    transform: scale(1);
     width: 100%;
     margin: 0 auto;
   }
