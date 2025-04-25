@@ -5,13 +5,13 @@
       :class="{ 'menu-wrapper-mobile': props.isMobile }"
     >
       <div class="menu-grid" :class="{ 'menu-mobile': props.isMobile }">
-        <HeaderMenuItem
-          v-for="[title, items] in Object.entries(props.headerItems)"
-          :key="title"
-          :title="title"
-          :items="items"
+        <!-- <HeaderMenuItem
+          v-for="(section, index) in headerItems"
+          :key="section.section"
+          :title="t(`header.megaMenu.${props.activeLink}[${index}].section`)"
+          :items="buildItems(section, index)"
           :isMobile="props.isMobile"
-        />
+        /> -->
 
         <div
           class="menu-banner"
@@ -25,22 +25,34 @@
 </template>
 
 <script setup>
+import { useI18n } from "vue-i18n";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import HeaderMenuItem from "~/components/block/LandingHeader/components/HeaderMenuItem.vue";
+// import { tradingMenuRoutes as routes } from "../composables/tradingMenuRoutes";
 
 const props = defineProps({
-  headerItems: {
-    type: Object,
-    default: () => ({}),
-  },
-
   isMobile: {
     type: Boolean,
     default: false,
   },
+
+  activeLink: {
+    type: String,
+  },
 });
 
-console.log("headerItems", props.headerItems);
+const { t, tm } = useI18n();
+
+const headerItems = tm(`header.megaMenu.${props.activeLink}`);
+
+// function buildItems(section, sectionIndex) {
+//   return section.items.map((_, itemIndex) => ({
+//     name: t(
+//       `header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
+//     ),
+//     path: routes[section.section]?.[itemIndex] ?? "#",
+//   }));
+// }
 </script>
 
 <style lang="scss" scoped>

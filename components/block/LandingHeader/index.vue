@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div v-if="isMenuOpen" class="overlay blurred"></div>
+    <div v-if="isMobileMenuOpen" class="overlay blurred"></div>
     <div
-      :class="{ blurred: isBlurred, 'nav--open': isMenuOpen }"
+      :class="{ blurred: isBlurred, 'nav--open': isMobileMenuOpen }"
       class="header__wrapper"
     >
       <UiContainer>
-        <header class="header" :class="{ 'header-is-open-menu ': isMenuOpen }">
+        <header
+          class="header"
+          :class="{ 'header-is-open-menu ': isMobileMenuOpen }"
+        >
           <div class="logo">
             <UiIconLogo
               :class="{
@@ -18,7 +21,7 @@
           <div
             class="burger-menu"
             :class="{
-              'burger-menu--open': isMenuOpen,
+              'burger-menu--open': isMobileMenuOpen,
               'is-theme-light': isThemeLight,
             }"
             @click="toggleMenu"
@@ -28,18 +31,21 @@
             <span></span>
           </div>
 
-          <nav class="nav" :class="{ 'nav--open': isMenuOpen }">
+          <nav class="nav" :class="{ 'nav--open': isMobileMenuOpen }">
             <HeaderLink
               v-for="link in linksList"
               :key="link"
               :name="link.name"
               :path="link.path"
               :activeLink="activeLink"
-              @mouseenter="handleMouseEnter(link.name)"
+              @click.stop="handleClick(link.name)"
             />
           </nav>
 
-          <div class="actions-wrapper" :class="{ 'is-menu-open': isMenuOpen }">
+          <div
+            class="actions-wrapper"
+            :class="{ 'is-menu-open': isMobileMenuOpen }"
+          >
             <div class="actions">
               <UiButtonDefault
                 state="link"
@@ -54,18 +60,13 @@
               <UiButtonDefault
                 state="primary"
                 class="register"
-                v-if="!isMenuOpen"
+                v-if="!isMobileMenuOpen"
               >
                 {{ t("header.auth.register") }}
               </UiButtonDefault>
 
               <div class="actions-icons">
-                <UiIconGlobe
-                  class="icon"
-                  :class="{
-                    'svg-invert': isThemeLight,
-                  }"
-                />
+                <LanguageSwitcher class="icon" :isInvert="isThemeLight" />
 
                 <transition name="fade" mode="out-in">
                   <span
@@ -94,33 +95,32 @@
         </header>
 
         <div
-          v-if="isMenuOpen"
-          :class="{ 'nav--open': isMenuOpen }"
+          v-if="isMobileMenuOpen"
+          :class="{ 'nav--open': isMobileMenuOpen }"
           class="mobile-nav"
         >
           <nav>
             <HeaderMobileLink
               v-for="link in linksList"
-              :key="link"
+              :key="`${link.name}-${activeLink}`"
               :name="link.name"
               :path="link.path"
               :headerItems="headerItems"
               :activeLink="activeLink"
-              @click="handleMouseEnter(link.name)"
+              @click="handleClick(link.name)"
             />
 
             <div class="mobile-acions">
               <UiButtonDefault
                 state="primary"
                 class="register"
-                v-if="!isMenuOpen"
+                v-if="isMobileMenuOpen"
               >
                 {{ t("header.auth.register") }}
               </UiButtonDefault>
 
               <UiButtonDefault
                 state="link"
-                class="login"
                 :class="{ 'is-theme-light': isThemeLight }"
               >
                 {{ t("header.auth.login") }}
@@ -135,26 +135,34 @@
       </UiContainer>
     </div>
 
-    <transition name="fade" mode="out-in">
-      <HeaderMenu
-        v-if="uiStore.showMenu"
-        :key="activeLink"
-        :headerItems="headerItems"
-        class="fixed-header-menu"
-        @mouseleave="handleMouseLeave"
-      />
-    </transition>
+    <div class="fixed-header-menu" v-if="!isMobileMenuOpen && activeLink">
+      <div ref="menuRef" class="menu-content">
+        <transition name="fade" mode="out-in">
+          <TradingMenu
+            v-if="activeLink === t('header.nav.trading')"
+            :activeLink="activeLink"
+          />
+          <PartnershipMenu
+            v-else-if="activeLink === t('header.nav.partnership')"
+            :activeLink="activeLink"
+          />
+          <CompanyMenu
+            v-else-if="activeLink === t('header.nav.company')"
+            :activeLink="activeLink"
+          />
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { useI18n } from "vue-i18n";
-import { ref, computed } from "vue";
-import useTrackScroll from "./composables/trackScroll";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useUiStore } from "~/stores/uiStore";
 import { useThemeStore } from "~/stores/themeStore.js";
+import useTrackScroll from "./composables/trackScroll";
 
-import UiIconGlobe from "~/components/ui/UiIconGlobe.vue";
 import UiIconLogo from "~/components/ui/UiIconLogo.vue";
 import UiIconMoon from "~/components/ui/UiIconMoon.vue";
 import UiIconSun from "~/components/ui/UiIconSun.vue";
@@ -162,96 +170,64 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import HeaderLink from "./components/HeaderLink.vue";
 import HeaderMobileLink from "./components/HeaderMobileLink.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
-import HeaderMenu from "~/components/block/LandingHeader/components/HeaderMenu.vue";
 import UiTextH6 from "~/components/ui/UiTextH6.vue";
+import TradingMenu from "./components/TradingMenu.vue";
+import PartnershipMenu from "./components/PartnershipMenu.vue";
+import CompanyMenu from "./components/CompanyMenu.vue";
+
+import LanguageSwitcher from "./components/LanguageSwitcher.vue";
 
 const themeStore = useThemeStore();
 const uiStore = useUiStore();
 
 const { isBlurred } = useTrackScroll();
-const { t, tm } = useI18n();
-const isMenuOpen = ref(false);
+const { t } = useI18n();
+
 const activeLink = ref("");
-
-// const linksList = [
-//   {
-//     name: "Trading",
-//     path: "#",
-//   },
-//   {
-//     name: "Partnership",
-//     path: "#",
-//   },
-//   {
-//     name: "Company",
-//     path: "#",
-//   },
-// ];
-
-const linksList = [
-  { name: t("header.nav.trading"), path: "#" },
-  { name: t("header.nav.partnership"), path: "#" },
-  { name: t("header.nav.company"), path: "#" },
-];
-
 const headerItems = ref();
+const isMobileMenuOpen = ref(false);
+const menuRef = ref(null);
 
-// const headerItems = {
-//   Trading: {
-//     "Account overview": [
-//       { name: "Standard", path: "#" },
-//       { name: "Pro", path: "#" },
-//       { name: "Islamic", path: "#" },
-//       { name: "Demo", path: "#" },
-//     ],
-
-//     "Market Instruments": [
-//       { name: "Forex", path: "#" },
-//       { name: "Metals", path: "#" },
-//       { name: "Stock CFDs", path: "#" },
-//       { name: "Crypto CFDs", path: "#" },
-//       { name: "Commodities", path: "#" },
-//       { name: "Indices", path: "#" },
-//       { name: "ETFs", path: "#" },
-//     ],
-//     Platform: [
-//       { name: "MT4 Desktop", path: "#" },
-//       { name: "MT 4 Mobile", path: "#" },
-//     ],
-
-//     "Trading conditions": [
-//       { name: "Account replenishment", path: "#" },
-//       { name: "Withdrawal of funds", path: "#" },
-//     ],
-
-//     "Trader's HUB": [
-//       { name: "Trader's blog", path: "#" },
-//       { name: "Economic calendar", path: "#" },
-//       { name: "Market news", path: "#" },
-//     ],
-//     "TANDEM trading": [
-//       { name: "For trader", path: "#" },
-//       { name: "For investor", path: "#" },
-//     ],
-//   },
-
-//   Partnership: {},
-
-//   Company: {},
-// };
+const linksList = computed(() => {
+  return [
+    { name: t("header.nav.trading"), path: "#" },
+    { name: t("header.nav.partnership"), path: "#" },
+    { name: t("header.nav.company"), path: "#" },
+  ];
+});
 
 const isThemeLight = computed(() => {
   return (
     (uiStore.headerScrolled && themeStore.currentTheme !== "dark") ||
-    (themeStore.currentTheme !== "dark" && isMenuOpen.value)
+    (themeStore.currentTheme !== "dark" && isMobileMenuOpen.value)
   );
 });
 
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-  uiStore.showMenu = false;
+const handleClick = (name) => {
+  if (activeLink.value !== name) {
+    activeLink.value = name;
+    uiStore.showMenu = true;
+  } else {
+    activeLink.value = "";
+    uiStore.showMenu = false;
+  }
+};
+const handleClickOutside = (event) => {
+  const menuEl = menuRef.value;
 
-  if (isMenuOpen.value) {
+  if (!menuEl || !activeLink.value) return;
+
+  if (!menuEl.contains(event.target)) {
+    activeLink.value = "";
+    uiStore.showMenu = false;
+  }
+};
+const toggleMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+  uiStore.showMenu = false;
+  activeLink.value = "";
+
+  if (isMobileMenuOpen.value) {
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
@@ -262,39 +238,13 @@ const toggleMenu = () => {
   }
 };
 
-function normalizeHeaderItems(raw) {
-  const result = {};
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
 
-  for (const section in raw) {
-    result[section] = raw[section].map((item) => ({
-      name:
-        typeof item.name === "string"
-          ? item.name
-          : item.name?.body?.static ?? "",
-
-      path: typeof item.path === "string" ? "#" : item.path?.body?.static,
-    }));
-  }
-
-  return result;
-}
-
-const handleMouseEnter = (name) => {
-  if (activeLink.value !== name) {
-    activeLink.value = name;
-    uiStore.showMenu = true;
-    const raw = tm(`header.megaMenu.${activeLink.value}`);
-    headerItems.value = normalizeHeaderItems(raw);
-  } else {
-    activeLink.value = "";
-    uiStore.showMenu = false;
-  }
-};
-
-const handleMouseLeave = () => {
-  uiStore.showMenu = false;
-  activeLink.value = "";
-};
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -397,6 +347,13 @@ const handleMouseLeave = () => {
   transform: translateX(-50%);
   z-index: 9998;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: 100vh;
+}
+
+.menu-content {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .mobile-nav {
@@ -406,7 +363,7 @@ const handleMouseLeave = () => {
   width: 100%;
   height: calc(100vh - 80px);
   padding: 10px;
-  z-index: 10001;
+  z-index: 10;
   overflow-y: auto;
   transform: translateY(-30px) scale(0.98);
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
@@ -508,7 +465,7 @@ const handleMouseLeave = () => {
 
     .actions {
       &-icons {
-        display: block;
+        display: flex;
       }
     }
   }

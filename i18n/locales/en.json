@@ -10,40 +10,40 @@
       "register": "Register"
     },
     "megaMenu": {
-      "Trading": {
-        "Account overview": [
-          { "name": "Standard", "path": "#" },
-          { "name": "Pro", "path": "#" },
-          { "name": "Islamic", "path": "#" },
-          { "name": "Demo", "path": "#" }
-        ],
-        "Market Instruments": [
-          { "name": "Forex", "path": "#" },
-          { "name": "Metals", "path": "#" },
-          { "name": "Stock CFDs", "path": "#" },
-          { "name": "Crypto CFDs", "path": "#" },
-          { "name": "Commodities", "path": "#" },
-          { "name": "Indices", "path": "#" },
-          { "name": "ETFs", "path": "#" }
-        ],
-        "Platform": [
-          { "name": "MT4 Desktop", "path": "#" },
-          { "name": "MT 4 Mobile", "path": "#" }
-        ],
-        "Trading conditions": [
-          { "name": "Account replenishment", "path": "#" },
-          { "name": "Withdrawal of funds", "path": "#" }
-        ],
-        "Trader's HUB": [
-          { "name": "Trader's blog", "path": "#" },
-          { "name": "Economic calendar", "path": "#" },
-          { "name": "Market news", "path": "#" }
-        ],
-        "TANDEM trading": [
-          { "name": "For trader", "path": "#" },
-          { "name": "For investor", "path": "#" }
-        ]
-      },
+      "Trading": [
+        {
+          "section": "Account overview",
+          "items": ["Standard", "Pro", "Islamic", "Demo"]
+        },
+        {
+          "section": "Market Instruments",
+          "items": [
+            "Forex",
+            "Metals",
+            "Stock CFDs",
+            "Crypto CFDs",
+            "Commodities",
+            "Indices",
+            "ETFs"
+          ]
+        },
+        {
+          "section": "Platform",
+          "items": ["MT4 Desktop", "MT 4 Mobile"]
+        },
+        {
+          "section": "Trading conditions",
+          "items": ["Account replenishment", "Withdrawal of funds"]
+        },
+        {
+          "section": "Trader's HUB",
+          "items": ["Trader's blog", "Economic calendar", "Market news"]
+        },
+        {
+          "section": "TANDEM trading",
+          "items": ["For trader", "For investor"]
+        }
+      ],
       "Partnership": {},
       "Company": {}
     }

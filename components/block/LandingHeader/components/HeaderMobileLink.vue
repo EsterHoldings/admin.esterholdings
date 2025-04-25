@@ -13,11 +13,25 @@
 
     <div class="header__underline"></div>
 
-    <HeaderMenu
-      v-if="props.headerItems && props.name === props.activeLink"
-      :headerItems="props.headerItems"
+    <TradingMenu
+      :activeLink="props.activeLink"
       isMobile
       class="header-mobile_menu"
+      v-if="props.name === props.activeLink"
+    />
+
+    <PartnershipMenu
+      :activeLink="activeLink"
+      isMobile
+      class="header-mobile_menu"
+      v-if="props.name === props.activeLink"
+    />
+
+    <CompanyMenu
+      :activeLink="activeLink"
+      isMobile
+      class="header-mobile_menu"
+      v-if="props.name === props.activeLink"
     />
   </div>
 </template>
@@ -26,7 +40,9 @@
 import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
 import UiIconChevronUp from "~/components/ui/UiIconChevronUp.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
-import HeaderMenu from "~/components/block/LandingHeader/components/HeaderMenu.vue";
+import TradingMenu from "./TradingMenu.vue";
+import PartnershipMenu from "./PartnershipMenu.vue";
+import CompanyMenu from "./CompanyMenu.vue";
 
 const props = defineProps({
   name: String,
