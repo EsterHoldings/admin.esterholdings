@@ -3,34 +3,34 @@
     <!-- Слайди -->
     <div class="slider-default__slides">
       <div
-          v-for="(image, index) in images"
-          :key="image.id"
-          class="slider-default__item"
-          :class="{ active: index === currentSlide }"
+        v-for="(image, index) in images"
+        :key="image.id"
+        class="slider-default__item"
+        :class="{ active: index === currentSlide }"
       >
         <UiImage
-            :src="image.src"
-            :alt="image.alt"
-            class="slider-default__item_image"
+          :src="image.src"
+          :alt="image.alt"
+          class="slider-default__item_image"
         />
       </div>
     </div>
 
     <div class="slider-default__dots">
       <span
-          v-for="(image, index) in images"
-          :key="image.id"
-          class="slider-default__dot"
-          :class="{ active: index === currentSlide }"
-          @click="goToSlide(index)"
+        v-for="(image, index) in images"
+        :key="image.id"
+        class="slider-default__dot"
+        :class="{ active: index === currentSlide }"
+        @click="goToSlide(index)"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref, onMounted, onUnmounted} from "vue";
-import {PropType} from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { PropType } from "vue";
 import UiImage from "~/components/ui/UiImage.vue";
 
 const props = defineProps({
@@ -76,7 +76,7 @@ const nextSlide = () => {
 };
 const prevSlide = () => {
   currentSlide.value =
-      (currentSlide.value - 1 + props.images.length) % props.images.length;
+    (currentSlide.value - 1 + props.images.length) % props.images.length;
 };
 const goToSlide = (index: number) => {
   currentSlide.value = index;

@@ -1,51 +1,28 @@
 <template>
   <section class="welcome">
-    <SliderDefault class="welcome__slider" :autoPlayInterval="10000" />
-    <UiContainer>
-      <div class="welcome__content">
-        <!-- <UiTextH1>
-          Trade <span class="welcome__title--highlight">Smarter</span>, <br />
-          Trade Faster !
-          <span v-html="$t('welcome-title')" />
-
-          <img class="rocket" src="/static/rocket.png" alt="Rocket" />
-        </UiTextH1> -->
-
-        <UiTextH1>
-          {{ $t("welcome-title.before") }}
-          <span class="welcome__title--highlight">{{
-            $t("welcome-title.highlight")
-          }}</span
-          >,<br />
-          {{ $t("welcome-title.after") }}
-          <img class="rocket" src="/static/rocket.png" alt="Rocket" />
-        </UiTextH1>
-
-        <UiTextH5 class="welcome__text">
-          {{ $t("welcome__text") }}
-        </UiTextH5>
-        <div>
-          <UiButtonDefault state="primary">{{
-            $t("welcome-btn")
-          }}</UiButtonDefault>
-        </div>
-      </div>
-      <div class="welcome__running-line-default">
-        <RunningLineDefault :items="items" />
-      </div>
-    </UiContainer>
+    <SliderDefault
+      class="welcome__slider"
+      :images="images"
+      :components="components"
+      :autoPlayInterval="10000"
+    />
   </section>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
+
+import GeneralSlide from "./slides/GeneralSlide.vue";
+import TenYearsSlide from "./slides/TenYearsSlide.vue";
+import TopTradersSlide from "./slides/TopTradersSlide.vue";
+
 import UiTextH1 from "~/components/ui/UiTextH1.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import RunningLineDefault from "~/components/block/lines/RunningLineDefault.vue";
 import UiImage from "~/components/ui/UiImage.vue";
 import TheSlider from "~/components/block/slider/TheSlider.vue";
-import SliderDefault from "~/components/block/sliders/SliderDefault.vue";
+import SliderDefault from "~/components/block/sliders/SliderDefaultTest.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import UiQRCode from "~/components/ui/UiQRCode.vue";
 
@@ -56,6 +33,14 @@ const items = ref([
   { name: "ETHUSD", price: 2655.08, change: -6.84 },
   { name: "WTI", price: 71.11, change: 0.21 },
 ]);
+
+const images = [
+  { id: "slide1", alt: "Welcome", src: "/static/welcome-first-slide.webp" },
+  { id: "slide2", alt: "10", src: "/static/ten_years_slide_background.webp" },
+  { id: "slide3", alt: "", src: "" },
+];
+
+const components = [GeneralSlide, TenYearsSlide, TopTradersSlide];
 </script>
 
 <style lang="scss" scoped>

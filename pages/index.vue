@@ -1,37 +1,36 @@
 <template>
   <main class="landing">
     <div ref="welcomeRef">
-      <WelcomeSection/>
+      <WelcomeSection />
     </div>
-    <AdvantagesSection/>
-    <TradingPlatformSection/>
-    <FeaturesSection/>
-    <AccountTypesSection/>
-    <WideRangeSection/>
-    <FourStepsSection/>
-    <BannerSection/>
-    <LatestUpdatesSection/>
+    <AdvantagesSection />
+    <TradingPlatformSection />
+    <FeaturesSection />
+    <AccountTypesSection />
+    <WideRangeSection />
+    <FourStepsSection />
+    <BannerSection />
+    <LatestUpdatesSection />
 
-    <CookieModal/>
+    <CookieModal />
   </main>
 </template>
 
 <script lang="ts" setup>
-import {definePageMeta} from "~/.nuxt/imports";
-import {ref, onMounted, onUnmounted} from 'vue';
-import {useUiStore} from '~/stores/uiStore';
+import { definePageMeta } from "~/.nuxt/imports";
+import { ref, onMounted, onUnmounted } from "vue";
+import { useUiStore } from "~/stores/uiStore";
 
-import WelcomeSection from "~/pages/landing/sections/WelcomeSection.vue";
+import WelcomeSection from "~/pages/landing/sections/WelcomeSection";
 import AdvantagesSection from "~/pages/landing/sections/AdvantagesSection.vue";
 import FeaturesSection from "~/pages/landing/sections/FeaturesSection.vue";
-import AccountTypesSection from "~/pages/landing/sections/AccountTypesSection.vue";
+import AccountTypesSection from "~/pages/landing/sections/AccountTypesSection";
 import WideRangeSection from "~/pages/landing/sections/WideRangeSection";
 import FourStepsSection from "~/pages/landing/sections/FourStepsSection.vue";
 import BannerSection from "~/pages/landing/sections/BannerSection.vue";
 import TradingPlatformSection from "~/pages/landing/sections/TradingPlatformSection.vue";
 import LatestUpdatesSection from "~/pages/landing/sections/LatestUpdatesSection.vue";
 import CookieModal from "~/components/block/modals/CookieModal.vue";
-
 
 definePageMeta({
   // middleware: ["not-auth-client"],
@@ -51,12 +50,12 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener("scroll", handleScroll);
   handleScroll();
 });
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 

@@ -59,6 +59,22 @@
 
   "welcome-btn": "Trade Now",
 
+  "slide-copy-title": {
+    "before": "Copy Strategies",
+    "highlight": "Top Traders",
+    "after": ""
+  },
+
+  "slide-copy-text": "Gain access to real deals from professionals and improve your trading.",
+  "slide-copy-btn": "Start",
+
+  "slide-10-title": {
+    "highlight": "Years",
+    "after": "in Trading"
+  },
+  "slide-10-text": "Experience tested by time. Reliability confirmed by results.",
+  "slide-10-btn": "Join in Us",
+
   "running-line-btn": "Trade",
 
   "advantages": [
@@ -131,26 +147,37 @@
     }
   ],
 
+  "account_types__categories": [
+    { "id": "Standard", "label": "Standard" },
+    { "id": "Pro", "label": "Pro" },
+    { "id": "Tandem", "label": "Tandem" },
+    { "id": "Islamic", "label": "Islamic" }
+  ],
+
   "accounts__title": "Explore Our Trading Account Options",
   "accounts__btn": "Open Account",
   "accounts__options": [
     {
+      "id": "Standard",
       "title": "Standard",
       "label": "account",
       "description": "Test trading strategies risk-free."
     },
     {
+      "id": "Pro",
       "title": "Pro",
       "label": "account",
       "description": "Test trading strategies risk-free."
     },
     {
+      "id": "Islamic",
       "title": "Islamic",
       "label": "account",
       "description": "Test trading strategies risk-free."
     },
     {
-      "title": "Demo",
+      "id": "Tandem",
+      "title": "Tandem",
       "label": "account",
       "description": "Test trading strategies risk-free."
     }

@@ -1,10 +1,18 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
-export default function useTrackScroll() {
-  const isBlurred = ref(false);
+const isBlurred = ref(false);
+export const isSlideWithoutPicture = ref(false);
 
+export default function useTrackScroll() {
   const checkScroll = () => {
     isBlurred.value = window.scrollY > 50;
+  };
+
+  const checkPicture = (images: { src?: string }[], slide: number): boolean => {
+    const noImage = !images[slide]?.src;
+
+    isSlideWithoutPicture.value = noImage;
+    return noImage;
   };
 
   onMounted(() => {
@@ -17,5 +25,6 @@ export default function useTrackScroll() {
 
   return {
     isBlurred,
+    checkPicture,
   };
 }

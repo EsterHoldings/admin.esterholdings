@@ -3,6 +3,8 @@
     <UiTextH3 class="account-types__title"
       >{{ t("accounts__title") }}
     </UiTextH3>
+
+    <div class="account-types"></div>
     <div class="account-types">
       <div class="account-container">
         <div
