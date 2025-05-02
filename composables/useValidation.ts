@@ -39,7 +39,7 @@ const generateErrorsFormData = (formData: any) => {
 }
 
 export const useValidation = (
-    formData: IFormDataDto,
+    formData: IFormDataDto | any,
     validationFormRules: any,
 ): any => {
   const errorsFormData = generateErrorsFormData({ ...formData })

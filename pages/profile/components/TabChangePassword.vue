@@ -5,54 +5,54 @@
         <UiFormControl
             class="change-password__form__field"
             label="Old password"
-            :errors="validatorUserDataForm.errorsFormData.oldPassword.errors"
+            :errors="validatorChangePasswordDataForm.errorsFormData.oldPassword.errors"
         >
           <UiInput
               type="password"
               placeholder="*********"
               :value="formData.oldPassword"
-              :isDirty="validatorUserDataForm.errorsFormData.oldPassword.isDirty"
-              :isInvalid="validatorUserDataForm.errorsFormData.oldPassword.errors.length > 0"
-              @input="validatorUserDataForm.doValidateField('oldPassword', $event.target.value)"
-              @blur="validatorUserDataForm.doValidateField('oldPassword', $event.target.value)"
+              :isDirty="validatorChangePasswordDataForm.errorsFormData.oldPassword.isDirty"
+              :isInvalid="validatorChangePasswordDataForm.errorsFormData.oldPassword.errors.length > 0"
+              @input="validatorChangePasswordDataForm.doValidateField('oldPassword', $event.target.value)"
+              @blur="validatorChangePasswordDataForm.doValidateField('oldPassword', $event.target.value)"
           />
         </UiFormControl>
 
         <UiFormControl
             class="change-password__form__field"
             label="New password"
-            :errors="validatorUserDataForm.errorsFormData.newPassword.errors"
+            :errors="validatorChangePasswordDataForm.errorsFormData.newPassword.errors"
         >
           <UiInput
               type="password"
               placeholder="*********"
               :value="formData.newPassword"
-              :isDirty="validatorUserDataForm.errorsFormData.newPassword.isDirty"
-              :isInvalid="validatorUserDataForm.errorsFormData.newPassword.errors.length > 0"
-              @input="validatorUserDataForm.doValidateField('newPassword', $event.target.value)"
-              @blur="validatorUserDataForm.doValidateField('newPassword', $event.target.value)"
+              :isDirty="validatorChangePasswordDataForm.errorsFormData.newPassword.isDirty"
+              :isInvalid="validatorChangePasswordDataForm.errorsFormData.newPassword.errors.length > 0"
+              @input="validatorChangePasswordDataForm.doValidateField('newPassword', $event.target.value)"
+              @blur="validatorChangePasswordDataForm.doValidateField('newPassword', $event.target.value)"
           />
         </UiFormControl>
 
         <UiFormControl
             class="change-password__form__field"
             label="New password confirmation"
-            :errors="validatorUserDataForm.errorsFormData.newPasswordConfirmation.errors"
+            :errors="validatorChangePasswordDataForm.errorsFormData.newPasswordConfirmation.errors"
         >
           <UiInput
               type="password"
               placeholder="*********"
               :value="formData.newPasswordConfirmation"
-              :isDirty="validatorUserDataForm.errorsFormData.newPasswordConfirmation.isDirty"
-              :isInvalid="validatorUserDataForm.errorsFormData.newPasswordConfirmation.errors.length > 0"
-              @input="validatorUserDataForm.doValidateField('newPasswordConfirmation', $event.target.value)"
-              @blur="validatorUserDataForm.doValidateField('newPasswordConfirmation', $event.target.value)"
+              :isDirty="validatorChangePasswordDataForm.errorsFormData.newPasswordConfirmation.isDirty"
+              :isInvalid="validatorChangePasswordDataForm.errorsFormData.newPasswordConfirmation.errors.length > 0"
+              @input="validatorChangePasswordDataForm.doValidateField('newPasswordConfirmation', $event.target.value)"
+              @blur="validatorChangePasswordDataForm.doValidateField('newPasswordConfirmation', $event.target.value)"
           />
         </UiFormControl>
 
         <div class="change-password__form__field__save_btn">
           <UiButtonDefault state="info--outline"
-                           @click="validateUserDataForm(handleSubmit)"
+                           @click="validateChangePasswordDataForm(handleSubmit)"
           >
             <UiIconSpinnerDefault v-if="isLoading" />
             <span v-if="!isLoading">Save new password</span>
@@ -67,7 +67,10 @@
 import {ref} from "vue";
 import {resetValidationUserDataForm, validateUserDataForm} from "~/pages/profile/composables/validation";
 import {formData} from "~/pages/profile/composables/TheChangePassword";
-import {validatorUserDataForm} from "~/pages/profile/composables/TheChangePassword/validation";
+import {
+  validateChangePasswordDataForm,
+  validatorChangePasswordDataForm
+} from "~/pages/profile/composables/TheChangePassword/validation";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";

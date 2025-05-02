@@ -7,8 +7,8 @@ export class useApi {
 
   constructor(forClient = false) {
     this.api = axios.create({
-      // baseURL: "http://127.0.0.1:8000/api/",
-      baseURL: "https://esterholdings.website/api/",
+      baseURL: "http://127.0.0.1:8000/api/",
+      // baseURL: "https://esterholdings.website/api/",
     });
 
     this.api.interceptors.request.use((config) => {
