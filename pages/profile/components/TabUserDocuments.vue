@@ -1,172 +1,24 @@
 <template>
-  <div class="user-photo__wrapper">
-    <div class="user-photo__left">
-      <PanelDefault class="user-photo-uploader">
-        <div class="uploader-body">
-          <div v-if="previewUrl" class="avatar-preview">
-            <img :src="previewUrl" alt="Preview" />
-            <div
-              v-if="previewUrl && !loading"
-              class="btn-delete"
-              @click="remove"
-            ></div>
-          </div>
-          <div v-else class="avatar-placeholder">
-            <span class="icon">👤</span>
-          </div>
-          <div class="actions">
-            <input
-              id="fileSelectionBtn"
-              type="file"
-              accept="image/*"
-              @change="onFileChange"
-              hidden
-            />
-            <div class="btn-select" @click="clickSelectionFile">
-              {{
-                t(
-                  "cabinet.profile.components.tab-user-documents.buttons.choose"
-                )
-              }}
-            </div>
-            <UiButtonDefault
-              class="btn-upload"
-              state="info--outline"
-              :disabled="!file || loading || !!error"
-              @click="upload"
-            >
-              {{
-                loading
-                  ? uploadProgress + "%"
-                  : t(
-                      "cabinet.profile.components.tab-user-documents.buttons.upload"
-                    )
-              }}
-            </UiButtonDefault>
-          </div>
-          <div v-if="loading" class="progress-bar">
-            <div class="progress" :style="{ width: uploadProgress + '%' }" />
-          </div>
-          <p v-if="error" class="error">{{ error }}</p>
-        </div>
+  <div class="user-documents__wrapper">
+    <div class="user-documents__left">
+      <PanelDefault class="user-documents-uploader">
+        Error loading component...
       </PanelDefault>
     </div>
-    <div class="user-photo__right">
-      <PanelDefault class="user-photo__right__panel">
-        <div>Тут будет список уже загруженых документов</div>
-        <div>Тут будет список уже загруженых документов</div>
+    <div class="user-documents__right">
+      <PanelDefault class="user-documents__right__panel">
+        ...
       </PanelDefault>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n";
-import axios from "axios";
-import { ref, onMounted } from "vue";
-import { useToast } from "vue-toastification";
-
-import useApi from "~/composables/useApi";
-import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-
-import useAppCore from "~/composables/useAppCore";
-
-const { t } = useI18n();
-const toast = useToast();
-const appCore = useAppCore();
-const api = new useApi(true);
-const MAX_SIZE = 2 * 1024 * 1024;
-
-const file = ref<File | null>(null);
-const previewUrl = ref<string>("");
-const uploadProgress = ref(0);
-const loading = ref(false);
-const error = ref("");
-
-onMounted(async () => {
-  const { data } = await appCore.auth.getAuthUser();
-  previewUrl.value = data.photo_url || "";
-});
-
-function clickSelectionFile() {
-  document.getElementById("fileSelectionBtn")?.click();
-}
-
-function onFileChange(e: Event) {
-  error.value = "";
-  const f = (e.target as HTMLInputElement).files?.[0];
-  if (!f) return;
-  if (!f.type.startsWith("image/")) {
-    error.value = t(
-      "cabinet.profile.components.tab-user-documents.errors.type"
-    );
-    return;
-  }
-  if (f.size > MAX_SIZE) {
-    error.value = t(
-      "cabinet.profile.components.tab-user-documents.errors.size"
-    );
-    return;
-  }
-  file.value = f;
-  previewUrl.value = URL.createObjectURL(f);
-  uploadProgress.value = 0;
-}
-
-async function upload() {
-  if (!file.value) return;
-  loading.value = true;
-  error.value = "";
-
-  try {
-    const { data } = await api.post("client/s3/presign", {
-      filename: file.value.name,
-      contentType: file.value.type,
-    });
-
-    await axios.put(data.url, file.value, {
-      headers: { "Content-Type": file.value.type },
-      onUploadProgress: (e) => {
-        uploadProgress.value = Math.round((e.loaded * 100) / (e.total || 1));
-      },
-    });
-
-    const res = await api.post("client/user/photo", { key: data.key });
-    previewUrl.value = res.data.photo_url;
-    file.value = null;
-
-    toast.success(
-      t("cabinet.profile.components.tab-user-documents.messages.upload_success")
-    );
-  } catch {
-    error.value = t(
-      "cabinet.profile.components.tab-user-documents.messages.upload_error"
-    );
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function remove() {
-  loading.value = true;
-  error.value = "";
-  try {
-    await api.delete("client/user/photo");
-    previewUrl.value = "";
-    file.value = null;
-  } catch {
-    error.value = t(
-      "cabinet.profile.components.tab-user-documents.messages.delete_error"
-    );
-  } finally {
-    loading.value = false;
-  }
-}
+import PanelDefault from '~/components/block/panels/PanelDefault.vue'
 </script>
 
 <style lang="scss" scoped>
-.user-photo {
+.user-documents {
   &__wrapper {
     display: flex;
     justify-content: space-between;
@@ -174,9 +26,17 @@ async function remove() {
   }
   &__left {
     width: 50%;
+
+    &>div {
+      padding: 20px;
+    }
   }
   &__right {
     width: 50%;
+
+    &>div {
+      padding: 20px;
+    }
 
     &__panel {
       padding: 20px;
@@ -224,18 +84,17 @@ async function remove() {
   padding: 20px;
 
   .title {
-    margin-bottom: 20px;
+    margin-bottom: 20px
   }
 
   .uploader-body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    align-items: center;
+    align-items: center
   }
 
-  .avatar-preview,
-  .avatar-placeholder {
+  .avatar-preview, .avatar-placeholder {
     position: relative;
     width: 300px;
     height: 300px;
@@ -253,12 +112,12 @@ async function remove() {
   .avatar-preview img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover
   }
 
   .icon {
     font-size: 2.5rem;
-    color: #9ca3af;
+    color: #9ca3af
   }
 
   .actions {
@@ -285,13 +144,13 @@ async function remove() {
     .progress {
       height: 100%;
       background: #3b82f6;
-      transition: width 0.2s;
+      transition: width .2s
     }
   }
 
   .error {
     color: #dc2626;
-    margin-top: 8px;
+    margin-top: 8px
   }
 }
 </style>

@@ -3,123 +3,79 @@
     <PanelDefault>
       <div class="change-password__form">
         <UiFormControl
-          class="change-password__form__field"
-          :label="
+            class="change-password__form__field"
+            :label="
             t(
               'cabinet.profile.components.tab-change-password.labels.old_password'
             )
           "
-          :errors="validatorUserDataForm.errorsFormData.oldPassword.errors"
+            :errors="validatorChangePasswordDataForm.errorsFormData.oldPassword.errors"
         >
           <UiInput
-            type="password"
-            :placeholder="
+              type="password"
+              :placeholder="
               t(
                 'cabinet.profile.components.tab-change-password.placeholders.old_password'
-              )
-            "
-            :value="formData.oldPassword"
-            :isDirty="validatorUserDataForm.errorsFormData.oldPassword.isDirty"
-            :isInvalid="
-              validatorUserDataForm.errorsFormData.oldPassword.errors.length > 0
-            "
-            @input="
-              validatorUserDataForm.doValidateField(
-                'oldPassword',
-                $event.target.value
-              )
-            "
-            @blur="
-              validatorUserDataForm.doValidateField(
-                'oldPassword',
-                $event.target.value
-              )
-            "
+              )"
+              :value="formData.oldPassword"
+              :isDirty="validatorChangePasswordDataForm.errorsFormData.oldPassword.isDirty"
+              :isInvalid="validatorChangePasswordDataForm.errorsFormData.oldPassword.errors.length > 0"
+              @input="validatorChangePasswordDataForm.doValidateField('oldPassword', $event.target.value)"
+              @blur="validatorChangePasswordDataForm.doValidateField('oldPassword', $event.target.value)"
           />
         </UiFormControl>
 
         <UiFormControl
-          class="change-password__form__field"
-          :label="
-            t(
-              'cabinet.profile.components.tab-change-password.labels.new_password'
-            )
-          "
-          :errors="validatorUserDataForm.errorsFormData.newPassword.errors"
+            class="change-password__form__field"
+            :label="
+              t(
+                'cabinet.profile.components.tab-change-password.labels.new_password'
+              )
+            "
+            :errors="validatorChangePasswordDataForm.errorsFormData.newPassword.errors"
         >
           <UiInput
-            type="password"
-            :placeholder="
+              type="password"
+              :placeholder="
               t(
-                'cabinet.profile.components.tab-change-password.placeholders.new_password'
-              )
-            "
-            :value="formData.newPassword"
-            :isDirty="validatorUserDataForm.errorsFormData.newPassword.isDirty"
-            :isInvalid="
-              validatorUserDataForm.errorsFormData.newPassword.errors.length > 0
-            "
-            @input="
-              validatorUserDataForm.doValidateField(
-                'newPassword',
-                $event.target.value
-              )
-            "
-            @blur="
-              validatorUserDataForm.doValidateField(
-                'newPassword',
-                $event.target.value
-              )
-            "
+                  'cabinet.profile.components.tab-change-password.placeholders.new_password'
+                )
+              "
+              :value="formData.newPassword"
+              :isDirty="validatorChangePasswordDataForm.errorsFormData.newPassword.isDirty"
+              :isInvalid="validatorChangePasswordDataForm.errorsFormData.newPassword.errors.length > 0"
+              @input="validatorChangePasswordDataForm.doValidateField('newPassword', $event.target.value)"
+              @blur="validatorChangePasswordDataForm.doValidateField('newPassword', $event.target.value)"
           />
         </UiFormControl>
 
         <UiFormControl
-          class="change-password__form__field"
-          :label="
-            t(
-              'profile.components.tab-change-password.labels.new_password_confirmation'
-            )
-          "
-          :errors="
-            validatorUserDataForm.errorsFormData.newPasswordConfirmation.errors
-          "
+            class="change-password__form__field"
+            :label="
+              t(
+                'profile.components.tab-change-password.labels.new_password_confirmation'
+              )
+            "
+            :errors="validatorChangePasswordDataForm.errorsFormData.newPasswordConfirmation.errors"
         >
           <UiInput
-            type="password"
-            :placeholder="
-              t(
-                'cabinet.profile.components.tab-change-password.placeholders.new_password_confirmation'
-              )
-            "
-            :value="formData.newPasswordConfirmation"
-            :isDirty="
-              validatorUserDataForm.errorsFormData.newPasswordConfirmation
-                .isDirty
-            "
-            :isInvalid="
-              validatorUserDataForm.errorsFormData.newPasswordConfirmation
-                .errors.length > 0
-            "
-            @input="
-              validatorUserDataForm.doValidateField(
-                'newPasswordConfirmation',
-                $event.target.value
-              )
-            "
-            @blur="
-              validatorUserDataForm.doValidateField(
-                'newPasswordConfirmation',
-                $event.target.value
-              )
-            "
+              type="password"
+              :placeholder="
+                t(
+                  'cabinet.profile.components.tab-change-password.placeholders.new_password_confirmation'
+                )
+              "
+              :value="formData.newPasswordConfirmation"
+              :isDirty="validatorChangePasswordDataForm.errorsFormData.newPasswordConfirmation.isDirty"
+              :isInvalid="validatorChangePasswordDataForm.errorsFormData.newPasswordConfirmation.errors.length > 0"
+              @input="validatorChangePasswordDataForm.doValidateField('newPasswordConfirmation', $event.target.value)"
+              @blur="validatorChangePasswordDataForm.doValidateField('newPasswordConfirmation', $event.target.value)"
           />
         </UiFormControl>
 
         <div class="change-password__form__field__save_btn">
-          <UiButtonDefault
-            state="info--outline"
-            @click="validateUserDataForm(handleSubmit)"
+          <UiButtonDefault state="info--outline"
+                           @click="validateChangePasswordDataForm(handleSubmit)"
           >
             <UiIconSpinnerDefault v-if="isLoading" />
             <span v-if="!isLoading">{{
@@ -134,13 +90,13 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { ref } from "vue";
+import {ref} from "vue";
+import {resetValidationUserDataForm, validateUserDataForm} from "~/pages/profile/composables/validation";
+import {formData} from "~/pages/profile/composables/TheChangePassword";
 import {
-  resetValidationUserDataForm,
-  validateUserDataForm,
-} from "~/pages/profile/composables/validation";
-import { formData } from "~/pages/profile/composables/TheChangePassword";
-import { validatorUserDataForm } from "~/pages/profile/composables/TheChangePassword/validation";
+  validateChangePasswordDataForm,
+  validatorChangePasswordDataForm
+} from "~/pages/profile/composables/TheChangePassword/validation";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";

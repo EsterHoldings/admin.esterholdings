@@ -32,6 +32,7 @@ import TabUserPhoto from "~/pages/profile/components/TabUserPhoto.vue";
 import TabsDefault from "~/components/block/tabs/TabsDefault.vue";
 import TabUserDocuments from "~/pages/profile/components/TabUserDocuments.vue";
 import TabChangePassword from "~/pages/profile/components/TabChangePassword.vue";
+import TabUserVerification from "~/pages/profile/components/TabUserVerification.vue";
 
 definePageMeta({
   layout: "cabinet",
@@ -60,7 +61,7 @@ const tabsList = computed(() => {
     },
     {
       label: t("cabinet.profile.index.tabs.verification"),
-      component: TabUserPhoto,
+      component: TabUserVerification,
     },
     {
       label: t("cabinet.profile.index.tabs.change_password"),
