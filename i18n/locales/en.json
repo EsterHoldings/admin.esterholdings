@@ -62,7 +62,12 @@
             "items": ["For trader", "For investor"]
           }
         ],
-        "Partnership": {},
+        "Partnership": [
+          {
+            "section": "Platform",
+            "items": ["MT4 Desktop", "MT 4 Mobile"]
+          }
+        ],
         "Company": {}
       }
     },

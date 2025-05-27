@@ -1,23 +1,38 @@
 <template>
   <div class="page--min-height login">
     <div class="admin-login-form-wrapper__logo">
-      <UiIconLogo />
+      <UiIconLogo
+        :class="{
+          'svg-invert': isThemeLight,
+        }"
+      />
     </div>
+
     <div class="admin-login-form-wrapper">
-      <AdminLoginForm :formData="formData" />
+      <PanelDefault class="panel-default">
+        <AdminLoginForm :formData="formData" />
+      </PanelDefault>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { formData } from "./composables";
+import { useThemeStore } from "~/stores/themeStore.js";
 import UiIconLogo from "~/components/ui/UiIconLogo.vue";
 import AdminLoginForm from "~/pages/admin/auth/login/components/AdminLoginForm.vue";
-
+import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 // @ts-ignore
 definePageMeta({
   middleware: ["admin-login-middleware"],
-  layout: "empty"
+  layout: "empty",
+});
+
+const themeStore = useThemeStore();
+
+const isThemeLight = computed(() => {
+  return themeStore.currentTheme !== "dark";
 });
 </script>
 
@@ -29,7 +44,8 @@ definePageMeta({
 
   &-form-wrapper {
     width: 100%;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 150px);
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,5 +58,15 @@ definePageMeta({
       padding: 10px;
     }
   }
+}
+
+.panel-default {
+  padding: 40px;
+  max-width: 600px;
+  width: 100vw;
+}
+
+.svg-invert {
+  filter: invert(1);
 }
 </style>

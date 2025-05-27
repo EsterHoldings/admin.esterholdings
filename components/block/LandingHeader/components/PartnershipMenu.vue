@@ -5,20 +5,15 @@
       :class="{ 'menu-wrapper-mobile': props.isMobile }"
     >
       <div class="menu-grid" :class="{ 'menu-mobile': props.isMobile }">
-        <!-- <HeaderMenuItem
+        <HeaderMenuItem
           v-for="(section, index) in headerItems"
           :key="section.section"
-          :title="t(`header.megaMenu.${props.activeLink}[${index}].section`)"
+          :title="
+            t(`landing.header.megaMenu.${props.activeLink}[${index}].section`)
+          "
           :items="buildItems(section, index)"
           :isMobile="props.isMobile"
-        /> -->
-
-        <div
-          class="menu-banner"
-          :class="{ 'menu-banner_mobile': props.isMobile }"
-        >
-          BANNER
-        </div>
+        />
       </div>
     </div>
   </UiContainer>
@@ -28,7 +23,7 @@
 import { useI18n } from "vue-i18n";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import HeaderMenuItem from "~/components/block/LandingHeader/components/HeaderMenuItem.vue";
-// import { tradingMenuRoutes as routes } from "../composables/tradingMenuRoutes";
+import { tradingMenuRoutes as routes } from "../composables/tradingMenuRoutes";
 
 const props = defineProps({
   isMobile: {
@@ -43,20 +38,23 @@ const props = defineProps({
 
 const { t, tm } = useI18n();
 
-const headerItems = tm(`header.megaMenu.${props.activeLink}`);
+const headerItems = tm(`landing.header.megaMenu.Partnership`);
 
-// function buildItems(section, sectionIndex) {
-//   return section.items.map((_, itemIndex) => ({
-//     name: t(
-//       `header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
-//     ),
-//     path: routes[section.section]?.[itemIndex] ?? "#",
-//   }));
-// }
+console.log("ITEM", headerItems);
+
+function buildItems(section, sectionIndex) {
+  return section.items.map((_, itemIndex) => ({
+    name: t(
+      `landing.header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
+    ),
+    path: routes[section.section]?.[itemIndex] ?? "#",
+  }));
+}
 </script>
 
 <style lang="scss" scoped>
 .menu-wrapper {
+  width: 225px;
   padding: 30px;
   background: var(--ui-background);
   border-radius: 16px;

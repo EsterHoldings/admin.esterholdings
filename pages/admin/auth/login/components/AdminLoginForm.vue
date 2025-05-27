@@ -1,77 +1,85 @@
 <template>
   <div class="admin-login-form">
+    <UiTextH3 class="admin-login-form__title">Login</UiTextH3>
+
     <UiFormControl
-        class="admin-login-form__field"
-        label="Email"
-        :errors="validatorAdminLoginForm?.errorsFormData?.email?.errors"
+      class="admin-login-form__field"
+      label="Email"
+      :errors="validatorAdminLoginForm?.errorsFormData?.email?.errors"
     >
       <UiInput
-          type="text"
-          placeholder="example@test.com"
-          @input="validatorAdminLoginForm?.doValidateField('email', $event.target.value)"
-          @blur="validatorAdminLoginForm?.doValidateField('email', $event.target.value)"
-          :value="props.formData?.email"
-          :isDirty="validatorAdminLoginForm?.errorsFormData?.email?.isDirty"
-          :isInvalid="validatorAdminLoginForm?.errorsFormData?.email?.errors?.length > 0"
+        type="text"
+        placeholder="example@test.com"
+        @input="
+          validatorAdminLoginForm?.doValidateField('email', $event.target.value)
+        "
+        @blur="
+          validatorAdminLoginForm?.doValidateField('email', $event.target.value)
+        "
+        :value="props.formData?.email"
+        :isDirty="validatorAdminLoginForm?.errorsFormData?.email?.isDirty"
+        :isInvalid="
+          validatorAdminLoginForm?.errorsFormData?.email?.errors?.length > 0
+        "
       />
     </UiFormControl>
 
     <UiFormControl
-        class="admin-login-form__field"
-        label="Password"
-        :errors="validatorAdminLoginForm?.errorsFormData?.password?.errors"
+      class="admin-login-form__field"
+      label="Password"
+      :errors="validatorAdminLoginForm?.errorsFormData?.password?.errors"
     >
       <UiInput
-          type="password"
-          placeholder="********"
-          @input="validatorAdminLoginForm?.doValidateField('password', $event.target.value)"
-          @blur="validatorAdminLoginForm?.doValidateField('password', $event.target.value)"
-          :value="props.formData?.password"
-          :isDirty="validatorAdminLoginForm?.errorsFormData?.password?.isDirty"
-          :isInvalid="validatorAdminLoginForm?.errorsFormData?.password?.errors?.length > 0"
+        type="password"
+        placeholder="********"
+        @input="
+          validatorAdminLoginForm?.doValidateField(
+            'password',
+            $event.target.value
+          )
+        "
+        @blur="
+          validatorAdminLoginForm?.doValidateField(
+            'password',
+            $event.target.value
+          )
+        "
+        :value="props.formData?.password"
+        :isDirty="validatorAdminLoginForm?.errorsFormData?.password?.isDirty"
+        :isInvalid="
+          validatorAdminLoginForm?.errorsFormData?.password?.errors?.length > 0
+        "
       />
     </UiFormControl>
 
     <UiButtonDefault
-        type="submit"
-        @click="validateLoginForm(doSendForm)"
-        :isLoading="isLoading"
-        state="dark"
-    >Do login
+      type="submit"
+      @click="validateLoginForm(doSendForm)"
+      :isLoading="isLoading"
+      state="primary"
+      >Do login
     </UiButtonDefault>
-
-<!--    <div class="admin-login-form__oauth-buttons">-->
-<!--      <UiButtonDefault-->
-<!--          state="warning"-->
-<!--          class="oauth-button oauth-button_developer"-->
-<!--          data-tooltip=" Sign in as a developer"-->
-<!--      >-->
-<!--        <UiIconDeveloper/>-->
-<!--      </UiButtonDefault>-->
-<!--    </div>-->
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
-import {useAppCore} from "~/composables/useAppCore";
-import {useAdminAuthStore} from "~/stores/adminAuthStore";
-import {useRouter} from "vue-router";
+import { ref } from "vue";
+import { useAppCore } from "~/composables/useAppCore";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
+import { useRouter } from "vue-router";
 
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
-import UiIconDeveloper from "~/components/ui/UiIconDeveloper.vue";
 
 import {
   validatorAdminLoginForm,
   validateLoginForm,
   resetValidationLoginForm,
 } from "@/pages/admin/auth/login/composables/validation";
-import {navigateTo} from "nuxt/app";
+import { navigateTo } from "nuxt/app";
 
-
-const props = defineProps({formData: {type: Object, required: true}});
+const props = defineProps({ formData: { type: Object, required: true } });
 
 const isLoading = ref(false);
 const appCore = useAppCore();
@@ -87,8 +95,8 @@ const doSendForm = async () => {
     const accessToken = response.data.data.access_token;
     const refreshToken = response.data.data.refresh_token;
 
-    localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
+    localStorage.setItem("access_token", accessToken);
+    localStorage.setItem("refresh_token", refreshToken);
 
     adminAuthStore.setAccessToken(accessToken);
     adminAuthStore.setRefreshToken(refreshToken);
@@ -98,8 +106,7 @@ const doSendForm = async () => {
     adminAuthStore.setRoles(response.data.data.roles);
     adminAuthStore.setPermissions(response.data.data.permissions);
 
-    navigateTo('/admin/access')
-
+    navigateTo("/admin/access");
   } catch (e: any) {
     console.log("LoginForm -> doSendForm -> catch", e.message);
   } finally {
@@ -116,12 +123,18 @@ onUnmounted(() => resetValidationLoginForm());
 
 <style lang="scss" scoped>
 .admin-login-form {
+  color: var(--ui-text-main);
   display: flex;
   justify-content: center;
   flex-direction: column;
 
   width: 100%;
   max-width: 600px;
+
+  &__title {
+    text-align: center;
+    margin-bottom: 30px;
+  }
 
   &__field {
     margin-bottom: 20px;

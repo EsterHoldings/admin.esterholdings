@@ -142,7 +142,14 @@
     </div>
 
     <div class="fixed-header-menu" v-if="!isMobileMenuOpen && activeLink">
-      <div ref="menuRef" class="menu-content">
+      <div
+        ref="menuRef"
+        class="menu-content"
+        :class="{
+          'menu-content_is-partnership':
+            activeLink === t('landing.header.nav.partnership'),
+        }"
+      >
         <transition name="fade" mode="out-in">
           <TradingMenu
             v-if="activeLink === t('landing.header.nav.trading')"
@@ -381,7 +388,7 @@ watch(windowWidth, (width) => {
 
 .fixed-header-menu {
   position: fixed;
-  top: 80px;
+  top: 60px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9998;
@@ -393,6 +400,10 @@ watch(windowWidth, (width) => {
 .menu-content {
   max-width: 1200px;
   margin: 0 auto;
+
+  &_is-partnership {
+    max-width: 500px;
+  }
 }
 
 .mobile-nav {

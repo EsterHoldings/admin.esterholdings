@@ -1,7 +1,6 @@
 <template>
   <div class="page__wrapper">
     <div class="page">
-      askdjnaskdjaskdjn
       <slot />
     </div>
   </div>
@@ -16,7 +15,7 @@
   overflow: hidden;
 
   &__wrapper {
-    background-color: var(--ui-background);
+    background-color: var(--ui-background-admin);
   }
 }
 </style>
