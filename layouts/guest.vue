@@ -1,6 +1,6 @@
 <template>
   <div class="page__wrapper">
-    <TheGuestHeader/>
+    <TheGuestHeader />
     <div class="page">
       <slot />
     </div>
@@ -18,7 +18,7 @@ import TheGuestHeader from "~/components/block/TheGuestHeader.vue";
   overflow: hidden;
 
   &__wrapper {
-    background-color: var(--color-ui-background);
+    background-color: var(--ui-background-admin);
   }
 }
 </style>
