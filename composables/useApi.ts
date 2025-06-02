@@ -1,14 +1,14 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import {useAdminAuthStore} from "~/stores/adminAuthStore";
-import {useAuthStore} from "~/stores/authStore";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
+import { useAuthStore } from "~/stores/authStore";
 
 export class useApi {
   private api: AxiosInstance;
 
   constructor(forClient = false) {
     this.api = axios.create({
-      // baseURL: "http://127.0.0.1:8000/api/",
-      baseURL: "https://esterholdings.website/api/",
+      baseURL: "http://127.0.0.1:8000/api/",
+      // baseURL: "https://esterholdings.website/api/",
     });
 
     this.api.interceptors.request.use((config) => {
@@ -16,8 +16,11 @@ export class useApi {
       let token = authStore.accessToken;
 
       // TODO :: Переделать все на стор
-      if (forClient) token = localStorage.getItem('user_access_token');
-      if (token) { config.headers.Authorization = `Bearer ${token}`; }
+      if (forClient) token = localStorage.getItem("user_access_token");
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
 
       return config;
     });

@@ -60,6 +60,15 @@
         <NuxtLink to="/auth/forgot">Forgot password</NuxtLink>
       </div>
     </div>
+
+    <div class="login-form__social-links">
+      <GoogleLogin />
+      <FacebookLogin />
+
+      <div class="login-form__social-link">
+        <UiIconApple />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -73,6 +82,10 @@ import UiInput from "~/components/ui/UiInput.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+
+import GoogleLogin from "./GoogleLogin.vue";
+import FacebookLogin from "./FacebookLogin.vue";
+import UiIconApple from "~/components/ui/UiIconApple.vue";
 
 import { useToast } from "vue-toastification";
 
@@ -136,6 +149,14 @@ onUnmounted(() => resetValidationLoginForm());
   &__link {
     margin-bottom: 10px;
 
+    a {
+      color: var(--ui-text-main);
+
+      &:hover {
+        color: var(--ui-text-secondary);
+      }
+    }
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -146,6 +167,23 @@ onUnmounted(() => resetValidationLoginForm());
     display: flex;
     align-items: center;
     flex-direction: column;
+  }
+
+  &__social-links {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  &__social-link {
+    display: flex;
+    place-content: center;
+    padding: 3px;
+    background: white;
+
+    border-radius: 100%;
   }
 
   &__title {

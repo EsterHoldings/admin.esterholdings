@@ -56,4 +56,16 @@ export default defineNuxtConfig({
     "/**": { ssr: false } as any,
     "/": { ssr: true } as any,
   },
+
+  app: {
+    head: {
+      script: [
+        {
+          src: "https://accounts.google.com/gsi/client",
+          async: true,
+          defer: true,
+        },
+      ],
+    },
+  },
 });

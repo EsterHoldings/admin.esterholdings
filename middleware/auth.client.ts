@@ -1,7 +1,7 @@
-import {defineNuxtRouteMiddleware, navigateTo} from "nuxt/app";
+import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  if (!localStorage.getItem('user_access_token')) {
-    return navigateTo('/auth/login');
+  if (!localStorage.getItem("user_access_token")) {
+    return navigateTo("/auth/login");
   }
 });

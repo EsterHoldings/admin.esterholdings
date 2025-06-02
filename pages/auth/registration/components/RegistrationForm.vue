@@ -102,13 +102,21 @@
     </UiButtonPrimary>
 
     <div class="registration-form__links">
-      <br>
+      <br />
       <nuxt-link to="/auth/login">Login</nuxt-link>
+    </div>
+
+    <div class="registration-form__social-links">
+      <div class="registration-form__social-link">
+        <UiIconGoogle @click="loginWithGoogle" />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref, onUnmounted, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import {
   validateRegistrationForm,
   validatorRegistrationForm,
@@ -116,11 +124,12 @@ import {
 } from "../composables/validation";
 import { validatorLoginForm } from "~/pages/auth/login/composables/validation";
 import { useAppCore } from "~/composables/useAppCore";
-import UiTextH2 from "~/components/ui/UiTextH2.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiButtonPrimary from "~/components/ui/UiButtonPrimary.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
+
+import UiIconGoogle from "~/components/ui/UiIconGoogleOauth.vue";
 // import { serverSideErrorsHandler } from "@/utils/validation/server-side-errors-handler.helper";
 
 const props = defineProps({ formData: { type: Object, required: true } });
@@ -166,6 +175,29 @@ onUnmounted(() => resetValidationRegistrationForm());
     display: flex;
     align-items: center;
     flex-direction: column;
+
+    a {
+      color: var(--ui-text-main);
+
+      &:hover {
+        color: var(--ui-text-secondary);
+      }
+    }
+  }
+
+  &__social-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__social-link {
+    display: flex;
+    place-content: center;
+    padding: 10px;
+    background: white;
+
+    border-radius: 5px;
   }
 
   &__title {
