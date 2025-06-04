@@ -14,7 +14,7 @@ const toast = useToast();
 
 function loginWithFacebook() {
   const clientId = "1668019407177142";
-  const redirectUri = "http://localhost:3000/auth/callback";
+  const redirectUri = "https://client-esterholdings-5ojhpxqaa-rodevillows-projects.vercel.app/auth/callback";
   const scope = "email,public_profile";
   const state = crypto.randomUUID();
 
