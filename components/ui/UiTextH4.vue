@@ -4,10 +4,12 @@
   </h4>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <style scoped lang="scss">
 .h4 {
+  color: var(--ui-text-main);
   // font-size: 15px;
   font-size: 24px;
   font-weight: 300;

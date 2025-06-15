@@ -2,78 +2,77 @@
   <div class="user-photo__wrapper">
     <PanelDefault class="user-photo-uploader">
       <div class="uploader-body">
-          <div v-if="previewUrl" class="avatar-preview">
-            <img :src="previewUrl" alt="Preview" />
-            <div
+        <div v-if="previewUrl" class="avatar-preview">
+          <UiImage @click="clickSelectionFile" :src="previewUrl"/>
+          <div
               v-if="previewUrl && !loading"
               class="btn-delete"
               @click="remove"
-            ></div>
-          </div>
-          <div v-else class="avatar-placeholder">
-            <span class="icon">👤</span>
-          </div>
-          <div class="actions">
-            <input
+          ></div>
+        </div>
+        <div v-else class="avatar-placeholder" @click="clickSelectionFile">
+          <span class="icon">👤</span>
+          <span class="avatar-placeholder__choose-file">
+            {{ t("cabinet.profile.components.tab-user-photo.buttons.choose") }}
+          </span>
+        </div>
+        <div class="actions">
+          <input
               id="fileSelectionBtn"
               type="file"
               accept="image/*"
               @change="onFileChange"
               hidden
-            />
-            <div class="btn-select" @click="clickSelectionFile">
-              {{
-                t("cabinet.profile.components.tab-user-photo.buttons.choose")
-              }}
-            </div>
-            <UiButtonDefault
+          />
+          <UiButtonDefault
               class="btn-upload"
               state="info--outline"
               :disabled="!file || loading || !!error"
               @click="upload"
-            >
-              {{loading ? uploadProgress + "%" : t("cabinet.profile.components.tab-user-photo.buttons.upload") }}
-            </UiButtonDefault>
-          </div>
-          <div v-if="loading" class="progress-bar">
-            <div class="progress" :style="{ width: uploadProgress + '%' }" />
-          </div>
-          <p v-if="error" class="error">{{ error }}</p>
-
-          <UiTextSmall>Поддерживаемые форматы файлов: PNG, JPG, JPEG</UiTextSmall>
-          <UiTextSmall>Фото пользователя не должно превышать размер в 5Мб.</UiTextSmall>
+          >
+            {{ loading ? uploadProgress + "%" : t("cabinet.profile.components.tab-user-photo.buttons.upload") }}
+          </UiButtonDefault>
         </div>
+        <div v-if="loading" class="progress-bar">
+          <div class="progress" :style="{ width: uploadProgress + '%' }"/>
+        </div>
+        <p v-if="error" class="error">{{ error }}</p>
 
-      <UiHorizontalLine />
+        <UiTextSmall>Поддерживаемые форматы файлов: PNG, JPG, JPEG</UiTextSmall>
+        <UiTextSmall>Фото пользователя не должно превышать размер в 5Мб.</UiTextSmall>
+      </div>
+
+      <UiHorizontalLine/>
 
       <UiTextH5 class="user-photo__panel__title"># Статус верификации</UiTextH5>
       <div class="user-photo__panel__verification-status">
           <span>
-            <UiIconSuccess />
+            <UiIconSuccess/>
           </span>
-        <span>Успешно верифицировано!</span>
+        <UiTextSmall>Успешно верифицировано!</UiTextSmall>
       </div>
-      </PanelDefault>
+    </PanelDefault>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 import axios from "axios";
-import { ref, computed, onMounted } from "vue";
-import { useToast } from "vue-toastification";
+import {ref, computed, onMounted} from "vue";
+import {useToast} from "vue-toastification";
 
 import useApi from "~/composables/useApi";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import { useAuthStore } from "~/stores/authStore";
+import {useAuthStore} from "~/stores/authStore";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
 import UiHorizontalLine from "~/components/ui/UiHorizontalLine.vue";
+import UiImage from "~/components/ui/UiImage.vue";
 
-const { t } = useI18n();
+const {t} = useI18n();
 const toast = useToast();
 const api = new useApi(true);
 const authStore = useAuthStore();
@@ -118,29 +117,29 @@ async function upload() {
   error.value = "";
 
   try {
-    const { data } = await api.post("client/s3/presign", {
+    const {data} = await api.post("client/s3/presign", {
       filename: file.value.name,
       contentType: file.value.type,
     });
 
     await axios.put(data.url, file.value, {
-      headers: { "Content-Type": file.value.type },
+      headers: {"Content-Type": file.value.type},
       onUploadProgress: (e) => {
         uploadProgress.value = Math.round((e.loaded * 100) / (e.total || 1));
       },
     });
 
-    const res = await api.post("client/user/photo", { key: data.key });
+    const res = await api.post("client/user/photo", {key: data.key});
     // Оновлюємо як локально, так і в Pinia
     previewUrl.value = res.data.photo_url;
     file.value = null;
 
     toast.success(
-      t("cabinet.profile.components.tab-user-photo.messages.upload_success")
+        t("cabinet.profile.components.tab-user-photo.messages.upload_success")
     );
   } catch {
     error.value = t(
-      "cabinet.profile.components.tab-user-photo.messages.upload_error"
+        "cabinet.profile.components.tab-user-photo.messages.upload_error"
     );
   } finally {
     loading.value = false;
@@ -155,11 +154,11 @@ async function remove() {
     previewUrl.value = "";
     file.value = null;
     toast.success(
-      t("cabinet.profile.components.tab-user-photo.messages.delete_success")
+        t("cabinet.profile.components.tab-user-photo.messages.delete_success")
     );
   } catch {
     error.value = t(
-      "cabinet.profile.components.tab-user-photo.messages.delete_error"
+        "cabinet.profile.components.tab-user-photo.messages.delete_error"
     );
   } finally {
     loading.value = false;
@@ -174,6 +173,8 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .user-photo {
+  color: var(--ui-text-main);
+
   &__wrapper {
     display: flex;
     justify-content: space-between;
@@ -199,13 +200,14 @@ onMounted(async () => {
     &__verification-status {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
     }
   }
 }
 
 .btn-delete {
-  background: var(--color-ui-primary);
+  background: var(--ui-background);
   border-radius: 50%;
   height: 30px;
   width: 30px;
@@ -257,13 +259,45 @@ onMounted(async () => {
     width: 300px;
     height: 300px;
     border-radius: 10px;
-    background: var(--color-ui-background);
+    background: var(--ui-background);
+    border: 1px solid var(--color-stroke-ui-dark);
     display: flex;
     justify-content: center;
     align-items: center;
 
     img {
       border-radius: 10px;
+    }
+
+    &:hover .avatar-placeholder__choose-file {
+      visibility: visible;
+      transition: visibility 0.2s;
+    }
+
+    &__choose-file {
+      z-index: 3;
+
+      visibility: hidden;
+      transition: visibility 0.2s;
+
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      height: 35%;
+      width: 100%;
+
+      padding: 10px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      cursor: pointer;
+
+      background-color: var(--ui-background-secondary);
+      border-radius: 0 0 10px 10px;
     }
   }
 
@@ -274,7 +308,7 @@ onMounted(async () => {
   }
 
   .icon {
-    font-size: 2.5rem;
+    font-size: 4.5rem;
     color: #9ca3af;
   }
 

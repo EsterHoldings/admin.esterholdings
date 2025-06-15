@@ -71,6 +71,7 @@ const handleRemoveDocument = async () => {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 8px;
+  color: var(--ui-text-main);
 
   &:hover {
     background-color: var(--color-stroke-ui-dark);

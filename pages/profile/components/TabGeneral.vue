@@ -197,9 +197,7 @@
                 @click="validateUserDataForm(handleSubmit)"
             >
               <UiIconSpinnerDefault v-if="isLoading"/>
-              <span v-if="!isLoading">{{
-                  t("cabinet.profile.components.tab-general.button")
-                }}</span>
+              <span v-if="!isLoading">{{ t("cabinet.profile.components.tab-general.button") }}</span>
             </UiButtonDefault>
           </div>
         </div>

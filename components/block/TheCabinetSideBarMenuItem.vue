@@ -70,13 +70,11 @@ const handleClickMenuItem = (event: Event) => emit("click", props.to);
   transition: 0.3s;
 
   &.active {
-    background-color: var(--ui-background-sidebar-link);
-    border-right: 1px solid var(--color-stroke-ui);
+    border-right: 3px solid var(--color-stroke-ui);
   }
 
   &:hover {
     transition: 0.3s;
-    background-color: var(--ui-background-sidebar-link);
   }
 
   &.active {

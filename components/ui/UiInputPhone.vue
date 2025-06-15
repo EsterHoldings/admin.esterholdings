@@ -80,7 +80,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', v: string): void
+  (e: 'input', v: string): void
   (e: 'focus', v: FocusEvent): void
   (e: 'blur', v: FocusEvent): void
 }>()
@@ -89,7 +89,6 @@ const open        = ref(false)
 const selected    = ref(countries.find(c => c.code === 'UA')!)
 const localNumber = ref('')
 
-// відразу при mount та при зміні props.value
 watch(
     () => props.modelValue,
     (val) => {
@@ -123,8 +122,7 @@ function onNumberInput(e: Event) {
 }
 
 function updateModel() {
-  // повертаємо повний рядок із префіксом
-  emit('update:modelValue', selected.value.dialCode + localNumber.value)
+  emit('input', selected.value.dialCode + localNumber.value)
 }
 </script>
 

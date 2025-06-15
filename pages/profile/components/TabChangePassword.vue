@@ -15,8 +15,7 @@
                 :isDirty="validatorChangePasswordDataForm.errorsFormData.oldPassword.isDirty"
                 :isInvalid="validatorChangePasswordDataForm.errorsFormData.oldPassword.errors.length > 0"
                 @input="validatorChangePasswordDataForm.doValidateField('oldPassword',$event.target.value)"
-                @blur="
-                validatorChangePasswordDataForm.doValidateField('oldPassword',$event.target.value)"
+                @blur="validatorChangePasswordDataForm.doValidateField('oldPassword',$event.target.value)"
             />
           </UiFormControl>
 
@@ -58,9 +57,7 @@
                 @click="validateChangePasswordDataForm(handleSubmit)"
             >
               <UiIconSpinnerDefault v-if="isLoading"/>
-              <span v-if="!isLoading">{{
-                  t("cabinet.profile.components.tab-change-password.button")
-                }}</span>
+              <span v-if="!isLoading">{{ t("cabinet.profile.components.tab-change-password.button") }}</span>
             </UiButtonDefault>
           </div>
         </div>
@@ -70,6 +67,7 @@
     <div class="change-password__right">
       <PanelDefault class="change-password__right__panel">
         <UiTextH5># Восстановление пароля</UiTextH5>
+
         <div class="change-password__card recovery-card">
           <UiTextSmall class="recovery-card__text">Если старый пароль утерян - вы можете отправить письмо на почту и
             перейдя по ссылке вы попадете на страницу восстановления пароля без указания старого пароля.
@@ -82,6 +80,8 @@
           </UiButtonDefault>
         </div>
 
+        <UiHorizontalLine/>
+
         <div class="change-password__card twofa-card">
           <UiTextH5 class="twofa-card__title"># Двофакторна аутентифікація (2Fa)</UiTextH5>
         </div>
@@ -91,28 +91,26 @@
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue-i18n";
 import {ref} from "vue";
-import {
-  resetValidationUserDataForm,
-  validateUserDataForm,
-} from "~/pages/profile/composables/validation";
+import {useI18n} from "vue-i18n";
+import {useToast} from "vue-toastification";
 import {formData} from "~/pages/profile/composables/TheChangePassword";
+import {resetValidationUserDataForm,} from "~/pages/profile/composables/validation";
 import {
   validateChangePasswordDataForm,
   validatorChangePasswordDataForm,
 } from "~/pages/profile/composables/TheChangePassword/validation";
+
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-import UiInput from "~/components/ui/UiInput.vue";
-import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import UiFormControl from "~/components/ui/UiFormControl.vue";
+import UiInput from "~/components/ui/UiInput.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-import {useAuthStore} from "~/stores/authStore";
-import {useToast} from "vue-toastification";
-import useAppCore from "~/composables/useAppCore";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
-import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+import UiHorizontalLine from "~/components/ui/UiHorizontalLine.vue";
+
+import useAppCore from "~/composables/useAppCore";
 
 const {t} = useI18n();
 const toast = useToast();
@@ -122,7 +120,6 @@ const isLoading = ref(false);
 const handleSubmit = async () => {
   try {
     isLoading.value = true;
-    const authStore = useAuthStore();
     await appCore.users.patch(formData);
     resetValidationUserDataForm();
     toast.success("Password was successfully updated!");

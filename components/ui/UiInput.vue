@@ -3,8 +3,9 @@
     <div v-if="slots['icon-left']" class="input-icon--left">
       <slot name="icon-left" />
     </div>
+
     <input
-        :class="{
+      :class="{
         border: !props.borderNone,
         padding: !props.paddingNone,
         'is-invalid': props.isDirty && props.isInvalid,
@@ -13,7 +14,7 @@
       }"
       :type="typeInput"
       :placeholder="props.placeholder"
-      :value="currentValue"
+      :value="value"
       :disabled="props.disabled"
       @focus="onFocus"
       @input="onInput"
@@ -21,6 +22,7 @@
       readonly
       onfocus="this.removeAttribute('readonly');"
     />
+
     <div v-if="props.isLoading" class="is-loading">
       <UiIconSpinnerDefault />
     </div>
@@ -67,16 +69,13 @@ const props = defineProps({
 
 const slots = useSlots()
 const isPasswordVisible = ref(false);
-const currentValue = computed(() => props.modelValue != null ? props.modelValue : props.value)
-const emit = defineEmits(['update:modelValue','input','focus','blur'])
+
+const togglePasswordVisibility = () => isPasswordVisible.value = !isPasswordVisible.value;
+
+const emit = defineEmits(['input','focus','blur'])
 const onFocus = (e: Event) => emit('focus', e)
 const onInput = (e: Event) => {
-  const val = (e.target as HTMLInputElement).value
-  console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=');
-  console.log(val);
-  console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=');
-  emit('update:modelValue', val)
-  // emit('input', val)
+  emit('input', e);
 }
 const onBlur = (e: Event) => emit('blur', e)
 
@@ -86,10 +85,6 @@ const typeInput = computed(() => {
   }
   return props.type;
 });
-
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value;
-}
 </script>
 
 <style lang="scss" scoped>
@@ -120,6 +115,7 @@ input {
   align-items: center;
   justify-content: space-between;
 }
+
 .input .is-loading {
   height: 10px;
   width: 10px;
@@ -128,6 +124,7 @@ input {
   align-items: center;
   justify-content: center;
 }
+
 .input-icon--left {
   display: flex;
   align-items: center;
@@ -135,13 +132,16 @@ input {
   height: 40px;
   width: 40px;
 }
+
 .input > .padding {
   padding: 15px;
 }
+
 .input > .border {
   border: 1px solid var(--color-stroke-ui-dark);
   border-radius: 10px;
 }
+
 .input::placeholder {
   color: var(--color-text-muted);
   font-weight: 400;
@@ -149,12 +149,15 @@ input {
   line-height: 17px;
   letter-spacing: 0em;
 }
+
 .input .is-invalid {
   border-color: red;
 }
+
 .input .is-valid {
   border-color: green;
 }
+
 .input .disabled {
   background-color: #e5e5e5;
 }

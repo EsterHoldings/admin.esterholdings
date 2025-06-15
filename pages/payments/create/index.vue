@@ -69,6 +69,8 @@ const handleSelectTab = (index: number) => {
 <style lang="scss" scoped>
 .payment-create {
 
+  color: var(--ui-text-main);
+
   &__title {
     margin-bottom: 20px;
   }

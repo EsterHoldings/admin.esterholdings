@@ -9,6 +9,7 @@ const handleClick = (): void => emit("click");
 
 <style lang="scss" scoped>
 p {
+  color: var(--ui-text-main);
   font-weight: 300;
   font-size: 14px;
   line-height: 17px;

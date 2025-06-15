@@ -44,7 +44,7 @@ const menuItems = computed(() => [
     icon: UiIconHome,
   },
   {
-    title: 'Deposit Withdrawal', // TODO :: Do translate
+    title: 'Deposit',
     to: addCurrentLocaleToPath("payments"),
     icon: UiIconPayment,
   },

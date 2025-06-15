@@ -1,5 +1,5 @@
 <template>
-  <img :id="props.id" :src="props.src" :alt="props.alt" />
+  <img @click="handleClick" :id="props.id" :src="props.src" :alt="props.alt" />
 </template>
 
 <script lang="ts" setup>
@@ -17,6 +17,12 @@ const props = defineProps({
     default: "",
   },
 });
+
+const emit = defineEmits(['click'])
+
+const handleClick = () => {
+  emit('click')
+}
 </script>
 
 <style lang="scss" scoped>

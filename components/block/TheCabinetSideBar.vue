@@ -107,7 +107,7 @@ const isProfileRoute = computed(() => {
 <style lang="scss" scoped>
 .side-bar-cabinet {
   position: fixed;
-  color: white;
+  color: var(--ui-text-main);
   height: 100vh;
   width: 6.4rem;
   display: flex;
@@ -151,7 +151,7 @@ const isProfileRoute = computed(() => {
         justify-content: center;
         height: 62px;
         width: 62px;
-        border: 3px solid var(--ui-primary-main);
+        border: 3px solid var(--ui-text-main);
         border-radius: 25%;
 
         img {
@@ -162,7 +162,7 @@ const isProfileRoute = computed(() => {
         }
 
         &.active {
-          border-color: var(--ui-primary-accent);
+          border-color: var(--ui-primary-main);
         }
       }
 

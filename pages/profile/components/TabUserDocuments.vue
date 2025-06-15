@@ -62,7 +62,7 @@
               <UiFormControl :label="file.name">
                 <UiInput
                     :model-value="docNumbers[index]"
-                    @update:modelValue="val => docNumbers[index] = val"
+                    @input="val => docNumbers[index] = val"
                     placeholder="Номер документа"
                     maxlength="100"
                 />
@@ -293,6 +293,8 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .user-documents {
+  color: var(--ui-text-main);
+
   &__wrapper {
     display: flex;
     justify-content: space-between;
