@@ -2,12 +2,13 @@
   <UiContainer>
     <div class="mt4">
       <UiTextH3 class="mt4_title">МТ4</UiTextH3>
-
-      <UiTextH4 class="mt4_subtitle"
-        >Download trading terminal and start earning</UiTextH4
-      >
-      <div>
-        <UiButtonDefault state="warning">DOWNLOAD MT-4</UiButtonDefault>
+      <div class="mt4_img">
+        <UiTextH4 class="mt4_subtitle"
+          >Download trading terminal and start earning</UiTextH4
+        >
+        <div>
+          <UiButtonDefault state="warning">DOWNLOAD MT-4</UiButtonDefault>
+        </div>
       </div>
 
       <UiTextH4 class="mt4_title-platform">About platform</UiTextH4>
@@ -75,8 +76,17 @@ definePageMeta({
   flex-direction: column;
   gap: 50px;
 
-  background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
-    url("/static/mt4Bg.jpeg") center / cover no-repeat;
+  &_img {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
+      url("/static/mt4Bg.jpeg") center / cover no-repeat;
+    border-radius: 15px;
+    min-height: 500px;
+    justify-content: end;
+  }
 
   &_title {
     text-align: center;

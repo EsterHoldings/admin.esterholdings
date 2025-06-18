@@ -60,7 +60,8 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { reactive, ref, computed } from "vue";
+import { ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import { definePageMeta } from "~/.nuxt/imports";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
@@ -81,8 +82,9 @@ definePageMeta({
 });
 
 const { t } = useI18n();
+const route = useRoute();
 
-const activeTabIndex = ref(0);
+const activeTabIndex = ref(0 || Number(route.query.index));
 
 const tabsList = computed(() => {
   return [

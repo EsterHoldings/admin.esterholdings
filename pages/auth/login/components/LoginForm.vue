@@ -64,10 +64,7 @@
     <div class="login-form__social-links">
       <GoogleLogin />
       <FacebookLogin />
-
-      <div class="login-form__social-link">
-        <UiIconApple />
-      </div>
+      <LinkedInLogin />
     </div>
   </div>
 </template>
@@ -85,7 +82,7 @@ import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 
 import GoogleLogin from "./GoogleLogin.vue";
 import FacebookLogin from "./FacebookLogin.vue";
-import UiIconApple from "~/components/ui/UiIconApple.vue";
+import LinkedInLogin from "./LinkedInLogin.vue";
 
 import { useToast } from "vue-toastification";
 

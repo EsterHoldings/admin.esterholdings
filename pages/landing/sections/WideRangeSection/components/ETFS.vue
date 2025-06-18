@@ -11,12 +11,15 @@
         <UiTextH5 class="forex__text">
           {{ t("landing.sections.wide_range_tabs.ETFS.description") }}
         </UiTextH5>
+
         <div>
-          <UiButtonDefault state="primary">
-            {{
-              t("landing.sections.wide_range_tabs.etfs.btn")
-            }}</UiButtonDefault
-          >
+          <Nuxt-Link to="market-instruments?index=6">
+            <UiButtonDefault state="primary">
+              {{
+                t("landing.sections.wide_range_tabs.ETFS.btn")
+              }}</UiButtonDefault
+            >
+          </Nuxt-Link>
         </div>
       </div>
 

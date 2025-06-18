@@ -155,6 +155,9 @@
           :class="{
             'menu-content_is-partnership':
               activeLink === t('landing.header.nav.partnership'),
+
+            'menu-content_is-company':
+              activeLink === t('landing.header.nav.company'),
           }"
         >
           <transition name="fade" mode="out-in">
@@ -237,7 +240,8 @@ const isWithPicture = computed(() => {
 });
 
 const forceSvgInvert = computed(() => {
-  return themeStore.currentTheme === "light" && route.name !== "index___en";
+  const baseRouteName = route.name?.toString().split("___")[0];
+  return themeStore.currentTheme === "light" && baseRouteName !== "index";
 });
 
 const updateWindowWidth = () => {
@@ -417,6 +421,10 @@ watch(windowWidth, (width) => {
 
   &_is-partnership {
     max-width: 500px;
+  }
+
+  &_is-company {
+    max-width: 120px;
   }
 }
 

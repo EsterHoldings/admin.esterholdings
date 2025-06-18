@@ -1,40 +1,26 @@
 <template>
   <div
-    class="account-card"
-    :data-text="t(`landing.sections.accounts__options[2].title`)"
-    :class="{ active: activeIndex === index }"
-    @mouseenter="setActive(index)"
+    class="account-card active"
+    :data-text="t(`landing.sections.accounts__options[3].title`)"
   >
     <div class="account-content">
-      <UiTextH3 v-if="activeIndex === index" class="account-title bold">
-        {{ t(`landing.sections.accounts__options[2].title`) }}
+      <UiTextH3 class="account-title bold">
+        {{ t(`landing.sections.accounts__options[3].title`) }}
 
         <UiTextH5 class="account-subtitle">
-          {{ t(`landing.sections.accounts__options[2].label`) }}
+          {{ t(`landing.sections.accounts__options[3].label`) }}
         </UiTextH5>
       </UiTextH3>
 
-      <UiTextH5 v-if="activeIndex === index" class="account-description">
-        {{ t(`landing.sections.accounts__options[2].description`) }}
+      <UiTextH5 class="account-description">
+        {{ t(`landing.sections.accounts__options[3].description`) }}
       </UiTextH5>
 
-      <UiButtonDefault state="primary" v-if="activeIndex === index">
-        {{ t("landing.sections.accounts__btn") }}
-      </UiButtonDefault>
-
-      <div v-else class="account-mini">
-        <UiTextH3
-          class="account-mini_title bold"
-          :key="t(`landing.sections.accounts__options[2].title`)"
-        >
-          {{ t(`landing.sections.accounts__options[2].title`) }}
-          <UiTextH5>{{
-            t(`landing.sections.accounts__options[2].label`)
-          }}</UiTextH5>
-        </UiTextH3>
-
-        <UiIconArrowRight class="arrow" />
-      </div>
+      <Nuxt-Link class="link" to="/account-overview?index=3">
+        <UiButtonDefault state="primary">
+          {{ t("landing.sections.accounts__btn") }}
+        </UiButtonDefault>
+      </Nuxt-Link>
     </div>
   </div>
 </template>
@@ -46,7 +32,6 @@ import { computed, ref, watchEffect } from "vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconArrowRight from "~/components/ui/UiIconArrowRight.vue";
 
 const { t, tm } = useI18n();
 
@@ -133,6 +118,13 @@ const currentIndex = computed(() => accountsMap.value[currentTab.value]);
     color: rgba(255, 255, 255, 0.15);
   }
 
+  .link {
+    color: var(--ui-text-main);
+    width: 100%;
+    min-height: 100%;
+    display: contents;
+  }
+
   @keyframes scroll-text {
     0% {
       transform: translateX(-100%);
@@ -178,26 +170,6 @@ const currentIndex = computed(() => accountsMap.value[currentTab.value]);
 .account-description {
   margin-top: 10px;
   color: var(--ui-text-secondary);
-}
-
-.account-mini {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--ui-text-main);
-
-  &_title {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-    height: 144px;
-  }
-}
-
-.arrow {
-  margin-top: 50px;
 }
 
 .fade-slide-enter-active,

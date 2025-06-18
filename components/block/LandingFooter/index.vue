@@ -29,9 +29,11 @@
           </li>
         </ul>
 
-        <FooterItem basePath="landing.footer.trading" />
-        <FooterItem basePath="landing.footer.partnership" />
-        <FooterItem basePath="landing.footer.company" />
+        <FooterLink basePath="landing.footer.trading" />
+
+        <FooterLink basePath="landing.footer.partnership" />
+
+        <FooterLink basePath="landing.footer.company" />
       </div>
 
       <div class="line"></div>
@@ -79,7 +81,8 @@ import UiIconLinkedIn from "~/components/ui/UiIconLinkedIn.vue";
 import UiIconLogo from "~/components/ui/UiIconLogo.vue";
 import UiTextH6 from "~/components/ui/UiTextH6.vue";
 import UiTextSmall from "~/components/ui/UiTextSmall.vue";
-import FooterItem from "./components/FooterItem.vue";
+
+import FooterLink from "./components/FooterLink.vue";
 
 import { useThemeStore } from "~/stores/themeStore.js";
 

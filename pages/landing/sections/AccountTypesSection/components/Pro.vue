@@ -1,12 +1,10 @@
 <template>
   <div
-    class="account-card"
+    class="account-card active"
     :data-text="t(`landing.sections.accounts__options[1].title`)"
-    :class="{ active: activeIndex === index }"
-    @mouseenter="setActive(index)"
   >
     <div class="account-content">
-      <UiTextH3 v-if="activeIndex === index" class="account-title bold">
+      <UiTextH3 class="account-title bold">
         {{ t(`landing.sections.accounts__options[1].title`) }}
 
         <UiTextH5 class="account-subtitle">
@@ -14,27 +12,15 @@
         </UiTextH5>
       </UiTextH3>
 
-      <UiTextH5 v-if="activeIndex === index" class="account-description">
+      <UiTextH5 class="account-description">
         {{ t(`landing.sections.accounts__options[1].description`) }}
       </UiTextH5>
 
-      <UiButtonDefault state="primary" v-if="activeIndex === index">
-        {{ t("landing.sections.accounts__btn") }}
-      </UiButtonDefault>
-
-      <div v-else class="account-mini">
-        <UiTextH3
-          class="account-mini_title bold"
-          :key="t(`landing.sections.accounts__options[1].title`)"
-        >
-          {{ t(`landing.sections.accounts__options[1].title`) }}
-          <UiTextH5>{{
-            t(`landing.sections.accounts__options[1].label`)
-          }}</UiTextH5>
-        </UiTextH3>
-
-        <UiIconArrowRight class="arrow" />
-      </div>
+      <Nuxt-Link class="link" to="/account-overview?index=1">
+        <UiButtonDefault state="primary">
+          {{ t("landing.sections.accounts__btn") }}
+        </UiButtonDefault>
+      </Nuxt-Link>
     </div>
   </div>
 </template>
@@ -46,7 +32,6 @@ import { computed, ref, watchEffect } from "vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconArrowRight from "~/components/ui/UiIconArrowRight.vue";
 
 const { t, tm } = useI18n();
 
@@ -131,6 +116,13 @@ const currentIndex = computed(() => accountsMap.value[currentTab.value]);
     filter: blur(1px);
     font-size: 130px;
     color: rgba(255, 255, 255, 0.15);
+  }
+
+  .link {
+    color: var(--ui-text-main);
+    width: 100%;
+    min-height: 100%;
+    display: contents;
   }
 
   @keyframes scroll-text {

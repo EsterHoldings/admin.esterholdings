@@ -44,6 +44,7 @@ const props = defineProps({
 const { t, tm } = useI18n();
 
 const headerItems = tm(`landing.header.megaMenu.${props.activeLink}`);
+const menuRoutes = routes(props.activeLink, t);
 
 function buildTitle(sectionIndex) {
   const title = t(
@@ -51,7 +52,7 @@ function buildTitle(sectionIndex) {
   );
   return {
     name: title,
-    path: routes[title]?.path ?? "#",
+    path: menuRoutes[title]?.path ?? "#",
   };
 }
 
@@ -64,7 +65,7 @@ function buildItems(sections, sectionIndex) {
     name: t(
       `landing.header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
     ),
-    path: routes[titleList]?.list?.[itemIndex] ?? "#",
+    path: menuRoutes[titleList]?.list?.[itemIndex] ?? "#",
   }));
 }
 </script>

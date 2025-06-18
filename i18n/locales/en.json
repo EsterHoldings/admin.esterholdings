@@ -38,10 +38,10 @@
             "items": [
               "Forex",
               "Metals",
-              "Stock CFDs",
               "Crypto CFDs",
-              "Commodities",
               "Indices",
+              "Shares",
+              "Energy",
               "ETFs"
             ]
           },
@@ -64,11 +64,22 @@
         ],
         "Partnership": [
           {
-            "section": "Platform",
-            "items": ["MT4 Desktop", "MT 4 Mobile"]
+            "section": "Partnership",
+            "items": ["Register IB/ Partnership", "How IB generate income"]
           }
         ],
-        "Company": {}
+        "Company": [
+          {
+            "section": "Company",
+            "items": [
+              "About the company",
+              "Documents",
+              "Company news",
+              "Contacts",
+              "Career"
+            ]
+          }
+        ]
       }
     },
 

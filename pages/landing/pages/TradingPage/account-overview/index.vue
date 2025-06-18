@@ -23,7 +23,8 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { reactive, ref, computed } from "vue";
+import { ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import { definePageMeta } from "~/.nuxt/imports";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
@@ -32,9 +33,7 @@ import TabsDefault from "~/components/block/tabs/TabsDefault.vue";
 
 import Standard from "./components/Standard.vue";
 import Pro from "./components/Pro.vue";
-
 import Tandem from "./components/Tandem.vue";
-
 import Islamic from "./components/Islamic.vue";
 
 definePageMeta({
@@ -43,8 +42,9 @@ definePageMeta({
 });
 
 const { t } = useI18n();
+const route = useRoute();
 
-const activeTabIndex = ref(0);
+const activeTabIndex = ref(Number(route.query.index) || 0);
 
 const tabsList = computed(() => {
   return [

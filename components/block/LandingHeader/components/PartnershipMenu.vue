@@ -21,7 +21,7 @@
 import { useI18n } from "vue-i18n";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import HeaderMenuItem from "~/components/block/LandingHeader/components/HeaderMenuItem.vue";
-import { tradingMenuRoutes as routes } from "../composables/tradingMenuRoutes";
+import { partnershipMenuRoutes as routes } from "../composables/partnershipMenuRoutes";
 
 const props = defineProps({
   isMobile: {
@@ -37,6 +37,7 @@ const props = defineProps({
 const { t, tm } = useI18n();
 
 const headerItems = tm(`landing.header.megaMenu.${props.activeLink}`);
+const menuRoutes = routes(props.activeLink, t);
 
 function buildTitle(sectionIndex) {
   const title = t(
@@ -44,7 +45,7 @@ function buildTitle(sectionIndex) {
   );
   return {
     name: title,
-    path: routes[title]?.path ?? "#",
+    path: menuRoutes[title]?.path ?? "#",
   };
 }
 
@@ -57,7 +58,7 @@ function buildItems(sections, sectionIndex) {
     name: t(
       `landing.header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
     ),
-    path: routes[titleList]?.list?.[itemIndex] ?? "#",
+    path: menuRoutes[titleList]?.list?.[itemIndex] ?? "#",
   }));
 }
 </script>
@@ -68,6 +69,9 @@ function buildItems(sections, sectionIndex) {
   padding: 30px;
   background: var(--ui-background);
   border-radius: 16px;
+
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), 0 0 60px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 128, 255, 0.2), 0 0 6px rgba(255, 255, 255, 0.08);
 
   &-mobile {
     padding: 0px;
@@ -81,22 +85,6 @@ function buildItems(sections, sectionIndex) {
   gap: 40px 32px;
   position: relative;
   align-items: baseline;
-}
-
-.menu-banner {
-  grid-column: 3 / span 2;
-  height: 200px;
-  background: var(--color-stroke-ui);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-
-  &_mobile {
-    display: none;
-  }
 }
 
 .menu-mobile {

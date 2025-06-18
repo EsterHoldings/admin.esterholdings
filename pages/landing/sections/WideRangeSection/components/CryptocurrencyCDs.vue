@@ -15,12 +15,15 @@
             t("landing.sections.wide_range_tabs.CryptocurrencyCDs.description")
           }}
         </UiTextH5>
+
         <div>
-          <UiButtonDefault state="primary">
-            {{
-              t("landing.sections.wide_range_tabs.CryptocurrencyCDs.btn")
-            }}</UiButtonDefault
-          >
+          <Nuxt-Link to="market-instruments?index=2">
+            <UiButtonDefault state="primary">
+              {{
+                t("landing.sections.wide_range_tabs.CryptocurrencyCDs.btn")
+              }}</UiButtonDefault
+            >
+          </Nuxt-Link>
         </div>
       </div>
 

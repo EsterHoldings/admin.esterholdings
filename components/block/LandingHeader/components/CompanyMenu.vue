@@ -5,20 +5,13 @@
       :class="{ 'menu-wrapper-mobile': props.isMobile }"
     >
       <div class="menu-grid" :class="{ 'menu-mobile': props.isMobile }">
-        <!-- <HeaderMenuItem
+        <HeaderMenuItem
           v-for="(section, index) in headerItems"
           :key="section.section"
-          :title="t(`header.megaMenu.${props.activeLink}[${index}].section`)"
+          :titles="buildTitle(index)"
           :items="buildItems(section, index)"
           :isMobile="props.isMobile"
-        /> -->
-
-        <div
-          class="menu-banner"
-          :class="{ 'menu-banner_mobile': props.isMobile }"
-        >
-          BANNER
-        </div>
+        />
       </div>
     </div>
   </UiContainer>
@@ -28,7 +21,7 @@
 import { useI18n } from "vue-i18n";
 import UiContainer from "~/components/ui/UiContainer.vue";
 import HeaderMenuItem from "~/components/block/LandingHeader/components/HeaderMenuItem.vue";
-// import { tradingMenuRoutes as routes } from "../composables/tradingMenuRoutes";
+import { companyMenuRoutes as routes } from "../composables/companyMenuRoutes";
 
 const props = defineProps({
   isMobile: {
@@ -43,23 +36,42 @@ const props = defineProps({
 
 const { t, tm } = useI18n();
 
-const headerItems = tm(`header.megaMenu.${props.activeLink}`);
+const headerItems = tm(`landing.header.megaMenu.${props.activeLink}`);
+const menuRoutes = routes(props.activeLink, t);
 
-// function buildItems(section, sectionIndex) {
-//   return section.items.map((_, itemIndex) => ({
-//     name: t(
-//       `header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
-//     ),
-//     path: routes[section.section]?.[itemIndex] ?? "#",
-//   }));
-// }
+function buildTitle(sectionIndex) {
+  const title = t(
+    `landing.header.megaMenu.${props.activeLink}[${sectionIndex}].section`
+  );
+  return {
+    name: title,
+    path: menuRoutes[title]?.path ?? "#",
+  };
+}
+
+function buildItems(sections, sectionIndex) {
+  const titleList = t(
+    `landing.header.megaMenu.${props.activeLink}[${sectionIndex}].section`
+  );
+
+  return sections.items.map((_, itemIndex) => ({
+    name: t(
+      `landing.header.megaMenu.${props.activeLink}[${sectionIndex}].items[${itemIndex}]`
+    ),
+    path: menuRoutes[titleList]?.list?.[itemIndex] ?? "#",
+  }));
+}
 </script>
 
 <style lang="scss" scoped>
 .menu-wrapper {
+  width: 225px;
   padding: 30px;
   background: var(--ui-background);
   border-radius: 16px;
+
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), 0 0 60px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 128, 255, 0.2), 0 0 6px rgba(255, 255, 255, 0.08);
 
   &-mobile {
     padding: 0px;

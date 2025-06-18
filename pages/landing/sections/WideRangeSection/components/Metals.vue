@@ -12,11 +12,13 @@
           {{ t("landing.sections.wide_range_tabs.Metals.description") }}
         </UiTextH5>
         <div>
-          <UiButtonDefault state="primary">
-            {{
-              t("landing.sections.wide_range_tabs.Metals.btn")
-            }}</UiButtonDefault
-          >
+          <Nuxt-Link to="market-instruments?index=1">
+            <UiButtonDefault state="primary">
+              {{
+                t("landing.sections.wide_range_tabs.Metals.btn")
+              }}</UiButtonDefault
+            >
+          </Nuxt-Link>
         </div>
       </div>
 

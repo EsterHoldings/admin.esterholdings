@@ -4,8 +4,10 @@
       <UiTextH5>{{ t(`${basePath}.title`) }}</UiTextH5>
     </li>
 
-    <li class="item" v-for="(_, index) in tm(`${basePath}.items`)" :key="index">
-      <UiTextH6>{{ t(`${basePath}.items[${index}]`) }}</UiTextH6>
+    <li class="item" v-for="link in sectionLinks" :key="link.path">
+      <NuxtLink :to="`/${link.path}`">
+        <UiTextH6>{{ t(link.labelKey) }}</UiTextH6>
+      </NuxtLink>
     </li>
   </ul>
 </template>
@@ -14,10 +16,18 @@
 import { useI18n } from "vue-i18n";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiTextH6 from "~/components/ui/UiTextH6.vue";
+import { footerMenuRoutes } from "../composables/footerMenuRoutes";
+
 const props = defineProps({
   basePath: String,
 });
-const { t, tm } = useI18n();
+
+const { t } = useI18n();
+const allLinks = footerMenuRoutes();
+
+const section = props.basePath.split(".").at(-1);
+
+const sectionLinks = allLinks[section];
 </script>
 
 <style lang="scss" scoped>
@@ -34,6 +44,10 @@ const { t, tm } = useI18n();
 
 .item {
   color: var(--ui-text-secondary);
+
+  a {
+    color: inherit;
+  }
 }
 
 @media (max-width: 576px) {
