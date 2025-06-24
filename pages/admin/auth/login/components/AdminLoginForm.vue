@@ -93,13 +93,10 @@ const doSendForm = async () => {
     const response = await appCore.adminAuth.doLogin(props.formData);
 
     const accessToken = response.data.data.access_token;
-    const refreshToken = response.data.data.refresh_token;
 
     localStorage.setItem("access_token", accessToken);
-    localStorage.setItem("refresh_token", refreshToken);
 
     adminAuthStore.setAccessToken(accessToken);
-    adminAuthStore.setRefreshToken(refreshToken);
 
     await appCore.adminAuth.getAvailablePermissions();
 

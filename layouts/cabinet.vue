@@ -12,25 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted} from "vue";
 import {useRoute} from "vue-router";
-import UiImage from "~/components/ui/UiImage.vue";
+
 import TheCabinetSideBar from "~/components/block/TheCabinetSideBar.vue";
 import TheFooter from "~/components/block/TheFooter.vue";
-
-import useAppCore from "~/composables/useAppCore";
+import UiImage from "~/components/ui/UiImage.vue";
 
 const route = useRoute();
-const appCore = useAppCore();
-
-onMounted(async () => {
-  const response = await appCore.auth.doCheckIsAuth();
-  if (!response.data.success) {
-    console.log('-------------------');
-    console.log(response.data);
-    console.log('-------------------');
-  }
-})
 </script>
 
 <style lang="scss" scoped>

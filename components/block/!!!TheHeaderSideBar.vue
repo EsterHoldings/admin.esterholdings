@@ -55,33 +55,37 @@
 </template>
 
 <script lang="ts" setup>
-import { useUiStore } from "~/stores/uiStore";
-import { useThemeStore } from "~/stores/themeStore.js";
+import { computed } from "vue";
+import { navigateTo } from "nuxt/app";
 import { useAuthStore } from "~/stores/authStore";
 import { useRoute } from "vue-router";
-import { navigateTo } from "nuxt/app";
-import { computed } from "vue";
+import { useThemeStore } from "~/stores/themeStore.js";
+import {useLocalePath} from "~/.nuxt/imports";
 
-import UiIconLogo from "~/components/ui/UiIconLogo.vue";
+import LanguageSwitcher from "~/components/block/LandingHeader/components/LanguageSwitcher.vue";
 import TheHeaderSideBarMenu from "~/components/block/!!!TheHeaderSideBarMenu.vue";
+import UiIconLogo from "~/components/ui/UiIconLogo.vue";
 import UiIconLogout from "~/components/ui/UiIconLogout.vue";
 import UiIconMoon from "~/components/ui/UiIconMoon.vue";
 import UiIconSun from "~/components/ui/UiIconSun.vue";
-import LanguageSwitcher from "~/components/block/LandingHeader/components/LanguageSwitcher.vue";
 
+const authStore = useAuthStore();
 const localePath = useLocalePath();
 const themeStore = useThemeStore();
-const uiStore = useUiStore();
-const authStore = useAuthStore();
 
 if (!authStore.user) {
   authStore.initAuth();
 }
 
 const handleClickLogout = () => {
-  authStore.setAccessToken("");
-  authStore.setRefreshToken("");
-  navigateTo(localePath("/admin/auth/login"));
+  localStorage.setItem('access_token', '');
+  localStorage.setItem('remember_token', '');
+
+  console.log('!!!TheHeaderSideBar -> handleClickLogout');
+
+  navigateTo(
+      localePath("/admin/auth/login")
+  );
 };
 
 const isThemeLight = computed(() => {

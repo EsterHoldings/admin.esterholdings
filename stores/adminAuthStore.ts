@@ -14,20 +14,15 @@ interface Permission {
 
 export const useAdminAuthStore = defineStore('adminAuth', () => {
   const accessToken = ref('');
-  const refreshToken = ref('');
   const roles = ref<Role[]>([]);
   const permissions = ref<Permission[]>([]);
 
   // 1. Спроба зчитати токени з localStorage
   if (process.client) {
     const storedAccessToken = localStorage.getItem('access_token');
-    const storedRefreshToken = localStorage.getItem('refresh_token');
 
     if (storedAccessToken) {
       accessToken.value = storedAccessToken;
-    }
-    if (storedRefreshToken) {
-      refreshToken.value = storedRefreshToken;
     }
   }
 
@@ -40,19 +35,10 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
       localStorage.setItem('access_token', newValue);
     }
   });
-  watch(refreshToken, (newValue) => {
-    if (process.client) {
-      localStorage.setItem('refresh_token', newValue);
-    }
-  });
 
   // --- Методи для керування токенами та даними користувача ---
   function setAccessToken(value: string) {
     accessToken.value = value;
-  }
-
-  function setRefreshToken(value: string) {
-    refreshToken.value = value;
   }
 
   function setRoles(r: Role[]) {
@@ -97,12 +83,10 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
 
   return {
     accessToken,
-    refreshToken,
     roles,
     permissions,
     isAuthenticated,
     setAccessToken,
-    setRefreshToken,
     setRoles,
     setPermissions,
     initAuth,

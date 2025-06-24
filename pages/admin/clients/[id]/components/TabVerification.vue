@@ -15,7 +15,7 @@
         <div class="user-verification__left__verification-list_wrapper">
 
           <div>
-            {{ verificationRequestDto.info.verification_status }}
+            {{ verificationRequestData }}
           </div>
 
           <ul class="user-verification__left__verification-list">

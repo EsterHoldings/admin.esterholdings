@@ -70,7 +70,6 @@ export class AuthModule {
     if (response?.data?.accessToken) {
       this.adminAuthStore.setTokens({
         accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
       });
     }
 

@@ -60,13 +60,10 @@ async function handleGoogleAuth(idToken: string) {
     const responseData = res.data;
 
     const accessToken = await responseData.data.access_token;
-    const refreshToken = await responseData.data.refresh_token;
 
     localStorage.setItem("user_access_token", accessToken);
-    localStorage.setItem("user_refresh_token", refreshToken);
 
     authStore.setAccessToken(accessToken);
-    authStore.setRefreshToken(refreshToken);
 
     navigateTo("/dashboard");
   } catch (e: any) {

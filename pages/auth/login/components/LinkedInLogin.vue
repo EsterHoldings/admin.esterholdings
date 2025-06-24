@@ -61,13 +61,10 @@ async function handleLinkedInAuth(accessToken: string) {
 
     const responseData = await res.data;
     const accessTokenResult = responseData.data.access_token;
-    const refreshToken = responseData.data.refresh_token;
 
     localStorage.setItem("user_access_token", accessTokenResult);
-    localStorage.setItem("user_refresh_token", refreshToken);
 
     authStore.setAccessToken(accessTokenResult);
-    authStore.setRefreshToken(refreshToken);
 
     toast.success("Вы вошли через LinkedIn");
     navigateTo("/dashboard");

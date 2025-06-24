@@ -43,6 +43,10 @@ export class AuthModule implements AuthModuleInterface {
   async doCheckIsAuth(): Promise<any> {
     return await this.authService.checkIsAuth()
   }
+
+  async doRefresh(): Promise<any> {
+    return await this.authService.refresh()
+  }
 }
 
 export default AuthModule;

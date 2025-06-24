@@ -6,6 +6,6 @@ export interface IFormDataDto {
 }
 
 export const formData: Reactive<IFormDataDto> = reactive({
-  email: "",
-  password: "",
+  email: "test@gmail.com",
+  password: "testtest",
 });

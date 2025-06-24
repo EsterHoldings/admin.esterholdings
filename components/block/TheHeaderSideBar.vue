@@ -68,7 +68,6 @@ const handleClickOpenCloseSideBar = () => {
 const handleClickLogoutButton = async () => {
   await appCore.auth.doLogout();
   authStore.setAccessToken("");
-  authStore.setRefreshToken("");
   navigateTo(ROUTE_AUTH_LOGIN);
 };
 </script>

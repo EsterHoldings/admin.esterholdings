@@ -107,24 +107,11 @@ const doSendForm = async () => {
   try {
     isLoading.value = true;
     const authStore = useAuthStore();
-
     const response = await appCore.auth.doLogin(props.formData);
-
-    console.log('-=-=-=- -=-=-=- -=-=-=-');
-    console.log(response.data);
-    console.log('-=-=-=- -=-=-=- -=-=-=-');
-
-    const accessToken = response.data.data.access_token;
-    const refreshToken = response.data.data.refresh_token;
-
-    localStorage.setItem("user_access_token", accessToken);
-    localStorage.setItem("user_refresh_token", refreshToken);
-
+    const accessToken = response.data.access_token;
     authStore.setAccessToken(accessToken);
-    authStore.setRefreshToken(refreshToken);
-
+    toast.success("Successfully!");
     navigateTo("/dashboard");
-    console.log("DO REDIRECT TO DASHBOARD");
   } catch (e: any) {
     console.log("LoginForm -> doSendForm -> catch", e.message);
     toast.error("Invalid credentials");

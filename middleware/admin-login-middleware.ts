@@ -9,7 +9,9 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   const adminAuthStore = useAdminAuthStore();
 
-  if (!!adminAuthStore.accessToken) {
-    return navigateTo("/admin/access");
-  }
+  console.log('ADMIN LOGIN MIDDLEWARE');
+
+  // if (!!adminAuthStore.accessToken) {
+  //   return navigateTo("/admin/auth/login");
+  // }
 });
