@@ -42,6 +42,22 @@
       />
     </UiFormControl>
 
+    <UiFormControl
+      class="login-form__field"
+      label="2Fa code"
+      :errors="twoFaErrors"
+      v-if="twoFaEnabled"
+    >
+      <UiInput
+        type="text"
+        placeholder="********"
+        :value="props.formData.twoFaCode"
+        :isDirty="twoFaErrors.length > 0"
+        :isInvalid="twoFaErrors.length > 0"
+        @input="handleTwoFaCodeInput"
+      />
+    </UiFormControl>
+
     <UiButtonDefault
       type="submit"
       state="primary"
@@ -70,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import {reactive, ref} from "vue";
 import { navigateTo } from "nuxt/app";
 import { useAuthStore } from "~/stores/authStore";
 import { useAppCore } from "~/composables/useAppCore";
@@ -91,6 +107,7 @@ import {
   validateLoginForm,
   resetValidationLoginForm,
 } from "@/pages/auth/login/composables/validation";
+import {formData} from "~/pages/auth/login/composables";
 
 const props = defineProps({
   formData: {
@@ -100,8 +117,16 @@ const props = defineProps({
 });
 
 const isLoading = ref(false);
+const twoFaEnabled = ref(false);
 const appCore = useAppCore();
 const toast = useToast();
+const emit = defineEmits(['input2Fa'])
+
+let twoFaErrors = reactive([])
+
+const handleTwoFaCodeInput = (value: string) => {
+  emit('input2Fa', value);
+}
 
 const doSendForm = async () => {
   try {
@@ -113,8 +138,17 @@ const doSendForm = async () => {
     toast.success("Successfully!");
     navigateTo("/dashboard");
   } catch (e: any) {
-    console.log("LoginForm -> doSendForm -> catch", e.message);
-    toast.error("Invalid credentials");
+    if (e.status === 401) {
+      if (!twoFaEnabled.value) {
+        toast.info(e.response.data.message)
+        twoFaEnabled.value = true;
+      } else {
+        twoFaErrors = [e.response.data.message]
+      }
+    } else {
+      console.log("LoginForm -> doSendForm -> catch", e.message);
+      toast.error("Invalid credentials");
+    }
   } finally {
     resetValidationLoginForm();
     setTimeout(() => {

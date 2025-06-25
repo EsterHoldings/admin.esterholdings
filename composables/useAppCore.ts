@@ -16,12 +16,14 @@ import UsersModule from "~/composables/core/modules/users/users.module";
 import AdminClientsModule from "~/composables/core/modules/adminModules/clients/clients.module";
 import AdminDocumentsModule from "~/composables/core/modules/adminModules/documents/documents.module";
 import AdminVerificationRequests from "~/composables/core/modules/adminModules/verificationRequests/verificationRequests.module";
+import Auth2faModule from "~/composables/core/modules/auth2fa/auth2fa.module";
 
 export interface ICoreModules {
     adminAuth : AdminAuthModule;
     admins : AdminsModule;
     accounts : AccountsModule;
     auth: AuthModule;
+    auth2fa: Auth2faModule;
     clients: AuthModule;
     documents: DocumentsModule;
     items: ItemsModule;
@@ -47,6 +49,7 @@ export const useAppCore = (): ICoreModules => {
         admins: new AdminsModule(), // TODO :: Move to adminModules
         accounts: new AccountsModule(),
         auth: new AuthModule(),
+        auth2fa: new Auth2faModule(),
         clients: new AuthModule(), // TODO :: Fix (Or remove)
         documents: new DocumentsModule(),
         items: new ItemsModule(),

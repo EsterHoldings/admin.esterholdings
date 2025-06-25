@@ -15,4 +15,5 @@ export const resetValidationLoginForm = (): void =>
 export const resetFormData = (): void => {
   formData.email = "";
   formData.password = "";
+  formData.twoFaCode = "";
 };

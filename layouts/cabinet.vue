@@ -3,11 +3,13 @@
     <TheCabinetSideBar/>
     <UiImage class="bg-image" src="/space.gif"/>
     <Transition name="fade" mode="out-in">
-      <div class="page" :key="route.fullPath">
-        <slot/>
+      <div class="page__wrapper_scroll">
+        <div class="page" :key="route.fullPath">
+          <slot/>
+        </div>
+        <TheFooter class="footer"/>
       </div>
     </Transition>
-    <TheFooter/>
   </div>
 </template>
 
@@ -22,6 +24,10 @@ const route = useRoute();
 </script>
 
 <style lang="scss" scoped>
+.footer {
+  height: 120px;
+}
+
 .bg-image {
   position: fixed;
   left: 0;
@@ -34,14 +40,19 @@ const route = useRoute();
   background-color: var(--ui-background-admin);
   height: 100vh;
   overflow: hidden;
+
+  &_scroll {
+    height: 100%;
+    overflow: scroll;
+  }
 }
 
 .page {
   box-sizing: border-box;
   width: 100%;
-  height: calc(100vh - 100px);
+  height: auto;
+  min-height: calc(100vh - 100px);
   padding: 40px 40px 40px 142px;
-  overflow-y: auto;
   color: white;
 }
 

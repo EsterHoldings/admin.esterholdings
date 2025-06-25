@@ -8,7 +8,7 @@
 
 <script lang="ts" setup></script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 svg {
   height: 24px;
   width: 24px;

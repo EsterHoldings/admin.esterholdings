@@ -143,6 +143,7 @@ const { locale, t } = useI18n({ useScope: "global" });
 <style lang="scss" scoped>
 .dashboard {
   color: #ffffff;
+  padding-bottom: 40px;
 
   &__title {
     margin-bottom: 24px;

@@ -43,20 +43,16 @@ export class useApi {
                 if (
                     err.response?.status === 401 &&
                     !orig._retry &&
-                    !orig.url?.endsWith(ROUTE_AUTH_REFRESH)
+                    !orig.url?.endsWith(ROUTE_AUTH_REFRESH) &&
+                    !orig.url?.endsWith('auth/login')
                 ) {
                     orig._retry = true
                     try {
-                        console.log('1');
                         const {data} = await this.api.post(ROUTE_AUTH_REFRESH)
-                        console.log('2');
                         localStorage.setItem('refresh_token', '')
                         localStorage.setItem('refresh_token', data.access_token)
-                        console.log('3');
                         store.setAccessToken(data.access_token)
-                        console.log('4');
                         orig.headers.Authorization = `Bearer ${data.access_token}`
-                        console.log('5');
                         return this.api(orig)
                     } catch {
                         console.log('6');

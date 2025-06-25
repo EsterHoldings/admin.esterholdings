@@ -19,7 +19,7 @@
 
 <script setup lang="ts"></script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 svg {
   height: 20px;
   width: 20px;

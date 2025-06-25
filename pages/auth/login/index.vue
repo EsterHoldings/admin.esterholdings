@@ -2,7 +2,7 @@
   <div class="page--min-height login">
     <div class="login-form__wrapper">
       <PanelDefault class="login-form__panel-default">
-        <LoginForm :formData="formData" />
+        <LoginForm :formData="formData" @input2-fa="handle2faInput" />
       </PanelDefault>
     </div>
   </div>
@@ -18,6 +18,10 @@ definePageMeta({
   middleware: ["not-auth-client"],
   layout: "guest"
 });
+
+const handle2faInput = (value: string) => {
+  formData.twoFaCode = value;
+}
 </script>
 
 <style lang="scss" scoped>
