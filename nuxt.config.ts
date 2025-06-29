@@ -1,4 +1,5 @@
 import {defineNuxtConfig} from "nuxt/config";
+import * as process from "node:process";
 
 // @ts-ignore
 export default defineNuxtConfig({
@@ -59,22 +60,41 @@ export default defineNuxtConfig({
             },
         },
     },
+
+    runtimeConfig: {
+        recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
+        public: {
+            baseApi: process.env.NUXT_PUBLIC_BASE_API,
+            baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
+            cliFacebook: process.env.NUXT_PUBLIC_CLI_FACEBOOK,
+            cliGoogle: process.env.NUXT_PUBLIC_CLI_GOOGLE,
+            cliLinkIdIn: process.env.NUXT_PUBLIC_CLI_LINK_ID_IN,
+            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY,
+
+        }
+    },
+
     routeRules: {
         "/**": {ssr: false} as any,
         "/": {ssr: true} as any,
     },
 
-    app: {
-        head: {
-            script: [
-                {
-                    src: "https://accounts.google.com/gsi/client",
-                    async: true,
-                    defer: true,
-                },
-            ],
-        },
+  app: {
+    head: {
+      script: [
+          {
+              src: "https://accounts.google.com/gsi/client",
+              async: true,
+              defer: true,
+          },
+          {
+              src: 'https://www.google.com/recaptcha/api.js?render=6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P',
+              async: true,
+              defer: true,
+          },
+      ],
     },
+  },
 
     nitro: {
         devProxy: {

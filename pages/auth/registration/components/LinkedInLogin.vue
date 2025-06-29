@@ -1,5 +1,5 @@
 <template>
-  <UiIconFacebook @click="loginWithFacebook"/>
+  <UiIconLinkedIn @click="loginWithLinkedIn"/>
 </template>
 
 <script setup lang="ts">
@@ -7,35 +7,31 @@ import {navigateTo} from "nuxt/app";
 import {useAppCore} from "~/composables/useAppCore";
 import {useToast} from "vue-toastification";
 import {useAuthStore} from "~/stores/authStore";
-import UiIconFacebook from "~/components/ui/UiIconFacebook.vue";
+import UiIconLinkedIn from "~/components/ui/UiIconLinkedIn.vue";
 
 const {public: pub} = useRuntimeConfig()
 const {$recaptcha} = useNuxtApp()
-
-
 const appCore = useAppCore();
 const toast = useToast();
 
-async function loginWithFacebook() {
-  if (!(await $recaptcha('registration'))) {
-    return
-  }
+function loginWithLinkedIn() {
+  localStorage.setItem("social_login_type", "linkedin");
 
-  localStorage.setItem("social_login_type", "facebook");
-  const clientId = `${pub.cliFacebook}`;
+  const clientId = `${pub.cliLinkIdIn}`;
   const redirectUri = `${pub.baseUrl}auth/callback`;
-  const scope = "email,public_profile";
+  const scope = "openid profile email";
   const state = crypto.randomUUID();
 
+
   const authUrl =
-      `https://www.facebook.com/v17.0/dialog/oauth?` +
+      "https://www.linkedin.com/oauth/v2/authorization?" +
+      `response_type=code&` +
       `client_id=${clientId}&` +
       `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-      `response_type=token&` +
       `scope=${encodeURIComponent(scope)}&` +
       `state=${state}`;
 
-  const popup = window.open(authUrl, "facebookLogin", "width=500,height=600");
+  const popup = window.open(authUrl, "linkedinLogin", "width=500,height=600");
 
   const popupListener = setInterval(() => {
     try {
@@ -44,43 +40,50 @@ async function loginWithFacebook() {
         return;
       }
 
-      const hash = popup.location.hash;
-      if (hash.includes("access_token")) {
-        const params = new URLSearchParams(hash.slice(1));
-        const accessToken = params.get("access_token");
+      const search = popup.location.search;
+      if (search.includes("code")) {
+        const params = new URLSearchParams(search);
+        const code = params.get("code");
 
-        if (accessToken) {
+        if (code) {
           popup.close();
           clearInterval(popupListener);
 
-          handleFacebookAuth(accessToken);
+          handleLinkedInAuth(code);
         }
       }
     } catch (e) {
+      // Ожидаем CORS до редиректа
     }
   }, 500);
 }
 
-async function handleFacebookAuth(accessToken: string) {
+async function handleLinkedInAuth(code: string) {
+  if (!(await $recaptcha('registration'))) {
+    return
+  }
   try {
     const res = await appCore.auth.doSocialLogin({
-      type: "facebook",
-      token: accessToken,
+      type: "linkedin",
+      token: code,
     });
 
     const authStore = useAuthStore();
     const responseData = await res.data;
 
     const accessTokenResult = responseData.data.access_token;
+    const refreshToken = responseData.data.refresh_token;
 
     localStorage.setItem("user_access_token", accessTokenResult);
+    localStorage.setItem("user_refresh_token", refreshToken);
 
     authStore.setAccessToken(accessTokenResult);
+    authStore.setRefreshToken(refreshToken);
 
     navigateTo("/dashboard");
   } catch (e) {
-    console.error("❌ Ошибка входа через Facebook:", e);
-    toast.error("Ошибка входа через Facebook");
+    console.error("❌ Ошибка входа через LinkedIn:", e);
+    toast.error("Ошибка входа через LinkedIn");
   }
 }
 </script>

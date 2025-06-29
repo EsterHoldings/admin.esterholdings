@@ -1,30 +1,35 @@
 <template>
-  <UiIconLinkedIn @click="loginWithLinkedIn" />
+  <UiIconLinkedIn @click="loginWithLinkedIn"/>
 </template>
 
 <script setup lang="ts">
-import { useToast } from "vue-toastification";
-import { useAuthStore } from "~/stores/authStore";
-import { navigateTo } from "nuxt/app";
-import { useAppCore } from "~/composables/useAppCore";
+import {navigateTo} from "nuxt/app";
+import {useAppCore} from "~/composables/useAppCore";
+import {useToast} from "vue-toastification";
+import {useAuthStore} from "~/stores/authStore";
+import UiIconLinkedIn from "~/components/ui/UiIconLinkedIn.vue";
 
-const toast = useToast();
-const authStore = useAuthStore();
+const {public: pub} = useRuntimeConfig()
+const {$recaptcha} = useNuxtApp()
 const appCore = useAppCore();
+const toast = useToast();
 
 function loginWithLinkedIn() {
-  const clientId = "784gmiujlnm9h2";
-  const redirectUri = "https://stage.esterholdings.website/auth/callback";
+  localStorage.setItem("social_login_type", "linkedin");
+
+  const clientId = pub.cliLinkIdIn;
+  const redirectUri = `${pub.baseUrl}auth/callback`;
+  const scope = "openid profile email";
   const state = crypto.randomUUID();
-  const scope = "r_liteprofile r_emailaddress";
+
 
   const authUrl =
-    `https://www.linkedin.com/oauth/v2/authorization?` +
-    `response_type=token&` +
-    `client_id=${clientId}&` +
-    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-    `state=${state}&` +
-    `scope=${encodeURIComponent(scope)}`;
+      "https://www.linkedin.com/oauth/v2/authorization?" +
+      `response_type=code&` +
+      `client_id=${clientId}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `scope=${encodeURIComponent(scope)}&` +
+      `state=${state}`;
 
   const popup = window.open(authUrl, "linkedinLogin", "width=500,height=600");
 
@@ -35,38 +40,43 @@ function loginWithLinkedIn() {
         return;
       }
 
-      const hash = popup.location.hash;
-      if (hash.includes("access_token")) {
-        const params = new URLSearchParams(hash.slice(1));
-        const accessToken = params.get("access_token");
+      const search = popup.location.search;
+      if (search.includes("code")) {
+        const params = new URLSearchParams(search);
+        const code = params.get("code");
 
-        if (accessToken) {
+        if (code) {
           popup.close();
           clearInterval(popupListener);
-          handleLinkedInAuth(accessToken);
+
+          handleLinkedInAuth(code);
         }
       }
     } catch (e) {
-      // Ничего не делаем — возможен CORS до момента полной загрузки
+      // Ожидаем CORS до редиректа
     }
   }, 500);
 }
 
-async function handleLinkedInAuth(accessToken: string) {
+async function handleLinkedInAuth(code: string) {
+  if (!(await $recaptcha('registration'))) {
+    return
+  }
   try {
     const res = await appCore.auth.doSocialLogin({
       type: "linkedin",
-      token: accessToken,
+      token: code,
     });
 
+    const authStore = useAuthStore();
     const responseData = await res.data;
+
     const accessTokenResult = responseData.data.access_token;
 
     localStorage.setItem("user_access_token", accessTokenResult);
 
     authStore.setAccessToken(accessTokenResult);
 
-    toast.success("Вы вошли через LinkedIn");
     navigateTo("/dashboard");
   } catch (e) {
     console.error("❌ Ошибка входа через LinkedIn:", e);

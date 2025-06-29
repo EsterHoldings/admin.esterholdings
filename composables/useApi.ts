@@ -3,17 +3,18 @@ import {useAdminAuthStore} from "~/stores/adminAuthStore";
 import {useAuthStore} from "~/stores/authStore";
 import {ROUTE_AUTH_REFRESH} from "~/constants/routes";
 
+
 export class useApi {
     private api: AxiosInstance;
 
     constructor(forClient = false) {
+        const {public: pub} = useRuntimeConfig()
 
         this.api = axios.create({
-            baseURL: "https://esterholdings.website/api/",
-            // baseURL: "http://127.0.0.1:8000/api/",
-            // baseURL: "/api",
+            // baseURL: "https://esterholdings.website/api/",
+            baseURL: pub.baseApi,
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             withCredentials: true,
         });

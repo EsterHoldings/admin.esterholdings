@@ -16,6 +16,7 @@ import {ref, provide, onMounted} from "vue";
 import ModalRightSideDefault from "./components/block/modals/ModalRightSideDefault.vue";
 import {useThemeStore} from './stores/themeStore'
 
+
 const modalRef = ref();
 const modalContent = ref(null);
 const modalProps = ref({});
@@ -36,6 +37,8 @@ onMounted(() => {
   const themeStore = useThemeStore()
   themeStore.initTheme()
 })
+
+
 </script>
 
 <style lang="scss" scoped>

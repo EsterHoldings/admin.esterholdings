@@ -64,6 +64,7 @@
         class="login-form__btn"
         :isLoading="isLoading"
         @click="validateLoginForm(doSendForm)"
+        :disabled="!isRecaptchaValid"
     >
       Login
     </UiButtonDefault>
@@ -108,6 +109,7 @@ import {
   resetValidationLoginForm,
 } from "@/pages/auth/login/composables/validation";
 import {formData} from "~/pages/auth/login/composables";
+import UiButtonPrimary from "~/components/ui/UiButtonPrimary.vue";
 
 const props = defineProps({
   formData: {
@@ -116,6 +118,8 @@ const props = defineProps({
   },
 });
 
+// const {$recaptcha} = useNuxtApp()
+const isRecaptchaValid = ref(false)
 const isLoading = ref(false);
 const twoFaEnabled = ref(false);
 const appCore = useAppCore();

@@ -40,6 +40,10 @@
           @click="togglePasswordVisibility"
       />
     </transition>
+
+    <div v-if="isLoading" class="is-loading">
+      <UiIconSpinnerDefault/>
+    </div>
   </div>
 </template>
 

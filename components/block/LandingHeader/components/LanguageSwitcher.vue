@@ -1,9 +1,9 @@
 <template>
   <div class="language-wrapper" ref="wrapperRef">
     <UiIconGlobe
-      class="icon"
-      @click="toggleDropdown"
-      :class="{
+        class="icon"
+        @click="toggleDropdown"
+        :class="{
         'svg-invert': props.isInvert,
       }"
     />
@@ -11,13 +11,13 @@
     <transition name="fade">
       <ul v-if="isOpen" class="dropdown" :class="{ top: props.isSidebar }">
         <li
-          v-for="(label, code) in languages"
-          :key="code"
-          @click="switchLanguage(code)"
-          :class="{ active: locale === code }"
+            v-for="(label, code) in languages"
+            :key="code"
+            @click="switchLanguage(code)"
+            :class="{ active: locale === code }"
         >
           <span class="flag">{{ getFlag(code) }}</span>
-          <span class="label">{{ code.toUpperCase() }}</span>
+          <span class="label">{{ label.toUpperCase() }}</span>
         </li>
       </ul>
     </transition>
@@ -25,8 +25,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
-import { useI18n } from "vue-i18n";
+import {ref, onMounted, onBeforeUnmount, computed} from "vue";
+import {useI18n} from "vue-i18n";
 import UiIconGlobe from "~/components/ui/UiIconGlobe.vue";
 
 const props = defineProps({
@@ -34,7 +34,7 @@ const props = defineProps({
   isSidebar: Boolean,
 });
 
-const { locale, setLocale } = useI18n();
+const {locale, setLocale} = useI18n();
 
 const isOpen = ref(false);
 const wrapperRef = ref(null);
@@ -91,7 +91,7 @@ onBeforeUnmount(() => {
     position: absolute;
     top: 40px;
     right: 0;
-    min-width: 80px;
+    width: fit-content;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -118,7 +118,7 @@ onBeforeUnmount(() => {
       align-items: center;
       gap: 8px;
       padding: 6px 16px;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
 
       &:hover {

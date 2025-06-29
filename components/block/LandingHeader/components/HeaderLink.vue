@@ -68,11 +68,11 @@ const iconDownClass = computed(() => ({
 }
 
 .svg-fill {
-  color: black;
+  color: var(--ui-text-main);
   fill: currentColor;
 }
 
 .is-theme-light {
-  color: #151515;
+  color: var(--ui-text-main);
 }
 </style>

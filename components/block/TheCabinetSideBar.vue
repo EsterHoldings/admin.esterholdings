@@ -64,11 +64,12 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from "vue";
-import {navigateTo} from "nuxt/app";
+import {useUiStore} from "~/stores/uiStore";
+import {useThemeStore} from "~/stores/themeStore.js";
 import {useAuthStore} from "~/stores/authStore";
 import {useRoute} from "vue-router";
-import {useThemeStore} from "~/stores/themeStore.js";
+import {navigateTo} from "nuxt/app";
+import {computed} from "vue";
 
 import LanguageSwitcher from "~/components/block/LandingHeader/components/LanguageSwitcher.vue";
 import TheCabinetSideBarMenu from "~/components/block/TheCabinetSideBarMenu.vue";
@@ -125,7 +126,6 @@ const isProfileRoute = computed(() => {
   }
 
   &__top {
-    overflow: hidden;
     height: auto;
     width: 100%;
     display: flex;

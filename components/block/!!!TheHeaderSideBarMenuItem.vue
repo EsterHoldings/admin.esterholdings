@@ -1,12 +1,12 @@
 <template>
   <li
-    class="side-bar-cabinet__menu__item"
-    :class="{ active: isActive }"
-    @click="handleClickMenuItem($event)"
+      class="side-bar-cabinet__menu__item"
+      :class="{ active: isActive }"
+      @click="handleClickMenuItem($event)"
   >
     <div
-      class="side-bar-cabinet__menu__item__indicator"
-      :class="{ active: isActive }"
+        class="side-bar-cabinet__menu__item__indicator"
+        :class="{ active: isActive }"
     ></div>
 
     <div class="side-bar-cabinet__menu__item__icon">
@@ -14,8 +14,8 @@
     </div>
 
     <div
-      class="side-bar-cabinet__menu__item__title"
-      :class="{ hide: !props.sideBarIsOpen }"
+        class="side-bar-cabinet__menu__item__title"
+        :class="{ hide: !props.sideBarIsOpen }"
     >
       {{ title }}
     </div>
@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from "vue-router";
-import { computed } from "vue";
+import {useRoute} from "vue-router";
+import {computed} from "vue";
 
 const emit = defineEmits(["click"]);
 

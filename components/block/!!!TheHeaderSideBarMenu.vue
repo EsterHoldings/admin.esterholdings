@@ -1,13 +1,13 @@
 <template>
   <ul class="side-bar-cabinet__menu">
     <TheHeaderSideBarMenuItem
-      v-for="menuItem in menuItems"
-      :title="menuItem.title"
-      :to="menuItem.to"
-      :icon="menuItem.icon"
-      :sideBarIsOpen="sideBarIsOpen"
-      :key="menuItem.title"
-      @click="handleClickMenuItem"
+        v-for="menuItem in menuItems"
+        :title="menuItem.title"
+        :to="menuItem.to"
+        :icon="menuItem.icon"
+        :sideBarIsOpen="sideBarIsOpen"
+        :key="menuItem.title"
+        @click="handleClickMenuItem"
     />
   </ul>
 </template>
@@ -22,14 +22,14 @@ import UiIconProfile from "~/components/ui/UiIconProfile.vue";
 import UiIconSetting from "~/components/ui/UiIconSetting.vue";
 import UiIconKeys from "~/components/ui/UiIconKeys.vue";
 
-import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
+import {ref, computed} from "vue";
+import {useRouter} from "vue-router";
 import UiIconSupport from "~/components/ui/UiIconSupport.vue";
 import UiIconPayment from "~/components/ui/UiIconPayment.vue";
 
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 
-const { locale, t } = useI18n({ useScope: "global" });
+const {locale, t} = useI18n({useScope: "global"});
 const localePath = useLocalePath();
 const addCurrentLocaleToPath = (path = "") => {
   return `/${locale.value}/${path}`;

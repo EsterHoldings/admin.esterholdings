@@ -1,30 +1,38 @@
 <template>
-  <UiIconFacebook @click="loginWithFacebook" />
+  <UiIconFacebook @click="loginWithFacebook"/>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from "nuxt/app";
-import { useAppCore } from "~/composables/useAppCore";
-import { useToast } from "vue-toastification";
-import { useAuthStore } from "~/stores/authStore";
+import {navigateTo} from "nuxt/app";
+import {useAppCore} from "~/composables/useAppCore";
+import {useToast} from "vue-toastification";
+import {useAuthStore} from "~/stores/authStore";
 import UiIconFacebook from "~/components/ui/UiIconFacebook.vue";
+
+const {public: pub} = useRuntimeConfig()
+const {$recaptcha} = useNuxtApp()
+
 
 const appCore = useAppCore();
 const toast = useToast();
 
-function loginWithFacebook() {
-  const clientId = "1668019407177142";
-  const redirectUri = "https://stage.esterholdings.website/auth/callback";
+async function loginWithFacebook() {
+  if (!(await $recaptcha('registration'))) {
+    return
+  }
+  localStorage.setItem("social_login_type", "facebook");
+  const clientId = `${pub.cliFacebook}`;
+  const redirectUri = `${pub.baseUrl}auth/callback`;
   const scope = "email,public_profile";
   const state = crypto.randomUUID();
 
   const authUrl =
-    `https://www.facebook.com/v17.0/dialog/oauth?` +
-    `client_id=${clientId}&` +
-    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-    `response_type=token&` +
-    `scope=${encodeURIComponent(scope)}&` +
-    `state=${state}`;
+      `https://www.facebook.com/v17.0/dialog/oauth?` +
+      `client_id=${clientId}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `response_type=token&` +
+      `scope=${encodeURIComponent(scope)}&` +
+      `state=${state}`;
 
   const popup = window.open(authUrl, "facebookLogin", "width=500,height=600");
 
@@ -47,7 +55,8 @@ function loginWithFacebook() {
           handleFacebookAuth(accessToken);
         }
       }
-    } catch (e) {}
+    } catch (e) {
+    }
   }, 500);
 }
 
