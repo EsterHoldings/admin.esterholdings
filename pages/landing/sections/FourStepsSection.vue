@@ -3,39 +3,42 @@
     <UiContainer>
       <div class="four-steps">
         <UiTextH3 class="four-steps__title">
-          {{ t("landing.sections.four_steps_section.title.before") }} <br />
+          {{ t("landing.sections.four_steps_section.title.before") }} <br/>
           <span class="highlight">{{
-            t("landing.sections.four_steps_section.title.highlight")
-          }}</span>
+              t("landing.sections.four_steps_section.title.highlight")
+            }}</span>
         </UiTextH3>
 
         <div class="four-steps__container">
           <div
-            v-for="(step, index) in steps"
-            :key="index"
-            class="four-steps__item"
+              v-for="(step, index) in steps"
+              :key="index"
+              class="four-steps__item"
           >
             <UiTextH3 class="four-steps__number">{{ index + 1 }}</UiTextH3>
             <div class="four-steps__content">
               <UiTextH4 class="four-steps__heading">{{ step.title }}</UiTextH4>
               <UiTextH5 class="four-steps__description"
-                >{{ step.text }}
+              >{{ step.text }}
               </UiTextH5>
             </div>
           </div>
         </div>
 
-        <UiButtonDefault state="primary" class="four-steps__button"
+        <NuxtLink to="/auth/registration">
+          <UiButtonDefault state="primary" class="four-steps__button"
           >{{ t("landing.sections.four_steps_section.button") }}
-        </UiButtonDefault>
+          </UiButtonDefault>
+        </NuxtLink>
+        
       </div>
     </UiContainer>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n";
-import { ref } from "vue";
+import {useI18n} from "vue-i18n";
+import {ref} from "vue";
 
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
@@ -43,17 +46,17 @@ import UiTextH4 from "~/components/ui/UiTextH4.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 
-const { t, tm } = useI18n();
+const {t, tm} = useI18n();
 
 const stepsRaw = tm("landing.sections.four_steps_section.items");
 
 const steps = ref(
-  Array.isArray(stepsRaw)
-    ? stepsRaw.map((_, index) => ({
-        title: t(`landing.sections.four_steps_section.items[${index}].title`),
-        text: t(`landing.sections.four_steps_section.items[${index}].text`),
-      }))
-    : []
+    Array.isArray(stepsRaw)
+        ? stepsRaw.map((_, index) => ({
+          title: t(`landing.sections.four_steps_section.items[${index}].title`),
+          text: t(`landing.sections.four_steps_section.items[${index}].text`),
+        }))
+        : []
 );
 </script>
 
