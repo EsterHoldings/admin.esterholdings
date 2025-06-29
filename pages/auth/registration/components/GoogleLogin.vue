@@ -24,9 +24,9 @@ const scope = "openid email profile";
 const responseType = "id_token";
 
 async function loginWithGoogle() {
-  if (!(await $recaptcha('registration'))) {
-    return
-  }
+  // if (!(await $recaptcha('registration'))) {
+  //   return
+  // }
   localStorage.setItem("social_login_type", "google");
   const state = crypto.randomUUID();
   const nonce = crypto.randomUUID();

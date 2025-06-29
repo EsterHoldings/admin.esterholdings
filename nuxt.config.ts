@@ -80,11 +80,11 @@ export default defineNuxtConfig({
                     async: true,
                     defer: true,
                 },
-                {
-                    src: 'https://www.google.com/recaptcha/api.js?render=6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P',
-                    async: true,
-                    defer: true,
-                },
+                // {
+                //     src: 'https://www.google.com/recaptcha/api.js?render=6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P',
+                //     async: true,
+                //     defer: true,
+                // },
             ],
         },
     },

@@ -17,9 +17,9 @@ const appCore = useAppCore();
 const toast = useToast();
 
 async function loginWithFacebook() {
-  if (!(await $recaptcha('registration'))) {
-    return
-  }
+  // if (!(await $recaptcha('registration'))) {
+  //   return
+  // }
 
   localStorage.setItem("social_login_type", "facebook");
   const clientId = `${pub.cliFacebook}`;

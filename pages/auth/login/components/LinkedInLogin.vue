@@ -59,9 +59,9 @@ function loginWithLinkedIn() {
 }
 
 async function handleLinkedInAuth(code: string) {
-  if (!(await $recaptcha('registration'))) {
-    return
-  }
+  // if (!(await $recaptcha('registration'))) {
+  //   return
+  // }
   try {
     const res = await appCore.auth.doSocialLogin({
       type: "linkedin",
