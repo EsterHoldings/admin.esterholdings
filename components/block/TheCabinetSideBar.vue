@@ -211,7 +211,7 @@ const isProfileRoute = computed(() => {
 
 @keyframes shadowPulse {
   0% {
-    box-shadow: 0 0 1px -1px var(--color-ui-background);
+    box-shadow: 0 0 1px -1px var(--ui-background);
   }
   100% {
     box-shadow: 0 0 5px 1px var(--color-stroke-ui-dark);

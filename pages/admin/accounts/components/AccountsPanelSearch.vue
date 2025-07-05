@@ -43,7 +43,6 @@ const handleInputSearch = (value) => emit("input", value);
 .panel-search {
   border: none;
   border-radius: 0;
-  border-top: 1px solid var(--color-secondary);
   margin-bottom: 0;
 
   &__input {

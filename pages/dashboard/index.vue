@@ -24,21 +24,25 @@
             </div>
             <ul class="card__list">
               <li>
+                <span></span>
                 <UiIconFailed />
                 <span>{{t("cabinet.dashboard.accountVerification.addressFailed") }}</span>
               </li>
 
               <li>
+                <span>Документы</span>
                 <UiIconSuccess />
                 <span>{{t("cabinet.dashboard.accountVerification.documentVerified") }}</span>
               </li>
 
               <li>
+                <span>1-й Депозит</span>
                 <UiIconWarning />
                 <span>{{t("cabinet.dashboard.accountVerification.paymentInProgress") }}</span>
               </li>
 
               <li>
+                <span>Профиль</span>
                 <UiIconWarning />
                 <span>{{t("cabinet.dashboard.accountVerification.profileInProgress") }}</span>
               </li>

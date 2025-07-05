@@ -2,17 +2,13 @@
   <UiContainer>
     <div class="referrals">
       <div class="referrals__tabs">
-        <UiTextH4 class="referrals__tabs_title">{{
-          t("cabinet.referrals.index.title")
-        }}</UiTextH4>
-
+        <UiTextH4 class="referrals__tabs_title">{{ t("cabinet.referrals.index.title") }}</UiTextH4>
         <TabsDefault
           :tabsList="tabsList"
           @selectTab="handleActiveTab"
           :activeTabIndex="activeTabIndex"
         />
       </div>
-
       <transition name="slide-short" mode="out-in">
         <component
           class="referrals__content"

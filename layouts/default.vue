@@ -2,30 +2,32 @@
   <div class="container-fluid">
     <div class="page-wrapper">
       <TheHeaderSideBar/>
+
       <UiImage class="bg-image" src="/space.gif"/>
+
       <Transition name="fade" mode="out-in">
         <div class="page-content">
           <div class="page" :key="route.fullPath">
             <UiContainer>
-              <slot />
+              <slot/>
             </UiContainer>
           </div>
         </div>
       </Transition>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// import TheHeaderSideBar from "~/components/block/TheHeaderSideBar.vue";
-
 import TheHeaderSideBar from "~/components/block/!!!TheHeaderSideBar.vue";
 
 import UiImage from "~/components/ui/UiImage.vue";
 import TheFooter from "@/components/block/TheFooter.vue";
 import HeaderMenu from "~/components/block/LandingHeader/components/HeaderMenu.vue";
-import { useRoute } from "vue-router";
+import {useRoute} from "vue-router";
 import UiContainer from "~/components/ui/UiContainer.vue";
+
 const route = useRoute();
 </script>
 

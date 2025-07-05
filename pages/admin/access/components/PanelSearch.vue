@@ -41,13 +41,16 @@ const handleInputSearch = (event) => emit("input", event);
 
 <style lang="scss" scoped>
 .panel-search {
-  border: none;
-  border-radius: 0;
-  border-top: 1px solid var(--color-secondary);
-  margin-bottom: 0;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  height: 60px;
 
   &__input {
-    border: none;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    overflow: hidden;
   }
 }
 </style>

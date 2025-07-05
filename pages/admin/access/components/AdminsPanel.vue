@@ -1,11 +1,11 @@
 <template>
-  <PanelDefault :title="t('admin.access.components.admins-panel.title')">
+  <PanelDefault class="admins-panel" :title="t('admin.access.components.admins-panel.title')">
     <template #title-extra>
       <UiButtonDefault class="add-btn" @click="handleClickAddRole"
         >+</UiButtonDefault
       >
     </template>
-    <AdminsPanelSearch
+    <PanelSearch
       @input="handleInputSearch"
       :isLoading="isLoadingSearch"
       :value="searchFilter"
@@ -40,7 +40,7 @@ import useEventBus from "~/composables/useEventBus";
 import UiIconEdit from "~/components/ui/UiIconEdit.vue";
 import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import AdminsPanelEdit from "~/pages/admin/access/components/AdminsPanelEdit.vue";
-import AdminsPanelSearch from "~/pages/admin/access/components/AdminsPanelSearch.vue";
+import PanelSearch from "~/pages/admin/access/components/PanelSearch.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import RolesPanelAddNew from "~/pages/access/components/RolesPanelAddNew.vue";
 import AdminsPanelAddNew from "~/pages/admin/access/components/AdminsPanelAddNew.vue";
@@ -160,10 +160,13 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+.admins-panel {
+  padding: 10px;
+}
+
 .panel-search {
   border: none;
   border-radius: 0;
-  border-top: 1px solid var(--color-stroke-ui-dark);
   margin-bottom: 0;
 
   &__input {

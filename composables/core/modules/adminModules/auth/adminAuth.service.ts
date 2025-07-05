@@ -2,7 +2,7 @@ import useApi from "~/composables/useApi";
 import {
   ROUTE_ADMIN_AUTH_GET_AVAILABLE_PERMISSIONS,
   ROUTE_ADMIN_AUTH_LOGIN,
-  ROUTE_ADMIN_AUTH_LOGOUT, ROUTE_ADMINS
+  ROUTE_ADMIN_AUTH_LOGOUT, ROUTE_ADMIN_AUTH_REFRESH, ROUTE_ADMINS
 } from "~/constants/routes";
 
 export class AdminAuthService {
@@ -19,6 +19,9 @@ export class AdminAuthService {
   }
   async postLogout():Promise<any> {
     return await this.useApi.post(ROUTE_ADMIN_AUTH_LOGOUT);
+  }
+  async postRefresh():Promise<any> {
+    return await this.useApi.post(ROUTE_ADMIN_AUTH_REFRESH);
   }
   async getAvailablePermissions():Promise<any> {
     return await this.useApi.get(ROUTE_ADMIN_AUTH_GET_AVAILABLE_PERMISSIONS);

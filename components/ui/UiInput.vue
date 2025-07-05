@@ -5,6 +5,7 @@
     </div>
 
     <input
+        v-if="props.type !== 'checkbox'"
         :class="{
           border: !props.borderNone,
           padding: !props.paddingNone,
@@ -19,6 +20,14 @@
         @focus="onFocus"
         @input="onInput"
         @blur="onBlur"
+    />
+
+    <input
+        v-else
+        type="checkbox"
+        :checked="!!props.value"
+        :disabled="props.disabled"
+        @change="onChecked"
     />
 
     <div v-if="props.isLoading" class="is-loading">
@@ -66,7 +75,7 @@ const props = defineProps({
   disabled: {type: Boolean, default: false},
 })
 
-const emit = defineEmits(['input', 'focus', 'blur'])
+const emit = defineEmits(['input', 'focus', 'blur', 'checked'])
 
 const slots = useSlots()
 
@@ -93,6 +102,10 @@ function onInput(e: Event) {
 
 function onBlur(e: Event) {
   emit('blur', e)
+}
+
+function onChecked(e: Event) {
+  emit('checked', e)
 }
 </script>
 

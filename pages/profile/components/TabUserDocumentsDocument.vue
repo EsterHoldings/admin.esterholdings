@@ -1,7 +1,7 @@
 <template>
   <div class="document">
     <div class="document__image">
-      <UiIconImage />
+      <UiIconImage/>
     </div>
     <div class="document__content">
       <div class="document__content-left">
@@ -9,19 +9,21 @@
           # {{ data.document_data.number }}
         </div>
         <div class="document__content-left__status">
-          Status: {{ data.state }}
+          <span>
+            <UiIconFailed v-if="data.state === 'rejected'"/>
+            <UiIconWarning v-if="data.state === 'pending'"/>
+            <UiIconSuccess v-if="data.state === 'approved'"/>
+          </span>
+          <span>{{ data.state }}</span>
         </div>
       </div>
       <div class="document__content-right">
         <span class="document__content-right__time">
-          <UiIconTime />{{ data.created_at }}
+          <UiIconTime/>{{ data.created_at }}
         </span>
         <span class="document__content-right__options">
-          <UiIconTrash
-              v-if="!inProcessRemoving"
-              @click="handleRemoveDocument"
-          />
-          <UiIconSpinnerDefault v-if="inProcessRemoving" />
+          <UiIconTrash @click="handleRemoveDocument" />
+          <UiIconSpinnerDefault v-if="inProcessRemoving"/>
         </span>
       </div>
     </div>
@@ -35,6 +37,9 @@ import UiIconTime from "~/components/ui/UiIconTime.vue";
 import UiIconImage from "~/components/ui/UiIconImage.vue";
 import UiIconTrash from "~/components/ui/UiIconTrash.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
+import UiIconFailed from "~/components/ui/UiIconFailed.vue";
+import UiIconWarning from "~/components/ui/UiIconWarning.vue";
+import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
 
 interface DocumentInterface {
   document_data: object
@@ -106,6 +111,9 @@ const handleRemoveDocument = async () => {
 
       &__status {
         color: var(--color-warning);
+        white-space: pre;
+        display: flex;
+        gap: 10px;
       }
     }
 
@@ -131,7 +139,8 @@ const handleRemoveDocument = async () => {
 
       &__options {
         display: flex;
-        align-items: center;
+        justify-content: end;
+        width: 100%;
 
         svg {
           margin-right: 10px;

@@ -1,36 +1,40 @@
 import useApi from "~/composables/useApi";
-import {
-  ROUTE_ADMIN_AUTH_LOGIN,
-  ROUTE_ADMIN_AUTH_LOGOUT,
-  ROUTE_AUTH_USER,
-} from "~/constants/routes";
+import {ROUTE_AUTH_LOGOUT, ROUTE_AUTH_REFRESH, ROUTE_AUTH_REGISTER, ROUTE_AUTH_USER} from "~/constants/routes";
 
-export class AdminAuthService {
+export class AuthService {
   private useApi: any;
+
   constructor() {
-    this.useApi = new useApi();
+    this.useApi = new useApi(true);
   }
-  async get(params: {}): Promise<any> {
-    return await this.useApi.get(ROUTE_AUTH_USER, params);
+
+  async login(formData: Object): Promise<any> {
+    return await this.useApi.post("/auth/login", formData);
   }
-  async postLogin(data: object = {}): Promise<any> {
-    return await this.useApi.post(ROUTE_ADMIN_AUTH_LOGIN, data);
+
+  async registration(formData: Object): Promise<any> {
+    return await this.useApi.post(ROUTE_AUTH_REGISTER, formData);
   }
-  async postLogout(): Promise<any> {
-    return await this.useApi.post(ROUTE_ADMIN_AUTH_LOGOUT);
+
+  async logout(formData: Object): Promise<any> {
+    return await this.useApi.post(ROUTE_AUTH_LOGOUT);
   }
 
   async authUser() {
     return await this.useApi.get(ROUTE_AUTH_USER);
   }
 
-  async postSocialLogin(data: object): Promise<any> {
+  async postSocialLogin(data: Object): Promise<any> {
     return await this.useApi.post("/auth/social", data);
   }
 
-  async postCheckIsAuth(): Promise<any> {
-    return await this.useApi.post("/auth/isAuth");
+  async checkIsAuth(): Promise<any> {
+    return await this.useApi.get("/auth/isAuth");
+  }
+
+  async refresh(): Promise<any> {
+    return await this.useApi.post(ROUTE_AUTH_REFRESH);
   }
 }
 
-export default AdminAuthService;
+export default AuthService;

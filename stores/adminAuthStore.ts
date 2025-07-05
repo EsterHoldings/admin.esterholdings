@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 import useAppCore from "~/composables/useAppCore";
+import {navigateTo} from "nuxt/app";
+import {ROUTE_ADMIN_AUTH_LOGIN, ROUTE_AUTH_LOGIN} from "~/constants/routes";
+import {ADMIN_ACCESS_TOKEN} from "~/constants/auth";
 
 interface Role {
   id: string;
@@ -17,7 +20,9 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   const roles = ref<Role[]>([]);
   const permissions = ref<Permission[]>([]);
 
-  // 1. Спроба зчитати токени з localStorage
+  const user = ref<any>(null);
+  const photoUrl = ref<string>("");
+
   if (process.client) {
     const storedAccessToken = localStorage.getItem('access_token');
 
@@ -26,17 +31,14 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     }
   }
 
-  // 2. Обчислюване значення (чи залогінений)
   const isAuthenticated = computed(() => !!accessToken.value);
 
-  // 3. Якщо змінюються токени, записуємо їх у localStorage
   watch(accessToken, (newValue) => {
     if (process.client) {
       localStorage.setItem('access_token', newValue);
     }
   });
 
-  // --- Методи для керування токенами та даними користувача ---
   function setAccessToken(value: string) {
     accessToken.value = value;
   }
@@ -56,7 +58,7 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     const appCore = useAppCore();
 
     try {
-      const response = await appCore.adminAuth.getAvailablePermissions();
+      const response = await appCore.adminModules.auth.getAvailablePermissions();
       setRoles(response.data.data.roles || []);
       setPermissions(response.data.data.permissions || []);
     } catch (error) {
@@ -64,7 +66,16 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
     }
   }
 
-  // ✅ Реактивні computed-функції для перевірки ролей та дозволів
+  async function authLogout(): Promise<void> {
+    setAccessToken("");
+    user.value = null;
+    photoUrl.value = "";
+    if (process.client) {
+      localStorage.removeItem(ADMIN_ACCESS_TOKEN);
+    }
+    navigateTo('/ru' + ROUTE_ADMIN_AUTH_LOGIN);
+  }
+
   const hasPermission = computed(() => (permName: string): boolean => {
     return permissions.value.some(p => p.name === permName);
   });
@@ -83,16 +94,17 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
 
   return {
     accessToken,
-    roles,
-    permissions,
-    isAuthenticated,
-    setAccessToken,
-    setRoles,
-    setPermissions,
-    initAuth,
-    hasRole,
-    hasRoleById,
+    authLogout,
     hasPermission,
     hasPermissionById,
+    hasRole,
+    hasRoleById,
+    initAuth,
+    isAuthenticated,
+    permissions,
+    roles,
+    setAccessToken,
+    setPermissions,
+    setRoles,
   };
 });

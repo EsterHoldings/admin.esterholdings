@@ -86,20 +86,18 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from "vue";
-import {navigateTo} from "nuxt/app";
-import {useAuthStore} from "~/stores/authStore";
-import {useAppCore} from "~/composables/useAppCore";
-
+import FacebookLogin from "./FacebookLogin.vue";
+import GoogleLogin from "./GoogleLogin.vue";
+import LinkedInLogin from "./LinkedInLogin.vue";
+import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
-import UiFormControl from "~/components/ui/UiFormControl.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 
-import GoogleLogin from "./GoogleLogin.vue";
-import FacebookLogin from "./FacebookLogin.vue";
-import LinkedInLogin from "./LinkedInLogin.vue";
-
+import {navigateTo} from "nuxt/app";
+import {reactive, ref} from "vue";
+import {useAppCore} from "~/composables/useAppCore";
+import {useAuthStore} from "~/stores/authStore";
 import {useToast} from "vue-toastification";
 
 import {
@@ -107,8 +105,6 @@ import {
   validateLoginForm,
   resetValidationLoginForm,
 } from "@/pages/auth/login/composables/validation";
-import {formData} from "~/pages/auth/login/composables";
-import UiButtonPrimary from "~/components/ui/UiButtonPrimary.vue";
 
 const props = defineProps({
   formData: {
@@ -117,7 +113,6 @@ const props = defineProps({
   },
 });
 
-// const {$recaptcha} = useNuxtApp()
 const isRecaptchaValid = ref(false)
 const isLoading = ref(false);
 const twoFaEnabled = ref(false);

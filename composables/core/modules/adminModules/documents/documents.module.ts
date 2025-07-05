@@ -1,5 +1,5 @@
 import {BasicModuleInterface} from "~/composables/core/modules/module.interface";
-import DocumentsService from "~/composables/core/modules/documents/documents.service";
+import DocumentsService from "~/composables/core/modules/adminModules/documents/documents.service";
 
 export class DocumentsModule implements BasicModuleInterface {
     private documentsService: DocumentsService;

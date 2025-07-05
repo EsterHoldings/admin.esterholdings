@@ -21,7 +21,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-sticker-success": "#03c11f",
     "--ui-sticker-danger": "#d93025",
 
-    "--color-stroke-ui-dark": "#011644",
+    "--color-stroke-ui-dark": "#b9b9bd",
     "--color-stroke-ui": "#b8b8c3",
   };
 

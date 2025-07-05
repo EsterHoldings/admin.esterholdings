@@ -9,10 +9,33 @@
             <span class="user-documents-uploader__title__options_reload"
                   @click="handleRefreshDocuments"
             >
-              <UiIconUpdate :class="{ spin: isLoading }" />
+              <UiIconUpdate :class="{ spin: isLoading }"/>
             </span>
           </div>
         </UiTextH5>
+
+        <UiAlert
+            v-if="verificationAddressComment?.length > 0"
+            state="warning"
+            :outline="true"
+            class="user-documents-uploader__documents_alert"
+            @click="handleRemoveAddressComment"
+        >
+          <UiIconWarning class="user-documents-uploader__documents_alert_icon"/>
+          <UiTextSmall>{{ verificationAddressComment }}</UiTextSmall>
+        </UiAlert>
+
+        <UiAlert
+            v-if="verificationDocumentsComment?.length > 0"
+            state="warning"
+            :outline="true"
+            class="user-documents-uploader__documents_alert"
+            @click="handleRemoveDocumentComment"
+        >
+          <UiIconWarning class="user-documents-uploader__documents_alert_icon"/>
+          <UiTextSmall>{{ verificationDocumentsComment }}</UiTextSmall>
+        </UiAlert>
+
         <div class="user-documents-uploader__documents">
           <TabUserDocumentsDocument
               v-for="document in documents"
@@ -20,30 +43,37 @@
               :key="document.id"
               @document-was-removed="handleRefreshDocuments"
           />
-          <div class="user-documents-uploader__documents--no-data" v-if="documents.length === 0">
+
+          <div class="user-documents-uploader__documents--no-data" v-if="documents?.length === 0">
             У вас нет загруженных документов.
           </div>
+
           <div class="user-documents-uploader__is-loading" v-if="isLoading">
-            <UiIconSpinnerDefault />
+            <UiIconSpinnerDefault/>
           </div>
+
         </div>
       </PanelDefault>
     </div>
 
     <div class="user-documents__right">
       <PanelDefault class="user-documents__right__panel">
+
         <UiTextH5 class="user-documents__right__panel__title"># Upload new documents</UiTextH5>
+
         <UiDragAndDrop
             @files="handleFilesSelected"
             v-if="selectedFiles.length === 0"
         />
+
         <div
             class="user-documents__right__panel__upload-document-info"
             v-if="selectedFiles.length === 0"
         >
-          Ви можете завантажити скани або фотографії документів загальним розміром до 20 МБ.
-          Підтримувані формати файлів: PNG, JPG, JPEG, PDF.
+          Ви можете завантажити скани або фотографії документів загальним розміром до 2 МБ.
+          Підтримувані формати файлів: PNG, JPG, JPEG, PDF, SVG.
         </div>
+
         <div
             v-for="(file, index) in selectedFiles"
             :key="file.name + `-${index}`"
@@ -55,36 +85,68 @@
                 class="btn-delete"
                 @click="removeFile(index)"
             />
+
             <div class="user-documents__right__panel__selected-file__wrapper__preview">
               <UiImage :src="getPreviewUrl(file)"/>
             </div>
+
             <div class="user-documents__right__panel__selected-file__wrapper__content">
               <UiFormControl :label="file.name">
                 <UiInput
                     :value="docNumbers[index]"
                     @input="val => docNumbers[index] = val"
-                    placeholder="Номер документа"
+                    placeholder="Название (Адрес, Паспорт и так далее.)"
                     maxlength="100"
                 />
               </UiFormControl>
+
               <div
                   v-if="docNumbers[index].length > 100"
                   class="validation-error"
               >
                 Поле не може містити більше ніж 100 символів.
               </div>
+
               <div v-if="isUploading" class="upload-progress">
                 Завантаження: {{ uploadProgress[index] }}%
               </div>
+
             </div>
           </div>
         </div>
-        <UiFormControl
-            label="Comment"
-            class="user-documents__right__panel__comment"
-        >
-          <UiTextarea v-model="comment" placeholder="Ваш коментар..."/>
-        </UiFormControl>
+
+        <div class="user-documents__right__panel__upload-document-info">
+          <div class="user-documents__right__panel__upload-document-info__verify-state">
+            <UiTextSmall>Подтвердите ваш Ф.И.О</UiTextSmall>
+            <UiBadge :outline="true">
+              <UiIconDelete class="rejected" v-if="verificationDocumentsStatus === 'rejected'" />
+              <UiIconWarning class="pending" v-if="verificationDocumentsStatus === 'pending'" />
+              <UiIconCheck class="approved" v-if="verificationDocumentsStatus === 'approved'" />
+              <span class="rejected" v-if="verificationDocumentsStatus === 'rejected'">Отклонено!</span>
+              <span class="pending" v-if="verificationDocumentsStatus === 'pending'">В ожидании!</span>
+              <span class="approved" v-if="verificationDocumentsStatus === 'approved'">Подтверждено!</span>
+            </UiBadge>
+          </div>
+          <div class="user-documents__right__panel__upload-document-info__verify-state">
+            <UiTextSmall>Подтвердите ваш адрес (паспорт или квитанция)</UiTextSmall>
+            <UiBadge :outline="true">
+              <UiIconDelete class="rejected" v-if="verificationAddressStatus === 'rejected'" />
+              <UiIconWarning class="pending" v-if="verificationAddressStatus === 'pending'" />
+              <UiIconCheck class="approved" v-if="verificationAddressStatus === 'approved'" />
+              <span class="rejected" v-if="verificationAddressStatus === 'rejected'">Отклонено!</span>
+              <span class="pending" v-if="verificationAddressStatus === 'pending'">В ожидании!</span>
+              <span class="approved" v-if="verificationAddressStatus === 'approved'">Подтверждено!</span>
+            </UiBadge>
+          </div>
+        </div>
+
+        <!--        <UiFormControl-->
+        <!--            label="Comment"-->
+        <!--            class="user-documents__right__panel__comment"-->
+        <!--        >-->
+        <!--          <UiTextarea v-model="comment" placeholder="Ваш коментар..."/>-->
+        <!--        </UiFormControl>-->
+
         <UiButtonDefault
             state="info--outline"
             :disabled="isUploading || selectedFiles.length === 0"
@@ -98,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref, onBeforeUnmount, onMounted} from "vue";
+import {reactive, ref, onBeforeUnmount, onMounted, computed} from "vue";
 import useApi from "~/composables/useApi";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 
@@ -116,6 +178,14 @@ import TabUserDocumentsDocument from "~/pages/profile/components/TabUserDocument
 import useAppCore from "~/composables/useAppCore";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
+import UiAlert from "~/components/ui/UiAlert.vue";
+import UiIconWarning from "~/components/ui/UiIconWarning.vue";
+import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+import UiIconFailed from "~/components/ui/UiIconFailed.vue";
+import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
+import UiIconCheck from "~/components/ui/UiIconCheck.vue";
+import UiIconAlert from "~/components/ui/UiIconAlert.vue";
+import UiBadge from "~/components/ui/UiBadge.vue";
 
 interface FileWithPreview extends File {
   _previewUrl?: string;
@@ -133,6 +203,12 @@ const appCore = useAppCore();
 
 const isLoading = ref(true)
 let documents = reactive([]);
+
+let verificationAddressStatus = ref('pending');
+let verificationDocumentsStatus = ref('pending');
+
+let verificationAddressComment = ref('');
+let verificationDocumentsComment = ref('');
 
 function isValidFormat(file: File): boolean {
   const allowed = ["image/png", "image/jpeg", "application/pdf"];
@@ -177,6 +253,18 @@ function handleFilesSelected(files: File[] | undefined) {
   }
 }
 
+const handleRemoveAddressComment = async () => {
+  await appCore.verifications.removeCommentForAddress();
+  await loadVerificationData();
+  await loadUploadedDocuments();
+}
+
+const handleRemoveDocumentComment = async () => {
+  await appCore.verifications.removeCommentForDocuments();
+  await loadVerificationData();
+  await loadUploadedDocuments();
+}
+
 function removeFile(index: number) {
   const file = selectedFiles[index];
   if (file && file._previewUrl) {
@@ -188,11 +276,8 @@ function removeFile(index: number) {
 }
 
 async function uploadFiles() {
-
-  console.log('uploadFiles -> start');
-
   if (selectedFiles.length === 0) {
-    toast.warning("Спочатку виберіть принаймні один файл.");
+    toast.warning("Please select file(s).");
     return;
   }
   isUploading.value = true;
@@ -264,7 +349,6 @@ async function uploadFiles() {
 
 const loadUploadedDocuments = async () => {
   isLoading.value = true;
-  // TODO :: LOAD UPLOADED DOCUMENTS
   const response = await appCore.documents.get();
   documents.splice(0, documents.length, ...response.data.data.data);
 
@@ -273,7 +357,22 @@ const loadUploadedDocuments = async () => {
   }, 300)
 }
 
+const loadVerificationData = async () => {
+  isLoading.value = true;
+
+  const response = await appCore.verifications.get();
+
+  verificationAddressStatus.value = response.data.data.address.verification_status;
+  verificationDocumentsStatus.value = response.data.data.documents.verification_status;
+
+  verificationAddressComment.value = response.data.data.address.comment;
+  verificationDocumentsComment.value = response.data.data.documents.comment;
+
+  isLoading.value = false;
+}
+
 const handleRefreshDocuments = async () => {
+  await loadVerificationData();
   await loadUploadedDocuments();
 }
 
@@ -287,11 +386,25 @@ onBeforeUnmount(() => {
 });
 
 onMounted(async () => {
+  await loadVerificationData();
   await loadUploadedDocuments();
 })
 </script>
 
 <style lang="scss" scoped>
+
+@media (max-width: 991px) {
+  .user-documents__wrapper {
+    flex-direction: column;
+  }
+  .user-documents__left {
+    width: 100% !important;
+  }
+  .user-documents__right {
+    width: 100% !important;
+  }
+}
+
 .user-documents {
   color: var(--ui-text-main);
 
@@ -336,6 +449,20 @@ onMounted(async () => {
         margin-bottom: 20px;
         font-size: 13px;
         color: var(--color-warning);
+
+        &__verify-state {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 5px;
+          border-radius: 10px;
+          background-color: var(--color-stroke-ui-dark);
+          padding: 10px;
+
+          & .rejected { fill: var(--color-danger) !important; color: var(--color-danger); }
+          & .pending { stroke: var(--color-warning) !important; color: var(--color-warning); }
+          & .approved { stroke: var(--color-success) !important; color: var(--color-success); }
+        }
       }
 
       &__selected-file {
@@ -449,6 +576,18 @@ onMounted(async () => {
 
   &__documents {
     position: relative;
+
+    &_alert {
+      padding: 20px 40px 20px 45px;
+      margin-bottom: 20px;
+      position: relative;
+
+      &_icon {
+        position: absolute;
+        top: 15px;
+        left: 10px;
+      }
+    }
 
     &--no-data {
       display: flex;

@@ -18,10 +18,13 @@
     }"
   >
     <slot />
+    <UiIconDelete class="alert__remove-option" @click="handleClickRemove" />
   </div>
 </template>
 
 <script lang="ts" setup>
+import UiIconDelete from "~/components/ui/UiIconDelete.vue";
+
 const props = defineProps({
   state: {
     type: String,
@@ -36,11 +39,33 @@ const props = defineProps({
     default: false,
   },
 });
+
+const emit = defineEmits(['click']);
+
+const handleClickRemove = () => emit('click');
 </script>
 
 <style lang="scss" scoped>
 .alert {
   padding: calc(var(--spacer) * 1.5);
+  border-radius: 10px;
+  position: relative;
+
+  &__remove-option {
+    position: absolute;
+    padding: 5px;
+    top: 15px;
+    right: 10px;
+    height: 24px;
+    width: 24px;
+    border-radius: 4px;
+
+    &:hover {
+      border: 1px solid var(--color-danger);
+      fill: var(--color-danger);
+      background-color: var(--color-stroke-ui-dark);
+    }
+  }
 
   &.text-color-light {
     color: var(--color-light);

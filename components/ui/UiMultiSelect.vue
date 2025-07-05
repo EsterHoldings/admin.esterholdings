@@ -107,6 +107,7 @@ const handleClickRemove = (id: string) => emit("remove", id)
   &__item {
     position: relative;
     display: flex;
+    color: var(--ui-text-main);
 
     &__remove {
       position: absolute;
@@ -125,6 +126,8 @@ const handleClickRemove = (id: string) => emit("remove", id)
       align-items: center;
       justify-content: center;
       text-align: center;
+      color: red;
+      line-height: 10px;
 
       &:hover {
         background-color: #d77272;
@@ -133,10 +136,10 @@ const handleClickRemove = (id: string) => emit("remove", id)
     }
 
     &__text {
-      border: 1px solid #b4cbef;
+      border: 1px solid var(--color-stroke-ui-dark);
+      border-radius: 5px;
       font-size: 12px;
       padding: 4px 6px;
-      border-radius: var(--ui-input--border-radius);
       margin-right: 4px;
       white-space: pre;
       display: flex;
@@ -155,21 +158,23 @@ const handleClickRemove = (id: string) => emit("remove", id)
   }
 
   &__list {
+    color: var(--ui-text-main);
     top: 0;
     left: 0;
     position: absolute;
     width: 100%;
-    border-radius: 0 0 var(--ui-input--border-radius) var(--ui-input--border-radius);
-    border: 1px solid var(--color-text);
+    border: 1px solid var(--color-stroke-ui-dark);
     overflow: scroll;
     max-height: 200px;
+    border-radius: 0 0 var(--ui-input--border-radius) var(--ui-input--border-radius);
 
     &-wrapper {
       position: relative;
     }
 
     &__item {
-      background-color: var(--color-ui-primary);
+      background-color: var(--color-stroke-ui-dark);
+      margin-bottom: 1px;
       height: 30px;
       padding: 0 15px;
       display: flex;
@@ -180,7 +185,7 @@ const handleClickRemove = (id: string) => emit("remove", id)
       font-size: 16px;
 
       &.is-select {
-        background-color: var(--color-ui-primary) !important;
+        background-color: var(--color-stroke-ui-dark) !important;
       }
 
       &:hover {
@@ -188,13 +193,17 @@ const handleClickRemove = (id: string) => emit("remove", id)
         opacity: 0.5;
       }
 
-      &:nth-child(odd) {
-        background-color: var(--color-ui-background);
+      &:last-child {
+        margin-bottom: 0;
       }
 
-      &:nth-child(even) {
-        background-color: var(--color-stroke-ui-dark);
-      }
+      //&:nth-child(odd) {
+      //  background-color: var(--ui-background);
+      //}
+      //
+      //&:nth-child(even) {
+      //  background-color: var(--color-stroke-ui-dark);
+      //}
     }
   }
 

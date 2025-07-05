@@ -2,7 +2,9 @@
   <header class="header" :class="{ 'is-open': isOpen }">
     <div class="header__top">
       <div class="header__top-left" :class="{ 'is-not-open': !isOpen }">
-        <UiIconLogo />
+        <NuxtLink to="/">
+          <UiIconLogo />
+        </NuxtLink>
       </div>
 
       <div class="header__top-right">
@@ -164,7 +166,7 @@ const handleClickLogoutButton = async () => {
         border-radius: 25px;
 
         &:hover {
-          background-color: var(--color-ui-background);
+          background-color: var(--ui-background);
         }
 
         &:active {

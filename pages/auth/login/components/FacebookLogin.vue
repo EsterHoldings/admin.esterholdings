@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import {navigateTo} from "nuxt/app";
+import {navigateTo, useNuxtApp, useRuntimeConfig} from "nuxt/app";
 import {useAppCore} from "~/composables/useAppCore";
 import {useToast} from "vue-toastification";
 import {useAuthStore} from "~/stores/authStore";
@@ -17,9 +17,6 @@ const appCore = useAppCore();
 const toast = useToast();
 
 async function loginWithFacebook() {
-  // if (!(await $recaptcha('registration'))) {
-  //   return
-  // }
   localStorage.setItem("social_login_type", "facebook");
   const clientId = `${pub.cliFacebook}`;
   const redirectUri = `${pub.baseUrl}auth/callback`;

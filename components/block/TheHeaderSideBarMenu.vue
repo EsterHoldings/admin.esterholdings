@@ -31,6 +31,7 @@ import UiIconKeys from "~/components/ui/UiIconKeys.vue";
 import { useRouter } from "vue-router";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 import { computed } from "vue";
+import {useLocalePath} from "~/.nuxt/imports";
 
 const { t } = useI18n();
 const localePath = useLocalePath();

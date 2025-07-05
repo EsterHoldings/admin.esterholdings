@@ -12,6 +12,7 @@
 import { formData } from "./composables";
 import LoginForm from "@/pages/auth/login/components/LoginForm.vue";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
+import {onMounted} from "vue";
 
 // @ts-ignore
 definePageMeta({
@@ -22,6 +23,10 @@ definePageMeta({
 const handle2faInput = (value: string) => {
   formData.twoFaCode = value;
 }
+
+onMounted(() => {
+  formData.twoFaCode = '';
+})
 </script>
 
 <style lang="scss" scoped>

@@ -10,14 +10,14 @@
 
     <div class="admin-login-form-wrapper">
       <PanelDefault class="panel-default">
-        <AdminLoginForm :formData="formData" />
+        <AdminLoginForm :formData="formData" @input2-fa="handleInput2Fa" />
       </PanelDefault>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import {computed, onMounted} from "vue";
 import { formData } from "./composables";
 import { useThemeStore } from "~/stores/themeStore.js";
 import UiIconLogo from "~/components/ui/UiIconLogo.vue";
@@ -34,6 +34,14 @@ const themeStore = useThemeStore();
 const isThemeLight = computed(() => {
   return themeStore.currentTheme !== "dark";
 });
+
+const handleInput2Fa = (value:string) => {
+  formData.twoFaCode = value;
+}
+
+onMounted(() => {
+  formData.twoFaCode = '';
+})
 </script>
 
 <style lang="scss" scoped>

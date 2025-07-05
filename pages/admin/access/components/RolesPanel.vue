@@ -1,5 +1,5 @@
 <template>
-  <PanelDefault :title="t('admin.access.components.roles-panel.title')">
+  <PanelDefault class="roles-panel" :title="t('admin.access.components.roles-panel.title')">
     <template #title-extra>
       <UiButtonDefault
           class="add-btn"
@@ -162,6 +162,10 @@ onUnmounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+.roles-panel {
+  padding: 10px;
+}
+
 .add-btn {
   background-color: var(--color-stroke-ui-dark);
   height: 30px;

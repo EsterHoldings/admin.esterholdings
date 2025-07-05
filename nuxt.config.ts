@@ -50,7 +50,7 @@ export default defineNuxtConfig({
         server: {
             proxy: {
                 "/api/": {
-                    target: "http://localhost:8000/",
+                    target: "http://127.0.0.1:8000/",
                     changeOrigin: true,
                     secure: false,
                 },
@@ -64,12 +64,12 @@ export default defineNuxtConfig({
     runtimeConfig: {
         recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
         public: {
-            baseApi: process.env.NUXT_PUBLIC_BASE_API,
-            baseUrl: process.env.NUXT_PUBLIC_BASE_URL,
-            cliFacebook: process.env.NUXT_PUBLIC_CLI_FACEBOOK,
-            cliGoogle: process.env.NUXT_PUBLIC_CLI_GOOGLE,
-            cliLinkIdIn: process.env.NUXT_PUBLIC_CLI_LINK_ID_IN,
-            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY,
+            baseApi: process.env.NUXT_PUBLIC_BASE_API || "https://esterholdings.website/api/",
+            baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "https://stage.esterholdings.website/",
+            cliFacebook: process.env.NUXT_PUBLIC_CLI_FACEBOOK || "1668019407177142",
+            cliGoogle: process.env.NUXT_PUBLIC_CLI_GOOGLE || "351197430667-flnael7gi4buja9a203e7rgebc6ug5dq.apps.googleusercontent.com",
+            cliLinkIdIn: process.env.NUXT_PUBLIC_CLI_LINK_ID_IN || "784gmiujlnm9h2",
+            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P",
         }
     },
 
@@ -98,8 +98,9 @@ export default defineNuxtConfig({
     nitro: {
         devProxy: {
             '/api/': {
-                target: 'http://localhost:8000/',
+                target: 'http://127.0.0.1:8000/',
                 changeOrigin: true,
+                prependPath: true,
                 secure: false
             }
         }

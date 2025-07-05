@@ -1,9 +1,10 @@
 <template>
-  <div class="image-wrapper" :style="{ width: width, height: height }">
+  <div class="image-wrapper">
     <div v-if="!loaded" class="image-placeholder">
       <UiLoaderPlaceholder />
     </div>
     <img
+        @click="handleClick"
         v-show="loaded"
         @load="onLoad"
         @error="onError"
@@ -30,15 +31,6 @@ const props = defineProps({
   alt: {
     type: String,
     default: '',
-  },
-  /** необов’язково: можна задати розміри іззовні */
-  width: {
-    type: String,
-    default: '100%',
-  },
-  height: {
-    type: String,
-    default: '100%',
   },
 })
 
@@ -69,6 +61,8 @@ function handleClick() {
   cursor: pointer;
   overflow: hidden;
   background-color: var(--color-stroke-ui-dark);
+  width: 100%;
+  height: 100%;
 
   img {
     display: block;

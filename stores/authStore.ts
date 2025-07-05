@@ -66,7 +66,6 @@ export const useAuthStore = defineStore("userAuth", () => {
     // }
   }
 
-  // Вихід (очищуємо токени, стан і повертаємо на сторінку логіну)
   async function authLogout(): Promise<void> {
     setAccessToken("");
     user.value = null;
@@ -74,18 +73,18 @@ export const useAuthStore = defineStore("userAuth", () => {
     if (process.client) {
       localStorage.removeItem("user_access_token");
     }
-    navigateTo('/ru' + ROUTE_AUTH_LOGIN);
+    navigateTo(ROUTE_AUTH_LOGIN);
   }
 
   return {
     accessToken,
-    user,
-    photoUrl,
-    isAuthenticated,
-    setAccessToken,
-    setUser,
-    setPhotoUrl,
-    initAuth,
     authLogout,
+    initAuth,
+    isAuthenticated,
+    photoUrl,
+    setAccessToken,
+    setPhotoUrl,
+    setUser,
+    user,
   };
 });

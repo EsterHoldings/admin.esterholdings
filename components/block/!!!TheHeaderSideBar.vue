@@ -2,9 +2,9 @@
   <header class="side-bar-cabinet">
     <div class="side-bar-cabinet__top">
       <div class="side-bar-cabinet__top__logo">
-        <NuxtLink to="/"
-          ><UiIconLogo
-            :class="{
+        <NuxtLink to="/">
+          <UiIconLogo
+              :class="{
               'svg-invert': isThemeLight,
             }"
           />
@@ -12,41 +12,44 @@
       </div>
 
       <div class="side-bar-cabinet__actions">
-        <LanguageSwitcher isSidebar :isInvert="isThemeLight" class="icon" />
+        <LanguageSwitcher isSidebar :isInvert="isThemeLight" class="icon"/>
 
         <transition name="fade" mode="out-in">
           <span
-            :key="themeStore.currentTheme"
-            @click="themeStore.toggleTheme()"
-            class="icon"
+              :key="themeStore.currentTheme"
+              @click="themeStore.toggleTheme()"
+              class="icon"
           >
-            <UiIconMoon v-if="themeStore.currentTheme === 'dark'" />
+            <UiIconMoon v-if="themeStore.currentTheme === 'dark'"/>
             <UiIconSun
-              v-else
-              :class="{
+                v-else
+                :class="{
                 'svg-invert': isThemeLight,
               }"
             />
           </span>
         </transition>
       </div>
+
       <div class="side-bar-cabinet__top__profile">
-        <UiImageCircle
-          :class="{
-            'svg-invert': isThemeLight,
-          }"
-        />
+        <NuxtLink to="/admin/profile">
+          <UiImageCircle
+              :class="{
+              'svg-invert': isThemeLight,
+            }"
+          />
+        </NuxtLink>
       </div>
     </div>
 
     <div class="side-bar-cabinet__content">
-      <TheHeaderSideBarMenu />
+      <TheHeaderSideBarMenu/>
     </div>
 
     <div class="side-bar-cabinet__logout">
       <UiIconLogout
-        @click="handleClickLogout"
-        :class="{
+          @click="handleClickLogout"
+          :class="{
           'svg-invert': isThemeLight,
         }"
       />
@@ -55,11 +58,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
-import { navigateTo } from "nuxt/app";
-import { useAuthStore } from "~/stores/authStore";
-import { useRoute } from "vue-router";
-import { useThemeStore } from "~/stores/themeStore.js";
+import {computed} from "vue";
+import {navigateTo} from "nuxt/app";
+import {useAuthStore} from "~/stores/authStore";
+import {useRoute} from "vue-router";
+import {useThemeStore} from "~/stores/themeStore.js";
 import {useLocalePath} from "~/.nuxt/imports";
 
 import LanguageSwitcher from "~/components/block/LandingHeader/components/LanguageSwitcher.vue";
@@ -68,6 +71,7 @@ import UiIconLogo from "~/components/ui/UiIconLogo.vue";
 import UiIconLogout from "~/components/ui/UiIconLogout.vue";
 import UiIconMoon from "~/components/ui/UiIconMoon.vue";
 import UiIconSun from "~/components/ui/UiIconSun.vue";
+import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 
 const authStore = useAuthStore();
 const localePath = useLocalePath();
@@ -173,7 +177,17 @@ const isProfileRoute = computed(() => {
   &__content {
     padding: 1px;
     height: calc(100vh - 160px);
+    overflow-y: scroll;
     width: 100%;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
   }
 
   &__actions {

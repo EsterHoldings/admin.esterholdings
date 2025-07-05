@@ -14,11 +14,90 @@
         </div>
         <div class="user-verification__left__verification-list_wrapper">
           <ul class="user-verification__left__verification-list">
-            <li><UiIconFailed/><span>Email is not verified!</span></li>
-            <li><UiIconFailed/><span>{{ t("cabinet.dashboard.accountVerification.addressFailed") }}</span></li>
-            <li><UiIconSuccess/><span>{{ t("cabinet.dashboard.accountVerification.documentVerified") }}</span></li>
-            <li><UiIconWarning/><span>{{ t("cabinet.dashboard.accountVerification.paymentInProgress") }}</span></li>
-            <li><UiIconWarning/><span>{{ t("cabinet.dashboard.accountVerification.profileInProgress") }}</span></li>
+            <li>
+              <span>Email</span>
+              <UiIconFailed v-if="emailStatus === 'rejected'"/>
+              <UiIconWarning v-if="emailStatus === 'pending'"/>
+              <UiIconSuccess v-if="emailStatus === 'approved'"/>
+              <span v-if="emailStatus === 'rejected'">Отклонен!</span>
+              <span v-if="emailStatus === 'pending'">В обработке!</span>
+              <span v-if="emailStatus === 'approved'">Успешно подтвержден!</span>
+              <div v-if="emailComment" class="user-verification__left__verification-list__item-comment-title">Comment</div>
+              <div v-if="emailComment"></div>
+              <div v-if="emailComment" class="user-verification__left__verification-list__item-comment-text">
+                <UiBadge state="warning" :outline="true"><UiTextSmall>{{ emailComment }}</UiTextSmall></UiBadge>
+              </div>
+            </li>
+            <li>
+              <span>Фото</span>
+              <UiIconFailed v-if="photoStatus === 'rejected'"/>
+              <UiIconWarning v-if="photoStatus === 'pending'"/>
+              <UiIconSuccess v-if="photoStatus === 'approved'"/>
+              <span v-if="photoStatus === 'rejected'">Отклонен!</span>
+              <span v-if="photoStatus === 'pending'">В обработке!</span>
+              <span v-if="photoStatus === 'approved'">Успешно подтвержден!</span>
+              <div v-if="photoComment" class="user-verification__left__verification-list__item-comment-title">Comment</div>
+              <div v-if="photoComment"></div>
+              <div v-if="photoComment" class="user-verification__left__verification-list__item-comment-text">
+                <UiBadge state="warning" :outline="true"><UiTextSmall>{{ photoComment }}</UiTextSmall></UiBadge>
+              </div>
+            </li>
+            <li>
+              <span>Адрес</span>
+              <UiIconFailed v-if="addressStatus === 'rejected'"/>
+              <UiIconWarning v-if="addressStatus === 'pending'"/>
+              <UiIconSuccess v-if="addressStatus === 'approved'"/>
+              <span v-if="addressStatus === 'rejected'">Отклонен!</span>
+              <span v-if="addressStatus === 'pending'">В обработке!</span>
+              <span v-if="addressStatus === 'approved'">Успешно подтвержден!</span>
+              <div v-if="addressComment" class="user-verification__left__verification-list__item-comment-title">Comment</div>
+              <div v-if="addressComment"></div>
+              <div v-if="addressComment" class="user-verification__left__verification-list__item-comment-text">
+                <UiBadge state="warning" :outline="true"><UiTextSmall>{{ addressComment }}</UiTextSmall></UiBadge>
+              </div>
+            </li>
+            <li>
+              <span>Документы</span>
+              <UiIconFailed v-if="documentsStatus === 'rejected'"/>
+              <UiIconWarning v-if="documentsStatus === 'pending'"/>
+              <UiIconSuccess v-if="documentsStatus === 'approved'"/>
+              <span v-if="documentsStatus === 'rejected'">Отклонен!</span>
+              <span v-if="documentsStatus === 'pending'">В обработке!</span>
+              <span v-if="documentsStatus === 'approved'">Успешно подтвержден!</span>
+              <div v-if="documentsComment" class="user-verification__left__verification-list__item-comment-title">Comment</div>
+              <div v-if="documentsComment"></div>
+              <div v-if="documentsComment" class="user-verification__left__verification-list__item-comment-text">
+                <UiBadge state="warning" :outline="true"><UiTextSmall>{{ documentsComment }}</UiTextSmall></UiBadge>
+              </div>
+            </li>
+            <li>
+              <span>1-й Депозит</span>
+              <UiIconFailed v-if="depositStatus === 'rejected'"/>
+              <UiIconWarning v-if="depositStatus === 'pending'"/>
+              <UiIconSuccess v-if="depositStatus === 'approved'"/>
+              <span v-if="depositStatus === 'rejected'">Отклонен!</span>
+              <span v-if="depositStatus === 'pending'">В обработке!</span>
+              <span v-if="depositStatus === 'approved'">Успешно подтвержден!</span>
+              <div v-if="depositComment" class="user-verification__left__verification-list__item-comment-title">Comment</div>
+              <div v-if="depositComment"></div>
+              <div v-if="depositComment" class="user-verification__left__verification-list__item-comment-text">
+                <UiBadge state="warning" :outline="true"><UiTextSmall>{{ depositComment }}</UiTextSmall></UiBadge>
+              </div>
+            </li>
+            <li>
+              <span>Профиль</span>
+              <UiIconFailed v-if="infoStatus === 'rejected'"/>
+              <UiIconWarning v-if="infoStatus === 'pending'"/>
+              <UiIconSuccess v-if="infoStatus === 'approved'"/>
+              <span v-if="infoStatus === 'rejected'">Отклонен!</span>
+              <span v-if="infoStatus === 'pending'">В обработке!</span>
+              <span v-if="infoStatus === 'approved'">Успешно подтвержден!</span>
+              <div v-if="infoComment" class="user-verification__left__verification-list__item-comment-title">Comment</div>
+              <div v-if="infoComment"></div>
+              <div v-if="infoComment" class="user-verification__left__verification-list__item-comment-text">
+                <UiBadge state="warning" :outline="true"><UiTextSmall>{{ infoComment }}</UiTextSmall></UiBadge>
+              </div>
+            </li>
           </ul>
           <div class="user-verification__left__verification-list--is-loading" v-if="isLoading">
             <UiIconSpinnerDefault />
@@ -69,15 +148,53 @@ import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
 import UiIconFailed from "~/components/ui/UiIconFailed.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
+import useAppCore from "~/composables/useAppCore";
+import {accountsData} from "~/pages/admin/accounts/composables";
+import UiBadge from "~/components/ui/UiBadge.vue";
+import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 
 const {locale, t} = useI18n({useScope: "global"});
 
+const appCore = useAppCore();
 const isLoading = ref(false);
+
+let verificationRequestData = reactive({});
+
+const addressStatus = ref('pending');
+const documentsStatus = ref('pending');
+const depositStatus = ref('pending');
+const emailStatus = ref('pending');
+const infoStatus = ref('pending');
+const photoStatus = ref('pending');
+
+const addressComment = ref('');
+const documentsComment = ref('');
+const depositComment = ref('');
+const emailComment = ref('');
+const infoComment = ref('');
+const photoComment = ref('');
 
 const loadVerificationData = async () => {
   isLoading.value = true;
+
+  const response = await appCore.verifications.get();
+  Object.assign(verificationRequestData, response.data.data);
+
+  addressStatus.value = verificationRequestData['address']['verification_status'];
+  emailStatus.value = verificationRequestData['email']['verification_status'];
+  photoStatus.value = verificationRequestData['photo']['verification_status'];
+  infoStatus.value = verificationRequestData['info']['verification_status'];
+  documentsStatus.value = verificationRequestData['documents']['verification_status'];
+  depositStatus.value = verificationRequestData['deposit']['verification_status'];
+
+  addressComment.value = verificationRequestData['address']['comment'];
+  emailComment.value = verificationRequestData['email']['comment'];
+  photoComment.value = verificationRequestData['photo']['comment'];
+  infoComment.value = verificationRequestData['info']['comment'];
+  documentsComment.value = verificationRequestData['documents']['comment'];
+  depositComment.value = verificationRequestData['deposit']['comment'];
 
   setTimeout(() => {
     isLoading.value = false;
@@ -106,12 +223,23 @@ onMounted(async () => {
   color: var(--color-danger)
 }
 
+@media (max-width: 560px) {
+  .user-verification__left__verification-list li { grid-template-columns: 80px 24px 1fr !important; }
+}
+
+@media (max-width: 991px) {
+  .user-verification__wrapper { flex-direction: column }
+  .user-verification__left { width: 100% !important; }
+  .user-verification__right { width: 100% !important; }
+}
+
 .user {
   &-verification {
     &__wrapper {
       display: flex;
       justify-content: space-between;
       gap: 20px;
+      color: var(--ui-text-main);
     }
 
     &__left {
@@ -133,6 +261,21 @@ onMounted(async () => {
 
       &__verification-list {
         list-style: none;
+
+        &__item-comment {
+          &-title {
+            font-size: 13px;
+            font-weight: bold;
+            padding: 10px;
+          }
+
+          &-text {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 50px;
+          }
+        }
 
         &_wrapper {
           position: relative;
@@ -157,18 +300,26 @@ onMounted(async () => {
         }
 
         li {
-          height: 50px;
-          display: flex;
+          min-height: 60px;
+          display: grid;
           align-items: center;
+          grid-template-columns: 140px 40px 1fr;
           border-bottom: 1px solid var(--color-stroke-ui-dark);
+          gap: 10px;
+          padding-top: 10px;
+          padding-bottom: 10px;
 
           svg {
             margin-left: 10px;
           }
 
           span {
-            margin-left: 40px;
+            margin-left: 10px;
             margin-right: 10px;
+          }
+
+          &:last-child {
+            border-bottom: none;
           }
         }
       }

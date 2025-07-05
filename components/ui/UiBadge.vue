@@ -54,7 +54,13 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .badge {
-  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 20px;
+  width: fit-content;
+  padding: 20px 15px;
   border-radius: 10px;
 
   &.text-color-light {

@@ -1,7 +1,7 @@
 import AccountsModule from "~/composables/core/modules/accounts/accounts.module";
-import AdminAuthModule from "~/composables/core/modules/adminAuth/adminAuth.module";
 import AdminsModule from "~/composables/core/modules/admins/admins.module";
-import AuthModule from "~/composables/core/modules/clients/auth.module"; // TODO :: Fix it
+import Auth2faModule from "~/composables/core/modules/auth2fa/auth2fa.module";
+import AuthModule from "~/composables/core/modules/auth/auth.module";
 import DocumentsModule from "~/composables/core/modules/documents/documents.module";
 import HelperModule from "~/composables/core/modules/helper/helper.module";
 import ItemsModule from "~/composables/core/modules/items/items.module";
@@ -13,13 +13,14 @@ import RolesModule from "~/composables/core/modules/roles/roles.module";
 import S3Module from "~/composables/core/modules/s3/s3.module";
 import UsersModule from "~/composables/core/modules/users/users.module";
 
+import AdminAuth2faModule from "~/composables/core/modules/adminModules/auth2fa/auth2fa.module";
+import AdminAuthModule from "~/composables/core/modules/adminModules/auth/adminAuth.module";
 import AdminClientsModule from "~/composables/core/modules/adminModules/clients/clients.module";
 import AdminDocumentsModule from "~/composables/core/modules/adminModules/documents/documents.module";
 import AdminVerificationRequests from "~/composables/core/modules/adminModules/verificationRequests/verificationRequests.module";
-import Auth2faModule from "~/composables/core/modules/auth2fa/auth2fa.module";
+import VerificationsModule from "~/composables/core/modules/verification/verifications.module";
 
 export interface ICoreModules {
-    adminAuth : AdminAuthModule;
     admins : AdminsModule;
     accounts : AccountsModule;
     auth: AuthModule;
@@ -35,8 +36,11 @@ export interface ICoreModules {
     helper: HelperModule;
     password: PasswordModule;
     s3: S3Module;
+    verifications: VerificationsModule;
 
     adminModules: {
+        auth : AdminAuthModule;
+        auth2fa: AdminAuth2faModule;
         clients: AdminClientsModule,
         documents: AdminDocumentsModule,
         verificationRequests: AdminVerificationRequests,
@@ -46,7 +50,6 @@ export interface ICoreModules {
 export const useAppCore = (): ICoreModules => {
     return {
         accounts: new AccountsModule(),
-        adminAuth: new AdminAuthModule(), // TODO :: Move to adminModules
         admins: new AdminsModule(), // TODO :: Move to adminModules
         auth2fa: new Auth2faModule(),
         auth: new AuthModule(),
@@ -61,8 +64,11 @@ export const useAppCore = (): ICoreModules => {
         roles: new RolesModule(), // TODO :: Move to adminModules
         s3: new S3Module(),
         users: new UsersModule(), // TODO :: Move to adminModules or remove
+        verifications: new VerificationsModule(),
 
         adminModules: {
+            auth: new AdminAuthModule(),
+            auth2fa: new AdminAuth2faModule(),
             clients: new AdminClientsModule(),
             documents: new AdminDocumentsModule(),
             verificationRequests: new AdminVerificationRequests(),

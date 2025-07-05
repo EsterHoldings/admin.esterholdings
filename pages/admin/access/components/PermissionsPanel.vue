@@ -1,19 +1,5 @@
 <template>
-  <PanelDefault :title="t('admin.access.components.permissions-panel.title')">
-    <div class="panel-search">
-      <UiInput
-        class="panel-search__input"
-        :placeholder="
-          t('admin.access.components.permissions-panel.searchPlaceholder')
-        "
-        :borderNone="true"
-        :paddingNone="true"
-      >
-        <template #icon-left>
-          <UiIconSearch />
-        </template>
-      </UiInput>
-    </div>
+  <PanelDefault class="permissions-panel" :title="t('admin.access.components.permissions-panel.title')">
     <TableDefault
       :columns="permissionsColumns"
       :data="permissionsData"
@@ -34,8 +20,6 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import UiInput from "~/components/ui/UiInput.vue";
-import UiIconSearch from "~/components/ui/UiIconSearch.vue";
 import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
 import TableDefault from "~/components/block/tables/TableDefault.vue";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
@@ -63,10 +47,10 @@ const searchFilter = ref("");
 // ]);
 
 const permissionsColumns = computed(() => [
-  {
-    title: t("admin.access.components.permissions-panel.columns.id"),
-    key: "id",
-  },
+  // {
+  //   title: t("admin.access.components.permissions-panel.columns.id"),
+  //   key: "id",
+  // },
   {
     title: t("admin.access.components.permissions-panel.columns.name"),
     key: "name",
@@ -132,10 +116,13 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+.permissions-panel {
+  padding: 10px;
+}
+
 .panel-search {
   border: none;
   border-radius: 0;
-  border-top: 1px solid var(--color-stroke-ui-dark);
   margin-bottom: 0;
 
   &__input {

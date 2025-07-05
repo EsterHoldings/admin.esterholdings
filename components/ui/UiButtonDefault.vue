@@ -9,6 +9,7 @@
       'btn--primary': props.state === 'primary',
       'btn--warning': props.state === 'warning',
       'btn--success': props.state === 'success',
+      'btn--info--outline--small': props.state === 'info--outline--small',
       'btn--info--outline': props.state === 'info--outline',
       'btn--success--outline': props.state === 'success--outline',
       'btn--danger--outline': props.state === 'danger--outline',
@@ -23,8 +24,6 @@
 </template>
 
 <script lang="ts" setup>
-// @ts-ignore
-import UiIconSpinnerLoader from "~/components/ui/UiIconSpinnerLoader.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 
 const props = defineProps({
@@ -43,7 +42,13 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["click"]);
-const handleClick = (): void => emit("click");
+const handleClick = (): void => {
+  console.log('CLICK - CLICK - CLICK');
+  console.log('CLICK - CLICK - CLICK');
+  console.log('CLICK - CLICK - CLICK');
+  console.log('CLICK - CLICK - CLICK');
+  emit("click");
+}
 </script>
 
 <style lang="scss" scoped>
@@ -120,6 +125,15 @@ const handleClick = (): void => emit("click");
       border: 1px solid var(--color-ui-primary);
       background-color: transparent;
       color: var(--color-ui-primary);
+
+      &--small {
+        border: 1px solid var(--color-stroke-ui-dark);
+        background-color: transparent;
+        height: 32px;
+        width: 32px;
+        border-radius: 8px;
+        padding: 0;
+      }
 
       &:hover {
         background: var(--color-ui-primary) !important;
