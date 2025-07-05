@@ -64,7 +64,6 @@
         class="login-form__btn"
         :isLoading="isLoading"
         @click="validateLoginForm(doSendForm)"
-        :disabled="false"
     >
       Login
     </UiButtonDefault>

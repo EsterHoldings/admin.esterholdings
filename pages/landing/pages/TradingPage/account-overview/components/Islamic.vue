@@ -1,7 +1,7 @@
 <template>
   <div
-    class="account-card"
-    :data-text="t(`landing.sections.accounts__options[2].title`)"
+      class="account-card"
+      :data-text="t(`landing.sections.accounts__options[2].title`)"
   >
     <div class="account-content">
       <UiTextH3 class="account-title bold">
@@ -24,15 +24,15 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { computed, ref, watchEffect } from "vue";
+import {useI18n} from "vue-i18n";
+import {computed, ref, watchEffect} from "vue";
 
 import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiIconArrowRight from "~/components/ui/UiIconArrowRight.vue";
 
-const { t, tm } = useI18n();
+const {t, tm} = useI18n();
 </script>
 
 <style lang="scss" scoped>
@@ -42,7 +42,7 @@ const { t, tm } = useI18n();
   justify-content: center;
 
   &__title {
-    color: var(--ui-text-main);
+    color: white;
     text-align: center;
     margin-bottom: 70px;
   }
@@ -57,7 +57,7 @@ const { t, tm } = useI18n();
 
 .account-card {
   background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
-    url("/static/IslamicBg.jpg") center / cover no-repeat;
+  url("/static/IslamicBg.jpg") center / cover no-repeat;
 
   flex: 1;
   min-height: 500px;
@@ -93,7 +93,7 @@ const { t, tm } = useI18n();
     pointer-events: none;
     animation: scroll-text 12s linear infinite;
     transition: left 0.6s ease, bottom 0.6s ease, transform 0.6s ease,
-      filter 0.6s ease, font-size 0.6s ease, color 0.6s ease;
+    filter 0.6s ease, font-size 0.6s ease, color 0.6s ease;
   }
 
   &:hover:before {
@@ -135,7 +135,7 @@ const { t, tm } = useI18n();
   align-items: center;
   gap: 47px;
   width: 80%;
-  color: var(--ui-text-main);
+  color: white;
 }
 
 .account-title {
@@ -144,12 +144,12 @@ const { t, tm } = useI18n();
 
 .account-subtitle {
   margin-top: 5px;
-  color: var(--ui-text-secondary);
+  color: #b8b8c3;
 }
 
 .account-description {
   margin-top: 10px;
-  color: var(--ui-text-secondary);
+  color: #b8b8c3;
 }
 
 .account-mini {
@@ -158,7 +158,7 @@ const { t, tm } = useI18n();
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: var(--ui-text-main);
+  color: white;
 
   &_title {
     writing-mode: vertical-rl;
@@ -176,11 +176,13 @@ const { t, tm } = useI18n();
 .fade-slide-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .fade-slide-enter-to,
 .fade-slide-leave-from {
   opacity: 1;
