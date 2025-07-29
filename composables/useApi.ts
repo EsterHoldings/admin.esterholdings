@@ -1,15 +1,16 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
-import {useAdminAuthStore} from "~/stores/adminAuthStore";
-import {useAuthStore} from "~/stores/authStore";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
+import { useAuthStore } from "~/stores/authStore";
 import {
     ROUTE_ADMIN_AUTH_LOGIN,
     ROUTE_ADMIN_AUTH_REFRESH,
     ROUTE_AUTH_LOGIN,
     ROUTE_AUTH_REFRESH
 } from "~/constants/routes";
-import {useRuntimeConfig} from "nuxt/app";
-import {ADMIN_REFRESH_TOKEN} from "~/constants/auth";
+import { useRuntimeConfig } from "nuxt/app";
+import { ADMIN_REFRESH_TOKEN } from "~/constants/auth";
 import useAppCore from "~/composables/useAppCore";
+import { useErrorStack } from "~/stores/errors";
 
 interface runtimeCfgInterface {
     baseApi: string
@@ -28,6 +29,9 @@ export class useApi {
             withCredentials: true,
         });
 
+        const errorsStack = useErrorStack();
+        errorsStack.flush();
+
         this.api.interceptors.request.use((config) => {
             const authStore = forClient ? useAuthStore() : useAdminAuthStore();
             if (authStore.accessToken)
@@ -41,7 +45,7 @@ export class useApi {
             async err => {
                 const appCore = useAppCore();
                 const authStore = forClient ? useAuthStore() : useAdminAuthStore();
-                const orig = err.config
+                const orig = err.config;
 
                 if (
                     err.response?.status === 401 &&
@@ -51,9 +55,10 @@ export class useApi {
                     !orig.url?.endsWith(ROUTE_ADMIN_AUTH_REFRESH) &&
                     !orig.url?.endsWith(ROUTE_ADMIN_AUTH_LOGIN)
                 ) {
-                    orig._retry = true
+                    orig._retry = true;
+
                     try {
-                        const {data} = forClient ? await appCore.auth.doRefresh() : await appCore.adminModules.auth.doRefresh();
+                        const { data } = forClient ? await appCore.auth.doRefresh() : await appCore.adminModules.auth.doRefresh();
                         authStore.setAccessToken(data.access_token)
                         orig.headers.Authorization = `Bearer ${data.access_token}`
                         return this.api(orig)
@@ -61,6 +66,23 @@ export class useApi {
                         await authStore.authLogout()
                     }
                 }
+
+                // single message
+                if (err.response?.status === 401 && err.response.data && err.response.data.message) {
+                    errorsStack.$patch({
+                        errors: {},
+                        message: err.response.data?.message
+                    });
+                }
+
+                // validation errors
+                if (err.response?.status === 422 && err.response.data) {
+                    errorsStack.$patch({
+                        errors: err.response.data?.errors || {},
+                        message: err.response.data?.message || null,
+                    });
+                }
+
                 return Promise.reject(err)
             }
         )
@@ -71,7 +93,7 @@ export class useApi {
     }
 
     get(url: string, params: object = {}): Promise<AxiosResponse> {
-        return this.api.get(url, {params});
+        return this.api.get(url, { params });
     }
 
     post(url: string, data?: object): Promise<AxiosResponse> {
@@ -87,7 +109,7 @@ export class useApi {
     }
 
     delete(url: string, params: object = {}): Promise<AxiosResponse> {
-        return this.api.delete(url, {params});
+        return this.api.delete(url, { params });
     }
 }
 

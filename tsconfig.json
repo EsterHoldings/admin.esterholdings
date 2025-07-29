@@ -2,11 +2,28 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
+      "~/*": [
+        "./*"
+      ],
+      "@/*": [
+        "./*"
+      ]
     },
-    "types": ["pinia", "@pinia/nuxt", "axios", "./types/vue-shim.d.ts"],
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "types": [
+      "axios",
+      "@pinia/nuxt",
+      "grecaptcha",
+      "vite/client",
+      "nuxt/types",
+      "./types/runtime-config"
+    ],
+    // ???
+    // "typeRoots": [
+    //   "./types",
+    //   "./node_modules/@types",
+    //   "./node_modules/@pinia/nuxt",
+    //   "./node_modules",
+    // ]
   },
   "include": [
     "types/**/*.d.ts",
@@ -17,22 +34,11 @@
     "composables/**/*.ts",
     "plugins/**/*.ts",
     ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
-    ".nuxt/types/imports.d.ts",
     "404.vue"
   ],
-  "exclude": ["node_modules", ".output", ".nuxt"]
+  "exclude": [
+    "node_modules",
+    ".output",
+    ".nuxt"
+  ]
 }

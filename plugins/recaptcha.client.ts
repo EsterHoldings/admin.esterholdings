@@ -1,6 +1,8 @@
+import { defineNuxtPlugin, useRuntimeConfig } from "nuxt/app"
+
 export default defineNuxtPlugin(() => {
-    const {public: pub} = useRuntimeConfig()
-    const SITE_KEY = pub.reCaptchaSiteKey
+    const { public: pub } = useRuntimeConfig();
+    const { reCaptchaSiteKey: SITE_KEY, baseApi } = pub;
 
     const waitForGrecaptcha = (): Promise<typeof grecaptcha> => {
         return new Promise((resolve) => {
@@ -17,17 +19,18 @@ export default defineNuxtPlugin(() => {
 
     const executeRecaptcha = async (action: string): Promise<boolean> => {
         try {
-            const grecaptcha = await waitForGrecaptcha()
+            const grecaptcha = await waitForGrecaptcha();
 
             const token = await new Promise<string>((resolve, reject) => {
                 grecaptcha.ready(() => {
-                    grecaptcha.execute(SITE_KEY, {action})
-                        .then(resolve)
-                        .catch(reject)
+                    grecaptcha.execute(SITE_KEY, { action })
+                        .then(resolve);
                 })
             })
 
-            const response = await $fetch('http://localhost:8000/api/verify-recaptcha', {
+            const response = await $fetch<{
+                success: boolean, score: number
+            }>(`${baseApi}/verify-recaptcha`, {
                 method: 'POST',
                 body: {
                     token,
@@ -35,11 +38,12 @@ export default defineNuxtPlugin(() => {
                 },
             })
 
-            
+
             return response.success === true && response.score >= 0.5
         } catch (err) {
-            console.error('reCAPTCHA error:', err)
-            return false
+            console.error('reCAPTCHA error:', err);
+
+            return false;
         }
     }
 
