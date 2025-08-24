@@ -4,17 +4,10 @@
       <UiTextH3 class="account_title">Account overview</UiTextH3>
 
       <div class="account_content">
-        <TabsDefault
-          :tabsList="tabsList"
-          @selectTab="handleActiveTab"
-          :activeTabIndex="activeTabIndex"
-        />
+        <TabsDefault :tabsList="tabsList" @selectTab="handleActiveTab" :activeTabIndex="activeTabIndex" />
 
         <transition name="slide-short" mode="out-in">
-          <component
-            :is="tabsList[activeTabIndex].component"
-            :key="activeTabIndex"
-          />
+          <component :is="tabsList[activeTabIndex].component" :key="activeTabIndex" />
         </transition>
       </div>
     </div>
@@ -49,22 +42,22 @@ const activeTabIndex = ref(Number(route.query.index) || 0);
 const tabsList = computed(() => {
   return [
     {
-      label: t("landing.sections.accounts__options[0].title"),
+      label: t("landing.sections.accounts__options.0.title"),
       component: Standard,
     },
 
     {
-      label: t("landing.sections.accounts__options[1].title"),
+      label: t("landing.sections.accounts__options.1.title"),
       component: Pro,
     },
 
     {
-      label: t("landing.sections.accounts__options[2].title"),
+      label: t("landing.sections.accounts__options.2.title"),
       component: Islamic,
     },
 
     {
-      label: t("landing.sections.accounts__options[3].title"),
+      label: t("landing.sections.accounts__options.3.title"),
       component: Tandem,
     },
   ];

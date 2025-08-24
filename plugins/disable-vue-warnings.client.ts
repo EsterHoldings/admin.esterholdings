@@ -1,5 +1,5 @@
-import { defineNuxtPlugin } from '#app'
+import { defineNuxtPlugin } from "nuxt/app";
 
 export default defineNuxtPlugin(nuxtApp => {
-    nuxtApp.vueApp.config.warnHandler = () => {}
+    nuxtApp.vueApp.config.warnHandler = () => { }
 })

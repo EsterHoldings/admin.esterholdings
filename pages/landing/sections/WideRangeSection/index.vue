@@ -9,19 +9,12 @@
         class="tabs"
       /> -->
 
-      <TabsDefault
-        :tabsList="tabsList"
-        @selectTab="handleActiveTab"
-        :activeTabIndex="activeTabIndex"
-      />
+      <TabsDefault :tabsList="tabsList" @selectTab="handleActiveTab" :activeTabIndex="activeTabIndex" />
     </div>
 
     <div class="wide_range_section__content">
       <transition name="slide-short" mode="out-in">
-        <component
-          :is="tabsList[activeTabIndex].component"
-          :key="activeTabIndex"
-        />
+        <component :is="tabsList[activeTabIndex].component" :key="activeTabIndex" />
       </transition>
     </div>
   </section>
@@ -49,31 +42,31 @@ const activeTabIndex = ref(0);
 const tabsList = computed(() => {
   return [
     {
-      label: t("landing.sections.wide_range__categories[0].label"),
+      label: t("landing.sections.wide_range__categories.0.label"),
       component: Forex,
     },
     {
-      label: t("landing.sections.wide_range__categories[1].label"),
+      label: t("landing.sections.wide_range__categories.1.label"),
       component: Metals,
     },
     {
-      label: t("landing.sections.wide_range__categories[2].label"),
+      label: t("landing.sections.wide_range__categories.2.label"),
       component: CryptocurrencyCDs,
     },
     {
-      label: t("landing.sections.wide_range__categories[3].label"),
+      label: t("landing.sections.wide_range__categories.3.label"),
       component: Indices,
     },
     {
-      label: t("landing.sections.wide_range__categories[4].label"),
+      label: t("landing.sections.wide_range__categories.4.label"),
       component: Shares,
     },
     {
-      label: t("landing.sections.wide_range__categories[5].label"),
+      label: t("landing.sections.wide_range__categories.5.label"),
       component: Energy,
     },
     {
-      label: t("landing.sections.wide_range__categories[6].label"),
+      label: t("landing.sections.wide_range__categories.6.label"),
       component: ETFS,
     },
   ];

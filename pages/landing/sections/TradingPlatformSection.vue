@@ -1,11 +1,8 @@
 <template>
-  <section
-    class="trading-platform"
-    :class="[
-      'trading-platform',
-      { 'light-theme': themeStore.currentTheme === 'light' },
-    ]"
-  >
+  <section class="trading-platform" :class="[
+    'trading-platform',
+    { 'light-theme': themeStore.currentTheme === 'light' },
+  ]">
     <div class="trading-platform_overlay">
       <UiTextH3 class="trading-platform_title">
         {{ t("landing.sections.platform__title") }}
@@ -13,34 +10,25 @@
 
       <div class="blur-circle"></div>
       <div class="platform-title">
-        <UiTextTrading
-          :title="t('landing.sections.platform__features[0].title')"
-          :subTitle="t('landing.sections.platform__features[0].text')"
-          color="primary"
-        />
+        <h1>TODO {{ t('landing.sections.platform__features.0.title') }}</h1>
+        <UiTextTrading :title="t('landing.sections.platform__features.0.title')"
+          :subTitle="t('landing.sections.platform__features.0.text')" color="primary" />
       </div>
 
       <div class="devices">
         <div class="device device-laptop">
           <img src="/static/Macbook.png" alt="Laptop Trading" />
 
-          <UiTextTrading
-            class="device device-laptop_position"
-            :title="t('landing.sections.platform__features[1].title')"
-            :subTitle="t('landing.sections.platform__features[1].text')"
-            hasBorder
-          />
+          <UiTextTrading class="device device-laptop_position"
+            :title="t('landing.sections.platform__features.1..title')"
+            :subTitle="t('landing.sections.platform__features[1].text')" hasBorder />
         </div>
 
         <div class="device device-main">
           <img src="/static/iMac.png" alt="Trading Platform" />
 
-          <UiTextTrading
-            class="device device-main_position"
-            :title="t('landing.sections.platform__features[2].title')"
-            :subTitle="t('landing.sections.platform__features[2].text')"
-            hasBorder
-          />
+          <UiTextTrading class="device device-main_position" :title="t('landing.sections.platform__features[2].title')"
+            :subTitle="t('landing.sections.platform__features[2].text')" hasBorder />
         </div>
 
         <div class="device device-phone">
@@ -50,26 +38,17 @@
         <div class="device device-ipad">
           <img src="/static/iPad.png" alt="Mobile Trading" />
 
-          <UiTextTrading
-            class="device device-ipad_position"
-            :title="t('landing.sections.platform__features[3].title')"
-            :subTitle="t('landing.sections.platform__features[3].text')"
-            color="warning"
-          />
+          <UiTextTrading class="device device-ipad_position" :title="t('landing.sections.platform__features[3].title')"
+            :subTitle="t('landing.sections.platform__features[3].text')" color="warning" />
         </div>
       </div>
 
       <div class="background-glow"></div>
 
       <div class="floating__wrapper">
-        <UiTextTrading
-          class="floating__item"
-          v-for="(item, index) in platformFeatures"
-          :key="index"
+        <UiTextTrading class="floating__item" v-for="(item, index) in platformFeatures" :key="index"
           :title="t(`landing.sections.platform__features[${index}].title`)"
-          :subTitle="t(`landing.sections.platform__features[${index}].text`)"
-          hasBorder
-        />
+          :subTitle="t(`landing.sections.platform__features[${index}].text`)" hasBorder />
       </div>
     </div>
   </section>
@@ -231,10 +210,12 @@ const platformFeatures = [0, 1, 2, 3];
     transform: scale(1);
     opacity: 0.5;
   }
+
   50% {
     transform: scale(1.1);
     opacity: 0.7;
   }
+
   100% {
     transform: scale(1);
     opacity: 0.5;
@@ -287,9 +268,11 @@ const platformFeatures = [0, 1, 2, 3];
   .trading-platform {
     min-height: 1100px;
   }
+
   .trading-wrapper {
     display: none;
   }
+
   .devices {
     max-width: 767px;
     display: flex;
@@ -353,6 +336,7 @@ const platformFeatures = [0, 1, 2, 3];
   .trading-platform {
     min-height: calc(900px + 4 * 50px);
   }
+
   .trading-platform_title {
     font-size: 26px;
     white-space: normal;
@@ -362,6 +346,7 @@ const platformFeatures = [0, 1, 2, 3];
     top: 68% !important;
     left: 80% !important;
   }
+
   .floating__wrapper {
     margin-top: 100px;
   }

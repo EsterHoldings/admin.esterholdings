@@ -15,18 +15,19 @@
       "grecaptcha",
       "vite/client",
       "nuxt/types",
-      "./types/runtime-config"
+      "@nuxtjs/i18n",
     ],
     // ???
     // "typeRoots": [
-    //   "./types",
     //   "./node_modules/@types",
     //   "./node_modules/@pinia/nuxt",
     //   "./node_modules",
+    //   "./types",
     // ]
   },
   "include": [
     "types/**/*.d.ts",
+    "types/**/*.ts",
     "nuxt.config.ts",
     "pages/**/*.vue",
     "components/**/*.vue",

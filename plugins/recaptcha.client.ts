@@ -1,8 +1,8 @@
 import { defineNuxtPlugin, useRuntimeConfig } from "nuxt/app"
 
 export default defineNuxtPlugin(() => {
-    const { public: pub } = useRuntimeConfig();
-    const { reCaptchaSiteKey: SITE_KEY, baseApi } = pub;
+    const { public: pub } = useRuntimeConfig()
+    const SITE_KEY = pub.reCaptchaSiteKey
 
     const waitForGrecaptcha = (): Promise<typeof grecaptcha> => {
         return new Promise((resolve) => {
@@ -24,7 +24,8 @@ export default defineNuxtPlugin(() => {
             const token = await new Promise<string>((resolve, reject) => {
                 grecaptcha.ready(() => {
                     grecaptcha.execute(SITE_KEY, { action })
-                        .then(resolve);
+                        .then(resolve)
+                        .catch(reject)
                 })
             })
 

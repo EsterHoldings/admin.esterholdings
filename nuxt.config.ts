@@ -1,4 +1,4 @@
-import {defineNuxtConfig} from "nuxt/config";
+import { defineNuxtConfig } from "nuxt/config";
 import * as process from "node:process";
 
 // @ts-ignore
@@ -7,11 +7,14 @@ export default defineNuxtConfig({
         shim: false,
     },
     compatibilityDate: "2024-04-03",
-    devtools: {enabled: true},
+    devtools: { enabled: true },
     ssr: true,
     css: ["~/assets/styles/main.scss"],
     modules: ["@pinia/nuxt", "@nuxtjs/i18n"],
-    plugins: ["~/plugins/eventBus.ts"],
+    plugins: [
+        "~/plugins/eventBus.ts",
+        '~/plugins/app-config.client.ts',
+    ],
     imports: {
         dirs: ["stores"],
     },
@@ -26,21 +29,21 @@ export default defineNuxtConfig({
                 code: "en",
                 iso: "en-US",
                 name: "English",
-                file: "en.json",
+                file: "en.ts",
             },
 
             {
                 code: "ru",
                 iso: "ru-RU",
                 name: "Russian",
-                file: "ru.json",
+                file: "ru.ts",
             },
         ],
-        fallbackLocale: 'en',
-        defaultLocale: "en",
-        experimental: {
-            jsTsFormatResource: false,
-        },
+        fallbackLocale: process.env.FALLBACK_LOCALE,
+        defaultLocale: process.env.APP_LOCALE,
+        // experimental: {
+        //     jsTsFormatResource: false,
+        // },
         escapeParameterHtml: false,
         runtimeOnly: false,
         compositionOnly: true,
@@ -64,18 +67,18 @@ export default defineNuxtConfig({
     runtimeConfig: {
         recaptchaSecretKey: process.env.RECAPTCHA_SECRET_KEY,
         public: {
-            baseApi: process.env.NUXT_PUBLIC_BASE_API || "https://esterholdings.website/api/",
-            baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "https://stage.esterholdings.website/",
-            cliFacebook: process.env.NUXT_PUBLIC_CLI_FACEBOOK || "1668019407177142",
-            cliGoogle: process.env.NUXT_PUBLIC_CLI_GOOGLE || "351197430667-flnael7gi4buja9a203e7rgebc6ug5dq.apps.googleusercontent.com",
-            cliLinkIdIn: process.env.NUXT_PUBLIC_CLI_LINK_ID_IN || "784gmiujlnm9h2",
-            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P",
+            baseApi: process.env.NUXT_PUBLIC_BASE_API || "http://localhost:8000/api/",
+            baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000/",
+            cliFacebook: process.env.NUXT_PUBLIC_CLI_FACEBOOK,
+            cliGoogle: process.env.NUXT_PUBLIC_CLI_GOOGLE,
+            cliLinkIdIn: process.env.NUXT_PUBLIC_CLI_LINK_ID_IN,
+            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY,
         }
     },
 
     routeRules: {
-        "/**": {ssr: false} as any,
-        "/": {ssr: true} as any,
+        "/**": { ssr: false } as any,
+        "/": { ssr: true } as any,
     },
 
     app: {
