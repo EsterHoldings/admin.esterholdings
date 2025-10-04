@@ -224,8 +224,8 @@
           class="fixed bottom-4 right-4 z-50
              w-[calc(100vw-1rem)] md:w-[380px]
              h-[70vh] md:h-[540px]
-             rounded-2xl border border-slate-200 dark:border-slate-700
-             bg-white dark:bg-slate-900 shadow-2xl overflow-hidden"
+             rounded-2xl border border-[var(--ui-primary-main)] dark:border-slate-700
+             bg-[var(--ui-background)] shadow-2xl overflow-hidden"
       />
     </div>
   </UiContainer>
