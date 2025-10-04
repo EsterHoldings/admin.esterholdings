@@ -71,6 +71,10 @@ hr {
   font-weight: 400 !important;
 }
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer utilities {
   /* Приховує вертикальну/горизонтальну смугу, але зберігає прокрутку */
   .no-scrollbar {
