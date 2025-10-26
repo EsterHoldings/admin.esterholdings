@@ -9,7 +9,7 @@
 
 <style scoped lang="scss">
 .h5 {
-  color: var(--ui-text-main);
+  color: currentColor;
   // font-size: 14px;
   font-size: 16px;
   font-weight: 300;

@@ -72,7 +72,6 @@
                 </UiButtonDefault>
               </nuxt-link>
 
-
               <div class="actions-icons">
                 <LanguageSwitcher
                     class="icon"
@@ -90,14 +89,14 @@
                         :class="{
                         'svg-invert':
                           isThemeLight || isWithPicture || forceSvgInvert,
-                      }"
+                        }"
                     />
 
                     <UiIconSun
                         :class="{
-                        'svg-invert':
-                          isThemeLight || isWithPicture || forceSvgInvert,
-                      }"
+                          'svg-invert':
+                            !(isThemeLight || isWithPicture || forceSvgInvert),
+                          }"
                         v-else
                     />
                   </span>
@@ -236,7 +235,10 @@ const isThemeLight = computed(() => {
 });
 
 const isWithPicture = computed(() => {
-  if (themeStore.currentTheme == "dark") {
+  console.log('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-');
+  console.log('IS WITH PICTURE', themeStore.currentTheme);
+  console.log('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-');
+  if (themeStore.currentTheme === "dark") {
     return false;
   } else {
     return isSlideWithoutPicture.value;

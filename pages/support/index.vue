@@ -46,10 +46,10 @@
             </template>
           </UiSelect>
 
-          <UiButtonDefault state="info--small">
-            <UiIconFilters class="mr-2"/>
-            <UiTextSmall>Filters</UiTextSmall>
-          </UiButtonDefault>
+<!--          <UiButtonDefault state="info&#45;&#45;small">-->
+<!--            <UiIconFilters class="mr-2"/>-->
+<!--            <UiTextSmall>Filters</UiTextSmall>-->
+<!--          </UiButtonDefault>-->
         </div>
       </div>
 
@@ -59,19 +59,20 @@
           class="relative rounded-2xl border border-[var(--color-stroke-ui-dark)] bg-[var(--ui-background)]"
       >
         <div
-            class="absolute top-0 left-0 right-0 bottom-0 backdrop-blur-sm rounded-lg flex items-center justify-center"
-            v-if="isLoading">
+            class="absolute !top-[46px] left-0 right-0 bottom-0 backdrop-blur-sm rounded-lg flex items-center justify-center"
+            v-show="isLoading">
           <UiIconSpinnerDefault/>
         </div>
 
         <div class="overflow-scroll no-scrollbar rounded-lg">
+
           <table class="w-full text-sm">
             <thead class="bg-[var(--color-stroke-ui-light)] h-[46px]">
             <tr class="text-left">
-              <th class="px-4 font-semibold">
-                <UiTextSmall class="!text-[var(--ui-text-invert)]">ID Ticket</UiTextSmall>
+              <th class="px-4 font-semibold w-[40px]">
+                <UiTextSmall class="!text-[var(--ui-text-invert)]">ID</UiTextSmall>
               </th>
-              <th class="px-4 font-semibold">
+              <th class="px-4 font-semibold w-full">
                 <UiTextSmall class="!text-[var(--ui-text-invert)]">Subject of the appeal</UiTextSmall>
               </th>
               <th class="px-4 font-semibold">
@@ -103,12 +104,13 @@
               <th class="px-2 font-semibold !text-[var(--ui-text-invert)]">...</th>
             </tr>
             </thead>
-            <tbody v-if="!isLoading && tickets.length > 0" class="divide-y divide-[var(--color-stroke-ui-dark)]">
+<!--            <tbody v-if="!isLoading && tickets.length > 0" class="divide-y divide-[var(&#45;&#45;color-stroke-ui-dark)]">-->
+            <tbody v-if="tickets.length > 0" class="divide-y divide-[var(--color-stroke-ui-dark)]">
             <tr v-for="t in filtered" :key="t.id"
                 class="bg-[var(--ui-background-panel)] hover:bg-[var(--color-stroke-ui-dark)] h-[60px]">
 
               <td class="px-4 whitespace-nowrap">
-                {{ t.id }}
+                <UiIconCopy :text="t.id" />
               </td>
 
               <td class="px-4">
@@ -122,7 +124,7 @@
               </td>
 
               <td class="px-4">
-                <UiBadge :outline="true" state="info" class="whitespace-nowrap">{{ t.status }}</UiBadge>
+                <UiBadge :outline="true" state="info" class="whitespace-nowrap !p-[10px]">{{ t.status }}</UiBadge>
               </td>
 
               <td class="px-2 text-right">
@@ -144,13 +146,16 @@
             </tr>
             </tbody>
           </table>
-          <div v-if="!isLoading && tickets.length === 0" class="w-full h-[100px] flex items-center justify-center">
+
+<!--          <div v-if="!isLoading && tickets.length === 0" class="w-full h-[100px] flex items-center justify-center">-->
+          <div v-if="tickets.length === 0" class="w-full h-[50vh] flex items-center justify-center">
             <UiButtonDefault state="info" @click="handleClickCreateNewTicket">
               <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]"/>
               <span>New ticket</span>
             </UiButtonDefault>
           </div>
         </div>
+
       </PanelDefault>
 
       <!-- Пагінація -->
@@ -257,6 +262,7 @@ import AccountsCreateNew from "~/pages/accounts/components/AccountsCreateNew.vue
 import {useI18n} from "vue-i18n";
 import TicketsCreateNew from "~/pages/support/components/TicketsCreateNew.vue";
 import useEventBus from "~/composables/useEventBus";
+import UiIconCopy from "~/components/ui/UiIconCopy.vue";
 
 type Status = 'resolved' | 'in_progress' | 'cancelled'
 
@@ -554,6 +560,30 @@ const handleChangePerPage = async (newPerPage: number) => {
   perPage.value = newPerPage;
   await loadData();
 };
+
+const handleCopyId = async (id: string): Promise<boolean> => {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(id);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = id;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    console.log('Скопійовано в буфер:', id);
+    return true;
+  } catch (err) {
+    console.error('Не вдалося скопіювати:', err);
+    return false;
+  }
+};
+
 
 onMounted(async () => {
   useEventBus.on("loadDataForSupport", loadData);

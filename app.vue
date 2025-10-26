@@ -17,6 +17,7 @@ import {ref, provide, onMounted} from "vue";
 import ModalRightSideDefault from "./components/block/modals/ModalRightSideDefault.vue";
 import {useThemeStore} from './stores/themeStore'
 
+import "vue-draggable-resizable/style.css";
 
 const modalRef = ref();
 const modalContent = ref(null);

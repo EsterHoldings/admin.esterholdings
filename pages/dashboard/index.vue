@@ -3,34 +3,11 @@
     <div class="dashboard">
       <div class="dashboard__title">
         <UiTextH4>{{ t("cabinet.dashboard.title") }}</UiTextH4>
-
-        <button
-            class="px-3 py-2 rounded bg-blue-600 text-white"
-            @click="() => $fetch(`${useRuntimeConfig().public.apiBase}/api/test-broadcast`, { method: 'POST', credentials: 'include' })"
-        >
-          Send test broadcast
-        </button>
       </div>
+
       <div class="dashboard__grid">
-
         <!-- Deposit & Withdraw -->
-        <PanelDefault>
-          <div class="card">
-            <div class="card__actions">
-              <NuxtLink to="/payments/create">
-                <UiButtonDefault state="success">{{t("cabinet.dashboard.actions.newDeposit")}}</UiButtonDefault>
-              </NuxtLink>
-
-              <NuxtLink to="/payments/create">
-                <UiButtonDefault state="primary">{{t("cabinet.dashboard.actions.newWithdrawal") }}</UiButtonDefault>
-              </NuxtLink>
-            </div>
-
-            <div class="chart-placeholder">
-              {{ t("cabinet.dashboard.actions.chartPlaceholder") }}
-            </div>
-          </div>
-        </PanelDefault>
+        <TransactionsWidget />
 
         <!-- Account Verification -->
         <PanelDefault>
@@ -152,6 +129,8 @@ import UiTextH4 from "~/components/ui/UiTextH4.vue";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 import {useNuxtApp, useRuntimeConfig} from "nuxt/app";
 import {onBeforeUnmount, onMounted} from "vue";
+import VerificationsPanel from "~/pages/admin/verifications/components/VerificationsPanel.vue";
+import TransactionsWidget from "~/pages/dashboard/components/TransactionsWidget.vue";
 const { locale, t } = useI18n({ useScope: "global" });
 
 const { $echo } = useNuxtApp();

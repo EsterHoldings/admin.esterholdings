@@ -28,10 +28,15 @@ export default defineNuxtPlugin(() => {
     })
     console.table('--- --- ---');
 
-    const apiBase = cfg.hostBase || 'http://localhost:8000'
+    const apiBase = cfg.hostBase || 'http://localhost:3000'
+
+    console.log('API BASE URL:', apiBase);
+
     window.Pusher = Pusher
 
     const token = localStorage.getItem(USER_ACCESS_TOKEN) || ''
+
+    console.log('TOKEN:', apiBase);
 
     const xsrf = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)?.[1] ?? ''
     const echo = new Echo({

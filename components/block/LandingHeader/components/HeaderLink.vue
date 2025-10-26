@@ -46,7 +46,7 @@ const iconDownClass = computed(() => ({
   display: flex;
   align-items: center;
   gap: 10px;
-  color: white;
+  color: var(--ui-text-invert);
   text-decoration: none;
   cursor: pointer;
 

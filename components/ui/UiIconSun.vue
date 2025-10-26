@@ -1,23 +1,22 @@
 <template>
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_441_2272)">
-      <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M12 1V3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M12 21V23" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M4.21973 4.22021L5.63973 5.64021" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M18.3604 18.3599L19.7804 19.7799" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M1 12H3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M21 12H23" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M4.21973 19.7799L5.63973 18.3599" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M18.3604 5.64021L19.7804 4.22021" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g clip-path="url(#clip0_442_2403)">
+      <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 1V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 21V23" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.21973 4.22021L5.63973 5.64021" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18.3604 18.3599L19.7804 19.7799" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1 12H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 12H23" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.21973 19.7799L5.63973 18.3599" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18.3604 5.64021L19.7804 4.22021" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
     <defs>
-      <clipPath id="clip0_441_2272">
-        <rect width="24" height="24" fill="white"/>
+      <clipPath id="clip0_442_2403">
+        <rect width="24" height="24" fill="currentColor"/>
       </clipPath>
     </defs>
   </svg>
-
 </template>
 
 <style lang="scss" scoped>
@@ -25,21 +24,22 @@ svg {
   width: 24px;
   height: 24px;
 
+
   defs {
     clipPath {
       rect {
-        fill: var(--ui-text-main) !important;
+        fill: currentColor !important;
       }
     };
   }
 
   rect {
-    fill: var(--ui-text-main) !important;
+    fill: currentColor !important;
   }
 
   g {
     path {
-      stroke: var(--text-main) !important;
+      stroke: currentColor !important;
     }
   }
 }
