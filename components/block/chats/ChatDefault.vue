@@ -342,7 +342,6 @@ function applyPresencePayload(payload:any){
 }
 
 function joinPresence(){
-  leavePresence()
   presenceChan = $echo.private(`support.ticket.${props.ticketId}`)
       .listen('.ticket.presence.updated', (payload:any) => {
         applyPresencePayload(payload)
@@ -379,8 +378,9 @@ onMounted( async ()=>{
   await loadInitial()
   window.addEventListener('resize', onViewportResize)
 
-  privateChan = subscribePrivate()
+  await apiOpen(props.ticketId)
   joinPresence()
+  privateChan = subscribePrivate()
   startPresenceHeartbeat(props.ticketId)
 })
 
@@ -395,9 +395,10 @@ onBeforeUnmount(()=>{
 watch(() => props.ticketId, async (id, oldId) => {
   if (id === oldId) return
   try{ if(privateChan) $echo.leave(`chat.${oldId}`) }catch{}
-  privateChan = subscribePrivate()
   leavePresence()
+  await apiOpen(id)
   joinPresence()
+  privateChan = subscribePrivate()
   stopPresenceHeartbeat()
   await startPresenceHeartbeat(id)
   booting.value = true
