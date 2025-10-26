@@ -26,6 +26,7 @@ import AdminAuthModule from "~/composables/core/modules/adminModules/auth/adminA
 import AdminClientsModule from "~/composables/core/modules/adminModules/clients/clients.module";
 import AdminDocumentsModule from "~/composables/core/modules/adminModules/documents/documents.module";
 import AdminVerificationRequests from "~/composables/core/modules/adminModules/verificationRequests/verificationRequests.module";
+import TicketsPresenceModule from "~/composables/core/modules/ticketsPresence/ticketsPresence.module";
 
 export interface ICoreModules {
     admins : AdminsModule;
@@ -47,6 +48,7 @@ export interface ICoreModules {
     password: PasswordModule;
     s3: S3Module;
     tickets: TicketsModule;
+    ticketsPresence: TicketsPresenceModule;
     messages: MessagesModule;
     verifications: VerificationsModule;
 
@@ -80,6 +82,7 @@ export const useAppCore = (): ICoreModules => {
         roles: new RolesModule(), // TODO :: Move to adminModules
         s3: new S3Module(),
         tickets: new TicketsModule(),
+        ticketsPresence: new TicketsPresenceModule(),
         messages: new MessagesModule(),
         users: new UsersModule(), // TODO :: Move to adminModules or remove
         verifications: new VerificationsModule(),

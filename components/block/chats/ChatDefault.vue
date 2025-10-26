@@ -23,7 +23,6 @@
             @resizestop="onResizeStop"
         >
           <div class="support-chat flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[var(--ui-primary-main)] bg-[var(--color-stroke-ui-dark)] shadow-[0_8px_40px_rgba(0,0,0,0.45)]">
-            <!-- Header -->
             <div class="drag-handle relative flex select-none items-center justify-between border-b border-[#2a3f73] px-4 py-3">
               <div class="flex items-center gap-3">
                 <h3 class="text-lg font-semibold text-white/95">Support Chat</h3>
@@ -42,7 +41,6 @@
               </button>
             </div>
 
-            <!-- Лоадер (1px від рамки) -->
             <div
                 v-if="booting"
                 class="absolute z-10 flex items-center justify-center backdrop-blur-sm p-4"
@@ -51,7 +49,6 @@
               <UiIconSpinnerDefault class="!text-[var(--ui-text-main)]"/>
             </div>
 
-            <!-- Messages -->
             <div
                 ref="listRef"
                 class="messages no-scrollbar flex-1 overflow-y-auto px-4 py-5 space-y-6"
@@ -59,7 +56,6 @@
                 @scroll.passive="onScroll"
             >
               <template v-for="item in renderItems" :key="item.key">
-                <!-- — today / yesterday — -->
                 <div v-if="item.kind==='sep'" class="flex items-center gap-3 text-white/70 select-none">
                   <span class="h-px flex-1 bg-white/10"></span>
                   <span class="text-xs uppercase tracking-wider opacity-80">— {{ item.label }} —</span>
@@ -67,7 +63,6 @@
                 </div>
 
                 <template v-else>
-                  <!-- left -->
                   <div
                       v-if="!isMe(item.msg)"
                       class="flex items-end gap-3"
@@ -80,7 +75,6 @@
                     </div>
                   </div>
 
-                  <!-- right -->
                   <div
                       v-else
                       class="flex items-end justify-end gap-3"
@@ -98,7 +92,6 @@
               <div v-if="!messages.length && !booting" class="text-center text-white/60">No messages yet</div>
             </div>
 
-            <!-- Composer -->
             <div class="border-t border-[#2a3f73] p-3">
               <div class="flex items-center gap-2 rounded-2xl bg-[#0a2a74]/50 p-2 ring-1 ring-[#2a3f73]">
                 <textarea
@@ -147,7 +140,6 @@ type PresenceUser = { id:number; name:string; role?:string }
 const props = defineProps<{ ticketId: number; currentUser: { id: number; name: string; role?:string }, adminChat: false }>()
 const emit = defineEmits(['close'])
 
-/* ===== позиціювання ===== */
 const mounted = ref(false)
 const minW = 320, minH = 420, margin = 16
 const pos = reactive({ top: 0, left: 0, width: 380, height: 540 })
@@ -170,7 +162,6 @@ function onViewportResize(){ clampToViewport() }
 function onDragStop(l:number,t:number){ pos.left=l; pos.top=t }
 function onResizeStop(l:number,t:number,w:number,h:number){ pos.left=l; pos.top=t; pos.width=w; pos.height=h }
 
-/* ===== чат / скрол ===== */
 const listRef = ref<HTMLElement|null>(null)
 const inputRef = ref<HTMLTextAreaElement|null>(null)
 const booting = ref(true)
@@ -179,9 +170,8 @@ const PAGE_SIZE = 6
 let nextPage = 2
 const hasMore = ref(true)
 const draft = ref('')
-const messages = reactive<ChatMessage[]>([]) // ASC: старі → нові
+const messages = reactive<ChatMessage[]>([])
 
-/* автоскрол */
 const userIsNearBottom = ref(true)
 let suppressScrollEvents = false
 let lastUserScrollAt = 0
@@ -191,7 +181,6 @@ const SCROLL_IDLE_MS = 200
 const isMe = (m:ChatMessage)=> m.author==='me'
 const canSend = computed(()=> draft.value.trim().length>0)
 
-/* === дата/час === */
 function pad(n:number){ return n<10 ? `0${n}` : `${n}` }
 function formatDateTime(ts:number){
   const d = new Date(ts)
@@ -214,11 +203,10 @@ const localDayKey = (ts: number) => {
 const todayLocalKey = computed(() => localDayKey(Date.now()))
 const yesterdayLocalKey = computed(() => { const y = new Date(); y.setDate(y.getDate()-1); return localDayKey(+y) })
 
-/* === список + сепаратори === */
 const renderItems = computed<RenderItem[]>(() => {
   const out: RenderItem[] = []
   const seen = new Set<number>()
-  for (const m of messages) { // ASC
+  for (const m of messages) {
     const key = localDayKey(m.createdAt)
     if (!seen.has(key)) {
       if (key === todayLocalKey.value) out.push({ kind: 'sep', key: `sep-${key}-today`, label: 'today' })
@@ -230,7 +218,6 @@ const renderItems = computed<RenderItem[]>(() => {
   return out
 })
 
-/* ===== стабільний PREPEND (якір) ===== */
 function firstVisibleEl(el:HTMLElement):HTMLElement|null{
   const cr = el.getBoundingClientRect()
   for(const c of Array.from(el.querySelectorAll<HTMLElement>('[data-mid]'))){
@@ -261,7 +248,6 @@ function scrollToBottom(){
   requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ suppressScrollEvents=false }) })
 }
 
-/* ===== дані ===== */
 const appCore = useAppCore()
 function mapApi(m:ApiMsg):ChatMessage{
   return {
@@ -311,10 +297,8 @@ function onScroll(){
   if(!loadingMore && hasMore.value && el.scrollTop <= 400) loadMoreAbove()
 }
 
-/* ===== Echo: події та presence ===== */
 const {$echo}=useNuxtApp()
 
-// приватний канал для подій (як було)
 function subscribePrivate(){
   const ch = $echo.private(`chat.${props.ticketId}`)
   ch.listen('.MessageSent', async (e:any)=>{
@@ -331,48 +315,62 @@ function subscribePrivate(){
   return ch
 }
 
-// presence для “онлайн в чаті”
 let presenceChan:any = null
-const onlineMap = reactive<Map<number, PresenceUser>>(new Map()) // userId -> user
+const onlineMap = reactive<Map<number, PresenceUser>>(new Map())
+
 const isCounterpartyOnline = computed(() => {
   if (onlineMap.size === 0) return false
   for (const u of onlineMap.values()) {
     if (u.id !== props.currentUser.id) {
-      // TODO: за потреби — фільтруй за роллю: if (u.role!=='agent') continue
       return true
     }
   }
   return false
 })
 
+function applyPresencePayload(payload:any){
+  onlineMap.clear()
+  if (payload && Array.isArray(payload.online_admins)) {
+    payload.online_admins.forEach((u:any) => {
+      onlineMap.set(Number(u.id), { id: Number(u.id), name: String(u.name), role: 'admin' })
+    })
+  }
+  if (payload && payload.online_client) {
+    const u = payload.online_client
+    onlineMap.set(Number(u.id), { id: Number(u.id), name: String(u.name), role: 'client' })
+  }
+}
+
 function joinPresence(){
   leavePresence()
-  presenceChan = $echo.join(`chat.${props.ticketId}.presence`)
-      .here((users:PresenceUser[]) => {
-        onlineMap.clear()
-        users.forEach(u => onlineMap.set(u.id, u))
+  presenceChan = $echo.private(`support.ticket.${props.ticketId}`)
+      .listen('.ticket.presence.updated', (payload:any) => {
+        applyPresencePayload(payload)
       })
-      .joining((user:PresenceUser) => { onlineMap.set(user.id, user) })
-      .leaving((user:PresenceUser) => { onlineMap.delete(user.id) })
 }
 function leavePresence(){
-  try { $echo.leave(`chat.${props.ticketId}.presence`) } catch {}
+  try { $echo.leave(`support.ticket.${props.ticketId}`) } catch {}
   presenceChan = null
   onlineMap.clear()
 }
 
-/* ===== Heartbeat до бекенд-індексу ===== */
 let hb:any=null
-async function apiOpen(ticketId:number){ await $fetch(`/api/client/tickets/${ticketId}/presence/open`, { method:'POST' }) }
-async function apiClose(ticketId:number){ await $fetch(`/api/client/tickets/${ticketId}/presence/close`, { method:'POST' }) }
+async function apiOpen(ticketId:number){
+  const data = await appCore.ticketsPresence.ping(ticketId)
+  applyPresencePayload(data)
+}
+async function apiClose(ticketId:number){
+  await appCore.ticketsPresence.presence(ticketId)
+}
 async function startPresenceHeartbeat(ticketId:number){
   await apiOpen(ticketId)
   stopPresenceHeartbeat()
-  hb = setInterval(() => { apiOpen(ticketId).catch(()=>{}) }, 25_000)
+  hb = setInterval(() => {
+    apiOpen(ticketId).catch(()=>{})
+  }, 15000)
 }
 function stopPresenceHeartbeat(){ if(hb){ clearInterval(hb); hb=null } }
 
-/* ===== Mount / Unmount ===== */
 let privateChan:any = null
 
 onMounted( async ()=>{
@@ -394,25 +392,20 @@ onBeforeUnmount(()=>{
   window.removeEventListener('resize', onViewportResize)
 })
 
-// якщо під час відкритого компонента зміниться ticketId
 watch(() => props.ticketId, async (id, oldId) => {
   if (id === oldId) return
-  // канали
   try{ if(privateChan) $echo.leave(`chat.${oldId}`) }catch{}
   privateChan = subscribePrivate()
   leavePresence()
   joinPresence()
-  // heartbeat
   stopPresenceHeartbeat()
   await startPresenceHeartbeat(id)
-  // перезавантажити переписку (опційно — можеш прибрати)
   booting.value = true
   messages.splice(0, messages.length)
   nextPage = 2; hasMore.value = true
   await loadInitial()
 })
 
-/* Надсилання */
 async function send(){
   if(!canSend.value) return
   const body=draft.value.trim(); draft.value=''
@@ -454,7 +447,6 @@ async function send(){
   scroll-behavior: auto;
 }
 
-/* безскролбарні списки */
 .no-scrollbar::-webkit-scrollbar{ display:none }
 .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
 </style>
