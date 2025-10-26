@@ -23,6 +23,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-sticker-danger": "#d93025",
 
     "--color-stroke-ui-dark": "#e4e4e7",
+    "--color-stroke-ui-light": "#eeeef1",
     "--color-stroke-ui": "#b8b8c3",
   };
 
@@ -46,6 +47,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-sticker-danger": "#d93025",
 
     "--color-stroke-ui-dark": "#011644",
+    "--color-stroke-ui-light": "#002880",
     "--color-stroke-ui":
       "linear-gradient(137.67deg, #1b63ff 2.397%, #011644 99.041%)",
     "--color-ui-grey": "#b8b8c3",

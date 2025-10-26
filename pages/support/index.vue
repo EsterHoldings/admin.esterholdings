@@ -107,10 +107,12 @@
 <!--            <tbody v-if="!isLoading && tickets.length > 0" class="divide-y divide-[var(&#45;&#45;color-stroke-ui-dark)]">-->
             <tbody v-if="tickets.length > 0" class="divide-y divide-[var(--color-stroke-ui-dark)]">
             <tr v-for="t in filtered" :key="t.id"
-                class="bg-[var(--ui-background-panel)] hover:bg-[var(--color-stroke-ui-dark)] h-[60px]">
+                class="bg-[var(--ui-background-panel)] hover:bg-[var(--color-stroke-ui-dark)] h-[60px]"
+                @click="handleClickRow(t.id)"
+            >
 
               <td class="px-4 whitespace-nowrap">
-                <UiIconCopy :text="t.id" />
+                <UiIconCopy @click.stop :text="t.id" />
               </td>
 
               <td class="px-4">
@@ -130,7 +132,7 @@
               <td class="px-2 text-right">
                 <div class="flex items-center justify-end gap-2">
                     <span
-                        @click="() => currentTicketIdForChat = t.id"
+                        @click.stop="() => currentTicketIdForChat = t.id"
                         class="h-[42px] w-[42px] flex items-center justify-center active:bg-[var(--color-stroke-ui-dark)] rounded-full hover:bg-[var(--color-stroke-ui-light)]">
                       <UiIconChat class="!h-[24px] !w-[24px]"/>
                     </span>
@@ -138,7 +140,7 @@
                       class="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[var(--color-stroke-ui-light)] active:opacity-[.5]"
                       aria-label="More"
                   >
-                    <UiIconDotsVertical/>
+                    <UiIconDotsVertical @click.stop/>
                   </button>
                 </div>
               </td>
@@ -237,32 +239,32 @@
 </template>
 
 <script lang="ts" setup>
-import PanelDefault from '~/components/block/panels/PanelDefault.vue'
-import UiContainer from '~/components/ui/UiContainer.vue'
-import UiTextH4 from '~/components/ui/UiTextH4.vue'
-import UiInput from '~/components/ui/UiInput.vue'
-import UiIconSearch from '~/components/ui/UiIconSearch.vue'
-import {ref, computed, nextTick, onMounted, onBeforeUnmount, computed as vComputed, reactive, inject} from 'vue'
-import {definePageMeta, useAuthStore} from '~/.nuxt/imports'
 import ChatDefault from "~/components/block/chats/ChatDefault.vue";
-import UiIconPlus from "~/components/ui/UiIconPlus.vue";
+import PanelDefault from '~/components/block/panels/PanelDefault.vue'
+import TicketsCreateNew from "~/pages/support/components/TicketsCreateNew.vue";
+import UiBadge from "~/components/ui/UiBadge.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-import UiSelect from "~/components/ui/UiSelect.vue";
-import UiIconFilters from "~/components/ui/UiIconFilters.vue";
-import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+import UiContainer from '~/components/ui/UiContainer.vue'
+import UiIconChat from "~/components/ui/UiIconChat.vue";
+import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
+import UiIconPlus from "~/components/ui/UiIconPlus.vue";
+import UiIconSearch from '~/components/ui/UiIconSearch.vue'
+import UiIconSort from "~/components/ui/UiIconSort.vue";
 import UiIconSortBy from "~/components/ui/UiIconSortBy.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-import UiIconSort from "~/components/ui/UiIconSort.vue";
+import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
+import UiInput from '~/components/ui/UiInput.vue'
+import UiSelect from "~/components/ui/UiSelect.vue";
+import UiTextH4 from '~/components/ui/UiTextH4.vue'
+import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+
 import useAppCore from "~/composables/useAppCore";
-import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
-import UiBadge from "~/components/ui/UiBadge.vue";
-import UiIconChat from "~/components/ui/UiIconChat.vue";
-import AccountsCreateNew from "~/pages/accounts/components/AccountsCreateNew.vue";
-import {useI18n} from "vue-i18n";
-import TicketsCreateNew from "~/pages/support/components/TicketsCreateNew.vue";
 import useEventBus from "~/composables/useEventBus";
-import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+import {definePageMeta, useAuthStore} from '~/.nuxt/imports'
+import {ref, computed, nextTick, onMounted, onBeforeUnmount, computed as vComputed, reactive, inject} from 'vue'
+import {useI18n} from "vue-i18n";
+import {useRouter} from "vue-router";
 
 type Status = 'resolved' | 'in_progress' | 'cancelled'
 
@@ -410,6 +412,8 @@ let hostRectCache = {left: 0, top: 0, width: 0, height: 0}
 let rafId = 0
 
 let currentPointerId: number | null = null
+
+const router = useRouter()
 
 const getHostRect = () => {
   const chat = chatRef.value
@@ -583,6 +587,8 @@ const handleCopyId = async (id: string): Promise<boolean> => {
     return false;
   }
 };
+
+const handleClickRow = (ticketId:string) => router.push(`/support/${ticketId}`)
 
 
 onMounted(async () => {

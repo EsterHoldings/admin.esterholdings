@@ -26,7 +26,7 @@ export class TicketsModule implements BasicModuleInterface {
     return await this.ticketsService.storeTicketMessage(id, payload);
   }
   async getById(id:any) {
-    return await this.ticketsService.get(id);
+    return await this.ticketsService.getById(id);
   }
 
   async post(data:object = {}):Promise<any> {
