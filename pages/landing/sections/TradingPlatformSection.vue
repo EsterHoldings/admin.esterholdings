@@ -61,7 +61,7 @@
 
       <div class="background-glow"></div>
 
-      <div class="floating__wrapper">
+      <div class="floating__wrapper border-bottom">
         <UiTextTrading
           class="floating__item"
           v-for="(item, index) in platformFeatures"
@@ -226,6 +226,14 @@ const platformFeatures = [0, 1, 2, 3];
   transition: var(--default-transition);
 }
 
+.border-bottom {
+  border-bottom: 2px solid rgb(27, 99, 255);
+}
+
+.light-theme .border-bottom {
+  border-bottom: none;
+} 
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -345,6 +353,7 @@ const platformFeatures = [0, 1, 2, 3];
 
     .floating__item {
       display: flex;
+      
     }
   }
 }
