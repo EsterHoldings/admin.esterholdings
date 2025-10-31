@@ -1,30 +1,33 @@
 <template>
   <div class="trading-conditions">
     <UiContainer>
-      <UiTextH3 class="trading-conditions_title"> Trading Conditions </UiTextH3>
+      <UiTextH3 class="trading-conditions_title">{{ t('landing.pages.trading.trading_conditions_title') }}</UiTextH3>
     </UiContainer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from "~/.nuxt/imports";
-import UiContainer from "~/components/ui/UiContainer.vue";
-import UiTextH3 from "~/components/ui/UiTextH3.vue";
+  import { definePageMeta } from '~/.nuxt/imports';
+  import { useI18n } from 'vue-i18n';
+  import UiContainer from '~/components/ui/UiContainer.vue';
+  import UiTextH3 from '~/components/ui/UiTextH3.vue';
 
-definePageMeta({
-  layout: "main",
-  alias: "/trading-conditions",
-});
+  definePageMeta({
+    layout: 'main',
+    alias: '/trading-conditions',
+  });
+
+  const { t } = useI18n();
 </script>
 
 <style lang="scss" scoped>
-.trading-conditions {
-  padding: 40px;
+  .trading-conditions {
+    padding: 40px;
 
-  &_title {
-    color: var(--ui-text-main);
-    text-align: center;
-    margin-top: 50px;
+    &_title {
+      color: var(--ui-text-main);
+      text-align: center;
+      margin-top: 50px;
+    }
   }
-}
 </style>

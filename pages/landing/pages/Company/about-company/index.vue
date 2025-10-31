@@ -1,104 +1,56 @@
 <template>
   <UiContainer>
     <div class="about-company">
-      <UiTextH3 class="about-company_title">О компании</UiTextH3>
+      <UiTextH3 class="about-company_title">{{ t('landing.pages.company.about.title') }}</UiTextH3>
 
       <div class="about-company_img"></div>
 
       <div class="about-company_text">
         <UiTextParagraph>
-          <span>The International financial holding Ester Holdings Inc.</span>
-          — is a stable company highly efficient management.
+          <span>{{ t('landing.pages.company.about.intro_1.highlight') }}</span>
+          {{ t('landing.pages.company.about.intro_1.text') }}
         </UiTextParagraph>
 
         <UiTextParagraph>
-          Company Ester, opened for everything new, is a leader in forming and
-          supporting high standards of work for all financial market.
+          {{ t('landing.pages.company.about.intro_2') }}
           <br />
-          <strong>Our peculiarity</strong> — profitable trading conditions,
-          high quality of servicing and legal security.
+          <strong>{{ t('landing.pages.company.about.intro_3') }}</strong>
         </UiTextParagraph>
 
         <UiTextParagraph>
-          In the first place company puts successful activity of its customers.
-          It is the main criteria of our success.
+          {{ t('landing.pages.company.about.intro_4') }}
           <br />
-          <strong>Mission of the company Ester</strong>
-          — to provide its customers with knowledge and advisory services which
-          guarantee them welfare. We are the universal financial company, which
-          supports high quality of our work on a stable base.
+          <strong>{{ t('landing.pages.company.about.intro_5.highlight') }}</strong>
+          {{ t('landing.pages.company.about.intro_5.text') }}
         </UiTextParagraph>
       </div>
 
-      <UiTextH3 class="about-company_title">Business-model</UiTextH3>
+      <UiTextH3 class="about-company_title">{{ t('landing.pages.company.about.business_model_title') }}</UiTextH3>
       <h2 class="about-company_subtitle">
-        Business-model of the company is built on transparent and trusting
-        relationships with a client.
+        {{ t('landing.pages.company.about.business_model_subtitle') }}
       </h2>
 
       <ul class="about-company_list">
-        <li>
+        <li
+          v-for="(item, index) in businessModelList"
+          :key="index">
           <UiIconSuccess />
-          <span>
-          The company receives quotes on ECN-platforms from the leading
-          banks-suppliers of liquidity and from the best prices forms quotes
-          currents for customers.
-          </span>
-        </li>
-        <li>
-          <UiIconSuccess />
-          <span>
-          In the trading terminal a customer can see and trade at the best
-          prices bid and ask by each financial tool.
-          </span>
-        </li>
-        <li>
-          <UiIconSuccess />
-          <span>
-          As a result of customer’s order the prices of that supplier of
-          liquidity are executed, who offers at the present moment the best
-          price of purchase or sale.
-          </span>
-        </li>
-        <li>
-          <UiIconSuccess />
-          <span>
-          Our Prime Broker makes clearing (mutual recognition of liabilities)
-          between the Company and banks-suppliers of liquidity.
-          </span>
+          <span>{{ item }}</span>
         </li>
       </ul>
 
-      <UiImage class="schema" src="/static/sxema01_eng.jpg" />
+      <UiImage
+        class="schema"
+        src="/static/sxema01_eng.jpg" />
 
-      <UiTextH3 class="about-company_title">Activity area </UiTextH3>
+      <UiTextH3 class="about-company_title">{{ t('landing.pages.company.about.activity_title') }}</UiTextH3>
 
       <ul class="about-company_list">
-        <li>
+        <li
+          v-for="(item, index) in activityList"
+          :key="index">
           <UiIconSuccess />
-          <span>
-            Providing access to the customers to conduct trading operations with
-            foreign currencies and other financial tools through Internet.
-          </span>
-        </li>
-        <li>
-          <UiIconSuccess />
-          <span>
-            Consultations on issues of management of investors assets and
-            investment activity.
-          </span>
-        </li>
-        <li>
-          <UiIconSuccess />
-          <span>
-            Informational and analytical services.
-          </span>
-        </li>
-        <li>
-          <UiIconSuccess />
-          <span>
-            Qualified trading training.
-          </span>
+          <span>{{ item }}</span>
         </li>
       </ul>
     </div>
@@ -106,87 +58,103 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from "~/.nuxt/imports";
-import UiContainer from "~/components/ui/UiContainer.vue";
-import UiTextH3 from "~/components/ui/UiTextH3.vue";
-import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-import UiImage from "~/components/ui/UiImage.vue";
-import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
+  import { definePageMeta } from '~/.nuxt/imports';
+  import { useI18n } from 'vue-i18n';
+  import { computed } from 'vue';
+  import UiContainer from '~/components/ui/UiContainer.vue';
+  import UiTextH3 from '~/components/ui/UiTextH3.vue';
+  import UiTextParagraph from '~/components/ui/UiTextParagraph.vue';
+  import UiImage from '~/components/ui/UiImage.vue';
+  import UiIconSuccess from '~/components/ui/UiIconSuccess.vue';
 
-definePageMeta({
-  layout: "main",
-  alias: "/about-company",
-});
+  definePageMeta({
+    layout: 'main',
+    alias: '/about-company',
+  });
+
+  const { t, tm } = useI18n();
+
+  const businessModelList = computed(() => {
+    const list = tm('landing.pages.company.about.business_model_list') as any[];
+    return Array.isArray(list)
+      ? list.map((_, index) => t(`landing.pages.company.about.business_model_list[${index}]`))
+      : [];
+  });
+
+  const activityList = computed(() => {
+    const list = tm('landing.pages.company.about.activity_list') as any[];
+    return Array.isArray(list) ? list.map((_, index) => t(`landing.pages.company.about.activity_list[${index}]`)) : [];
+  });
 </script>
 
 <style lang="scss" scoped>
-.schema {
-  max-width: 550px;
-  width: 100%;
-  margin: auto auto 40px auto;
-}
-
-.about-company {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  &_title {
-    color: var(--ui-text-main);
-    text-align: center;
+  .schema {
+    max-width: 550px;
+    width: 100%;
+    margin: auto auto 40px auto;
   }
 
-  &_subtitle {
-    font-weight: 700;
-    font-size: 14px;
-    color: #138ee7;
-  }
-
-  &_img {
-    background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
-      url("/static/aboutCompany.jpeg") center / cover no-repeat;
-    height: 200px;
-    border-radius: 15px;
-  }
-
-  &_text {
+  .about-company {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin-bottom: 40px;
 
-    p {
-      color: var(--ui-text-secondary);
-      line-height: 25px;
-
-      span {
-        font-weight: 700;
-        color: #138ee7;
-      }
-
-      strong {
-        font-weight: 700;
-      }
+    &_title {
+      color: var(--ui-text-main);
+      text-align: center;
     }
-  }
 
-  &_list {
-    color: var(--ui-text-secondary);
-    font-size: 14px;
-    margin-bottom: 40px;
+    &_subtitle {
+      font-weight: 700;
+      font-size: 14px;
+      color: #138ee7;
+    }
 
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    &_img {
+      background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
+        url('/static/aboutCompany.jpeg') center / cover no-repeat;
+      height: 200px;
+      border-radius: 15px;
+    }
 
-    list-style: none;
-
-    li {
+    &_text {
       display: flex;
-      align-items: center;
-      justify-content: flex-start;
+      flex-direction: column;
       gap: 20px;
+      margin-bottom: 40px;
+
+      p {
+        color: var(--ui-text-secondary);
+        line-height: 25px;
+
+        span {
+          font-weight: 700;
+          color: #138ee7;
+        }
+
+        strong {
+          font-weight: 700;
+        }
+      }
+    }
+
+    &_list {
+      color: var(--ui-text-secondary);
+      font-size: 14px;
+      margin-bottom: 40px;
+
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+
+      list-style: none;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 20px;
+      }
     }
   }
-}
 </style>

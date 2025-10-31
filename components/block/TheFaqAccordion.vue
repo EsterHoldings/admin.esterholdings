@@ -25,13 +25,19 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import IFaqItem from '~/composables/interfaces/IFaqItem';
+  import { PropType, ref } from 'vue';
   import UiIconArrowDown from '~/components/ui/UiIconArrowDown.vue';
+
+
+  interface IFaqItem {
+    title: string;
+    description: string;
+    isActive: boolean;
+  }
 
   const props = defineProps({
     items: {
-      type: Array as () => IFaqItem[],
+      type: Array as PropType<IFaqItem[]>,
       required: true,
     },
   });

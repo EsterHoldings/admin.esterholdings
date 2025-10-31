@@ -1,0 +1,1198 @@
+{
+    "ui-components": {
+        "modals": {
+            "cookie-modal": {
+                "text": "Bu site, kullanıcı deneyimini geliştirmek için çerezleri kullanır. Siteyi kullanmaya devam ederek çerez kullanımımızı kabul etmiş olursunuz.",
+                "btn-successful": "Kabul Et",
+                "btn-negative": "Reddet"
+            }
+        },
+        "lines": {
+            "running-line-btn": "İşlem Yap"
+        },
+        "tables": {
+            "table-default": "Gösterilecek bir şey yok..."
+        },
+        "ui-select": "Seçili değil..."
+    },
+    "landing": {
+        "header": {
+            "nav": {
+                "trading": "İşlem",
+                "partnership": "Ortaklık",
+                "company": "Şirket"
+            },
+            "auth": {
+                "login": "Giriş Yap",
+                "register": "Kayıt Ol"
+            },
+            "megaMenu": {
+                "Trading": [
+                    {
+                        "section": "Hesap özeti",
+                        "items": [
+                            "Standart",
+                            "Pro",
+                            "İslami",
+                            "Demo"
+                        ]
+                    },
+                    {
+                        "section": "Piyasa Araçları",
+                        "items": [
+                            "Forex",
+                            "Metaller",
+                            "Kripto CFD'ler",
+                            "Endeksler",
+                            "Hisse Senetleri",
+                            "Enerji",
+                            "ETF'ler"
+                        ]
+                    },
+                    {
+                        "section": "Platform",
+                        "items": [
+                            "MT4 Desktop",
+                            "MT 4 Mobile"
+                        ]
+                    },
+                    {
+                        "section": "İşlem koşulları",
+                        "items": [
+                            "Hesap yükleme",
+                            "Para çekme"
+                        ]
+                    },
+                    {
+                        "section": "Trader'ın HUB'ı",
+                        "items": [
+                            "Trader blogu",
+                            "Ekonomik takvim",
+                            "Piyasa haberleri"
+                        ]
+                    },
+                    {
+                        "section": "TANDEM işlem",
+                        "items": [
+                            "Trader için",
+                            "Yatırımcı için"
+                        ]
+                    }
+                ],
+                "Partnership": [
+                    {
+                        "section": "Ortaklık",
+                        "items": [
+                            "IB/ Ortaklık kaydet",
+                            "IB'ler nasıl gelir elde eder"
+                        ]
+                    }
+                ],
+                "Company": [
+                    {
+                        "section": "Şirket",
+                        "items": [
+                            "Şirket hakkında",
+                            "Belgeler",
+                            "Şirket haberleri",
+                            "İletişim",
+                            "Kariyer"
+                        ]
+                    }
+                ]
+            }
+        },
+        "slider": {
+            "general-slide": {
+                "title": {
+                    "before": "Daha",
+                    "highlight": "Akıllı",
+                    "after": "Daha Hızlı İşlem Yapın!"
+                },
+                "text": "Hızlı işlem, düşük spreadler ve gerçek zamanlı piyasa analiziyle \nForex, Hisse Senetleri ve CFD'ler dahil küresel piyasalara erişin.",
+                "btn": "Şimdi İşlem Yap"
+            },
+            "top-trader-slide": {
+                "title": {
+                    "before": "Stratejileri Kopyala",
+                    "highlight": "En İyi Trader'lar",
+                    "after": ""
+                },
+                "text": "Profesyonellerden gerçek işlemlere erişin ve işleminizi geliştirin.",
+                "btn": "Başla"
+            },
+            "ten_years_slide": {
+                "title": {
+                    "highlight": "Yıl",
+                    "after": "İşlemde"
+                },
+                "text": "Zamanla test edilmiş deneyim. Sonuçlarla onaylanmış güvenilirlik.",
+                "btn": "Bize Katılın"
+            }
+        },
+        "sections": {
+            "advantages": [
+                {
+                    "value": "10+",
+                    "label": "Alandaki deneyim yılı"
+                },
+                {
+                    "value": "1,160,000+",
+                    "label": "Müşteriler"
+                },
+                {
+                    "value": "5* Derecelendirildi",
+                    "label": "Müşteri hizmeti"
+                }
+            ],
+            "platform__title": "Başarılı Forex ve CFD işlemi için\nefsanevi platform",
+            "platform__features": [
+                {
+                    "title": "İşlem Platformu",
+                    "text": "Ürünlerimizle seviye atlayın"
+                },
+                {
+                    "title": "Mobil işlem",
+                    "text": "İşlemler üzerinde her zaman tam kontrol."
+                },
+                {
+                    "title": "Ester MetaTrader 4",
+                    "text": "Popüler, klasik çözüm"
+                },
+                {
+                    "title": "Yüksek hız ve güvenilirlik",
+                    "text": "Zayıf PC'lerde bile çalışır."
+                }
+            ],
+            "feature__title": "Neden Bizi Seçmelisiniz?",
+            "features__items": [
+                {
+                    "title": "Araçlar",
+                    "text": "Forex/Spot\nHisse Senetleri/Endeksler",
+                    "icon": "/static/F-Wrench & Screwdriver.png"
+                },
+                {
+                    "title": "Likidite:\n200+ Üst Düzey",
+                    "text": "Finansal kurumlar",
+                    "icon": "/static/F-Building Library.png"
+                },
+                {
+                    "title": "Değişken Spread",
+                    "text": "0 pip'ten itibaren",
+                    "icon": "/static/F-Money.png"
+                },
+                {
+                    "title": "Limit ve Stop Seviyeleri",
+                    "text": "= 0",
+                    "icon": "/static/LIMIT AND STOP LEVELS.png"
+                },
+                {
+                    "title": "En Hızlı Sunucu Teknolojileri",
+                    "text": "yüksek sipariş işleme hızlarıyla",
+                    "icon": "/static/F-Rocket.png"
+                },
+                {
+                    "title": "Banka Güvenliği",
+                    "text": "işlem hesaplarının",
+                    "icon": "/static/L-Shield Done.png"
+                }
+            ],
+            "account_types__categories": [
+                {
+                    "id": "Standard",
+                    "label": "Standart"
+                },
+                {
+                    "id": "Pro",
+                    "label": "Pro"
+                },
+                {
+                    "id": "Tandem",
+                    "label": "Tandem"
+                },
+                {
+                    "id": "Islamic",
+                    "label": "İslami"
+                }
+            ],
+            "accounts__title": "İşlem Hesabı Seçeneklerimizi Keşfedin",
+            "accounts__btn": "Hesap Aç",
+            "accounts__options": [
+                {
+                    "id": "demo",
+                    "type": "demo",
+                    "title": "Demo",
+                    "subtitle": "hesap",
+                    "description": "Sanal fonlarla risksiz işlem, piyasaları keşfetmek isteyen yeni başlayanlar için mükemmel.",
+                    "features": [
+                        "1:500'e kadar kaldıraç",
+                        "0,0 pip'ten itibaren spreadler",
+                        "Depozito gerekmez"
+                    ],
+                    "buttonText": "Şimdi Demoyu Deneyin",
+                    "isRecommended": true
+                },
+                {
+                    "id": "standard",
+                    "type": "standard",
+                    "title": "Standart",
+                    "subtitle": "hesap",
+                    "description": "Düşük ücretlerle spot piyasalara kolay erişim — yeni başlayanlar ve aktif trader'lar için ideal.",
+                    "features": [
+                        "1:500'e kadar kaldıraç",
+                        "1,2 pip'ten itibaren spreadler",
+                        "İlk depozito $50"
+                    ],
+                    "buttonText": "Standart Hesap Aç",
+                    "isRecommended": false
+                },
+                {
+                    "id": "pro",
+                    "type": "pro",
+                    "title": "Pro",
+                    "subtitle": "hesap",
+                    "description": "Dar spreadleri, daha yüksek kaldıracı ve her işlem üzerinde tam kontrolü deneyimleyin.",
+                    "features": [
+                        "1:500'e kadar kaldıraç",
+                        "0,0 pip'ten itibaren spreadler",
+                        "İlk depozito $1000"
+                    ],
+                    "buttonText": "Pro Gibi İşlem Yapın",
+                    "isRecommended": false
+                },
+                {
+                    "id": "tandem",
+                    "type": "tandem",
+                    "title": "Tandem",
+                    "subtitle": "hesap",
+                    "description": "Bir ortak, mentor veya ortak trader ile işbirliği yapın ve senkronize stratejilerle birlikte büyüyün.",
+                    "features": [
+                        "1:200'e kadar kaldıraç",
+                        "Paylaşımlı hesap erişimi",
+                        "Gerçek zamanlı işlem yansıtma"
+                    ],
+                    "buttonText": "Birlikte İşlem Yapın",
+                    "isRecommended": false
+                },
+                {
+                    "id": "islamic",
+                    "type": "islamic",
+                    "title": "İslami",
+                    "subtitle": "hesap",
+                    "description": "Swap yok. Şeriata uygun. Tam platform erişimiyle faizsiz işlem yapın.",
+                    "features": [
+                        "1:500'e kadar kaldıraç",
+                        "Swap / faiz ücreti yok",
+                        "Tüm işlem araçlarına erişim"
+                    ],
+                    "buttonText": "İslami Hesap Aç",
+                    "isRecommended": false
+                }
+            ],
+            "wide_range__title": "Geniş Ürün Yelpazesi",
+            "wide_range__categories": [
+                {
+                    "id": "forex",
+                    "label": "Forex"
+                },
+                {
+                    "id": "metals",
+                    "label": "Metaller"
+                },
+                {
+                    "id": "cryptocurrency CDs",
+                    "label": "Kripto para CD'leri"
+                },
+                {
+                    "id": "indices",
+                    "label": "Endeksler"
+                },
+                {
+                    "id": "shares",
+                    "label": "Hisse Senetleri"
+                },
+                {
+                    "id": "energy",
+                    "label": "Enerji"
+                },
+                {
+                    "id": "ETFS",
+                    "label": "ETF'ler"
+                }
+            ],
+            "wide_range_tabs": {
+                "Forex": {
+                    "title": "Forex",
+                    "description": "Rekabetçi işlem koşullarıyla 70 majör, minör ve egzotik\n döviz çifti ile işlem yapın.",
+                    "btn": "Forex İşlemi Yap"
+                },
+                "Metals": {
+                    "title": "Metaller",
+                    "description": "Altın, Gümüş ve Platin gibi\n metal emtiaları ile işlem yapın.",
+                    "btn": "Metal İşlemi Yap"
+                },
+                "CryptocurrencyCDs": {
+                    "title": "Kripto para CD'leri",
+                    "description": "Bitcoin CFD, Ether CFD, Doge CFD\n ve daha fazla kripto CD'si ve altcoin CFD'leri ile işlem yapın",
+                    "btn": "Kripto para CFD'leri ile İşlem Yap"
+                },
+                "Indices": {
+                    "title": "Endeksler",
+                    "description": "Dünya çapında Spot ve Vadeli majör ve minör\nEndeks CFD'leri ile işlem yapın.",
+                    "btn": "Endeks İşlemi Yap"
+                },
+                "Shares": {
+                    "title": "Hisse Senetleri",
+                    "description": "ABD, İngiltere ve AB'den binlerce halka açık şirket\n işlem için mevcut.",
+                    "btn": "Hisse Senedi İşlemi Yap"
+                },
+                "Energy": {
+                    "title": "Enerji",
+                    "description": "İngiltere ve ABD Ham Petrolü ve Doğal Gaz Spot\n ve Vadeli kontratlarındaki fırsatları keşfedin.",
+                    "btn": "Enerji İşlemi Yap"
+                },
+                "ETFS": {
+                    "title": "ETF'ler",
+                    "description": "ETF CFD'leri ile Piyasalar Dünyasına Erişin - Tahvillerden\n Emtialara, Gayrimenkulden Volatiliteye.",
+                    "btn": "ETF İşlemi Yap"
+                }
+            },
+            "four_steps_section": {
+                "title": {
+                    "before": "Hesap açın",
+                    "highlight": "4 basit adımda"
+                },
+                "button": "Hesap aç",
+                "items": [
+                    {
+                        "title": "Kayıt Ol",
+                        "text": "Bir hesap türü seçin ve hızlı ve güvenli uygulama formumuzu doldurun"
+                    },
+                    {
+                        "title": "Doğrula",
+                        "text": "Hızlı doğrulama için dijital onboarding sistemimizi kullanın"
+                    },
+                    {
+                        "title": "Fonla",
+                        "text": "Çok çeşitli fonlama yöntemlerini kullanarak işlem hesabınızı fonlayın"
+                    },
+                    {
+                        "title": "İşlem Yap",
+                        "text": "Canlı hesabınızda işlem yapmaya başlayın ve 2.100'den fazla araca erişin"
+                    }
+                ]
+            },
+            "banner_section": {
+                "title": "Piyasalarda İşlem Yapın",
+                "title_highlight": "Bir Pro Gibi!",
+                "subtitle": "İster yeni başlayan ister profesyonel olun, gelişmiş araçlarımız ve kaynaklarımız bilinçli işlem kararları almanıza yardımcı olur.",
+                "button_primary": "İşleme başla",
+                "button_secondary": "Demo Hesabı Deneyin"
+            },
+            "latest_updates__title": "Son güncellemeler",
+            "latest_updates__items": [
+                {
+                    "title": "NVIDIA hisseleri rapor sonrası %15 yükseldi",
+                    "subtitle": "Çip üreticisi NVIDIA (NVDA), Wall Street'in tüm beklentilerini aşan üç aylık bir rapor sundu...",
+                    "time": "15 dk"
+                },
+                {
+                    "title": "Tesla 1:10 hisse bölünmesi açıkladı – kotasyonlar %12 yükseldi",
+                    "subtitle": "Haber hisseleri %12 yükseltti, Tesla şimdi hisse başına 1.180$'dan işlem görüyor.",
+                    "time": "30 dk"
+                },
+                {
+                    "title": "SEC stablecoin yasağını açıkladıktan sonra Bitcoin %12 düştü",
+                    "subtitle": "ABD Menkul Kıymetler ve Borsa Komisyonu (SEC) yeni düzenlemeler getiren sürpriz bir açıklama yaptı...",
+                    "time": "1 saat önce"
+                }
+            ],
+            "faqs__form_title": "Yardıma İhtiyacınız Var mı?",
+            "faqs__form_subtitle": "Bir gün içinde size geri döneceğiz.",
+            "faqs__form_placeholders": {
+                "name": "Adınız",
+                "email": "E-postanız",
+                "description": "Sorunuzu açıklayın..."
+            },
+            "faqs__form_button": "Gönder",
+            "faqs__items": [
+                {
+                    "title": "Nasıl işlem hesabı açarım?",
+                    "description": "Bir işlem hesabı açmak için sadece kaydolun, kimliğinizi doğrulayın ve tercih ettiğiniz hesap türünü seçin."
+                },
+                {
+                    "title": "Gereken minimum depozito nedir?",
+                    "description": "Minimum depozito hesap türünüze göre değişir. Özel ayrıntılar için lütfen hesap türleri bölümümüze bakın."
+                },
+                {
+                    "title": "Platformu risksiz deneyebilir miyim?",
+                    "description": "Evet, gerçek parayı yatırmadan önce sanal fonlarla işlem yapabileceğiniz demo hesapları sunuyoruz."
+                },
+                {
+                    "title": "Param platformunuzda güvende mi?",
+                    "description": "Kesinlikle. Endüstri standardı güvenlik önlemleri kullanıyoruz ve müşteri fonlarını ayrı hesaplarda tutuyoruz."
+                },
+                {
+                    "title": "Hangi işlem araçları mevcut?",
+                    "description": "Forex, CFD'ler, emtialar, endeksler ve kripto paralar dahil olmak üzere geniş bir araç yelpazesi sunuyoruz."
+                }
+            ],
+            "accounts__badge_recommended": "Önerilen",
+            "helpSection": "Yardıma İhtiyacınız Var mı? Ziyaret edin",
+            "helpLinkText": "Yardım Bölümü"
+        },
+        "pages": {
+            "company": {
+                "about": {
+                    "title": "Şirket hakkında",
+                    "intro_1": {
+                        "highlight": "Uluslararası finans holdingi Ester Holdings Inc.",
+                        "text": "— son derece verimli yönetime sahip istikrarlı bir şirkettir."
+                    },
+                    "intro_2": "Her yeniliğe açık Ester şirketi, tüm finans piyasası için yüksek çalışma standartlarının oluşturulması ve desteklenmesinde liderdir.",
+                    "intro_3": "Özelliğimiz — karlı işlem koşulları, yüksek hizmet kalitesi ve yasal güvenlik.",
+                    "intro_4": "Şirket, müşterilerinin başarılı faaliyetlerini ilk sıraya koyar. Bu bizim başarımızın ana kriteridir.",
+                    "intro_5": {
+                        "highlight": "Ester şirketinin misyonu",
+                        "text": "— müşterilerine refah garantisi veren bilgi ve danışmanlık hizmetleri sağlamaktır. Biz, istikrarlı bir temelde işimizin yüksek kalitesini koruyan evrensel finans şirketiyiz."
+                    },
+                    "business_model_title": "İş modeli",
+                    "business_model_subtitle": "Şirketin iş modeli, müşteriyle şeffaf ve güvenilir ilişkiler üzerine kuruludur.",
+                    "business_model_list": [
+                        "Şirket, önde gelen likidite sağlayıcı bankalardan ECN platformlarında kotasyonlar alır ve en iyi fiyatlardan müşteriler için kotasyon akışları oluşturur.",
+                        "İşlem terminalinde müşteri, her finansal araç için en iyi alış ve satış fiyatlarını görebilir ve işlem yapabilir.",
+                        "Müşterinin emri sonucunda, o anda en iyi alım veya satım fiyatını sunan likidite sağlayıcısının fiyatları uygulanır.",
+                        "Prime Broker'ımız, Şirket ile likidite sağlayıcı bankalar arasında kliring (yükümlülüklerin karşılıklı tanınması) yapar."
+                    ],
+                    "activity_title": "Faaliyet alanı",
+                    "activity_list": [
+                        "Müşterilere İnternet üzerinden döviz ve diğer finansal araçlarla işlem yapma erişimi sağlama.",
+                        "Yatırımcı varlıklarının yönetimi ve yatırım faaliyeti konularında danışmanlık.",
+                        "Bilgi ve analitik hizmetler.",
+                        "Nitelikli işlem eğitimi."
+                    ]
+                },
+                "career": {
+                    "title": "Kariyer",
+                    "subtitle": "Şu anda şirket aşağıdaki uzmanları arıyor:",
+                    "positions": [
+                        "SATIŞ MÜDÜRÜ",
+                        "ANALİTİK DEPARTMANI BAŞKANI"
+                    ],
+                    "cta": "DİNAMİK BÜYÜMEYE HAZIR, HİRSLI VE YETENEKLIYSEN, ÖZGEÇMİŞİNİ GÖNDER.",
+                    "button": "CV GÖNDER"
+                },
+                "news": {
+                    "title": "Şirket Haberleri",
+                    "items": [
+                        {
+                            "title": "NVIDIA hisseleri rapor sonrası %15 yükseldi",
+                            "subtitle": "Çip üreticisi NVIDIA (NVDA), Wall Street'in tüm beklentilerini aşan üç aylık bir rapor sundu...",
+                            "time": "15 dk"
+                        },
+                        {
+                            "title": "Tesla 1:10 hisse bölünmesi açıkladı – kotasyonlar %12 yükseldi",
+                            "subtitle": "Haber hisseleri %12 yükseltti, Tesla şimdi hisse başına 1.180$'dan işlem görüyor.",
+                            "time": "30 dk"
+                        },
+                        {
+                            "title": "SEC stablecoin yasağını açıkladıktan sonra Bitcoin %12 düştü",
+                            "subtitle": "ABD Menkul Kıymetler ve Borsa Komisyonu (SEC) yeni düzenlemeler getiren sürpriz bir açıklama yaptı...",
+                            "time": "1 saat önce"
+                        },
+                        {
+                            "title": "İşlem stratejileri",
+                            "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                            "time": "17.04.2024 | 04:04 PM"
+                        }
+                    ],
+                    "button": "Daha fazla bilgi edin"
+                },
+                "contacts": {
+                    "title": "İletişim",
+                    "office_title": "Merkez Ofis",
+                    "office_name": "Ester Holdings Ltd",
+                    "office_address": "Zemin Kat, Sotheby Binası, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia",
+                    "office_registration": "2023-00477 kayıt numarası altında",
+                    "support_label": "Teknik destek servisi:",
+                    "support_email": "support{'@'}esterholdings.com",
+                    "finance_label": "Finans servisi:",
+                    "finance_email": "finance{'@'}esterholdings.com",
+                    "marketing_label": "Pazarlama servisi:",
+                    "marketing_email": "marketing{'@'}esterholdings.com"
+                },
+                "documents": {
+                    "title": "Belgeler",
+                    "intro": "Ester Holdings Inc. ile tüm etkileşim süreci standart belgelerle düzenlenir",
+                    "regulations_title": "KOTASYON YÖNETMELİKLERİ",
+                    "regulations_subtitle": "Yönetmelikler şunları belirler:",
+                    "regulations_list": [
+                        "müşterinin işlem operasyonlarında kullanılan terimler;",
+                        "marjlı işlem ilkeleri;",
+                        "pozisyonların açılması/kapatılması, düzenlenmesi/kaldırılması, değiştirilmesi ve bekleyen emirlerin yerine getirilmesi kuralları;",
+                        "müşteri yetkilendirme sırası ve MetaTrader 4 işlem sisteminde Müşteri operasyonlarının protokollenmesi sırası;",
+                        "anlaşmazlıkların çözümü prosedürü vb."
+                    ],
+                    "contract_title": "Sözleşme",
+                    "contract_description": "Sözleşme, müşteri ve Ester Holdings Inc. işbirliği kurallarını içerir. Tarafların yükümlülüklerini yerine getirme sorumlulukları burada tanımlanır.",
+                    "button": "İNDİR"
+                }
+            },
+            "partnership": {
+                "title": "Ortaklık",
+                "subtitle": "Ortaklık çeşitleri",
+                "button_agent": "ACENTA PROGRAMI",
+                "button_franchising": "FRANÇİZ",
+                "intro_1": {
+                    "highlight": "Ester ortağı olun ve marka ile birlikte gelir elde edin"
+                },
+                "intro_2": {
+                    "highlight": "Ester Holdings Inc.",
+                    "text": "— son derece verimli yönetime sahip istikrarlı şirket. Ester Holdings şirketi her yeniliğe açık, tüm finans piyasası için yüksek çalışma standartlarının oluşturulması ve desteklenmesinde liderdir."
+                },
+                "intro_3": "Uluslararası Ester Holdings şirketi markası altında internet ticareti alanında kendi işinizi kurma fırsatı sunuyoruz. Şehrinizde ilk olmak için acele edin, Ester Holdings ofisini açın ve en karlı işbirliği koşullarını ve en önemlisi yüksek gelir seviyesini elde edin.",
+                "offer_title": "Size sunuyoruz",
+                "offer_list": [
+                    "markamız altında çalışmak;",
+                    "gelir getiren hazır model;",
+                    "rahat çalışma için teknik çözümler;",
+                    "karlı işbirliği koşulları;",
+                    "temsilcilik açarken teknik destek;",
+                    "en iyi uzmanlarımızdan 24/7 destek."
+                ],
+                "agent_title": "Acenta programı",
+                "agent_description": "Dahil edilen müşterilerin işlem faaliyetlerinden gelir elde edin! İnternet kullanıcılarının dinamik olarak artan sayısı sayesinde bu bugün kolaydır. Ester Holdings Şirketinin en önemli önceliği, hizmet kalitesinin yüksek seviyesi ve uzun vadeli ilişkilerin oluşturulmasıdır. Bu, Forex piyasasının bir katılımcısı olmadan, dahil edilen üyelerin işlem faaliyetlerinden komisyon olarak sürekli gelir elde etmenizi sağlayacaktır.",
+                "agent_how_title": "Nasıl çalışır?",
+                "agent_how_list": [
+                    "Bize yeni müşteriler getirin",
+                    "Kayıt olacaklar ve para kazanacaklar",
+                    "Karlarından komisyon alacaksınız"
+                ],
+                "agent_how_cta": "DAHA FAZLA MÜŞTERİ – DAHA FAZLA KÂR",
+                "franchising_title": "Françiz",
+                "franchising_description_1": "Ester Holdings şirketinin ortakları, deneyimli uzmanlarımızdan kapsamlı destek ve bireysel yaklaşım alır. Gerçek ihtiyaçlarınıza ve kişisel hedeflerinize karşılık gelen çözümler seçebiliriz. Şirketimizin olumlu imajının ve kusursuz itibarının da sizin için çalıştığını unutmayın.",
+                "franchising_description_2": "Ester Holdings ile françiz — şehrinizde şirketin ofisini açma ve dünyanın en büyük brokerlerinden birinin markası altında çalışma fırsatıdır. Geliştirilmiş iş teknolojisi ve uzmanlarımızın kapsamlı desteğini alacaksınız.",
+                "franchising_business_title": "Ester Holdings ile işinizi açmak:",
+                "franchising_business_list": [
+                    "Şirket işlem operasyonlarını gerçekleştirerek spread alır. Müşterilerinizin spreadinden % alacaksınız.",
+                    "Ayrıca ofisinizde sunulan bilgi ve danışmanlık hizmetlerinden tüm geliri alacaksınız."
+                ],
+                "franchising_how_title": "Bunu nasıl yapmalı?",
+                "franchising_how_list": [
+                    "Başvuru gönderin",
+                    "Sizin için en iyi çözümü seçiyoruz",
+                    "Uygulamasına yardımcı oluyoruz",
+                    "Eğitim yapıyor ve destek sağlıyoruz"
+                ],
+                "button_receive": "FRANÇİZ AL",
+                "generate_income_title": "IB'ler nasıl gelir elde eder",
+                "register_ib_title": "IB/ Ortaklık kaydet"
+            },
+            "trading": {
+                "account_overview_title": "Hesap özeti",
+                "account_replenishment_title": "Hesap yükleme",
+                "economic_calendar_title": "Ekonomik Takvim",
+                "for_investor_title": "Yatırımcı için",
+                "for_trader_title": "Trader için",
+                "market_instruments_title": "Araçlar",
+                "market_instruments_text": [
+                    "Ester Holdings şirketinin işlem terminalindeki tüm döviz çifti spreadleri bankalararası seviyededir. Spreadler, her mevcut anda likidite sağlayıcılardan en iyi fiyatları seçen işlem toplayıcısı yardımıyla oluşturulur. Forex piyasasında en iyi likiditeyi sağlıyoruz. Swap, piyasa katılımcılarının pozisyonu ertesi güne taşımak için yaptığı ödeme anlamına gelir.",
+                    "Açık pozisyonların ertesi güne aktarılması işlemi, Şirket sunucusu saatine göre 23:59:59'dan 00:00:00'a kadar açık kalan tüm pozisyonlar için gerçekleştirilir. Bir pozisyonun ertesi güne aktarılması için Müşterinin hesabına bu pozisyonlarda swap alacaklandırılabilir veya borçlandırılabilir.",
+                    "Swapların boyutları ve bunların alacaklandırılması/borçlandırılması yöntemi ilgili spesifikasyonlarda belirtilmiştir.",
+                    "23:55'ten 00:05'e kadar (GMT saati) rollover döneminde likidite azalır, spread ve müşteri emirlerinin işlem süresinin artması mümkündür.",
+                    "Web sitesine ve/veya platformuna erişiminiz ve kullanımınız, bu İşlem Koşullarını ve diğer yasal bildirimleri ve beyanları kabul ettiğiniz anlamına gelir. Ester bu İşlem Koşullarını her zaman ve önceden haber vermeksizin değiştirebilir. Web sitesine ve/veya platformuna sürekli erişiminiz ve kullanımınız, değiştirilen bu İşlem Koşullarını kabul ettiğiniz anlamına gelir."
+                ],
+                "market_news_title": "Piyasa Haberleri",
+                "market_news_items": [
+                    {
+                        "title": "İşlemde Riskleri Etkili Bir Şekilde Nasıl Yönetilir",
+                        "subtitle": "İşlem, şüphesiz heyecan verici ve potansiyel olarak karlı bir faaliyettir. Ancak, bu alanda başarı sadece piyasayı analiz etme yeteneği gerektirmez...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "Demo hesaptan gerçek hesaba ne zaman geçilir?",
+                        "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "Efsanevi yatırımcı Warren Buffett",
+                        "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "İşlem stratejileri",
+                        "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "mt4_title": "МТ4",
+                "mt4_subtitle": "İşlem terminalini indirin ve kazanmaya başlayın",
+                "mt4_button": "MT-4'Ü İNDİR",
+                "mt4_about_title": "Platform hakkında",
+                "mt4_about_text": "MetaTrader 4 – dünyanın en popüler işlem platformu. Bu platformla uzun yıllara dayanan çalışma deneyimi ve geliştirilmesine aktif katılım sayesinde size en karlı ve rahat koşulları sunuyoruz.",
+                "mt4_about_highlight": "Çünkü MetaTrader 4:",
+                "mt4_features": [
+                    "çeşitli teknik analiz araçlarına sahip kolay ve anlaşılır arayüz;",
+                    "akıllı telefonlar, iPad'ler ve PDA'lardan işlem yapma fırsatı;",
+                    "kendi işlem danışmanları ve göstergeleri oluşturmaya izin veren yerleşik programlama dili MQL4;",
+                    "MT4 Bridge teknolojisi yardımıyla bankalararası likiditeye erişim, requote olmadan işlem (No Dealing Desk);",
+                    "Dow Jones'tan finansal haberler"
+                ],
+                "mt4_requirements_title": "SİSTEM GEREKSİNİMLERİ:",
+                "mt4_requirements_text": "Windows XP ve üzeri.",
+                "mt4_requirements_link": "Mac OS için talimatlar",
+                "platform_title": "Platform",
+                "traders_blog_title": "Trader'ların Blogu",
+                "traders_blog_items": [
+                    {
+                        "title": "İşlemde Riskleri Etkili Bir Şekilde Nasıl Yönetilir",
+                        "subtitle": "İşlem, şüphesiz heyecan verici ve potansiyel olarak karlı bir faaliyettir. Ancak, bu alanda başarı sadece piyasayı analiz etme yeteneği gerektirmez...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "Demo hesaptan gerçek hesaba ne zaman geçilir?",
+                        "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "Efsanevi yatırımcı Warren Buffett",
+                        "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "İşlem stratejileri",
+                        "subtitle": "Üzgünüz, bu giriş yalnızca Rusça'da mevcut.",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "trading_conditions_title": "İşlem Koşulları",
+                "trading_hub_title": "İşlem HUB'ı",
+                "tandem_trading_title": "Tandem İşlem",
+                "withdrawal_funds_title": "Para çekme"
+            }
+        },
+        "footer": {
+            "description": "Ester'in ana hedefi, perakende ve kurumsal trader'lar için en iyi ve en şeffaf koşulları oluşturmaktır.",
+            "trading": {
+                "title": "İşlem",
+                "items": [
+                    "Hesap özeti",
+                    "Piyasalar",
+                    "Platform",
+                    "İşlem koşulları",
+                    "Tandem işlem"
+                ]
+            },
+            "partnership": {
+                "title": "Ortaklık",
+                "items": [
+                    "IB/ Ortaklık kaydet",
+                    "IB'ler nasıl gelir elde eder"
+                ]
+            },
+            "company": {
+                "title": "Şirket",
+                "items": [
+                    "Şirket hakkında",
+                    "Belgeler",
+                    "Şirket haberleri",
+                    "İletişim",
+                    "Kariyer"
+                ]
+            },
+            "legal": {
+                "regulated": "Ester, Seychelles Financial Services Authority (FSA) tarafından düzenlenen ve SD018 No'lu Securities Dealer License'a sahip resmi ticari isimdir.",
+                "risk": "Risk Uyarısı: CFD ticareti yüksek risk taşır ve sermaye kaybına neden olabilir. Sadece kaybetmeyi göze alabileceğiniz parayla yatırım yapmalısınız. Canlı enstrümanlarla işlem hiçbir koşulda durdurulamaz, bu nedenle içerdiği riskleri tam olarak anlamanız ve gerekirse bağımsız tavsiye almanız önemlidir. Lütfen risk açıklamamızı okuyun ve tam olarak anladığınızdan emin olun.",
+                "restricted": "Kısıtlı Ülkeler: Raw Trading Ltd, Amerika Birleşik Devletleri, Kanada, İsrail, Yeni Zelanda, İran ve Kuzey Kore (Kore Demokratik Halk Cumhuriyeti) dahil olmak üzere birçok ülkenin sakinlerine ve yerel yasalara aykırı olan diğer yargı bölgelerinde hizmet sağlamamaktadır.",
+                "age": "Ester'de hesap açmak için en az 18 yaşında olmanız veya ülkenizin yasalarına göre reşit olmanız gerekmektedir. Bir hesap oluşturarak, Ester'den herhangi bir talep veya teklif olmaksızın kendi inisiyatifinizle kaydolduğunuzu onaylarsınız.",
+                "compliance": "Ester, hizmetlerini veya web sitesi içeriğini kullanımının yerel yasalarla yasaklandığı ülkelerdeki kullanıcılara yönlendirmez. Bu web sitesine kısıtlı bir ülkeden erişirseniz, yerel yasalara uygunluktan siz sorumlusunuz. Şirket ayrıca sağlanan bilgilerin tüm yargı bölgelerinin gerekliliklerine uygun olduğunu garanti etmez.",
+                "copyrightStart": "© 2025 Ester",
+                "copyrightEnd": "Tüm hakları saklıdır."
+            }
+        }
+    },
+    "cabinet": {
+        "menu": {
+            "dashboard": "Gösterge Paneli",
+            "payment_details": "Ödeme detayları",
+            "accounts": "Hesaplar",
+            "referral_system": "Yönlendirme sistemi",
+            "billing": "Faturalandırma",
+            "support": "Destek",
+            "settings": "Ayarlar"
+        },
+        "dashboard": {
+            "title": "Gösterge Paneli",
+            "accountVerification": {
+                "title": "Hesap Doğrulama",
+                "subtitle": "Doğrulama devam ediyor",
+                "addressFailed": "Adres doğrulama başarısız!",
+                "documentVerified": "Belge başarıyla doğrulandı!",
+                "paymentInProgress": "Ödeme doğrulaması devam ediyor!",
+                "profileInProgress": "Profil doğrulaması devam ediyor!",
+                "profileButton": "Profil"
+            },
+            "actions": {
+                "newDeposit": "Yeni Depozito",
+                "newWithdrawal": "Yeni Çekim",
+                "chartPlaceholder": "Grafik buraya gelecek"
+            },
+            "mt4": {
+                "title": "MT4 Hesapları",
+                "openNewAccount": "Yeni hesap aç",
+                "table": {
+                    "account": "Hesap",
+                    "type": "Tür",
+                    "balance": "Bakiye",
+                    "status": "Durum",
+                    "active": "Aktif",
+                    "inactive": "Aktif değil"
+                }
+            }
+        },
+        "billing": {
+            "title": "Faturalandırma",
+            "create": "Yeni ödeme oluştur",
+            "search": "Ara",
+            "columns": {
+                "id": "Id",
+                "paysystem": "Ödeme sistemi",
+                "status": "Durum",
+                "currency": "Para birimi",
+                "amount": "Tutar",
+                "createdAt": "Oluşturulma tarihi"
+            },
+            "nothingToShow": "Gösterilecek bir şey yok =(",
+            "pagination": {
+                "prev": "Önceki",
+                "next": "Sonraki"
+            },
+            "panel-title": "Yeni Yönetici Ekle"
+        },
+        "payments": {
+            "title": "Ödeme detayları",
+            "search": "Ara",
+            "create": "Yeni ödeme detayı oluştur",
+            "columns": {
+                "title": "Başlık",
+                "paysystem": "Ödeme sistemi",
+                "currency": "Para birimi",
+                "createdAt": "Oluşturulma tarihi"
+            },
+            "nothingToShow": "Gösterilecek bir şey yok =(",
+            "pagination": {
+                "prev": "Önceki",
+                "next": "Sonraki"
+            }
+        },
+        "profile": {
+            "components": {
+                "tab-change-password": {
+                    "labels": {
+                        "old_password": "Eski şifre",
+                        "new_password": "Yeni şifre",
+                        "new_password_confirmation": "Yeni şifre onayı"
+                    },
+                    "placeholders": {
+                        "old_password": "*********",
+                        "new_password": "*********",
+                        "new_password_confirmation": "*********"
+                    },
+                    "button": "Yeni şifreyi kaydet",
+                    "success": "Şifre başarıyla güncellendi!"
+                },
+                "tab-general": {
+                    "labels": {
+                        "email": "E-posta",
+                        "first_name": "Ad",
+                        "last_name": "Soyad",
+                        "mid_name": "İkinci ad",
+                        "birthdate": "Doğum tarihi",
+                        "phone": "Telefon",
+                        "country": "Ülke",
+                        "state": "Eyalet",
+                        "city": "Şehir",
+                        "address": "Adres",
+                        "postal_code": "Posta kodu"
+                    },
+                    "placeholders": {
+                        "email": "ornek1test.com",
+                        "first_name": "Ahmet",
+                        "last_name": "Yılmaz",
+                        "mid_name": "Mehmet",
+                        "birthdate": "",
+                        "phone": "",
+                        "country": "Ülke",
+                        "state": "Eyalet",
+                        "city": "Şehir",
+                        "address": "Backer Sk. 2b, Daire 8",
+                        "postal_code": "00000"
+                    },
+                    "button": "Kaydet ve doğrulamaya gönder",
+                    "success": "Kullanıcı verileri başarıyla güncellendi ve doğrulamaya gönderildi!"
+                },
+                "tab-user-documents": {
+                    "buttons": {
+                        "choose": "Dosya seç",
+                        "upload": "Yükle"
+                    },
+                    "messages": {
+                        "upload_success": "Profil fotoğrafı başarıyla güncellendi ve doğrulamaya gönderildi!",
+                        "upload_error": "Fotoğraf yüklenemedi",
+                        "delete_error": "Fotoğraf silinemedi"
+                    },
+                    "errors": {
+                        "type": "Sadece resimler izin verilir",
+                        "size": "Maksimum boyut 2MB"
+                    }
+                },
+                "tab-user-photo": {
+                    "buttons": {
+                        "choose": "Dosya seç",
+                        "upload": "Yükle"
+                    },
+                    "messages": {
+                        "upload_success": "Profil fotoğrafı başarıyla güncellendi",
+                        "delete_success": "Profil fotoğrafı silindi",
+                        "upload_error": "Fotoğraf yüklenemedi",
+                        "delete_error": "Fotoğraf silinemedi"
+                    },
+                    "errors": {
+                        "type": "Sadece resimler izin verilir",
+                        "size": "Maksimum boyut 2MB"
+                    }
+                }
+            },
+            "index": {
+                "tabs": {
+                    "general": "Genel",
+                    "photo": "Kullanıcı fotoğrafı",
+                    "documents": "Belgeler",
+                    "verification": "Doğrulama",
+                    "change_password": "Şifre değiştir"
+                },
+                "title": "Profil"
+            }
+        },
+        "accounts": {
+            "account": {
+                "title": "Hesap"
+            },
+            "title": "Hesaplar",
+            "openNew": "Yeni hesap aç",
+            "search": "Ara",
+            "columns": {
+                "type": "Hesap türü",
+                "currency": "Para birimi",
+                "leverage": "Kaldıraç",
+                "number": "Hesap numarası",
+                "balance": "MT Bakiyesi"
+            },
+            "nothingToShow": "Gösterilecek aktif hesap yok!",
+            "openAccount": "Yeni hesap aç!",
+            "pagination": {
+                "prev": "Önceki",
+                "next": "Sonraki"
+            },
+            "accounts-form": {
+                "title": "Yeni hesap aç",
+                "fields": {
+                    "accountType": "Hesap türü",
+                    "phonePassword": "Telefon şifresi",
+                    "phonePasswordPlaceholder": "Telefon şifresini girin"
+                },
+                "actions": {
+                    "submit": "Yeni hesap aç"
+                }
+            }
+        },
+        "referrals": {
+            "components": {},
+            "index": {
+                "tabs": {
+                    "general": "Genel",
+                    "settings": "Ayarlar",
+                    "terms": "Koşullar"
+                },
+                "title": "Yönlendirme sistemi"
+            }
+        }
+    },
+    "admin": {
+        "menu": {
+            "dashboard": "Gösterge Paneli",
+            "verificationRequests": "Doğrulama istekleri",
+            "clients": "Müşteriler",
+            "accounts": "Hesaplar",
+            "referral": "Yönlendirme sistemi",
+            "payments": "Ödemeler",
+            "settings": "Ayarlar",
+            "support": "Destek",
+            "news": "Haberler",
+            "mail": "E-postalar",
+            "access": "Erişim"
+        },
+        "access": {
+            "components": {
+                "admins-panel": {
+                    "title": "# Yöneticiler",
+                    "columns": {
+                        "id": "Id",
+                        "nickname": "Takma ad",
+                        "email": "E-posta",
+                        "roles": "Roller",
+                        "createdAt": "Oluşturulma tarihi",
+                        "options": "Seçenekler"
+                    },
+                    "actions": {
+                        "addNewAdmin": "Yeni Yönetici Ekle"
+                    }
+                },
+                "admins-panel-add-new": {
+                    "title": "Yeni Yönetici Oluştur",
+                    "fields": {
+                        "nickname": "Takma ad",
+                        "email": "E-posta",
+                        "password": "Şifre",
+                        "roles": "Roller"
+                    },
+                    "placeholders": {
+                        "nickname": "Yönetici takma adını girin",
+                        "email": "ornek\\u0040gmail.com",
+                        "roles": "Rolleri seçin"
+                    },
+                    "actions": {
+                        "submit": "Yeni Oluştur ve Kaydet"
+                    }
+                },
+                "admins-panel-edit": {
+                    "title": "Yönetici Rollerini Düzenle",
+                    "labels": {
+                        "nickname": "Takma ad",
+                        "email": "E-posta",
+                        "roles": "Roller"
+                    },
+                    "placeholders": {
+                        "nickname": "Rol takma adını girin",
+                        "email": "ornek1gmail.com",
+                        "roles": "Rolleri seçin"
+                    },
+                    "actions": {
+                        "submit": "Güncelle ve Kaydet"
+                    }
+                },
+                "admins-panel-search": {
+                    "placeholder": "Ara"
+                },
+                "permissions-panel": {
+                    "title": "# İzinler",
+                    "searchPlaceholder": "Ara",
+                    "columns": {
+                        "id": "ID",
+                        "name": "Ad"
+                    }
+                },
+                "roles-panel": {
+                    "title": "# Roller",
+                    "addTitle": "Yeni Rol Ekle",
+                    "editTitle": "Rolü Düzenle",
+                    "columns": {
+                        "name": "Ad",
+                        "permissions": "İzinler"
+                    }
+                },
+                "roles-panel-add-new": {
+                    "labels": {
+                        "name": "Ad",
+                        "permissions": "İzinler"
+                    },
+                    "placeholders": {
+                        "name": "Rol adını girin",
+                        "permissions": "İzinleri seçin"
+                    },
+                    "actions": {
+                        "createAndSave": "Yeni Oluştur ve Kaydet"
+                    }
+                },
+                "roles-panel-edit": {
+                    "labels": {
+                        "name": "Ad",
+                        "permissions": "İzinler"
+                    },
+                    "placeholders": {
+                        "name": "Rol adını girin",
+                        "permissions": "İzinleri seçin"
+                    },
+                    "actions": {
+                        "updateAndSave": "Güncelle ve Kaydet"
+                    }
+                },
+                "roles-panel-search": {
+                    "placeholder": "Ara"
+                }
+            },
+            "index": {
+                "title": "Erişim kontrolleri",
+                "subtitle": "( Roller ve İzinler )"
+            }
+        },
+        "accounts": {
+            "components": {
+                "accounts-panel": {
+                    "title": "# Müşteriler",
+                    "addTitle": "Yeni Müşteri Ekle",
+                    "editTitle": "Müşteriyi Düzenle",
+                    "columns": {
+                        "id": "ID",
+                        "name": "Ad",
+                        "email": "E-posta",
+                        "phone": "Telefon",
+                        "created_at": "Oluşturulma tarihi",
+                        "options": "İşlemler"
+                    }
+                },
+                "accounts-panel-add-new": {
+                    "labels": {
+                        "email": "E-posta",
+                        "first_name": "Ad",
+                        "last_name": "Soyad",
+                        "mid_name": "İkinci ad",
+                        "birthdate": "Doğum tarihi",
+                        "phone": "Telefon",
+                        "country": "Ülke",
+                        "city": "Şehir",
+                        "address": "Adres",
+                        "postal_code": "Posta kodu",
+                        "password": "Şifre",
+                        "password_confirmation": "Şifre onayı"
+                    },
+                    "placeholders": {
+                        "email": "E-posta girin",
+                        "first_name": "Ad girin",
+                        "last_name": "Soyad girin",
+                        "mid_name": "İkinci ad girin",
+                        "phone": "Telefon girin",
+                        "address": "Adres girin",
+                        "postal_code": "Posta kodu girin",
+                        "password": "Şifre girin",
+                        "password_confirmation": "Şifre onayı girin"
+                    },
+                    "submit": "Yeni Oluştur ve Kaydet"
+                },
+                "accounts-panel-edit": {
+                    "labels": {
+                        "name": "Ad",
+                        "permissions": "İzinler"
+                    },
+                    "placeholders": {
+                        "name": "Rol adını girin",
+                        "permissions": "İzinleri seçin"
+                    },
+                    "submit": "Güncelle ve Kaydet"
+                },
+                "accounts-panel-search": {
+                    "placeholder": "Müşterileri ara..."
+                }
+            },
+            "index": {
+                "title": "Hesaplar",
+                "subtitle": "Hesaplar listesi"
+            }
+        },
+        "clients": {
+            "components": {
+                "clients-panel": {
+                    "title": "# Müşteriler",
+                    "addTitle": "Yeni Müşteri Ekle",
+                    "editTitle": "Müşteriyi Düzenle",
+                    "columns": {
+                        "id": "ID",
+                        "email": "E-posta",
+                        "first_name": "Ad",
+                        "last_name": "Soyad",
+                        "phone": "Telefon",
+                        "created_at": "Oluşturulma tarihi",
+                        "options": "İşlemler"
+                    }
+                },
+                "clients-panel-add-new": {
+                    "labels": {
+                        "email": "E-posta",
+                        "first_name": "Ad",
+                        "last_name": "Soyad",
+                        "mid_name": "İkinci ad",
+                        "birthdate": "Doğum tarihi",
+                        "phone": "Telefon",
+                        "country": "Ülke",
+                        "city": "Şehir",
+                        "address": "Adres",
+                        "postal_code": "Posta kodu",
+                        "password": "Şifre",
+                        "password_confirmation": "Şifre onayı"
+                    },
+                    "placeholders": {
+                        "email": "E-posta girin",
+                        "first_name": "Ad girin",
+                        "last_name": "Soyad girin",
+                        "mid_name": "İkinci ad girin",
+                        "phone": "Telefon girin",
+                        "address": "Adres girin",
+                        "postal_code": "Posta kodu girin",
+                        "password": "Şifre girin",
+                        "password_confirmation": "Şifre onayı girin"
+                    },
+                    "submit": "Yeni Oluştur ve Kaydet"
+                },
+                "clients-panel-edit": {
+                    "labels": {
+                        "name": "Ad",
+                        "permissions": "İzinler"
+                    },
+                    "placeholders": {
+                        "name": "Rol adını girin",
+                        "permissions": "İzinleri seçin"
+                    },
+                    "submit": "Güncelle ve Kaydet"
+                },
+                "clients-panel-search": {
+                    "placeholder": "Müşterileri ara..."
+                }
+            },
+            "index": {
+                "title": "Müşteriler",
+                "subtitle": "Müşteriler listesi"
+            }
+        },
+        "dashboard": {},
+        "profile": {},
+        "referral": {},
+        "settings": {
+            "title": "Ayarlar",
+            "tabs": {
+                "general": "Genel",
+                "appearance": "Görünüm",
+                "secure": "Güvenlik"
+            },
+            "tables": {
+                "appearance": {
+                    "variable": "Değişken Adı",
+                    "preview": "Önizleme",
+                    "picker": "Renk Seçici",
+                    "background": "Arka Plan",
+                    "text": "Örnek Metin",
+                    "button": "Düğme"
+                },
+                "security": {
+                    "key": "Anahtar",
+                    "value": "Değer (Saniye)"
+                },
+                "general": {
+                    "button": "Yükle"
+                }
+            }
+        },
+        "support": {
+            "title": "Destek"
+        }
+    }
+}

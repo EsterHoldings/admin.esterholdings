@@ -1,84 +1,70 @@
 <template>
   <UiContainer>
     <div class="traders-blog">
-      <UiTextH3 class="traders-blog__title">Traders Blog</UiTextH3>
+      <UiTextH3 class="traders-blog__title">{{ t('landing.pages.trading.traders_blog_title') }}</UiTextH3>
       <div class="traders-blog__wrapper">
         <BlogCard
-            v-for="card in blogEntries"
-            :key="card.title"
-            :image="card.src"
-            :title="card.title"
-            :message="card.subTitle"
-            :date="card.time"
-            :link="card.link"
-        />
+          v-for="(card, index) in blogItems"
+          :key="index"
+          :image="card.src"
+          :title="card.title"
+          :message="card.subTitle"
+          :date="card.time"
+          :link="card.link"
+          :button-text="card.buttonText" />
       </div>
     </div>
   </UiContainer>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import {definePageMeta} from "~/.nuxt/imports";
-import UiContainer from "~/components/ui/UiContainer.vue";
-import UiTextH3 from "~/components/ui/UiTextH3.vue";
+  import { computed } from 'vue';
+  import { definePageMeta } from '~/.nuxt/imports';
+  import { useI18n } from 'vue-i18n';
+  import UiContainer from '~/components/ui/UiContainer.vue';
+  import UiTextH3 from '~/components/ui/UiTextH3.vue';
 
-import BlogCard from "./components/BlogCard.vue";
+  import BlogCard from './components/BlogCard.vue';
 
-definePageMeta({
-  layout: "main",
-  alias: "/trader's-blog",
-});
+  definePageMeta({
+    layout: 'main',
+    alias: "/trader's-blog",
+  });
 
-const blogEntries = ref([
-  {
-    src: "/static/newsBg.jpg",
-    title: "How to Effectively Manage Risks in Trading",
-    subTitle: "Trading is undeniably an exciting and potentially profitable activity. However, success in this field requires not only the ability to analyze the market and …",
-    time: "4.06.2024 | 01:40 PM",
-    link: "/blog/manage-risks",
-  },
-  {
-    src: "/static/newsBg.jpg",
-    title: "Когда переходить с демо на реальный счет?",
-    subTitle: "Sorry, this entry is only available in Russian.",
-    time: "17.05.2024 | 11:00 AM",
-    link: "/blog/switch-to-real",
-  },
-  {
-    src: "/static/newsBg.jpg",
-    title: "Легендарный инвестор Уоррен Баффетт",
-    subTitle: "Sorry, this entry is only available in Russian.",
-    time: "5.05.2024 | 11:00 AM",
-    link: "/blog/warren-buffet",
-  },
-  {
-    src: "/static/newsBg.jpg",
-    title: "Стратегии трейдинга",
-    subTitle: "Sorry, this entry is only available in Russian.",
-    time: "17.04.2024 | 04:04 PM",
-    link: "/blog/trading-strategies",
-  },
+  const { t, tm } = useI18n();
 
-]);
+  const blogItems = computed(() => {
+    const items = tm('landing.pages.trading.traders_blog_items') as any[];
+    const buttonText = t('landing.pages.company.news.button');
+    return Array.isArray(items)
+      ? items.map((_, index) => ({
+          src: '/static/newsBg.jpg',
+          title: t(`landing.pages.trading.traders_blog_items[${index}].title`),
+          subTitle: t(`landing.pages.trading.traders_blog_items[${index}].subtitle`),
+          time: t(`landing.pages.trading.traders_blog_items[${index}].time`),
+          link: '/blog/post',
+          buttonText,
+        }))
+      : [];
+  });
 </script>
 
 <style lang="scss" scoped>
-.traders-blog {
-  display: flex;
-  flex-direction: column;
-
-  &__title {
-    color: var(--ui-text-main);
-    text-align: center;
-  }
-
-  &__wrapper {
-    margin-top: 20px;
+  .traders-blog {
     display: flex;
     flex-direction: column;
-    align-items: baseline;
-    gap: 30px;
+
+    &__title {
+      color: var(--ui-text-main);
+      text-align: center;
+    }
+
+    &__wrapper {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: baseline;
+      gap: 30px;
+    }
   }
-}
 </style>

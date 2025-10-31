@@ -48,7 +48,7 @@
     background: var(--ui-background);
     border-radius: 15px;
     width: 360px;
-    height: 355px;
+    height: 430px;
     display: flex;
     flex-direction: column;
   }

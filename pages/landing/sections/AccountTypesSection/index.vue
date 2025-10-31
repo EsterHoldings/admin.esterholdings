@@ -6,8 +6,8 @@
       <div class="cards-scroll-wrapper">
         <div class="cards-scroll-container">
           <TheCard
-            v-for="card in accountCards"
-            :key="card.type"
+            v-for="(card, index) in accountCards"
+            :key="index"
             :type="card.type"
             :title="card.title"
             :subtitle="card.subtitle"
@@ -23,59 +23,34 @@
 
 <script lang="ts" setup>
   import { useI18n } from 'vue-i18n';
+  import { computed } from 'vue';
   import UiTextH3 from '~/components/ui/UiTextH3.vue';
   import UiContainer from '~/components/ui/UiContainer.vue';
   import TheCard from '~/components/block/TheCard.vue';
 
-  const { t } = useI18n();
+  const { t, tm } = useI18n();
 
-  const accountCards = [
-    {
-      type: 'demo' as const,
-      title: 'Demo',
-      subtitle: 'account',
-      description: 'Risk-free trading with virtual funds, perfect for beginners to explore markets.',
-      features: ['Leverage up to 1:500', 'Spreads from 0.0 pips', 'No deposit required'],
-      buttonText: 'Try Demo Now',
-      isRecommended: true,
-    },
-    {
-      type: 'standard' as const,
-      title: 'Standard',
-      subtitle: 'account',
-      description: 'Easy access to spot markets with low fees and — ideal for beginners and active traders.',
-      features: ['Leverage up to 1:500', 'Spreads from 1.2 pips', 'First deposit of $50'],
-      buttonText: 'Open Standard Account',
-      isRecommended: false,
-    },
-    {
-      type: 'pro' as const,
-      title: 'Pro',
-      subtitle: 'account',
-      description: 'Experience tight spreads, higher leverage, and full control over every trade.',
-      features: ['Leverage up to 1:500', 'Spreads from 0.0 pips', 'First deposit of $1000'],
-      buttonText: 'Trade Like a Pro',
-      isRecommended: false,
-    },
-    {
-      type: 'tandem' as const,
-      title: 'Tandem',
-      subtitle: 'account',
-      description: 'Pair with a partner, mentor, or co-trader and grow together with synchronized strategies.',
-      features: ['Leverage up to 1:200', 'Shared account access', 'Real-time trade mirroring'],
-      buttonText: 'Trade Together',
-      isRecommended: false,
-    },
-    {
-      type: 'islamic' as const,
-      title: 'Islamic',
-      subtitle: 'account',
-      description: 'Swap-free. Shariah-compliant. Trade without interest, with full platform access.',
-      features: ['Leverage up to 1:500', 'No swap / interest fees', 'Access to all trading instruments'],
-      buttonText: 'Open Islamic Account',
-      isRecommended: false,
-    },
-  ];
+  const accountCards = computed(() => {
+    const options = tm('landing.sections.accounts__options') as any[];
+    return Array.isArray(options)
+      ? options.map((option: any, index: number) => ({
+          type: t(`landing.sections.accounts__options[${index}].type`) as
+            | 'demo'
+            | 'standard'
+            | 'pro'
+            | 'tandem'
+            | 'islamic',
+          title: t(`landing.sections.accounts__options[${index}].title`),
+          subtitle: t(`landing.sections.accounts__options[${index}].subtitle`),
+          description: t(`landing.sections.accounts__options[${index}].description`),
+          features: (tm(`landing.sections.accounts__options[${index}].features`) as any[]).map((_, fIndex) =>
+            t(`landing.sections.accounts__options[${index}].features[${fIndex}]`),
+          ),
+          buttonText: t(`landing.sections.accounts__options[${index}].buttonText`),
+          isRecommended: Boolean(option.isRecommended),
+        }))
+      : [];
+  });
 </script>
 
 <style lang="scss" scoped>
