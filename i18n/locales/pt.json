@@ -1,0 +1,1198 @@
+{
+    "ui-components": {
+        "modals": {
+            "cookie-modal": {
+                "text": "Este site usa cookies para melhorar a experiência do usuário. Ao continuar a usar o site, você concorda com o nosso uso de cookies.",
+                "btn-successful": "Aceitar",
+                "btn-negative": "Recusar"
+            }
+        },
+        "lines": {
+            "running-line-btn": "Negociar"
+        },
+        "tables": {
+            "table-default": "Nada a mostrar..."
+        },
+        "ui-select": "Não selecionado..."
+    },
+    "landing": {
+        "header": {
+            "nav": {
+                "trading": "Negociação",
+                "partnership": "Parceria",
+                "company": "Empresa"
+            },
+            "auth": {
+                "login": "Entrar",
+                "register": "Registrar"
+            },
+            "megaMenu": {
+                "Trading": [
+                    {
+                        "section": "Visão geral de contas",
+                        "items": [
+                            "Padrão",
+                            "Pro",
+                            "Islâmica",
+                            "Demo"
+                        ]
+                    },
+                    {
+                        "section": "Instrumentos de mercado",
+                        "items": [
+                            "Forex",
+                            "Metais",
+                            "CFDs de Cripto",
+                            "Índices",
+                            "Ações",
+                            "Energia",
+                            "ETFs"
+                        ]
+                    },
+                    {
+                        "section": "Plataforma",
+                        "items": [
+                            "MT4 Desktop",
+                            "MT 4 Mobile"
+                        ]
+                    },
+                    {
+                        "section": "Condições de negociação",
+                        "items": [
+                            "Recarga de conta",
+                            "Retirada de fundos"
+                        ]
+                    },
+                    {
+                        "section": "HUB do Trader",
+                        "items": [
+                            "Blog do trader",
+                            "Calendário econômico",
+                            "Notícias do mercado"
+                        ]
+                    },
+                    {
+                        "section": "Negociação TANDEM",
+                        "items": [
+                            "Para trader",
+                            "Para investidor"
+                        ]
+                    }
+                ],
+                "Partnership": [
+                    {
+                        "section": "Parceria",
+                        "items": [
+                            "Registrar IB/ Parceria",
+                            "Como os IB geram renda"
+                        ]
+                    }
+                ],
+                "Company": [
+                    {
+                        "section": "Empresa",
+                        "items": [
+                            "Sobre a empresa",
+                            "Documentos",
+                            "Notícias da empresa",
+                            "Contatos",
+                            "Carreira"
+                        ]
+                    }
+                ]
+            }
+        },
+        "slider": {
+            "general-slide": {
+                "title": {
+                    "before": "Negocie",
+                    "highlight": "Mais Inteligente",
+                    "after": "Negocie Mais Rápido!"
+                },
+                "text": "Acesse mercados globais, incluindo Forex, Ações e CFDs, com \nexecução rápida, spreads baixos e análise de mercado em tempo real.",
+                "btn": "Negocie Agora"
+            },
+            "top-trader-slide": {
+                "title": {
+                    "before": "Copie Estratégias dos",
+                    "highlight": "Melhores Traders",
+                    "after": ""
+                },
+                "text": "Obtenha acesso a negociações reais de profissionais e melhore sua negociação.",
+                "btn": "Começar"
+            },
+            "ten_years_slide": {
+                "title": {
+                    "highlight": "Anos",
+                    "after": "em Negociação"
+                },
+                "text": "Experiência testada pelo tempo. Confiabilidade confirmada por resultados.",
+                "btn": "Junte-se a Nós"
+            }
+        },
+        "sections": {
+            "advantages": [
+                {
+                    "value": "10+",
+                    "label": "Anos de experiência no campo"
+                },
+                {
+                    "value": "1,160,000+",
+                    "label": "Clientes"
+                },
+                {
+                    "value": "5* Classificado",
+                    "label": "Serviço ao cliente"
+                }
+            ],
+            "platform__title": "Plataforma lendária para negociação bem-sucedida\nde Forex e CFD",
+            "platform__features": [
+                {
+                    "title": "Plataforma de Negociação",
+                    "text": "Suba de nível com nossos produtos"
+                },
+                {
+                    "title": "Negociação móvel",
+                    "text": "Controle total sobre transações a qualquer momento."
+                },
+                {
+                    "title": "Ester MetaTrader 4",
+                    "text": "A solução popular e clássica"
+                },
+                {
+                    "title": "Alta velocidade e confiabilidade",
+                    "text": "Funciona mesmo em PCs fracos."
+                }
+            ],
+            "feature__title": "Por Que Nos Escolher?",
+            "features__items": [
+                {
+                    "title": "Instrumentos",
+                    "text": "Forex/Spot\nAções/Índices",
+                    "icon": "/static/F-Wrench & Screwdriver.png"
+                },
+                {
+                    "title": "Liquidez:\n200+ Nível Superior",
+                    "text": "Instituições financeiras",
+                    "icon": "/static/F-Building Library.png"
+                },
+                {
+                    "title": "Spread Flutuante",
+                    "text": "a partir de 0 pips",
+                    "icon": "/static/F-Money.png"
+                },
+                {
+                    "title": "Níveis Limit e Stop",
+                    "text": "= 0",
+                    "icon": "/static/LIMIT AND STOP LEVELS.png"
+                },
+                {
+                    "title": "Tecnologias de Servidor Mais Rápidas",
+                    "text": "com altas velocidades de processamento de ordens",
+                    "icon": "/static/F-Rocket.png"
+                },
+                {
+                    "title": "Segurança Bancária",
+                    "text": "de contas de negociação",
+                    "icon": "/static/L-Shield Done.png"
+                }
+            ],
+            "account_types__categories": [
+                {
+                    "id": "Standard",
+                    "label": "Padrão"
+                },
+                {
+                    "id": "Pro",
+                    "label": "Pro"
+                },
+                {
+                    "id": "Tandem",
+                    "label": "Tandem"
+                },
+                {
+                    "id": "Islamic",
+                    "label": "Islâmica"
+                }
+            ],
+            "accounts__title": "Explore Nossas Opções de Contas de Negociação",
+            "accounts__btn": "Abrir Conta",
+            "accounts__options": [
+                {
+                    "id": "demo",
+                    "type": "demo",
+                    "title": "Demo",
+                    "subtitle": "conta",
+                    "description": "Negociação sem risco com fundos virtuais, perfeito para iniciantes explorarem os mercados.",
+                    "features": [
+                        "Alavancagem até 1:500",
+                        "Spreads a partir de 0,0 pips",
+                        "Nenhum depósito necessário"
+                    ],
+                    "buttonText": "Experimente Demo Agora",
+                    "isRecommended": true
+                },
+                {
+                    "id": "standard",
+                    "type": "standard",
+                    "title": "Padrão",
+                    "subtitle": "conta",
+                    "description": "Acesso fácil aos mercados à vista com taxas baixas — ideal para iniciantes e traders ativos.",
+                    "features": [
+                        "Alavancagem até 1:500",
+                        "Spreads a partir de 1,2 pips",
+                        "Primeiro depósito de $50"
+                    ],
+                    "buttonText": "Abrir Conta Padrão",
+                    "isRecommended": false
+                },
+                {
+                    "id": "pro",
+                    "type": "pro",
+                    "title": "Pro",
+                    "subtitle": "conta",
+                    "description": "Experimente spreads apertados, maior alavancagem e controle total sobre cada negociação.",
+                    "features": [
+                        "Alavancagem até 1:500",
+                        "Spreads a partir de 0,0 pips",
+                        "Primeiro depósito de $1000"
+                    ],
+                    "buttonText": "Negocie Como um Pro",
+                    "isRecommended": false
+                },
+                {
+                    "id": "tandem",
+                    "type": "tandem",
+                    "title": "Tandem",
+                    "subtitle": "conta",
+                    "description": "Associe-se com um parceiro, mentor ou co-trader e cresça junto com estratégias sincronizadas.",
+                    "features": [
+                        "Alavancagem até 1:200",
+                        "Acesso compartilhado à conta",
+                        "Espelhamento de negociações em tempo real"
+                    ],
+                    "buttonText": "Negocie Juntos",
+                    "isRecommended": false
+                },
+                {
+                    "id": "islamic",
+                    "type": "islamic",
+                    "title": "Islâmica",
+                    "subtitle": "conta",
+                    "description": "Sem swap. Compatível com a Sharia. Negocie sem juros, com acesso completo à plataforma.",
+                    "features": [
+                        "Alavancagem até 1:500",
+                        "Sem taxas de swap / juros",
+                        "Acesso a todos os instrumentos de negociação"
+                    ],
+                    "buttonText": "Abrir Conta Islâmica",
+                    "isRecommended": false
+                }
+            ],
+            "wide_range__title": "Ampla Gama de Produtos",
+            "wide_range__categories": [
+                {
+                    "id": "forex",
+                    "label": "Forex"
+                },
+                {
+                    "id": "metals",
+                    "label": "Metais"
+                },
+                {
+                    "id": "cryptocurrency CDs",
+                    "label": "CDs de Criptomoedas"
+                },
+                {
+                    "id": "indices",
+                    "label": "Índices"
+                },
+                {
+                    "id": "shares",
+                    "label": "Ações"
+                },
+                {
+                    "id": "energy",
+                    "label": "Energia"
+                },
+                {
+                    "id": "ETFS",
+                    "label": "ETFs"
+                }
+            ],
+            "wide_range_tabs": {
+                "Forex": {
+                    "title": "Forex",
+                    "description": "Negocie 70 pares de moedas principais, menores e exóticas\n com condições de negociação competitivas.",
+                    "btn": "Negocie Forex"
+                },
+                "Metals": {
+                    "title": "Metais",
+                    "description": "Negocie commodities metálicas como Ouro,\n Prata e Platina.",
+                    "btn": "Negocie Metais"
+                },
+                "CryptocurrencyCDs": {
+                    "title": "CDs de Criptomoedas",
+                    "description": "Negocie CFD de Bitcoin, CFD de Ether, CFD de Doge\n e mais CDs de cripto e CFDs de altcoins",
+                    "btn": "Negocie CFDs de Criptomoedas"
+                },
+                "Indices": {
+                    "title": "Índices",
+                    "description": "Negocie CFDs de Índices principais e menores à Vista e\nFuturos de todo o mundo.",
+                    "btn": "Negocie Índices"
+                },
+                "Shares": {
+                    "title": "Ações",
+                    "description": "Milhares de empresas públicas dos EUA,\n Reino Unido e UE disponíveis para negociação.",
+                    "btn": "Negocie Ações"
+                },
+                "Energy": {
+                    "title": "Energia",
+                    "description": "Descubra oportunidades em Petróleo Bruto do Reino Unido e EUA\n e contratos à Vista e Futuros de Gás Natural.",
+                    "btn": "Negocie Energia"
+                },
+                "ETFS": {
+                    "title": "ETFs",
+                    "description": "Acesse um Mundo de Mercados com CFDs de ETF - De\n Títulos a Commodities, Imóveis a Volatilidade.",
+                    "btn": "Negocie ETFs"
+                }
+            },
+            "four_steps_section": {
+                "title": {
+                    "before": "Abra uma conta em",
+                    "highlight": "4 passos simples"
+                },
+                "button": "Abrir conta",
+                "items": [
+                    {
+                        "title": "Registrar",
+                        "text": "Escolha um tipo de conta e preencha nosso formulário rápido e seguro"
+                    },
+                    {
+                        "title": "Verificar",
+                        "text": "Use nosso sistema de integração digital para verificação rápida"
+                    },
+                    {
+                        "title": "Financiar",
+                        "text": "Financie sua conta de negociação usando uma ampla gama de métodos de financiamento"
+                    },
+                    {
+                        "title": "Negociar",
+                        "text": "Comece a negociar em sua conta real e acesse mais de 2.100 instrumentos"
+                    }
+                ]
+            },
+            "banner_section": {
+                "title": "Negocie nos Mercados",
+                "title_highlight": "Como um Pro!",
+                "subtitle": "Seja você um iniciante ou um profissional, nossas ferramentas e recursos avançados ajudam você a tomar decisões de negociação informadas.",
+                "button_primary": "Começar a negociar",
+                "button_secondary": "Experimente Conta Demo"
+            },
+            "latest_updates__title": "Últimas atualizações",
+            "latest_updates__items": [
+                {
+                    "title": "Ações da NVIDIA dispararam 15% após o relatório",
+                    "subtitle": "A fabricante de chips NVIDIA (NVDA) apresentou um relatório trimestral que superou todas as expectativas de Wall Street...",
+                    "time": "15 min"
+                },
+                {
+                    "title": "Tesla anunciou desdobramento de ações 1:10 – cotações subiram 12%",
+                    "subtitle": "A notícia fez as ações subirem 12%, com a Tesla agora negociando a $1.180 por ação.",
+                    "time": "30 min"
+                },
+                {
+                    "title": "Bitcoin cai 12% após SEC anunciar proibição de stablecoins",
+                    "subtitle": "A Securities and Exchange Commission (SEC) dos EUA fez um anúncio surpresa introduzindo novas...",
+                    "time": "1 hora atrás"
+                }
+            ],
+            "faqs__form_title": "Precisa de Ajuda?",
+            "faqs__form_subtitle": "Responderemos dentro de um dia.",
+            "faqs__form_placeholders": {
+                "name": "Seu Nome",
+                "email": "Seu Email",
+                "description": "Descreva sua pergunta..."
+            },
+            "faqs__form_button": "Enviar",
+            "faqs__items": [
+                {
+                    "title": "Como abro uma conta de negociação?",
+                    "description": "Para abrir uma conta de negociação, basta se inscrever, verificar sua identidade e escolher seu tipo de conta preferido."
+                },
+                {
+                    "title": "Qual é o depósito mínimo necessário?",
+                    "description": "O depósito mínimo varia dependendo do seu tipo de conta. Por favor, verifique nossa seção de tipos de conta para detalhes específicos."
+                },
+                {
+                    "title": "Posso experimentar a plataforma sem risco?",
+                    "description": "Sim, oferecemos contas demo onde você pode praticar negociação com fundos virtuais antes de comprometer dinheiro real."
+                },
+                {
+                    "title": "Meu dinheiro está seguro com sua plataforma?",
+                    "description": "Absolutamente. Usamos medidas de segurança padrão da indústria e mantemos os fundos dos clientes em contas segregadas."
+                },
+                {
+                    "title": "Quais instrumentos de negociação estão disponíveis?",
+                    "description": "Oferecemos uma ampla gama de instrumentos, incluindo Forex, CFDs, commodities, índices e criptomoedas."
+                }
+            ],
+            "accounts__badge_recommended": "Recomendado",
+            "helpSection": "Precisa de Ajuda? Visite nossa",
+            "helpLinkText": "Seção de Ajuda"
+        },
+        "pages": {
+            "company": {
+                "about": {
+                    "title": "Sobre a empresa",
+                    "intro_1": {
+                        "highlight": "A holding financeira internacional Ester Holdings Inc.",
+                        "text": "— é uma empresa estável com gestão altamente eficiente."
+                    },
+                    "intro_2": "A empresa Ester, aberta a tudo de novo, é líder na formação e apoio de altos padrões de trabalho para todo o mercado financeiro.",
+                    "intro_3": "Nossa peculiaridade — condições de negociação lucrativas, alta qualidade de serviço e segurança jurídica.",
+                    "intro_4": "Em primeiro lugar, a empresa coloca a atividade bem-sucedida de seus clientes. É o principal critério de nosso sucesso.",
+                    "intro_5": {
+                        "highlight": "Missão da empresa Ester",
+                        "text": "— fornecer aos seus clientes conhecimento e serviços de consultoria que lhes garantam bem-estar. Somos a empresa financeira universal, que mantém alta qualidade de nosso trabalho em uma base estável."
+                    },
+                    "business_model_title": "Modelo de negócio",
+                    "business_model_subtitle": "O modelo de negócio da empresa é construído sobre relacionamentos transparentes e de confiança com o cliente.",
+                    "business_model_list": [
+                        "A empresa recebe cotações em plataformas ECN dos principais bancos fornecedores de liquidez e dos melhores preços forma fluxos de cotações para os clientes.",
+                        "No terminal de negociação, um cliente pode ver e negociar aos melhores preços de compra e venda para cada instrumento financeiro.",
+                        "Como resultado da ordem do cliente, são executados os preços daquele fornecedor de liquidez que oferece no momento o melhor preço de compra ou venda.",
+                        "Nosso Prime Broker faz compensação (reconhecimento mútuo de responsabilidades) entre a Empresa e os bancos fornecedores de liquidez."
+                    ],
+                    "activity_title": "Área de atividade",
+                    "activity_list": [
+                        "Fornecer acesso aos clientes para realizar operações de negociação com moedas estrangeiras e outros instrumentos financeiros através da Internet.",
+                        "Consultas sobre questões de gestão de ativos de investidores e atividade de investimento.",
+                        "Serviços informativos e analíticos.",
+                        "Treinamento de negociação qualificado."
+                    ]
+                },
+                "career": {
+                    "title": "Carreira",
+                    "subtitle": "No momento, a empresa está procurando os seguintes especialistas:",
+                    "positions": [
+                        "GERENTE DE VENDAS",
+                        "CHEFE DO DEPARTAMENTO DE ANÁLISE"
+                    ],
+                    "cta": "SE VOCÊ ESTÁ PRONTO PARA CRESCIMENTO DINÂMICO, VOCÊ É AMBICIOSO E TALENTOSO, ENVIE SEU CURRÍCULO.",
+                    "button": "ENVIAR CV"
+                },
+                "news": {
+                    "title": "Notícias da Empresa",
+                    "items": [
+                        {
+                            "title": "Ações da NVIDIA dispararam 15% após o relatório",
+                            "subtitle": "A fabricante de chips NVIDIA (NVDA) apresentou um relatório trimestral que superou todas as expectativas de Wall Street...",
+                            "time": "15 min"
+                        },
+                        {
+                            "title": "Tesla anunciou desdobramento de ações 1:10 – cotações subiram 12%",
+                            "subtitle": "A notícia fez as ações subirem 12%, com a Tesla agora negociando a $1.180 por ação.",
+                            "time": "30 min"
+                        },
+                        {
+                            "title": "Bitcoin cai 12% após SEC anunciar proibição de stablecoins",
+                            "subtitle": "A Securities and Exchange Commission (SEC) dos EUA fez um anúncio surpresa introduzindo novas...",
+                            "time": "1 hora atrás"
+                        },
+                        {
+                            "title": "Estratégias de negociação",
+                            "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                            "time": "17.04.2024 | 04:04 PM"
+                        }
+                    ],
+                    "button": "Saber mais"
+                },
+                "contacts": {
+                    "title": "Contatos",
+                    "office_title": "Escritório Principal",
+                    "office_name": "Ester Holdings Ltd",
+                    "office_address": "Térreo, Edifício Sotheby, Rodney Village, Rodney Bay, Gros-Islet, Santa Lúcia",
+                    "office_registration": "Sob número de registro 2023-00477",
+                    "support_label": "Serviço de suporte técnico:",
+                    "support_email": "support{'@'}esterholdings.com",
+                    "finance_label": "Serviço financeiro:",
+                    "finance_email": "finance{'@'}esterholdings.com",
+                    "marketing_label": "Serviço de marketing:",
+                    "marketing_email": "marketing{'@'}esterholdings.com"
+                },
+                "documents": {
+                    "title": "Documentos",
+                    "intro": "Todo o processo de interação com a Ester Holdings Inc. é regulado por documentos padrão",
+                    "regulations_title": "REGULAMENTOS DE COTAÇÕES",
+                    "regulations_subtitle": "Os regulamentos fixam:",
+                    "regulations_list": [
+                        "termos, usados nas operações de negociação do cliente;",
+                        "princípios de negociação de margem;",
+                        "regras de abertura/fechamento de posições, disposição/remoção, mudança e cumprimento de ordens pendentes;",
+                        "ordem de autorização do cliente, bem como ordem de protocolo das operações do Cliente no sistema de negociação MetaTrader 4;",
+                        "procedimento para estabelecer disputas, etc."
+                    ],
+                    "contract_title": "Contrato",
+                    "contract_description": "O contrato contém regras de cooperação do cliente e Ester Holdings Inc. As responsabilidades das partes quanto ao cumprimento de suas obrigações são definidas nele.",
+                    "button": "BAIXAR"
+                }
+            },
+            "partnership": {
+                "title": "Parceria",
+                "subtitle": "Variantes de parceria",
+                "button_agent": "PROGRAMA DE AGENTE",
+                "button_franchising": "FRANQUIA",
+                "intro_1": {
+                    "highlight": "Torne-se parceiro da Ester e obtenha renda junto com a marca"
+                },
+                "intro_2": {
+                    "highlight": "Ester Holdings Inc.",
+                    "text": "— empresa estável com gestão altamente eficiente. A empresa Ester Holdings está aberta a tudo de novo, é líder na formação e apoio de altos padrões de trabalho para todo o mercado financeiro."
+                },
+                "intro_3": "Oferecemos a oportunidade de construir seu próprio negócio sob a marca da empresa internacional Ester Holdings na esfera de negociação pela Internet. Apresse-se em ser o primeiro em sua cidade, abra o escritório da Ester Holdings e obtenha as condições de cooperação mais lucrativas e, o mais importante, alto nível de renda.",
+                "offer_title": "Oferecemos a você",
+                "offer_list": [
+                    "trabalhar sob nossa marca;",
+                    "modelo pronto gerando renda;",
+                    "soluções técnicas para trabalho confortável;",
+                    "condições lucrativas de cooperação;",
+                    "suporte técnico na abertura de escritórios de representação;",
+                    "suporte 24/7 de nossos melhores especialistas."
+                ],
+                "agent_title": "Programa de agente",
+                "agent_description": "Obtenha renda da atividade de negociação de clientes envolvidos! É fácil hoje em dia, graças ao número dinamicamente crescente de usuários da Internet. A prioridade mais importante da Empresa Ester Holdings nisso é o alto nível de qualidade de serviço e formação de relações de longo prazo. Isso é o que permitirá que você, sem ser participante do mercado Forex, obtenha renda constante como comissões da atividade de negociação dos membros envolvidos.",
+                "agent_how_title": "Como funciona?",
+                "agent_how_list": [
+                    "Traga novos clientes para nós",
+                    "Eles se registram e ganharão dinheiro",
+                    "Você receberá comissões de seus lucros"
+                ],
+                "agent_how_cta": "MAIS CLIENTES – MAIS LUCRO",
+                "franchising_title": "Franquia",
+                "franchising_description_1": "Os parceiros da empresa Ester Holdings recebem suporte abrangente e abordagem individual por parte de nossos especialistas experientes. Podemos selecionar soluções correspondentes às suas necessidades reais e objetivos pessoais. Lembre-se de que a imagem positiva e a reputação impecável de nossa Empresa também trabalham para você.",
+                "franchising_description_2": "Franquia com Ester Holdings – é uma oportunidade de abrir um escritório da empresa em sua cidade e trabalhar sob a marca de um dos maiores corretores do mundo. Você obterá tecnologia de negócios desenvolvida e suporte abrangente de nossos especialistas.",
+                "franchising_business_title": "Abrindo seu negócio com Ester Holdings:",
+                "franchising_business_list": [
+                    "A empresa recebe spread ao realizar operações de negociação. Você receberá % do spread de seus clientes.",
+                    "Além disso, você receberá toda a renda da prestação de serviços informativos e de consultoria, apresentados em seu escritório."
+                ],
+                "franchising_how_title": "Como fazer isso?",
+                "franchising_how_list": [
+                    "Envie uma solicitação",
+                    "Selecionamos para você a melhor solução",
+                    "Ajudamos a implementá-la",
+                    "Realizamos treinamento e fornecemos suporte"
+                ],
+                "button_receive": "RECEBER FRANQUIA",
+                "generate_income_title": "Como os IB geram renda",
+                "register_ib_title": "Registrar IB/ Parceria"
+            },
+            "trading": {
+                "account_overview_title": "Visão geral de contas",
+                "account_replenishment_title": "Recarga de conta",
+                "economic_calendar_title": "Calendário Econômico",
+                "for_investor_title": "Para investidor",
+                "for_trader_title": "Para trader",
+                "market_instruments_title": "Ferramentas",
+                "market_instruments_text": [
+                    "Todos os spreads de pares de moedas no terminal de negociação da empresa Ester Holdings são interbancários. Os spreads são formados com a ajuda do agregador de negociação, que escolhe os melhores preços dos provedores de liquidez a cada momento atual. Fornecemos a melhor liquidez no mercado Forex. Swap significa um pagamento pelos participantes do mercado para transferir uma posição para o dia seguinte.",
+                    "O processo de transferência de posições abertas para o dia seguinte é realizado para todas as posições que permanecem abertas das 23:59:59 às 00:00:00, conforme o horário do servidor da Empresa. Para a transferência de uma posição para o dia seguinte, a conta do Cliente pode ser creditada ou debitada de swaps em tais posições.",
+                    "Os tamanhos dos swaps e o método de seu crédito/débito são estipulados nas respectivas especificações.",
+                    "Durante o período de rollover das 23:55 às 00:05 (horário GMT), a liquidez é reduzida, é possível aumentar o spread e o tempo de processamento dos pedidos do cliente.",
+                    "Seu acesso e uso do site e/ou plataforma constitui sua aceitação destas Condições de Negociação e quaisquer outros avisos legais e declarações contidos nele. A Ester pode modificar estas Condições de Negociação a qualquer momento e sem aviso prévio. Seu acesso contínuo e uso do site e/ou plataforma constitui sua aceitação destas Condições de Negociação conforme modificadas."
+                ],
+                "market_news_title": "Notícias do Mercado",
+                "market_news_items": [
+                    {
+                        "title": "Como Gerenciar Efetivamente Riscos na Negociação",
+                        "subtitle": "A negociação é inegavelmente uma atividade emocionante e potencialmente lucrativa. No entanto, o sucesso neste campo requer não apenas a capacidade de analisar o mercado e...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "Quando mudar de conta demo para conta real?",
+                        "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "O lendário investidor Warren Buffett",
+                        "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "Estratégias de negociação",
+                        "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "mt4_title": "МТ4",
+                "mt4_subtitle": "Baixe o terminal de negociação e comece a ganhar",
+                "mt4_button": "BAIXAR MT-4",
+                "mt4_about_title": "Sobre a plataforma",
+                "mt4_about_text": "MetaTrader 4 – a plataforma de negociação mais popular do mundo. Graças a muitos anos de experiência de trabalho com esta plataforma e participação ativa em seu desenvolvimento, fornecemos a você as condições mais lucrativas e confortáveis.",
+                "mt4_about_highlight": "Porque MetaTrader 4 é:",
+                "mt4_features": [
+                    "interface fácil e compreensível com uma variedade de ferramentas de análise técnica;",
+                    "oportunidade de negociar de smartphones, iPads e PDAs;",
+                    "linguagem de programação integrada MQL4, permitindo criar seus próprios assessores de negociação e indicadores;",
+                    "acesso à liquidez interbancária com a ajuda da tecnologia МТ4 Bridge, execução sem requotes (No Dealing Desk);",
+                    "notícias financeiras da Dow Jones"
+                ],
+                "mt4_requirements_title": "REQUISITOS DO SISTEMA:",
+                "mt4_requirements_text": "Windows XP e superior.",
+                "mt4_requirements_link": "Instruções para Mac OS",
+                "platform_title": "Plataforma",
+                "traders_blog_title": "Blog dos Traders",
+                "traders_blog_items": [
+                    {
+                        "title": "Como Gerenciar Efetivamente Riscos na Negociação",
+                        "subtitle": "A negociação é inegavelmente uma atividade emocionante e potencialmente lucrativa. No entanto, o sucesso neste campo requer não apenas a capacidade de analisar o mercado e...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "Quando mudar de conta demo para conta real?",
+                        "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "O lendário investidor Warren Buffett",
+                        "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "Estratégias de negociação",
+                        "subtitle": "Desculpe, esta entrada está disponível apenas em russo.",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "trading_conditions_title": "Condições de Negociação",
+                "trading_hub_title": "HUB de Negociação",
+                "tandem_trading_title": "Negociação Tandem",
+                "withdrawal_funds_title": "Retirada de fundos"
+            }
+        },
+        "footer": {
+            "description": "O objetivo principal da Ester é criar as melhores e mais transparentes condições para traders de varejo e corporativos.",
+            "trading": {
+                "title": "Negociação",
+                "items": [
+                    "Visão geral de contas",
+                    "Mercados",
+                    "Plataforma",
+                    "Termos de negociação",
+                    "Negociação tandem"
+                ]
+            },
+            "partnership": {
+                "title": "Parceria",
+                "items": [
+                    "Registrar IB/ Parceria",
+                    "Como os IB geram renda"
+                ]
+            },
+            "company": {
+                "title": "Empresa",
+                "items": [
+                    "Sobre a empresa",
+                    "Documentos",
+                    "Notícias da empresa",
+                    "Contatos",
+                    "Carreira"
+                ]
+            },
+            "legal": {
+                "regulated": "Ester é o nome comercial oficial que é regulado pela Seychelles Financial Services Authority (FSA) e detém uma Securities Dealer License No. SD018.",
+                "risk": "Aviso de Risco: a negociação de CFD carrega um alto nível de risco e pode resultar na perda de capital. Você deve investir apenas com dinheiro que pode dar-se ao luxo de perder. A negociação de instrumentos ao vivo não pode ser interrompida em nenhuma circunstância, por isso é importante que você compreenda completamente os riscos envolvidos e procure aconselhamento independente se necessário. Por favor, leia nossa divulgação de riscos e certifique-se de compreendê-la completamente.",
+                "restricted": "Países Restritos: Raw Trading Ltd não fornece seus serviços a residentes de vários países, incluindo Estados Unidos, Canadá, Israel, Nova Zelândia, Irã e Coreia do Norte (República Popular Democrática da Coreia), bem como outras jurisdições onde tais atividades são contrárias à lei local.",
+                "age": "Para registrar uma conta com a Ester, você deve ter pelo menos 18 anos ou ter atingido a maioridade de acordo com as leis de seu país. Ao criar uma conta, você confirma que está se registrando por sua própria iniciativa, sem qualquer solicitação ou oferta da Ester.",
+                "compliance": "A Ester não direciona seus serviços ou conteúdo do site para usuários em países onde seu uso é proibido pelas leis locais. Se você acessar este site de um país restrito, você é responsável pela conformidade com as leis locais. A Empresa também não garante que as informações fornecidas estejam em conformidade com os requisitos de todas as jurisdições.",
+                "copyrightStart": "© 2025 Ester",
+                "copyrightEnd": "Todos os direitos reservados."
+            }
+        }
+    },
+    "cabinet": {
+        "menu": {
+            "dashboard": "Painel",
+            "payment_details": "Detalhes de pagamento",
+            "accounts": "Contas",
+            "referral_system": "Sistema de referência",
+            "billing": "Faturamento",
+            "support": "Suporte",
+            "settings": "Configurações"
+        },
+        "dashboard": {
+            "title": "Painel",
+            "accountVerification": {
+                "title": "Verificação de Conta",
+                "subtitle": "Verificação em andamento",
+                "addressFailed": "A verificação do endereço falhou!",
+                "documentVerified": "Documento verificado com sucesso!",
+                "paymentInProgress": "Verificação de pagamento em andamento!",
+                "profileInProgress": "Verificação de perfil em andamento!",
+                "profileButton": "Perfil"
+            },
+            "actions": {
+                "newDeposit": "Novo Depósito",
+                "newWithdrawal": "Nova Retirada",
+                "chartPlaceholder": "O gráfico irá aqui"
+            },
+            "mt4": {
+                "title": "Contas MT4",
+                "openNewAccount": "Abrir nova conta",
+                "table": {
+                    "account": "Conta",
+                    "type": "Tipo",
+                    "balance": "Saldo",
+                    "status": "Status",
+                    "active": "Ativa",
+                    "inactive": "Inativa"
+                }
+            }
+        },
+        "billing": {
+            "title": "Faturamento",
+            "create": "Criar novo pagamento",
+            "search": "Pesquisar",
+            "columns": {
+                "id": "Id",
+                "paysystem": "Sistema de pagamento",
+                "status": "Status",
+                "currency": "Moeda",
+                "amount": "Quantia",
+                "createdAt": "Criado em"
+            },
+            "nothingToShow": "Nada a mostrar =(",
+            "pagination": {
+                "prev": "Ant",
+                "next": "Próx"
+            },
+            "panel-title": "Adicionar novo Admin"
+        },
+        "payments": {
+            "title": "Detalhes de pagamento",
+            "search": "Pesquisar",
+            "create": "Criar novo detalhe de pagamento",
+            "columns": {
+                "title": "Título",
+                "paysystem": "Sistema de pagamento",
+                "currency": "Moeda",
+                "createdAt": "Criado em"
+            },
+            "nothingToShow": "Nada a mostrar =(",
+            "pagination": {
+                "prev": "Ant",
+                "next": "Próx"
+            }
+        },
+        "profile": {
+            "components": {
+                "tab-change-password": {
+                    "labels": {
+                        "old_password": "Senha antiga",
+                        "new_password": "Nova senha",
+                        "new_password_confirmation": "Confirmação da nova senha"
+                    },
+                    "placeholders": {
+                        "old_password": "*********",
+                        "new_password": "*********",
+                        "new_password_confirmation": "*********"
+                    },
+                    "button": "Salvar nova senha",
+                    "success": "A senha foi atualizada com sucesso!"
+                },
+                "tab-general": {
+                    "labels": {
+                        "email": "Email",
+                        "first_name": "Primeiro nome",
+                        "last_name": "Sobrenome",
+                        "mid_name": "Nome do meio",
+                        "birthdate": "Data de nascimento",
+                        "phone": "Telefone",
+                        "country": "País",
+                        "state": "Estado",
+                        "city": "Cidade",
+                        "address": "Endereço",
+                        "postal_code": "Código postal"
+                    },
+                    "placeholders": {
+                        "email": "exemplo1test.com",
+                        "first_name": "João",
+                        "last_name": "Silva",
+                        "mid_name": "Carlos",
+                        "birthdate": "",
+                        "phone": "",
+                        "country": "País",
+                        "state": "Estado",
+                        "city": "Cidade",
+                        "address": "Rua Backer 2b, Apartamento 8",
+                        "postal_code": "00000"
+                    },
+                    "button": "Salvar e enviar para verificação",
+                    "success": "Dados do usuário atualizados com sucesso e enviados para verificação!"
+                },
+                "tab-user-documents": {
+                    "buttons": {
+                        "choose": "Escolher arquivo",
+                        "upload": "Carregar"
+                    },
+                    "messages": {
+                        "upload_success": "Foto de perfil atualizada com sucesso e enviada para verificação!",
+                        "upload_error": "Falha ao carregar foto",
+                        "delete_error": "Falha ao excluir foto"
+                    },
+                    "errors": {
+                        "type": "Apenas imagens são permitidas",
+                        "size": "O tamanho máximo é 2MB"
+                    }
+                },
+                "tab-user-photo": {
+                    "buttons": {
+                        "choose": "Escolher arquivo",
+                        "upload": "Carregar"
+                    },
+                    "messages": {
+                        "upload_success": "Foto de perfil atualizada com sucesso",
+                        "delete_success": "Foto de perfil excluída",
+                        "upload_error": "Falha ao carregar foto",
+                        "delete_error": "Falha ao excluir foto"
+                    },
+                    "errors": {
+                        "type": "Apenas imagens são permitidas",
+                        "size": "O tamanho máximo é 2MB"
+                    }
+                }
+            },
+            "index": {
+                "tabs": {
+                    "general": "Geral",
+                    "photo": "Foto do usuário",
+                    "documents": "Documentos",
+                    "verification": "Verificação",
+                    "change_password": "Alterar senha"
+                },
+                "title": "Perfil"
+            }
+        },
+        "accounts": {
+            "account": {
+                "title": "Conta"
+            },
+            "title": "Contas",
+            "openNew": "Abrir nova conta",
+            "search": "Pesquisar",
+            "columns": {
+                "type": "Tipo de conta",
+                "currency": "Moeda",
+                "leverage": "Alavancagem",
+                "number": "Número da conta",
+                "balance": "Saldo MT"
+            },
+            "nothingToShow": "Nenhuma conta ativa para mostrar!",
+            "openAccount": "Abrir nova conta!",
+            "pagination": {
+                "prev": "Ant",
+                "next": "Próx"
+            },
+            "accounts-form": {
+                "title": "Abrir nova conta",
+                "fields": {
+                    "accountType": "Tipo de conta",
+                    "phonePassword": "Senha do telefone",
+                    "phonePasswordPlaceholder": "Digite a senha do telefone"
+                },
+                "actions": {
+                    "submit": "Abrir nova conta"
+                }
+            }
+        },
+        "referrals": {
+            "components": {},
+            "index": {
+                "tabs": {
+                    "general": "Geral",
+                    "settings": "Configurações",
+                    "terms": "Termos"
+                },
+                "title": "Sistema de referência"
+            }
+        }
+    },
+    "admin": {
+        "menu": {
+            "dashboard": "Painel",
+            "verificationRequests": "Solicitações de verificação",
+            "clients": "Clientes",
+            "accounts": "Contas",
+            "referral": "Sistema de referência",
+            "payments": "Pagamentos",
+            "settings": "Configurações",
+            "support": "Suporte",
+            "news": "Notícias",
+            "mail": "Emails",
+            "access": "Acesso"
+        },
+        "access": {
+            "components": {
+                "admins-panel": {
+                    "title": "# Admins",
+                    "columns": {
+                        "id": "Id",
+                        "nickname": "Apelido",
+                        "email": "Email",
+                        "roles": "Funções",
+                        "createdAt": "Criado em",
+                        "options": "Opções"
+                    },
+                    "actions": {
+                        "addNewAdmin": "Adicionar novo Admin"
+                    }
+                },
+                "admins-panel-add-new": {
+                    "title": "Criar novo Admin",
+                    "fields": {
+                        "nickname": "Apelido",
+                        "email": "Email",
+                        "password": "Senha",
+                        "roles": "Funções"
+                    },
+                    "placeholders": {
+                        "nickname": "Digite o apelido do admin",
+                        "email": "exemplo\\u0040gmail.com",
+                        "roles": "Escolher funções"
+                    },
+                    "actions": {
+                        "submit": "Criar novo e Salvar"
+                    }
+                },
+                "admins-panel-edit": {
+                    "title": "Editar Funções do Admin",
+                    "labels": {
+                        "nickname": "Apelido",
+                        "email": "Email",
+                        "roles": "Funções"
+                    },
+                    "placeholders": {
+                        "nickname": "Digite o apelido da função",
+                        "email": "exemplo1gmail.com",
+                        "roles": "Escolher funções"
+                    },
+                    "actions": {
+                        "submit": "Atualizar e Salvar"
+                    }
+                },
+                "admins-panel-search": {
+                    "placeholder": "Pesquisar"
+                },
+                "permissions-panel": {
+                    "title": "# Permissões",
+                    "searchPlaceholder": "Pesquisar",
+                    "columns": {
+                        "id": "ID",
+                        "name": "Nome"
+                    }
+                },
+                "roles-panel": {
+                    "title": "# Funções",
+                    "addTitle": "Adicionar nova Função",
+                    "editTitle": "Editar Função",
+                    "columns": {
+                        "name": "Nome",
+                        "permissions": "Permissões"
+                    }
+                },
+                "roles-panel-add-new": {
+                    "labels": {
+                        "name": "Nome",
+                        "permissions": "Permissões"
+                    },
+                    "placeholders": {
+                        "name": "Digite o nome da Função",
+                        "permissions": "Escolher permissões"
+                    },
+                    "actions": {
+                        "createAndSave": "Criar novo e Salvar"
+                    }
+                },
+                "roles-panel-edit": {
+                    "labels": {
+                        "name": "Nome",
+                        "permissions": "Permissões"
+                    },
+                    "placeholders": {
+                        "name": "Digite o nome da Função",
+                        "permissions": "Escolher permissões"
+                    },
+                    "actions": {
+                        "updateAndSave": "Atualizar e Salvar"
+                    }
+                },
+                "roles-panel-search": {
+                    "placeholder": "Pesquisar"
+                }
+            },
+            "index": {
+                "title": "Controles de acesso",
+                "subtitle": "( Funções e Permissões )"
+            }
+        },
+        "accounts": {
+            "components": {
+                "accounts-panel": {
+                    "title": "# Clientes",
+                    "addTitle": "Adicionar novo Cliente",
+                    "editTitle": "Editar Cliente",
+                    "columns": {
+                        "id": "ID",
+                        "name": "Nome",
+                        "email": "Email",
+                        "phone": "Telefone",
+                        "created_at": "Criado em",
+                        "options": "Ações"
+                    }
+                },
+                "accounts-panel-add-new": {
+                    "labels": {
+                        "email": "Email",
+                        "first_name": "Primeiro nome",
+                        "last_name": "Sobrenome",
+                        "mid_name": "Nome do meio",
+                        "birthdate": "Data de nascimento",
+                        "phone": "Telefone",
+                        "country": "País",
+                        "city": "Cidade",
+                        "address": "Endereço",
+                        "postal_code": "Código postal",
+                        "password": "Senha",
+                        "password_confirmation": "Confirmação da senha"
+                    },
+                    "placeholders": {
+                        "email": "Digite o email",
+                        "first_name": "Digite o primeiro nome",
+                        "last_name": "Digite o sobrenome",
+                        "mid_name": "Digite o nome do meio",
+                        "phone": "Digite o telefone",
+                        "address": "Digite o endereço",
+                        "postal_code": "Digite o código postal",
+                        "password": "Digite a senha",
+                        "password_confirmation": "Digite a confirmação da senha"
+                    },
+                    "submit": "Criar novo e Salvar"
+                },
+                "accounts-panel-edit": {
+                    "labels": {
+                        "name": "Nome",
+                        "permissions": "Permissões"
+                    },
+                    "placeholders": {
+                        "name": "Digite o nome da função",
+                        "permissions": "Escolher permissões"
+                    },
+                    "submit": "Atualizar e Salvar"
+                },
+                "accounts-panel-search": {
+                    "placeholder": "Pesquisar clientes..."
+                }
+            },
+            "index": {
+                "title": "Contas",
+                "subtitle": "Lista de contas"
+            }
+        },
+        "clients": {
+            "components": {
+                "clients-panel": {
+                    "title": "# Clientes",
+                    "addTitle": "Adicionar novo Cliente",
+                    "editTitle": "Editar Cliente",
+                    "columns": {
+                        "id": "ID",
+                        "email": "Email",
+                        "first_name": "Primeiro nome",
+                        "last_name": "Sobrenome",
+                        "phone": "Telefone",
+                        "created_at": "Criado em",
+                        "options": "Ações"
+                    }
+                },
+                "clients-panel-add-new": {
+                    "labels": {
+                        "email": "Email",
+                        "first_name": "Primeiro nome",
+                        "last_name": "Sobrenome",
+                        "mid_name": "Nome do meio",
+                        "birthdate": "Data de nascimento",
+                        "phone": "Telefone",
+                        "country": "País",
+                        "city": "Cidade",
+                        "address": "Endereço",
+                        "postal_code": "Código postal",
+                        "password": "Senha",
+                        "password_confirmation": "Confirmação da senha"
+                    },
+                    "placeholders": {
+                        "email": "Digite o email",
+                        "first_name": "Digite o primeiro nome",
+                        "last_name": "Digite o sobrenome",
+                        "mid_name": "Digite o nome do meio",
+                        "phone": "Digite o telefone",
+                        "address": "Digite o endereço",
+                        "postal_code": "Digite o código postal",
+                        "password": "Digite a senha",
+                        "password_confirmation": "Digite a confirmação da senha"
+                    },
+                    "submit": "Criar novo e Salvar"
+                },
+                "clients-panel-edit": {
+                    "labels": {
+                        "name": "Nome",
+                        "permissions": "Permissões"
+                    },
+                    "placeholders": {
+                        "name": "Digite o nome da função",
+                        "permissions": "Escolher permissões"
+                    },
+                    "submit": "Atualizar e Salvar"
+                },
+                "clients-panel-search": {
+                    "placeholder": "Pesquisar clientes..."
+                }
+            },
+            "index": {
+                "title": "Clientes",
+                "subtitle": "Lista de clientes"
+            }
+        },
+        "dashboard": {},
+        "profile": {},
+        "referral": {},
+        "settings": {
+            "title": "Configurações",
+            "tabs": {
+                "general": "Geral",
+                "appearance": "Aparência",
+                "secure": "Segurança"
+            },
+            "tables": {
+                "appearance": {
+                    "variable": "Nome da variável",
+                    "preview": "Visualizar",
+                    "picker": "Seletor de cor",
+                    "background": "Fundo",
+                    "text": "Texto de exemplo",
+                    "button": "Botão"
+                },
+                "security": {
+                    "key": "Chave",
+                    "value": "Valor (Segundos)"
+                },
+                "general": {
+                    "button": "Carregar"
+                }
+            }
+        },
+        "support": {
+            "title": "Suporte"
+        }
+    }
+}

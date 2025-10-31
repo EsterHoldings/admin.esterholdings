@@ -1,12 +1,12 @@
 <template>
   <section class="lates_updates">
     <UiContainer>
-      <UiTextH3 class="lates_updates_title">Latest updates</UiTextH3>
+      <UiTextH3 class="lates_updates_title">{{ t('landing.sections.latest_updates__title') }}</UiTextH3>
 
       <div class="lates_updates_cards">
         <UiCard
-          v-for="card in theNews"
-          :key="card.src"
+          v-for="(card, index) in newsItems"
+          :key="index"
           :src="card.src"
           :title="card.title"
           :subTitle="card.subTitle"
@@ -18,34 +18,24 @@
 
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n';
-  import { ref } from 'vue';
+  import { computed } from 'vue';
   import UiTextH3 from '~/components/ui/UiTextH3.vue';
-  import UiTextH4 from '~/components/ui/UiTextH4.vue';
   import UiCard from '~/components/ui/UiCard.vue';
   import UiContainer from '~/components/ui/UiContainer.vue';
 
   const { t, tm } = useI18n();
 
-  const theNews = ref([
-    {
-      src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGiL_OXNaefDrdif97UBefC4OW4azk1cyOLQ&s',
-      title: 'NVIDIA shares soared 15% after the report',
-      subTitle: 'Chipmaker NVIDIA (NVDA) presented a quarterly report that exceeded all Wall Street expectations...',
-      time: '15 min',
-    },
-    {
-      src: 'https://hips.hearstapps.com/hmg-prod/images/2025-tesla-model-s-1-672d42e172407.jpg?crop=0.465xw:0.466xh;0.285xw,0.361xh&resize=1200:*',
-      title: 'Tesla announced a 1:10 stock split – quotes rose by 12%',
-      subTitle: 'The news sent shares up 12%, with Tesla now trading at $1,180 per share.',
-      time: '30 min',
-    },
-    {
-      src: 'https://www.brookings.edu/wp-content/uploads/2021/06/shutterstock_1708749826_small.jpg?quality=75&w=1500',
-      title: 'Bitcoin crashes 12% after SEC announces ban on stablecoins',
-      subTitle: 'The US Securities and Exchange Commission (SEC) made a surprise announcement introducing new...',
-      time: '1 hour ago',
-    },
-  ]);
+  const newsItems = computed(() => {
+    const items = tm('landing.sections.latest_updates__items') as any[];
+    return Array.isArray(items)
+      ? items.map((_, index) => ({
+          src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGiL_OXNaefDrdif97UBefC4OW4azk1cyOLQ&s',
+          title: t(`landing.sections.latest_updates__items[${index}].title`),
+          subTitle: t(`landing.sections.latest_updates__items[${index}].subtitle`),
+          time: t(`landing.sections.latest_updates__items[${index}].time`),
+        }))
+      : [];
+  });
 </script>
 
 <style lang="scss" scoped>

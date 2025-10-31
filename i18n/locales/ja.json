@@ -1,0 +1,1198 @@
+{
+    "ui-components": {
+        "modals": {
+            "cookie-modal": {
+                "text": "このサイトはユーザー体験を向上させるためにCookieを使用しています。サイトの使用を続けることで、Cookieの使用に同意したことになります。",
+                "btn-successful": "同意する",
+                "btn-negative": "拒否する"
+            }
+        },
+        "lines": {
+            "running-line-btn": "取引"
+        },
+        "tables": {
+            "table-default": "表示するものがありません..."
+        },
+        "ui-select": "未選択..."
+    },
+    "landing": {
+        "header": {
+            "nav": {
+                "trading": "取引",
+                "partnership": "パートナーシップ",
+                "company": "会社"
+            },
+            "auth": {
+                "login": "ログイン",
+                "register": "登録"
+            },
+            "megaMenu": {
+                "Trading": [
+                    {
+                        "section": "アカウント概要",
+                        "items": [
+                            "スタンダード",
+                            "プロ",
+                            "イスラム",
+                            "デモ"
+                        ]
+                    },
+                    {
+                        "section": "市場商品",
+                        "items": [
+                            "外国為替",
+                            "貴金属",
+                            "暗号CFD",
+                            "指数",
+                            "株式",
+                            "エネルギー",
+                            "ETF"
+                        ]
+                    },
+                    {
+                        "section": "プラットフォーム",
+                        "items": [
+                            "MT4デスクトップ",
+                            "MT4モバイル"
+                        ]
+                    },
+                    {
+                        "section": "取引条件",
+                        "items": [
+                            "口座入金",
+                            "出金"
+                        ]
+                    },
+                    {
+                        "section": "トレーダーズHUB",
+                        "items": [
+                            "トレーダーズブログ",
+                            "経済カレンダー",
+                            "マーケットニュース"
+                        ]
+                    },
+                    {
+                        "section": "TANDEM取引",
+                        "items": [
+                            "トレーダー向け",
+                            "投資家向け"
+                        ]
+                    }
+                ],
+                "Partnership": [
+                    {
+                        "section": "パートナーシップ",
+                        "items": [
+                            "IB/パートナーシップ登録",
+                            "IBの収益方法"
+                        ]
+                    }
+                ],
+                "Company": [
+                    {
+                        "section": "会社",
+                        "items": [
+                            "会社について",
+                            "書類",
+                            "会社ニュース",
+                            "お問い合わせ",
+                            "キャリア"
+                        ]
+                    }
+                ]
+            }
+        },
+        "slider": {
+            "general-slide": {
+                "title": {
+                    "before": "より",
+                    "highlight": "スマートに",
+                    "after": "より速く取引！"
+                },
+                "text": "外国為替、株式、CFDを含むグローバル市場にアクセス。\n高速執行、低スプレッド、リアルタイム市場分析。",
+                "btn": "今すぐ取引"
+            },
+            "top-trader-slide": {
+                "title": {
+                    "before": "戦略をコピー",
+                    "highlight": "トップトレーダー",
+                    "after": ""
+                },
+                "text": "プロフェッショナルの実際の取引にアクセスし、取引を改善します。",
+                "btn": "開始"
+            },
+            "ten_years_slide": {
+                "title": {
+                    "highlight": "年",
+                    "after": "取引経験"
+                },
+                "text": "時間によって証明された経験。結果によって確認された信頼性。",
+                "btn": "参加する"
+            }
+        },
+        "sections": {
+            "advantages": [
+                {
+                    "value": "10+",
+                    "label": "業界経験年数"
+                },
+                {
+                    "value": "1,160,000+",
+                    "label": "クライアント"
+                },
+                {
+                    "value": "5つ星評価",
+                    "label": "カスタマーサービス"
+                }
+            ],
+            "platform__title": "成功した外国為替とCFD取引のための\n伝説的なプラットフォーム",
+            "platform__features": [
+                {
+                    "title": "取引プラットフォーム",
+                    "text": "当社の製品でレベルアップ"
+                },
+                {
+                    "title": "モバイル取引",
+                    "text": "いつでも取引を完全にコントロール。"
+                },
+                {
+                    "title": "Ester MetaTrader 4",
+                    "text": "人気のクラシックソリューション"
+                },
+                {
+                    "title": "高速と信頼性",
+                    "text": "低スペックPCでも動作します。"
+                }
+            ],
+            "feature__title": "なぜ私たちを選ぶのか？",
+            "features__items": [
+                {
+                    "title": "商品",
+                    "text": "外国為替/スポット\n株式/指数",
+                    "icon": "/static/F-Wrench & Screwdriver.png"
+                },
+                {
+                    "title": "流動性：\n200+トップレベル",
+                    "text": "金融機関",
+                    "icon": "/static/F-Building Library.png"
+                },
+                {
+                    "title": "変動スプレッド",
+                    "text": "0ピップから",
+                    "icon": "/static/F-Money.png"
+                },
+                {
+                    "title": "指値とストップレベル",
+                    "text": "= 0",
+                    "icon": "/static/LIMIT AND STOP LEVELS.png"
+                },
+                {
+                    "title": "最速のサーバー技術",
+                    "text": "高速注文処理速度",
+                    "icon": "/static/F-Rocket.png"
+                },
+                {
+                    "title": "銀行レベルのセキュリティ",
+                    "text": "取引口座の",
+                    "icon": "/static/L-Shield Done.png"
+                }
+            ],
+            "account_types__categories": [
+                {
+                    "id": "Standard",
+                    "label": "スタンダード"
+                },
+                {
+                    "id": "Pro",
+                    "label": "プロ"
+                },
+                {
+                    "id": "Tandem",
+                    "label": "タンデム"
+                },
+                {
+                    "id": "Islamic",
+                    "label": "イスラム"
+                }
+            ],
+            "accounts__title": "取引口座オプションを探索",
+            "accounts__btn": "口座を開設",
+            "accounts__options": [
+                {
+                    "id": "demo",
+                    "type": "demo",
+                    "title": "デモ",
+                    "subtitle": "口座",
+                    "description": "仮想資金でのリスクフリー取引。市場を探索する初心者に最適。",
+                    "features": [
+                        "最大1:500のレバレッジ",
+                        "0.0ピップからのスプレッド",
+                        "入金不要"
+                    ],
+                    "buttonText": "今すぐデモを試す",
+                    "isRecommended": true
+                },
+                {
+                    "id": "standard",
+                    "type": "standard",
+                    "title": "スタンダード",
+                    "subtitle": "口座",
+                    "description": "低手数料でスポット市場に簡単アクセス — 初心者とアクティブトレーダーに最適。",
+                    "features": [
+                        "最大1:500のレバレッジ",
+                        "1.2ピップからのスプレッド",
+                        "初回入金$50"
+                    ],
+                    "buttonText": "スタンダード口座を開設",
+                    "isRecommended": false
+                },
+                {
+                    "id": "pro",
+                    "type": "pro",
+                    "title": "プロ",
+                    "subtitle": "口座",
+                    "description": "タイトなスプレッド、より高いレバレッジ、すべての取引の完全なコントロールを体験。",
+                    "features": [
+                        "最大1:500のレバレッジ",
+                        "0.0ピップからのスプレッド",
+                        "初回入金$1000"
+                    ],
+                    "buttonText": "プロのように取引",
+                    "isRecommended": false
+                },
+                {
+                    "id": "tandem",
+                    "type": "tandem",
+                    "title": "タンデム",
+                    "subtitle": "口座",
+                    "description": "パートナー、メンター、または共同トレーダーとペアを組み、同期戦略で一緒に成長。",
+                    "features": [
+                        "最大1:200のレバレッジ",
+                        "共有口座アクセス",
+                        "リアルタイム取引ミラーリング"
+                    ],
+                    "buttonText": "一緒に取引",
+                    "isRecommended": false
+                },
+                {
+                    "id": "islamic",
+                    "type": "islamic",
+                    "title": "イスラム",
+                    "subtitle": "口座",
+                    "description": "スワップフリー。シャリーア準拠。利息なしで取引、プラットフォームへの完全アクセス。",
+                    "features": [
+                        "最大1:500のレバレッジ",
+                        "スワップ/利息手数料なし",
+                        "すべての取引商品へのアクセス"
+                    ],
+                    "buttonText": "イスラム口座を開設",
+                    "isRecommended": false
+                }
+            ],
+            "wide_range__title": "幅広い製品範囲",
+            "wide_range__categories": [
+                {
+                    "id": "forex",
+                    "label": "外国為替"
+                },
+                {
+                    "id": "metals",
+                    "label": "貴金属"
+                },
+                {
+                    "id": "cryptocurrency CDs",
+                    "label": "暗号通貨CD"
+                },
+                {
+                    "id": "indices",
+                    "label": "指数"
+                },
+                {
+                    "id": "shares",
+                    "label": "株式"
+                },
+                {
+                    "id": "energy",
+                    "label": "エネルギー"
+                },
+                {
+                    "id": "ETFS",
+                    "label": "ETF"
+                }
+            ],
+            "wide_range_tabs": {
+                "Forex": {
+                    "title": "外国為替",
+                    "description": "競争力のある取引条件で70のメジャー、マイナー、エキゾチック\n通貨ペアを取引。",
+                    "btn": "外国為替を取引"
+                },
+                "Metals": {
+                    "title": "貴金属",
+                    "description": "金、銀、プラチナなどの\n金属商品を取引。",
+                    "btn": "貴金属を取引"
+                },
+                "CryptocurrencyCDs": {
+                    "title": "暗号通貨CD",
+                    "description": "ビットコインCFD、イーサリアムCFD、ドージCFD\nおよびその他の暗号CDとアルトコインCFDを取引",
+                    "btn": "暗号通貨CFDを取引"
+                },
+                "Indices": {
+                    "title": "指数",
+                    "description": "世界中のメジャーおよびマイナーなスポットおよび\n先物指数CFDを取引。",
+                    "btn": "指数を取引"
+                },
+                "Shares": {
+                    "title": "株式",
+                    "description": "米国、英国、EUからの数千の\n上場企業が取引可能。",
+                    "btn": "株式を取引"
+                },
+                "Energy": {
+                    "title": "エネルギー",
+                    "description": "英国と米国の原油および\n天然ガスのスポットと先物契約の機会を発見。",
+                    "btn": "エネルギーを取引"
+                },
+                "ETFS": {
+                    "title": "ETF",
+                    "description": "ETF CFDで市場の世界にアクセス - \n債券から商品、不動産からボラティリティまで。",
+                    "btn": "ETFを取引"
+                }
+            },
+            "four_steps_section": {
+                "title": {
+                    "before": "口座を開設",
+                    "highlight": "4つの簡単なステップで"
+                },
+                "button": "口座を開設",
+                "items": [
+                    {
+                        "title": "登録",
+                        "text": "口座タイプを選択し、迅速で安全な申請フォームに記入"
+                    },
+                    {
+                        "title": "確認",
+                        "text": "デジタルオンボーディングシステムを使用して迅速に確認"
+                    },
+                    {
+                        "title": "入金",
+                        "text": "幅広い入金方法を使用して取引口座に入金"
+                    },
+                    {
+                        "title": "取引",
+                        "text": "ライブ口座で取引を開始し、2,100以上の商品にアクセス"
+                    }
+                ]
+            },
+            "banner_section": {
+                "title": "市場を取引",
+                "title_highlight": "プロのように！",
+                "subtitle": "初心者でもプロでも、当社の高度なツールとリソースが情報に基づいた取引決定をサポートします。",
+                "button_primary": "取引を開始",
+                "button_secondary": "デモ口座を試す"
+            },
+            "latest_updates__title": "最新アップデート",
+            "latest_updates__items": [
+                {
+                    "title": "NVIDIA株が報告後15%急騰",
+                    "subtitle": "チップメーカーのNVIDIA（NVDA）は、ウォール街のすべての期待を上回る四半期報告を発表...",
+                    "time": "15分"
+                },
+                {
+                    "title": "テスラが1:10の株式分割を発表 - 株価が12%上昇",
+                    "subtitle": "このニュースで株価は12%上昇し、テスラは現在1株あたり1,180ドルで取引されています。",
+                    "time": "30分"
+                },
+                {
+                    "title": "SECがステーブルコイン禁止を発表後、ビットコインが12%急落",
+                    "subtitle": "米国証券取引委員会（SEC）は、新しい規制を導入するサプライズ発表を行いました...",
+                    "time": "1時間前"
+                }
+            ],
+            "faqs__form_title": "ヘルプが必要ですか？",
+            "faqs__form_subtitle": "1日以内に返信いたします。",
+            "faqs__form_placeholders": {
+                "name": "お名前",
+                "email": "メールアドレス",
+                "description": "質問を説明してください..."
+            },
+            "faqs__form_button": "送信",
+            "faqs__items": [
+                {
+                    "title": "取引口座を開設するには？",
+                    "description": "取引口座を開設するには、サインアップし、身元を確認し、希望する口座タイプを選択するだけです。"
+                },
+                {
+                    "title": "必要な最低入金額は？",
+                    "description": "最低入金額は口座タイプによって異なります。詳細については、口座タイプセクションをご確認ください。"
+                },
+                {
+                    "title": "リスクなしでプラットフォームを試すことはできますか？",
+                    "description": "はい、実際のお金を投入する前に仮想資金で取引を練習できるデモ口座を提供しています。"
+                },
+                {
+                    "title": "私のお金はあなたのプラットフォームで安全ですか？",
+                    "description": "もちろんです。業界標準のセキュリティ対策を使用し、顧客資金を分離口座に保管しています。"
+                },
+                {
+                    "title": "どのような取引商品が利用できますか？",
+                    "description": "外国為替、CFD、商品、指数、暗号通貨を含む幅広い商品を提供しています。"
+                }
+            ],
+            "accounts__badge_recommended": "おすすめ",
+            "helpSection": "ヘルプが必要ですか？",
+            "helpLinkText": "ヘルプセクション"
+        },
+        "pages": {
+            "company": {
+                "about": {
+                    "title": "会社について",
+                    "intro_1": {
+                        "highlight": "国際金融持株会社Ester Holdings Inc.",
+                        "text": "— 高効率な経営を持つ安定した会社です。"
+                    },
+                    "intro_2": "すべての新しいものに開かれたEster社は、金融市場全体の高水準の作業基準を形成し、サポートするリーダーです。",
+                    "intro_3": "私たちの特徴 — 収益性の高い取引条件、高品質のサービス、法的保証。",
+                    "intro_4": "会社は顧客の成功した活動を第一に考えています。これが私たちの成功の主な基準です。",
+                    "intro_5": {
+                        "highlight": "Ester社の使命",
+                        "text": "— 顧客に福祉を保証する知識とアドバイザリーサービスを提供すること。私たちは、安定した基盤の上で高品質の仕事を維持する普遍的な金融会社です。"
+                    },
+                    "business_model_title": "ビジネスモデル",
+                    "business_model_subtitle": "会社のビジネスモデルは、顧客との透明で信頼できる関係に基づいています。",
+                    "business_model_list": [
+                        "会社は、主要な流動性供給銀行からECNプラットフォームで見積もりを受け取り、最良の価格から顧客のための見積もりの流れを形成します。",
+                        "取引ターミナルでは、顧客は各金融商品の最良のビッドとアスク価格を見て取引できます。",
+                        "顧客の注文の結果として、現在の瞬間に最良の購入または販売価格を提供する流動性供給者の価格が実行されます。",
+                        "当社のプライムブローカーは、会社と流動性供給銀行の間で清算（義務の相互認識）を行います。"
+                    ],
+                    "activity_title": "活動分野",
+                    "activity_list": [
+                        "インターネットを通じて外貨およびその他の金融商品との取引操作を行うための顧客へのアクセスの提供。",
+                        "投資家の資産管理と投資活動の問題に関するコンサルティング。",
+                        "情報および分析サービス。",
+                        "資格のある取引トレーニング。"
+                    ]
+                },
+                "career": {
+                    "title": "キャリア",
+                    "subtitle": "現在、会社は次の専門家を探しています：",
+                    "positions": [
+                        "セールスマネージャー",
+                        "分析部門長"
+                    ],
+                    "cta": "ダイナミックな成長の準備ができていて、意欲的で才能があるなら、履歴書を送ってください。",
+                    "button": "履歴書を送信"
+                },
+                "news": {
+                    "title": "会社ニュース",
+                    "items": [
+                        {
+                            "title": "NVIDIA株が報告後15%急騰",
+                            "subtitle": "チップメーカーのNVIDIA（NVDA）は、ウォール街のすべての期待を上回る四半期報告を発表...",
+                            "time": "15分"
+                        },
+                        {
+                            "title": "テスラが1:10の株式分割を発表 - 株価が12%上昇",
+                            "subtitle": "このニュースで株価は12%上昇し、テスラは現在1株あたり1,180ドルで取引されています。",
+                            "time": "30分"
+                        },
+                        {
+                            "title": "SECがステーブルコイン禁止を発表後、ビットコインが12%急落",
+                            "subtitle": "米国証券取引委員会（SEC）は、新しい規制を導入するサプライズ発表を行いました...",
+                            "time": "1時間前"
+                        },
+                        {
+                            "title": "取引戦略",
+                            "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                            "time": "17.04.2024 | 04:04 PM"
+                        }
+                    ],
+                    "button": "詳細を見る"
+                },
+                "contacts": {
+                    "title": "お問い合わせ",
+                    "office_title": "本社",
+                    "office_name": "Ester Holdings Ltd",
+                    "office_address": "1階、ソザビービル、ロドニービレッジ、ロドニーベイ、グロスアイレット、セントルシア",
+                    "office_registration": "登録番号2023-00477",
+                    "support_label": "技術サポートサービス：",
+                    "support_email": "support{'@'}esterholdings.com",
+                    "finance_label": "財務サービス：",
+                    "finance_email": "finance{'@'}esterholdings.com",
+                    "marketing_label": "マーケティングサービス：",
+                    "marketing_email": "marketing{'@'}esterholdings.com"
+                },
+                "documents": {
+                    "title": "書類",
+                    "intro": "Ester Holdings Inc.とのすべてのやり取りプロセスは、標準文書によって規制されています",
+                    "regulations_title": "見積もり規制",
+                    "regulations_subtitle": "規制は以下を定めています：",
+                    "regulations_list": [
+                        "顧客の取引操作で使用される用語；",
+                        "マージン取引の原則；",
+                        "ポジションの開設/決済、配置/削除、変更、および保留注文の履行のルール；",
+                        "顧客の承認順序、およびMetaTrader 4取引システムでの顧客操作のプロトコル順序；",
+                        "紛争の解決手順など。"
+                    ],
+                    "contract_title": "契約",
+                    "contract_description": "契約には、顧客とEster Holdings Inc.の協力のルールが含まれています。義務の履行に関する当事者の責任がそこで定義されています。",
+                    "button": "ダウンロード"
+                }
+            },
+            "partnership": {
+                "title": "パートナーシップ",
+                "subtitle": "パートナーシップのバリエーション",
+                "button_agent": "エージェントプログラム",
+                "button_franchising": "フランチャイズ",
+                "intro_1": {
+                    "highlight": "Esterのパートナーになり、ブランドと一緒に収入を得る"
+                },
+                "intro_2": {
+                    "highlight": "Ester Holdings Inc.",
+                    "text": "— 高効率な経営を持つ安定した会社。Ester Holdings社はすべての新しいものに開かれており、金融市場全体の高水準の作業基準を形成し、サポートするリーダーです。"
+                },
+                "intro_3": "インターネット取引の分野で国際企業Ester Holdingsのブランドの下で自分のビジネスを構築する機会を提供します。あなたの都市で最初になるために急いで、Ester Holdingsのオフィスを開設し、最も収益性の高い協力条件と、最も重要なことに、高レベルの収入を得てください。",
+                "offer_title": "私たちは提供します",
+                "offer_list": [
+                    "私たちのブランドの下で働く；",
+                    "収入を生み出す既製モデル；",
+                    "快適な作業のための技術ソリューション；",
+                    "収益性の高い協力条件；",
+                    "代表事務所を開設するための技術サポート；",
+                    "最高の専門家からの24/7サポート。"
+                ],
+                "agent_title": "エージェントプログラム",
+                "agent_description": "関与した顧客の取引活動から収入を得る！インターネットユーザーの動的に増加する数のおかげで、今日は簡単です。Ester Holdings社の最も重要な優先事項は、高レベルのサービス品質と長期的な関係の形成です。これにより、外国為替市場の参加者でなくても、関与したメンバーの取引活動からの手数料として一定の収入を得ることができます。",
+                "agent_how_title": "どのように機能しますか？",
+                "agent_how_list": [
+                    "新しい顧客を私たちに連れてきてください",
+                    "彼らは登録してお金を稼ぎます",
+                    "あなたは彼らの利益から手数料を受け取ります"
+                ],
+                "agent_how_cta": "より多くの顧客 – より多くの利益",
+                "franchising_title": "フランチャイズ",
+                "franchising_description_1": "Ester Holdings社のパートナーは、経験豊富な専門家から包括的なサポートと個別のアプローチを受けます。実際のニーズと個人的な目標に対応するソリューションを選択できます。私たちの会社の肯定的なイメージと完璧な評判もあなたのために働いていることを忘れないでください。",
+                "franchising_description_2": "Ester Holdingsとのフランチャイズ - あなたの都市で会社のオフィスを開設し、世界最大のブローカーの1つのブランドの下で働く機会です。開発されたビジネステクノロジーと専門家の包括的なサポートを受けます。",
+                "franchising_business_title": "Ester Holdingsでビジネスを開く：",
+                "franchising_business_list": [
+                    "会社は取引操作を実行することでスプレッドを受け取ります。あなたは顧客のスプレッドの％を受け取ります。",
+                    "さらに、あなたのオフィスで提供される情報およびアドバイザリーサービスからのすべての収入を受け取ります。"
+                ],
+                "franchising_how_title": "これをどのように行いますか？",
+                "franchising_how_list": [
+                    "申請を送信",
+                    "あなたのために最良のソリューションを選択",
+                    "実装を支援",
+                    "トレーニングを実施し、サポートを提供"
+                ],
+                "button_receive": "フランチャイズを受け取る",
+                "generate_income_title": "IBの収益方法",
+                "register_ib_title": "IB/パートナーシップ登録"
+            },
+            "trading": {
+                "account_overview_title": "アカウント概要",
+                "account_replenishment_title": "口座入金",
+                "economic_calendar_title": "経済カレンダー",
+                "for_investor_title": "投資家向け",
+                "for_trader_title": "トレーダー向け",
+                "market_instruments_title": "ツール",
+                "market_instruments_text": [
+                    "Ester Holdings社の取引ターミナルのすべての通貨ペアスプレッドは銀行間レベルです。スプレッドは、各現在の瞬間に流動性供給者から最良の価格を選択する取引アグリゲーターの助けを借りて形成されます。外国為替市場で最高の流動性を提供します。スワップとは、市場参加者がポジションを翌日に持ち越すための支払いを意味します。",
+                    "オープンポジションを翌日に転送するプロセスは、会社のサーバー時間で23:59:59から00:00:00までオープンのままのすべてのポジションに対して実行されます。ポジションを翌日に転送するために、顧客の口座にはそのようなポジションのスワップが入金または出金される場合があります。",
+                    "スワップのサイズとその入金/出金方法は、それぞれの仕様に規定されています。",
+                    "23:55から00:05（GMT時間）のロールオーバー期間中、流動性が減少し、スプレッドと顧客注文の処理時間が増加する可能性があります。",
+                    "ウェブサイトおよび/またはプラットフォームへのアクセスと使用は、これらの取引条件およびそこに含まれるその他の法的通知と声明の受け入れを構成します。Esterは、いつでも事前の通知なしにこれらの取引条件を変更できます。ウェブサイトおよび/またはプラットフォームへの継続的なアクセスと使用は、変更されたこれらの取引条件の受け入れを構成します。"
+                ],
+                "market_news_title": "マーケットニュース",
+                "market_news_items": [
+                    {
+                        "title": "取引でリスクを効果的に管理する方法",
+                        "subtitle": "取引は間違いなくエキサイティングで潜在的に収益性の高い活動です。しかし、この分野での成功には、市場を分析する能力だけでなく...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "デモ口座から実際の口座にいつ切り替えますか？",
+                        "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "伝説的な投資家ウォーレン・バフェット",
+                        "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "取引戦略",
+                        "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "mt4_title": "МТ4",
+                "mt4_subtitle": "取引ターミナルをダウンロードして稼ぎ始める",
+                "mt4_button": "MT-4をダウンロード",
+                "mt4_about_title": "プラットフォームについて",
+                "mt4_about_text": "MetaTrader 4 - 世界で最も人気のある取引プラットフォーム。このプラットフォームでの長年の作業経験とその開発への積極的な参加のおかげで、最も収益性が高く快適な条件を提供します。",
+                "mt4_about_highlight": "なぜならMetaTrader 4は：",
+                "mt4_features": [
+                    "さまざまなテクニカル分析ツールを備えた簡単で理解しやすいインターフェース；",
+                    "スマートフォン、iPad、PDAから取引する機会；",
+                    "独自の取引アドバイザーとインジケーターを作成できる組み込みプログラミング言語MQL4；",
+                    "МТ4 Bridgeテクノロジーの助けを借りた銀行間流動性へのアクセス、リクオートなしの実行（ノーディーリングデスク）；",
+                    "ダウ・ジョーンズからの金融ニュース"
+                ],
+                "mt4_requirements_title": "システム要件：",
+                "mt4_requirements_text": "Windows XP以上。",
+                "mt4_requirements_link": "Mac OSの説明書",
+                "platform_title": "プラットフォーム",
+                "traders_blog_title": "トレーダーズブログ",
+                "traders_blog_items": [
+                    {
+                        "title": "取引でリスクを効果的に管理する方法",
+                        "subtitle": "取引は間違いなくエキサイティングで潜在的に収益性の高い活動です。しかし、この分野での成功には、市場を分析する能力だけでなく...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "デモ口座から実際の口座にいつ切り替えますか？",
+                        "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "伝説的な投資家ウォーレン・バフェット",
+                        "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "取引戦略",
+                        "subtitle": "申し訳ありませんが、このエントリはロシア語でのみ利用可能です。",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "trading_conditions_title": "取引条件",
+                "trading_hub_title": "取引HUB",
+                "tandem_trading_title": "タンデム取引",
+                "withdrawal_funds_title": "出金"
+            }
+        },
+        "footer": {
+            "description": "Esterの主な目標は、小売および法人トレーダーのための最高かつ最も透明な条件を作成することです。",
+            "trading": {
+                "title": "取引",
+                "items": [
+                    "アカウント概要",
+                    "市場",
+                    "プラットフォーム",
+                    "取引条件",
+                    "タンデム取引"
+                ]
+            },
+            "partnership": {
+                "title": "パートナーシップ",
+                "items": [
+                    "IB/パートナーシップ登録",
+                    "IBの収益方法"
+                ]
+            },
+            "company": {
+                "title": "会社",
+                "items": [
+                    "会社について",
+                    "書類",
+                    "会社ニュース",
+                    "お問い合わせ",
+                    "キャリア"
+                ]
+            },
+            "legal": {
+                "regulated": "Esterは、セーシェル金融サービス局（FSA）によって規制され、証券ディーラーライセンスSD018を保有する公式取引名です。",
+                "risk": "リスク警告：CFD取引は高レベルのリスクを伴い、資本の損失につながる可能性があります。失うことができる資金のみで投資する必要があります。ライブ商品の取引はいかなる状況でも停止できないため、関係するリスクを完全に理解し、必要に応じて独立したアドバイスを求めることが重要です。リスク開示をお読みになり、完全に理解していることを確認してください。",
+                "restricted": "制限国：Raw Trading Ltdは、米国、カナダ、イスラエル、ニュージーランド、イラン、北朝鮮（朝鮮民主主義人民共和国）を含む多くの国の居住者、およびそのような活動が現地法に反するその他の管轄区域にサービスを提供していません。",
+                "age": "Esterでアカウントを登録するには、18歳以上であるか、お住まいの国の法律に従って成人に達している必要があります。アカウントを作成することで、Esterからの勧誘やオファーなしに、自分の主導で登録していることを確認します。",
+                "compliance": "Esterは、現地法により使用が禁止されている国のユーザーにサービスまたはウェブサイトコンテンツを向けていません。制限国からこのウェブサイトにアクセスする場合、現地法の遵守に責任があります。会社はまた、提供された情報がすべての管轄区域の要件に準拠していることを保証しません。",
+                "copyrightStart": "© 2025 Ester",
+                "copyrightEnd": "全著作権所有。"
+            }
+        }
+    },
+    "cabinet": {
+        "menu": {
+            "dashboard": "ダッシュボード",
+            "payment_details": "支払詳細",
+            "accounts": "アカウント",
+            "referral_system": "紹介システム",
+            "billing": "請求",
+            "support": "サポート",
+            "settings": "設定"
+        },
+        "dashboard": {
+            "title": "ダッシュボード",
+            "accountVerification": {
+                "title": "アカウント確認",
+                "subtitle": "確認進行中",
+                "addressFailed": "住所確認に失敗しました！",
+                "documentVerified": "文書が正常に確認されました！",
+                "paymentInProgress": "支払い確認進行中！",
+                "profileInProgress": "プロフィール確認進行中！",
+                "profileButton": "プロフィール"
+            },
+            "actions": {
+                "newDeposit": "新規入金",
+                "newWithdrawal": "新規出金",
+                "chartPlaceholder": "チャートがここに表示されます"
+            },
+            "mt4": {
+                "title": "MT4アカウント",
+                "openNewAccount": "新しい口座を開設",
+                "table": {
+                    "account": "アカウント",
+                    "type": "タイプ",
+                    "balance": "残高",
+                    "status": "ステータス",
+                    "active": "アクティブ",
+                    "inactive": "非アクティブ"
+                }
+            }
+        },
+        "billing": {
+            "title": "請求",
+            "create": "新規支払いを作成",
+            "search": "検索",
+            "columns": {
+                "id": "Id",
+                "paysystem": "支払いシステム",
+                "status": "ステータス",
+                "currency": "通貨",
+                "amount": "金額",
+                "createdAt": "作成日時"
+            },
+            "nothingToShow": "表示するものがありません =(",
+            "pagination": {
+                "prev": "前へ",
+                "next": "次へ"
+            },
+            "panel-title": "新しい管理者を追加"
+        },
+        "payments": {
+            "title": "支払詳細",
+            "search": "検索",
+            "create": "新しい支払詳細を作成",
+            "columns": {
+                "title": "タイトル",
+                "paysystem": "支払いシステム",
+                "currency": "通貨",
+                "createdAt": "作成日時"
+            },
+            "nothingToShow": "表示するものがありません =(",
+            "pagination": {
+                "prev": "前へ",
+                "next": "次へ"
+            }
+        },
+        "profile": {
+            "components": {
+                "tab-change-password": {
+                    "labels": {
+                        "old_password": "古いパスワード",
+                        "new_password": "新しいパスワード",
+                        "new_password_confirmation": "新しいパスワードの確認"
+                    },
+                    "placeholders": {
+                        "old_password": "*********",
+                        "new_password": "*********",
+                        "new_password_confirmation": "*********"
+                    },
+                    "button": "新しいパスワードを保存",
+                    "success": "パスワードが正常に更新されました！"
+                },
+                "tab-general": {
+                    "labels": {
+                        "email": "メール",
+                        "first_name": "名",
+                        "last_name": "姓",
+                        "mid_name": "ミドルネーム",
+                        "birthdate": "生年月日",
+                        "phone": "電話",
+                        "country": "国",
+                        "state": "州",
+                        "city": "市",
+                        "address": "住所",
+                        "postal_code": "郵便番号"
+                    },
+                    "placeholders": {
+                        "email": "example1test.com",
+                        "first_name": "太郎",
+                        "last_name": "山田",
+                        "mid_name": "次郎",
+                        "birthdate": "",
+                        "phone": "",
+                        "country": "国",
+                        "state": "州",
+                        "city": "市",
+                        "address": "ベーカー通り2b、アパート8",
+                        "postal_code": "00000"
+                    },
+                    "button": "保存して確認に送信",
+                    "success": "ユーザーデータが正常に更新され、確認に送信されました！"
+                },
+                "tab-user-documents": {
+                    "buttons": {
+                        "choose": "ファイルを選択",
+                        "upload": "アップロード"
+                    },
+                    "messages": {
+                        "upload_success": "プロフィール写真が正常に更新され、確認に送信されました！",
+                        "upload_error": "写真のアップロードに失敗しました",
+                        "delete_error": "写真の削除に失敗しました"
+                    },
+                    "errors": {
+                        "type": "画像のみが許可されています",
+                        "size": "最大サイズは2MBです"
+                    }
+                },
+                "tab-user-photo": {
+                    "buttons": {
+                        "choose": "ファイルを選択",
+                        "upload": "アップロード"
+                    },
+                    "messages": {
+                        "upload_success": "プロフィール写真が正常に更新されました",
+                        "delete_success": "プロフィール写真が削除されました",
+                        "upload_error": "写真のアップロードに失敗しました",
+                        "delete_error": "写真の削除に失敗しました"
+                    },
+                    "errors": {
+                        "type": "画像のみが許可されています",
+                        "size": "最大サイズは2MBです"
+                    }
+                }
+            },
+            "index": {
+                "tabs": {
+                    "general": "一般",
+                    "photo": "ユーザー写真",
+                    "documents": "書類",
+                    "verification": "確認",
+                    "change_password": "パスワード変更"
+                },
+                "title": "プロフィール"
+            }
+        },
+        "accounts": {
+            "account": {
+                "title": "アカウント"
+            },
+            "title": "アカウント",
+            "openNew": "新しい口座を開設",
+            "search": "検索",
+            "columns": {
+                "type": "アカウントタイプ",
+                "currency": "通貨",
+                "leverage": "レバレッジ",
+                "number": "アカウント番号",
+                "balance": "MT残高"
+            },
+            "nothingToShow": "表示するアクティブなアカウントがありません！",
+            "openAccount": "新しい口座を開設！",
+            "pagination": {
+                "prev": "前へ",
+                "next": "次へ"
+            },
+            "accounts-form": {
+                "title": "新しい口座を開設",
+                "fields": {
+                    "accountType": "アカウントタイプ",
+                    "phonePassword": "電話パスワード",
+                    "phonePasswordPlaceholder": "電話パスワードを入力"
+                },
+                "actions": {
+                    "submit": "新しい口座を開設"
+                }
+            }
+        },
+        "referrals": {
+            "components": {},
+            "index": {
+                "tabs": {
+                    "general": "一般",
+                    "settings": "設定",
+                    "terms": "規約"
+                },
+                "title": "紹介システム"
+            }
+        }
+    },
+    "admin": {
+        "menu": {
+            "dashboard": "ダッシュボード",
+            "verificationRequests": "確認リクエスト",
+            "clients": "クライアント",
+            "accounts": "アカウント",
+            "referral": "紹介システム",
+            "payments": "支払い",
+            "settings": "設定",
+            "support": "サポート",
+            "news": "ニュース",
+            "mail": "メール",
+            "access": "アクセス"
+        },
+        "access": {
+            "components": {
+                "admins-panel": {
+                    "title": "# 管理者",
+                    "columns": {
+                        "id": "Id",
+                        "nickname": "ニックネーム",
+                        "email": "メール",
+                        "roles": "役割",
+                        "createdAt": "作成日時",
+                        "options": "オプション"
+                    },
+                    "actions": {
+                        "addNewAdmin": "新しい管理者を追加"
+                    }
+                },
+                "admins-panel-add-new": {
+                    "title": "新しい管理者を作成",
+                    "fields": {
+                        "nickname": "ニックネーム",
+                        "email": "メール",
+                        "password": "パスワード",
+                        "roles": "役割"
+                    },
+                    "placeholders": {
+                        "nickname": "管理者のニックネームを入力",
+                        "email": "example\\u0040gmail.com",
+                        "roles": "役割を選択"
+                    },
+                    "actions": {
+                        "submit": "新規作成して保存"
+                    }
+                },
+                "admins-panel-edit": {
+                    "title": "管理者の役割を編集",
+                    "labels": {
+                        "nickname": "ニックネーム",
+                        "email": "メール",
+                        "roles": "役割"
+                    },
+                    "placeholders": {
+                        "nickname": "役割のニックネームを入力",
+                        "email": "example1gmail.com",
+                        "roles": "役割を選択"
+                    },
+                    "actions": {
+                        "submit": "更新して保存"
+                    }
+                },
+                "admins-panel-search": {
+                    "placeholder": "検索"
+                },
+                "permissions-panel": {
+                    "title": "# 権限",
+                    "searchPlaceholder": "検索",
+                    "columns": {
+                        "id": "ID",
+                        "name": "名前"
+                    }
+                },
+                "roles-panel": {
+                    "title": "# 役割",
+                    "addTitle": "新しい役割を追加",
+                    "editTitle": "役割を編集",
+                    "columns": {
+                        "name": "名前",
+                        "permissions": "権限"
+                    }
+                },
+                "roles-panel-add-new": {
+                    "labels": {
+                        "name": "名前",
+                        "permissions": "権限"
+                    },
+                    "placeholders": {
+                        "name": "役割名を入力",
+                        "permissions": "権限を選択"
+                    },
+                    "actions": {
+                        "createAndSave": "新規作成して保存"
+                    }
+                },
+                "roles-panel-edit": {
+                    "labels": {
+                        "name": "名前",
+                        "permissions": "権限"
+                    },
+                    "placeholders": {
+                        "name": "役割名を入力",
+                        "permissions": "権限を選択"
+                    },
+                    "actions": {
+                        "updateAndSave": "更新して保存"
+                    }
+                },
+                "roles-panel-search": {
+                    "placeholder": "検索"
+                }
+            },
+            "index": {
+                "title": "アクセス制御",
+                "subtitle": "（役割と権限）"
+            }
+        },
+        "accounts": {
+            "components": {
+                "accounts-panel": {
+                    "title": "# クライアント",
+                    "addTitle": "新しいクライアントを追加",
+                    "editTitle": "クライアントを編集",
+                    "columns": {
+                        "id": "ID",
+                        "name": "名前",
+                        "email": "メール",
+                        "phone": "電話",
+                        "created_at": "作成日時",
+                        "options": "アクション"
+                    }
+                },
+                "accounts-panel-add-new": {
+                    "labels": {
+                        "email": "メール",
+                        "first_name": "名",
+                        "last_name": "姓",
+                        "mid_name": "ミドルネーム",
+                        "birthdate": "生年月日",
+                        "phone": "電話",
+                        "country": "国",
+                        "city": "市",
+                        "address": "住所",
+                        "postal_code": "郵便番号",
+                        "password": "パスワード",
+                        "password_confirmation": "パスワード確認"
+                    },
+                    "placeholders": {
+                        "email": "メールを入力",
+                        "first_name": "名を入力",
+                        "last_name": "姓を入力",
+                        "mid_name": "ミドルネームを入力",
+                        "phone": "電話を入力",
+                        "address": "住所を入力",
+                        "postal_code": "郵便番号を入力",
+                        "password": "パスワードを入力",
+                        "password_confirmation": "パスワード確認を入力"
+                    },
+                    "submit": "新規作成して保存"
+                },
+                "accounts-panel-edit": {
+                    "labels": {
+                        "name": "名前",
+                        "permissions": "権限"
+                    },
+                    "placeholders": {
+                        "name": "役割名を入力",
+                        "permissions": "権限を選択"
+                    },
+                    "submit": "更新して保存"
+                },
+                "accounts-panel-search": {
+                    "placeholder": "クライアントを検索..."
+                }
+            },
+            "index": {
+                "title": "アカウント",
+                "subtitle": "アカウントリスト"
+            }
+        },
+        "clients": {
+            "components": {
+                "clients-panel": {
+                    "title": "# クライアント",
+                    "addTitle": "新しいクライアントを追加",
+                    "editTitle": "クライアントを編集",
+                    "columns": {
+                        "id": "ID",
+                        "email": "メール",
+                        "first_name": "名",
+                        "last_name": "姓",
+                        "phone": "電話",
+                        "created_at": "作成日時",
+                        "options": "アクション"
+                    }
+                },
+                "clients-panel-add-new": {
+                    "labels": {
+                        "email": "メール",
+                        "first_name": "名",
+                        "last_name": "姓",
+                        "mid_name": "ミドルネーム",
+                        "birthdate": "生年月日",
+                        "phone": "電話",
+                        "country": "国",
+                        "city": "市",
+                        "address": "住所",
+                        "postal_code": "郵便番号",
+                        "password": "パスワード",
+                        "password_confirmation": "パスワード確認"
+                    },
+                    "placeholders": {
+                        "email": "メールを入力",
+                        "first_name": "名を入力",
+                        "last_name": "姓を入力",
+                        "mid_name": "ミドルネームを入力",
+                        "phone": "電話を入力",
+                        "address": "住所を入力",
+                        "postal_code": "郵便番号を入力",
+                        "password": "パスワードを入力",
+                        "password_confirmation": "パスワード確認を入力"
+                    },
+                    "submit": "新規作成して保存"
+                },
+                "clients-panel-edit": {
+                    "labels": {
+                        "name": "名前",
+                        "permissions": "権限"
+                    },
+                    "placeholders": {
+                        "name": "役割名を入力",
+                        "permissions": "権限を選択"
+                    },
+                    "submit": "更新して保存"
+                },
+                "clients-panel-search": {
+                    "placeholder": "クライアントを検索..."
+                }
+            },
+            "index": {
+                "title": "クライアント",
+                "subtitle": "クライアントリスト"
+            }
+        },
+        "dashboard": {},
+        "profile": {},
+        "referral": {},
+        "settings": {
+            "title": "設定",
+            "tabs": {
+                "general": "一般",
+                "appearance": "外観",
+                "secure": "セキュリティ"
+            },
+            "tables": {
+                "appearance": {
+                    "variable": "変数名",
+                    "preview": "プレビュー",
+                    "picker": "カラーピッカー",
+                    "background": "背景",
+                    "text": "サンプルテキスト",
+                    "button": "ボタン"
+                },
+                "security": {
+                    "key": "キー",
+                    "value": "値（秒）"
+                },
+                "general": {
+                    "button": "アップロード"
+                }
+            }
+        },
+        "support": {
+            "title": "サポート"
+        }
+    }
+}

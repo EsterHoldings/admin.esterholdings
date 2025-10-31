@@ -1,0 +1,1198 @@
+{
+    "ui-components": {
+        "modals": {
+            "cookie-modal": {
+                "text": "本网站使用Cookie以增强用户体验。继续使用本网站，即表示您同意我们使用Cookie。",
+                "btn-successful": "接受",
+                "btn-negative": "拒绝"
+            }
+        },
+        "lines": {
+            "running-line-btn": "交易"
+        },
+        "tables": {
+            "table-default": "无数据显示..."
+        },
+        "ui-select": "未选择..."
+    },
+    "landing": {
+        "header": {
+            "nav": {
+                "trading": "交易",
+                "partnership": "合作伙伴",
+                "company": "公司"
+            },
+            "auth": {
+                "login": "登录",
+                "register": "注册"
+            },
+            "megaMenu": {
+                "Trading": [
+                    {
+                        "section": "账户概览",
+                        "items": [
+                            "标准",
+                            "专业",
+                            "伊斯兰",
+                            "模拟"
+                        ]
+                    },
+                    {
+                        "section": "市场工具",
+                        "items": [
+                            "外汇",
+                            "贵金属",
+                            "加密货币差价合约",
+                            "指数",
+                            "股票",
+                            "能源",
+                            "ETF"
+                        ]
+                    },
+                    {
+                        "section": "平台",
+                        "items": [
+                            "MT4桌面版",
+                            "MT4移动版"
+                        ]
+                    },
+                    {
+                        "section": "交易条件",
+                        "items": [
+                            "账户充值",
+                            "资金提取"
+                        ]
+                    },
+                    {
+                        "section": "交易者中心",
+                        "items": [
+                            "交易者博客",
+                            "经济日历",
+                            "市场新闻"
+                        ]
+                    },
+                    {
+                        "section": "TANDEM交易",
+                        "items": [
+                            "交易者",
+                            "投资者"
+                        ]
+                    }
+                ],
+                "Partnership": [
+                    {
+                        "section": "合作伙伴",
+                        "items": [
+                            "注册IB/合作伙伴",
+                            "IB如何产生收入"
+                        ]
+                    }
+                ],
+                "Company": [
+                    {
+                        "section": "公司",
+                        "items": [
+                            "关于公司",
+                            "文件",
+                            "公司新闻",
+                            "联系方式",
+                            "职业机会"
+                        ]
+                    }
+                ]
+            }
+        },
+        "slider": {
+            "general-slide": {
+                "title": {
+                    "before": "更",
+                    "highlight": "智能",
+                    "after": "更快速地交易！"
+                },
+                "text": "访问全球市场，包括外汇、股票和差价合约，快速执行、\n低点差和实时市场分析。",
+                "btn": "立即交易"
+            },
+            "top-trader-slide": {
+                "title": {
+                    "before": "复制策略",
+                    "highlight": "顶级交易者",
+                    "after": ""
+                },
+                "text": "获得专业人士的真实交易，提高您的交易水平。",
+                "btn": "开始"
+            },
+            "ten_years_slide": {
+                "title": {
+                    "highlight": "年",
+                    "after": "交易经验"
+                },
+                "text": "经时间考验的经验。结果验证的可靠性。",
+                "btn": "加入我们"
+            }
+        },
+        "sections": {
+            "advantages": [
+                {
+                    "value": "10+",
+                    "label": "行业经验年数"
+                },
+                {
+                    "value": "1,160,000+",
+                    "label": "客户"
+                },
+                {
+                    "value": "5星评级",
+                    "label": "客户服务"
+                }
+            ],
+            "platform__title": "成功外汇和差价合约交易的\n传奇平台",
+            "platform__features": [
+                {
+                    "title": "交易平台",
+                    "text": "使用我们的产品提升等级"
+                },
+                {
+                    "title": "移动交易",
+                    "text": "随时完全控制交易。"
+                },
+                {
+                    "title": "Ester MetaTrader 4",
+                    "text": "流行的经典解决方案"
+                },
+                {
+                    "title": "高速度和可靠性",
+                    "text": "即使在低配置PC上也能运行。"
+                }
+            ],
+            "feature__title": "为什么选择我们？",
+            "features__items": [
+                {
+                    "title": "工具",
+                    "text": "外汇/现货\n股票/指数",
+                    "icon": "/static/F-Wrench & Screwdriver.png"
+                },
+                {
+                    "title": "流动性：\n200+顶级",
+                    "text": "金融机构",
+                    "icon": "/static/F-Building Library.png"
+                },
+                {
+                    "title": "浮动点差",
+                    "text": "从0点起",
+                    "icon": "/static/F-Money.png"
+                },
+                {
+                    "title": "限价和止损水平",
+                    "text": "= 0",
+                    "icon": "/static/LIMIT AND STOP LEVELS.png"
+                },
+                {
+                    "title": "最快的服务器技术",
+                    "text": "具有高订单处理速度",
+                    "icon": "/static/F-Rocket.png"
+                },
+                {
+                    "title": "银行级安全",
+                    "text": "交易账户",
+                    "icon": "/static/L-Shield Done.png"
+                }
+            ],
+            "account_types__categories": [
+                {
+                    "id": "Standard",
+                    "label": "标准"
+                },
+                {
+                    "id": "Pro",
+                    "label": "专业"
+                },
+                {
+                    "id": "Tandem",
+                    "label": "双人"
+                },
+                {
+                    "id": "Islamic",
+                    "label": "伊斯兰"
+                }
+            ],
+            "accounts__title": "探索我们的交易账户选项",
+            "accounts__btn": "开设账户",
+            "accounts__options": [
+                {
+                    "id": "demo",
+                    "type": "demo",
+                    "title": "模拟",
+                    "subtitle": "账户",
+                    "description": "使用虚拟资金进行无风险交易，非常适合初学者探索市场。",
+                    "features": [
+                        "杠杆高达1:500",
+                        "点差从0.0点起",
+                        "无需存款"
+                    ],
+                    "buttonText": "立即试用模拟",
+                    "isRecommended": true
+                },
+                {
+                    "id": "standard",
+                    "type": "standard",
+                    "title": "标准",
+                    "subtitle": "账户",
+                    "description": "以低费用轻松进入现货市场——非常适合初学者和活跃交易者。",
+                    "features": [
+                        "杠杆高达1:500",
+                        "点差从1.2点起",
+                        "首次存款$50"
+                    ],
+                    "buttonText": "开设标准账户",
+                    "isRecommended": false
+                },
+                {
+                    "id": "pro",
+                    "type": "pro",
+                    "title": "专业",
+                    "subtitle": "账户",
+                    "description": "体验紧密点差、更高杠杆和对每笔交易的完全控制。",
+                    "features": [
+                        "杠杆高达1:500",
+                        "点差从0.0点起",
+                        "首次存款$1000"
+                    ],
+                    "buttonText": "像专业人士一样交易",
+                    "isRecommended": false
+                },
+                {
+                    "id": "tandem",
+                    "type": "tandem",
+                    "title": "双人",
+                    "subtitle": "账户",
+                    "description": "与合作伙伴、导师或共同交易者配对，通过同步策略共同成长。",
+                    "features": [
+                        "杠杆高达1:200",
+                        "共享账户访问",
+                        "实时交易镜像"
+                    ],
+                    "buttonText": "一起交易",
+                    "isRecommended": false
+                },
+                {
+                    "id": "islamic",
+                    "type": "islamic",
+                    "title": "伊斯兰",
+                    "subtitle": "账户",
+                    "description": "无掉期。符合伊斯兰教法。无息交易，完全访问平台。",
+                    "features": [
+                        "杠杆高达1:500",
+                        "无掉期/利息费用",
+                        "访问所有交易工具"
+                    ],
+                    "buttonText": "开设伊斯兰账户",
+                    "isRecommended": false
+                }
+            ],
+            "wide_range__title": "广泛的产品范围",
+            "wide_range__categories": [
+                {
+                    "id": "forex",
+                    "label": "外汇"
+                },
+                {
+                    "id": "metals",
+                    "label": "贵金属"
+                },
+                {
+                    "id": "cryptocurrency CDs",
+                    "label": "加密货币CD"
+                },
+                {
+                    "id": "indices",
+                    "label": "指数"
+                },
+                {
+                    "id": "shares",
+                    "label": "股票"
+                },
+                {
+                    "id": "energy",
+                    "label": "能源"
+                },
+                {
+                    "id": "ETFS",
+                    "label": "ETF"
+                }
+            ],
+            "wide_range_tabs": {
+                "Forex": {
+                    "title": "外汇",
+                    "description": "以具有竞争力的交易条件交易70个主要、次要和\n异国货币对。",
+                    "btn": "交易外汇"
+                },
+                "Metals": {
+                    "title": "贵金属",
+                    "description": "交易黄金、白银和铂金等\n贵金属商品。",
+                    "btn": "交易贵金属"
+                },
+                "CryptocurrencyCDs": {
+                    "title": "加密货币CD",
+                    "description": "交易比特币差价合约、以太币差价合约、狗狗币差价合约\n和更多加密货币CD和山寨币差价合约",
+                    "btn": "交易加密货币差价合约"
+                },
+                "Indices": {
+                    "title": "指数",
+                    "description": "交易来自世界各地的主要和次要现货和\n期货指数差价合约。",
+                    "btn": "交易指数"
+                },
+                "Shares": {
+                    "title": "股票",
+                    "description": "来自美国、英国和欧盟的数千家\n上市公司可供交易。",
+                    "btn": "交易股票"
+                },
+                "Energy": {
+                    "title": "能源",
+                    "description": "发现英国和美国原油以及\n天然气现货和期货合约的机会。",
+                    "btn": "交易能源"
+                },
+                "ETFS": {
+                    "title": "ETF",
+                    "description": "通过ETF差价合约访问市场世界——从\n债券到商品、房地产到波动率。",
+                    "btn": "交易ETF"
+                }
+            },
+            "four_steps_section": {
+                "title": {
+                    "before": "开设账户只需",
+                    "highlight": "4个简单步骤"
+                },
+                "button": "开设账户",
+                "items": [
+                    {
+                        "title": "注册",
+                        "text": "选择账户类型并完成我们快速安全的申请表"
+                    },
+                    {
+                        "title": "验证",
+                        "text": "使用我们的数字入职系统进行快速验证"
+                    },
+                    {
+                        "title": "充值",
+                        "text": "使用广泛的充值方式为您的交易账户充值"
+                    },
+                    {
+                        "title": "交易",
+                        "text": "开始在您的真实账户上交易并访问2100+工具"
+                    }
+                ]
+            },
+            "banner_section": {
+                "title": "像专业人士一样",
+                "title_highlight": "交易市场！",
+                "subtitle": "无论您是初学者还是专业人士，我们的先进工具和资源都能帮助您做出明智的交易决策。",
+                "button_primary": "开始交易",
+                "button_secondary": "试用模拟账户"
+            },
+            "latest_updates__title": "最新更新",
+            "latest_updates__items": [
+                {
+                    "title": "NVIDIA股票在报告后飙升15%",
+                    "subtitle": "芯片制造商NVIDIA（NVDA）发布的季度报告超出了华尔街所有预期...",
+                    "time": "15分钟"
+                },
+                {
+                    "title": "特斯拉宣布1:10股票拆分——报价上涨12%",
+                    "subtitle": "这一消息使股价上涨了12%，特斯拉目前以每股1,180美元的价格交易。",
+                    "time": "30分钟"
+                },
+                {
+                    "title": "SEC宣布禁止稳定币后比特币暴跌12%",
+                    "subtitle": "美国证券交易委员会（SEC）出人意料地宣布引入新规定...",
+                    "time": "1小时前"
+                }
+            ],
+            "faqs__form_title": "需要帮助？",
+            "faqs__form_subtitle": "我们将在一天内回复您。",
+            "faqs__form_placeholders": {
+                "name": "您的姓名",
+                "email": "您的电子邮件",
+                "description": "描述您的问题..."
+            },
+            "faqs__form_button": "发送",
+            "faqs__items": [
+                {
+                    "title": "如何开设交易账户？",
+                    "description": "要开设交易账户，只需注册、验证您的身份并选择您首选的账户类型。"
+                },
+                {
+                    "title": "所需的最低存款是多少？",
+                    "description": "最低存款因您的账户类型而异。请查看我们的账户类型部分了解具体详情。"
+                },
+                {
+                    "title": "我可以无风险试用平台吗？",
+                    "description": "是的，我们提供模拟账户，您可以在投入真实资金之前使用虚拟资金练习交易。"
+                },
+                {
+                    "title": "我的资金在您的平台上安全吗？",
+                    "description": "绝对安全。我们使用行业标准的安全措施，并将客户资金保存在独立账户中。"
+                },
+                {
+                    "title": "有哪些交易工具可用？",
+                    "description": "我们提供广泛的工具，包括外汇、差价合约、商品、指数和加密货币。"
+                }
+            ],
+            "accounts__badge_recommended": "推荐",
+            "helpSection": "需要帮助？访问我们的",
+            "helpLinkText": "帮助部分"
+        },
+        "pages": {
+            "company": {
+                "about": {
+                    "title": "关于公司",
+                    "intro_1": {
+                        "highlight": "国际金融控股公司Ester Holdings Inc.",
+                        "text": "——是一家拥有高效管理的稳定公司。"
+                    },
+                    "intro_2": "Ester公司对一切新事物持开放态度，是为整个金融市场制定和支持高标准工作的领导者。",
+                    "intro_3": "我们的特色——有利可图的交易条件、高质量的服务和法律安全。",
+                    "intro_4": "公司首先考虑客户的成功活动。这是我们成功的主要标准。",
+                    "intro_5": {
+                        "highlight": "Ester公司的使命",
+                        "text": "——为客户提供保证他们福利的知识和咨询服务。我们是一家通用金融公司，在稳定的基础上保持高质量的工作。"
+                    },
+                    "business_model_title": "商业模式",
+                    "business_model_subtitle": "公司的商业模式建立在与客户透明和信任的关系上。",
+                    "business_model_list": [
+                        "公司从主要流动性供应银行的ECN平台接收报价，并从最佳价格为客户形成报价流。",
+                        "在交易终端中，客户可以看到每个金融工具的最佳买入和卖出价格并进行交易。",
+                        "作为客户订单的结果，执行在当前时刻提供最佳购买或销售价格的流动性供应商的价格。",
+                        "我们的优质经纪商在公司与流动性供应银行之间进行清算（相互承认义务）。"
+                    ],
+                    "activity_title": "活动领域",
+                    "activity_list": [
+                        "为客户提供通过互联网进行外币和其他金融工具交易操作的访问。",
+                        "关于投资者资产管理和投资活动问题的咨询。",
+                        "信息和分析服务。",
+                        "合格的交易培训。"
+                    ]
+                },
+                "career": {
+                    "title": "职业机会",
+                    "subtitle": "目前公司正在寻找以下专家：",
+                    "positions": [
+                        "销售经理",
+                        "分析部门主管"
+                    ],
+                    "cta": "如果您准备好迎接动态增长，您雄心勃勃且有才华，请发送您的简历。",
+                    "button": "发送简历"
+                },
+                "news": {
+                    "title": "公司新闻",
+                    "items": [
+                        {
+                            "title": "NVIDIA股票在报告后飙升15%",
+                            "subtitle": "芯片制造商NVIDIA（NVDA）发布的季度报告超出了华尔街所有预期...",
+                            "time": "15分钟"
+                        },
+                        {
+                            "title": "特斯拉宣布1:10股票拆分——报价上涨12%",
+                            "subtitle": "这一消息使股价上涨了12%，特斯拉目前以每股1,180美元的价格交易。",
+                            "time": "30分钟"
+                        },
+                        {
+                            "title": "SEC宣布禁止稳定币后比特币暴跌12%",
+                            "subtitle": "美国证券交易委员会（SEC）出人意料地宣布引入新规定...",
+                            "time": "1小时前"
+                        },
+                        {
+                            "title": "交易策略",
+                            "subtitle": "抱歉，此条目仅提供俄语版本。",
+                            "time": "17.04.2024 | 04:04 PM"
+                        }
+                    ],
+                    "button": "了解更多"
+                },
+                "contacts": {
+                    "title": "联系方式",
+                    "office_title": "总部",
+                    "office_name": "Ester Holdings Ltd",
+                    "office_address": "一楼，索斯比大楼，罗德尼村，罗德尼湾，格罗斯伊斯莱特，圣卢西亚",
+                    "office_registration": "注册号2023-00477",
+                    "support_label": "技术支持服务：",
+                    "support_email": "support{'@'}esterholdings.com",
+                    "finance_label": "财务服务：",
+                    "finance_email": "finance{'@'}esterholdings.com",
+                    "marketing_label": "营销服务：",
+                    "marketing_email": "marketing{'@'}esterholdings.com"
+                },
+                "documents": {
+                    "title": "文件",
+                    "intro": "与Ester Holdings Inc.的所有互动过程均由标准文件规范",
+                    "regulations_title": "报价规定",
+                    "regulations_subtitle": "规定规定：",
+                    "regulations_list": [
+                        "客户交易操作中使用的术语；",
+                        "保证金交易原则；",
+                        "开仓/平仓、安排/删除、更改和执行挂单的规则；",
+                        "客户授权顺序，以及MetaTrader 4交易系统中客户操作的协议顺序；",
+                        "争议解决程序等。"
+                    ],
+                    "contract_title": "合同",
+                    "contract_description": "合同包含客户和Ester Holdings Inc.的合作规则。其中定义了双方履行义务的责任。",
+                    "button": "下载"
+                }
+            },
+            "partnership": {
+                "title": "合作伙伴",
+                "subtitle": "合作伙伴变体",
+                "button_agent": "代理计划",
+                "button_franchising": "特许经营",
+                "intro_1": {
+                    "highlight": "成为Ester的合作伙伴，与品牌一起获得收入"
+                },
+                "intro_2": {
+                    "highlight": "Ester Holdings Inc.",
+                    "text": "——拥有高效管理的稳定公司。Ester Holdings公司对一切新事物持开放态度，是为整个金融市场制定和支持高标准工作的领导者。"
+                },
+                "intro_3": "我们提供在互联网交易领域以国际公司Ester Holdings品牌建立自己业务的机会。赶快成为您所在城市的第一个，开设Ester Holdings办事处，获得最有利的合作条件，最重要的是获得高水平的收入。",
+                "offer_title": "我们为您提供",
+                "offer_list": [
+                    "在我们的品牌下工作；",
+                    "现成的盈利模式；",
+                    "舒适工作的技术解决方案；",
+                    "有利的合作条件；",
+                    "开设代表处的技术支持；",
+                    "我们最优秀专家的24/7支持。"
+                ],
+                "agent_title": "代理计划",
+                "agent_description": "从参与客户的交易活动中获得收入！由于互联网用户数量的动态增长，这在今天很容易实现。Ester Holdings公司最重要的优先事项是高水平的服务质量和形成长期关系。这将使您无需成为外汇市场的参与者，就能从参与成员的交易活动中获得稳定的佣金收入。",
+                "agent_how_title": "如何运作？",
+                "agent_how_list": [
+                    "为我们带来新客户",
+                    "他们注册并赚钱",
+                    "您将从他们的利润中获得佣金"
+                ],
+                "agent_how_cta": "更多客户——更多利润",
+                "franchising_title": "特许经营",
+                "franchising_description_1": "Ester Holdings公司的合作伙伴从我们经验丰富的专家那里获得全面支持和个性化方法。我们可以选择符合您实际需求和个人目标的解决方案。请记住，我们公司的良好形象和无可挑剔的声誉也在为您工作。",
+                "franchising_description_2": "与Ester Holdings的特许经营——是在您的城市开设公司办事处并在世界上最大的经纪商之一的品牌下工作的机会。您将获得发达的商业技术和我们专家的全面支持。",
+                "franchising_business_title": "与Ester Holdings一起开展业务：",
+                "franchising_business_list": [
+                    "公司通过执行交易操作获得点差。您将获得客户点差的百分比。",
+                    "此外，您将获得在您的办公室提供的信息和咨询服务的所有收入。"
+                ],
+                "franchising_how_title": "如何做到这一点？",
+                "franchising_how_list": [
+                    "发送申请",
+                    "我们为您选择最佳解决方案",
+                    "我们帮助实施",
+                    "进行培训并提供支持"
+                ],
+                "button_receive": "获得特许经营",
+                "generate_income_title": "IB如何产生收入",
+                "register_ib_title": "注册IB/合作伙伴"
+            },
+            "trading": {
+                "account_overview_title": "账户概览",
+                "account_replenishment_title": "账户充值",
+                "economic_calendar_title": "经济日历",
+                "for_investor_title": "投资者",
+                "for_trader_title": "交易者",
+                "market_instruments_title": "工具",
+                "market_instruments_text": [
+                    "Ester Holdings公司交易终端中的所有货币对点差都是银行间的。点差是在交易聚合器的帮助下形成的，该聚合器从流动性提供商那里选择每个当前时刻的最佳价格。我们在外汇市场提供最佳流动性。掉期是指市场参与者将头寸展期至第二天的付款。",
+                    "将未平仓头寸转移到第二天的过程是针对根据公司服务器时间从23:59:59到00:00:00保持未平仓的所有头寸进行的。为了将头寸转移到第二天，客户账户可能会记入或借记这些头寸的掉期。",
+                    "掉期的大小及其记入/借记方法在相应规格中规定。",
+                    "在从23:55到00:05（格林威治标准时间）的展期期间，流动性减少，点差可能增加，客户订单的处理时间也可能增加。",
+                    "您对网站和/或平台的访问和使用构成您对这些交易条件以及其中包含的任何其他法律声明和声明的接受。Ester可以随时修改这些交易条件，无需事先通知。您对网站和/或平台的持续访问和使用构成您对修改后的这些交易条件的接受。"
+                ],
+                "market_news_title": "市场新闻",
+                "market_news_items": [
+                    {
+                        "title": "如何有效管理交易风险",
+                        "subtitle": "交易无疑是一项令人兴奋且可能盈利的活动。然而，这一领域的成功不仅需要分析市场的能力...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "何时从模拟账户切换到真实账户？",
+                        "subtitle": "抱歉，此条目仅提供俄语版本。",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "传奇投资者沃伦·巴菲特",
+                        "subtitle": "抱歉，此条目仅提供俄语版本。",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "交易策略",
+                        "subtitle": "抱歉，此条目仅提供俄语版本。",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "mt4_title": "МТ4",
+                "mt4_subtitle": "下载交易终端并开始赚钱",
+                "mt4_button": "下载MT-4",
+                "mt4_about_title": "关于平台",
+                "mt4_about_text": "MetaTrader 4——世界上最受欢迎的交易平台。由于多年使用该平台的工作经验和积极参与其开发，我们为您提供最有利和舒适的条件。",
+                "mt4_about_highlight": "因为MetaTrader 4是：",
+                "mt4_features": [
+                    "具有各种技术分析工具的简单易懂的界面；",
+                    "可以从智能手机、iPad和PDA进行交易的机会；",
+                    "内置的MQL4编程语言，允许创建自己的交易顾问和指标；",
+                    "在МТ4 Bridge技术的帮助下访问银行间流动性，无重新报价执行（无交易台）；",
+                    "来自道琼斯的金融新闻"
+                ],
+                "mt4_requirements_title": "系统要求：",
+                "mt4_requirements_text": "Windows XP及更高版本。",
+                "mt4_requirements_link": "Mac OS说明",
+                "platform_title": "平台",
+                "traders_blog_title": "交易者博客",
+                "traders_blog_items": [
+                    {
+                        "title": "如何有效管理交易风险",
+                        "subtitle": "交易无疑是一项令人兴奋且可能盈利的活动。然而，这一领域的成功不仅需要分析市场的能力...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "何时从模拟账户切换到真实账户？",
+                        "subtitle": "抱歉，此条目仅提供俄语版本。",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "传奇投资者沃伦·巴菲特",
+                        "subtitle": "抱歉，此条目仅提供俄语版本。",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "交易策略",
+                        "subtitle": "抱歉，此条目仅提供俄语版本。",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "trading_conditions_title": "交易条件",
+                "trading_hub_title": "交易中心",
+                "tandem_trading_title": "双人交易",
+                "withdrawal_funds_title": "资金提取"
+            }
+        },
+        "footer": {
+            "description": "Ester的主要目标是为零售和企业交易者创造最佳和最透明的条件。",
+            "trading": {
+                "title": "交易",
+                "items": [
+                    "账户概览",
+                    "市场",
+                    "平台",
+                    "交易条款",
+                    "双人交易"
+                ]
+            },
+            "partnership": {
+                "title": "合作伙伴",
+                "items": [
+                    "注册IB/合作伙伴",
+                    "IB如何产生收入"
+                ]
+            },
+            "company": {
+                "title": "公司",
+                "items": [
+                    "关于公司",
+                    "文件",
+                    "公司新闻",
+                    "联系方式",
+                    "职业机会"
+                ]
+            },
+            "legal": {
+                "regulated": "Ester是由塞舌尔金融服务管理局（FSA）监管并持有证券交易商许可证SD018的官方交易名称。",
+                "risk": "风险警告：差价合约交易具有高风险，可能导致资本损失。您应该只用您能承受损失的资金进行投资。实时工具的交易在任何情况下都无法停止，因此重要的是您完全了解所涉及的风险，如有必要，请寻求独立建议。请阅读我们的风险披露并确保您完全理解。",
+                "restricted": "受限国家：Raw Trading Ltd不向包括美国、加拿大、以色列、新西兰、伊朗和朝鲜（朝鲜民主主义人民共和国）在内的许多国家的居民以及此类活动违反当地法律的其他司法管辖区提供服务。",
+                "age": "要在Ester注册账户，您必须年满18岁或根据您所在国家的法律达到法定年龄。通过创建账户，您确认您是自己主动注册的，没有任何来自Ester的征求或要约。",
+                "compliance": "Ester不会将其服务或网站内容定向到当地法律禁止使用的国家的用户。如果您从受限国家访问本网站，您有责任遵守当地法律。公司也不保证所提供的信息符合所有司法管辖区的要求。",
+                "copyrightStart": "© 2025 Ester",
+                "copyrightEnd": "保留所有权利。"
+            }
+        }
+    },
+    "cabinet": {
+        "menu": {
+            "dashboard": "仪表板",
+            "payment_details": "支付详情",
+            "accounts": "账户",
+            "referral_system": "推荐系统",
+            "billing": "账单",
+            "support": "支持",
+            "settings": "设置"
+        },
+        "dashboard": {
+            "title": "仪表板",
+            "accountVerification": {
+                "title": "账户验证",
+                "subtitle": "验证进行中",
+                "addressFailed": "地址验证失败！",
+                "documentVerified": "文件已成功验证！",
+                "paymentInProgress": "支付验证进行中！",
+                "profileInProgress": "个人资料验证进行中！",
+                "profileButton": "个人资料"
+            },
+            "actions": {
+                "newDeposit": "新存款",
+                "newWithdrawal": "新提款",
+                "chartPlaceholder": "图表将显示在这里"
+            },
+            "mt4": {
+                "title": "MT4账户",
+                "openNewAccount": "开设新账户",
+                "table": {
+                    "account": "账户",
+                    "type": "类型",
+                    "balance": "余额",
+                    "status": "状态",
+                    "active": "活跃",
+                    "inactive": "不活跃"
+                }
+            }
+        },
+        "billing": {
+            "title": "账单",
+            "create": "创建新支付",
+            "search": "搜索",
+            "columns": {
+                "id": "Id",
+                "paysystem": "支付系统",
+                "status": "状态",
+                "currency": "货币",
+                "amount": "金额",
+                "createdAt": "创建时间"
+            },
+            "nothingToShow": "无数据显示 =(",
+            "pagination": {
+                "prev": "上一页",
+                "next": "下一页"
+            },
+            "panel-title": "添加新管理员"
+        },
+        "payments": {
+            "title": "支付详情",
+            "search": "搜索",
+            "create": "创建新支付详情",
+            "columns": {
+                "title": "标题",
+                "paysystem": "支付系统",
+                "currency": "货币",
+                "createdAt": "创建时间"
+            },
+            "nothingToShow": "无数据显示 =(",
+            "pagination": {
+                "prev": "上一页",
+                "next": "下一页"
+            }
+        },
+        "profile": {
+            "components": {
+                "tab-change-password": {
+                    "labels": {
+                        "old_password": "旧密码",
+                        "new_password": "新密码",
+                        "new_password_confirmation": "新密码确认"
+                    },
+                    "placeholders": {
+                        "old_password": "*********",
+                        "new_password": "*********",
+                        "new_password_confirmation": "*********"
+                    },
+                    "button": "保存新密码",
+                    "success": "密码已成功更新！"
+                },
+                "tab-general": {
+                    "labels": {
+                        "email": "电子邮件",
+                        "first_name": "名字",
+                        "last_name": "姓氏",
+                        "mid_name": "中间名",
+                        "birthdate": "出生日期",
+                        "phone": "电话",
+                        "country": "国家",
+                        "state": "州",
+                        "city": "城市",
+                        "address": "地址",
+                        "postal_code": "邮政编码"
+                    },
+                    "placeholders": {
+                        "email": "example1test.com",
+                        "first_name": "张",
+                        "last_name": "伟",
+                        "mid_name": "明",
+                        "birthdate": "",
+                        "phone": "",
+                        "country": "国家",
+                        "state": "州",
+                        "city": "城市",
+                        "address": "贝克街2b，公寓8",
+                        "postal_code": "00000"
+                    },
+                    "button": "保存并发送验证",
+                    "success": "用户数据已成功更新并发送验证！"
+                },
+                "tab-user-documents": {
+                    "buttons": {
+                        "choose": "选择文件",
+                        "upload": "上传"
+                    },
+                    "messages": {
+                        "upload_success": "个人资料照片已成功更新并发送验证！",
+                        "upload_error": "上传照片失败",
+                        "delete_error": "删除照片失败"
+                    },
+                    "errors": {
+                        "type": "仅允许图片",
+                        "size": "最大大小为2MB"
+                    }
+                },
+                "tab-user-photo": {
+                    "buttons": {
+                        "choose": "选择文件",
+                        "upload": "上传"
+                    },
+                    "messages": {
+                        "upload_success": "个人资料照片已成功更新",
+                        "delete_success": "个人资料照片已删除",
+                        "upload_error": "上传照片失败",
+                        "delete_error": "删除照片失败"
+                    },
+                    "errors": {
+                        "type": "仅允许图片",
+                        "size": "最大大小为2MB"
+                    }
+                }
+            },
+            "index": {
+                "tabs": {
+                    "general": "常规",
+                    "photo": "用户照片",
+                    "documents": "文件",
+                    "verification": "验证",
+                    "change_password": "更改密码"
+                },
+                "title": "个人资料"
+            }
+        },
+        "accounts": {
+            "account": {
+                "title": "账户"
+            },
+            "title": "账户",
+            "openNew": "开设新账户",
+            "search": "搜索",
+            "columns": {
+                "type": "账户类型",
+                "currency": "货币",
+                "leverage": "杠杆",
+                "number": "账户号码",
+                "balance": "MT余额"
+            },
+            "nothingToShow": "没有活跃账户可显示！",
+            "openAccount": "开设新账户！",
+            "pagination": {
+                "prev": "上一页",
+                "next": "下一页"
+            },
+            "accounts-form": {
+                "title": "开设新账户",
+                "fields": {
+                    "accountType": "账户类型",
+                    "phonePassword": "电话密码",
+                    "phonePasswordPlaceholder": "输入电话密码"
+                },
+                "actions": {
+                    "submit": "开设新账户"
+                }
+            }
+        },
+        "referrals": {
+            "components": {},
+            "index": {
+                "tabs": {
+                    "general": "常规",
+                    "settings": "设置",
+                    "terms": "条款"
+                },
+                "title": "推荐系统"
+            }
+        }
+    },
+    "admin": {
+        "menu": {
+            "dashboard": "仪表板",
+            "verificationRequests": "验证请求",
+            "clients": "客户",
+            "accounts": "账户",
+            "referral": "推荐系统",
+            "payments": "支付",
+            "settings": "设置",
+            "support": "支持",
+            "news": "新闻",
+            "mail": "邮件",
+            "access": "访问"
+        },
+        "access": {
+            "components": {
+                "admins-panel": {
+                    "title": "# 管理员",
+                    "columns": {
+                        "id": "Id",
+                        "nickname": "昵称",
+                        "email": "电子邮件",
+                        "roles": "角色",
+                        "createdAt": "创建时间",
+                        "options": "选项"
+                    },
+                    "actions": {
+                        "addNewAdmin": "添加新管理员"
+                    }
+                },
+                "admins-panel-add-new": {
+                    "title": "创建新管理员",
+                    "fields": {
+                        "nickname": "昵称",
+                        "email": "电子邮件",
+                        "password": "密码",
+                        "roles": "角色"
+                    },
+                    "placeholders": {
+                        "nickname": "输入管理员昵称",
+                        "email": "example\\u0040gmail.com",
+                        "roles": "选择角色"
+                    },
+                    "actions": {
+                        "submit": "创建新的并保存"
+                    }
+                },
+                "admins-panel-edit": {
+                    "title": "编辑管理员角色",
+                    "labels": {
+                        "nickname": "昵称",
+                        "email": "电子邮件",
+                        "roles": "角色"
+                    },
+                    "placeholders": {
+                        "nickname": "输入角色昵称",
+                        "email": "example1gmail.com",
+                        "roles": "选择角色"
+                    },
+                    "actions": {
+                        "submit": "更新并保存"
+                    }
+                },
+                "admins-panel-search": {
+                    "placeholder": "搜索"
+                },
+                "permissions-panel": {
+                    "title": "# 权限",
+                    "searchPlaceholder": "搜索",
+                    "columns": {
+                        "id": "ID",
+                        "name": "名称"
+                    }
+                },
+                "roles-panel": {
+                    "title": "# 角色",
+                    "addTitle": "添加新角色",
+                    "editTitle": "编辑角色",
+                    "columns": {
+                        "name": "名称",
+                        "permissions": "权限"
+                    }
+                },
+                "roles-panel-add-new": {
+                    "labels": {
+                        "name": "名称",
+                        "permissions": "权限"
+                    },
+                    "placeholders": {
+                        "name": "输入角色名称",
+                        "permissions": "选择权限"
+                    },
+                    "actions": {
+                        "createAndSave": "创建新的并保存"
+                    }
+                },
+                "roles-panel-edit": {
+                    "labels": {
+                        "name": "名称",
+                        "permissions": "权限"
+                    },
+                    "placeholders": {
+                        "name": "输入角色名称",
+                        "permissions": "选择权限"
+                    },
+                    "actions": {
+                        "updateAndSave": "更新并保存"
+                    }
+                },
+                "roles-panel-search": {
+                    "placeholder": "搜索"
+                }
+            },
+            "index": {
+                "title": "访问控制",
+                "subtitle": "（角色和权限）"
+            }
+        },
+        "accounts": {
+            "components": {
+                "accounts-panel": {
+                    "title": "# 客户",
+                    "addTitle": "添加新客户",
+                    "editTitle": "编辑客户",
+                    "columns": {
+                        "id": "ID",
+                        "name": "名称",
+                        "email": "电子邮件",
+                        "phone": "电话",
+                        "created_at": "创建时间",
+                        "options": "操作"
+                    }
+                },
+                "accounts-panel-add-new": {
+                    "labels": {
+                        "email": "电子邮件",
+                        "first_name": "名字",
+                        "last_name": "姓氏",
+                        "mid_name": "中间名",
+                        "birthdate": "出生日期",
+                        "phone": "电话",
+                        "country": "国家",
+                        "city": "城市",
+                        "address": "地址",
+                        "postal_code": "邮政编码",
+                        "password": "密码",
+                        "password_confirmation": "密码确认"
+                    },
+                    "placeholders": {
+                        "email": "输入电子邮件",
+                        "first_name": "输入名字",
+                        "last_name": "输入姓氏",
+                        "mid_name": "输入中间名",
+                        "phone": "输入电话",
+                        "address": "输入地址",
+                        "postal_code": "输入邮政编码",
+                        "password": "输入密码",
+                        "password_confirmation": "输入密码确认"
+                    },
+                    "submit": "创建新的并保存"
+                },
+                "accounts-panel-edit": {
+                    "labels": {
+                        "name": "名称",
+                        "permissions": "权限"
+                    },
+                    "placeholders": {
+                        "name": "输入角色名称",
+                        "permissions": "选择权限"
+                    },
+                    "submit": "更新并保存"
+                },
+                "accounts-panel-search": {
+                    "placeholder": "搜索客户..."
+                }
+            },
+            "index": {
+                "title": "账户",
+                "subtitle": "账户列表"
+            }
+        },
+        "clients": {
+            "components": {
+                "clients-panel": {
+                    "title": "# 客户",
+                    "addTitle": "添加新客户",
+                    "editTitle": "编辑客户",
+                    "columns": {
+                        "id": "ID",
+                        "email": "电子邮件",
+                        "first_name": "名字",
+                        "last_name": "姓氏",
+                        "phone": "电话",
+                        "created_at": "创建时间",
+                        "options": "操作"
+                    }
+                },
+                "clients-panel-add-new": {
+                    "labels": {
+                        "email": "电子邮件",
+                        "first_name": "名字",
+                        "last_name": "姓氏",
+                        "mid_name": "中间名",
+                        "birthdate": "出生日期",
+                        "phone": "电话",
+                        "country": "国家",
+                        "city": "城市",
+                        "address": "地址",
+                        "postal_code": "邮政编码",
+                        "password": "密码",
+                        "password_confirmation": "密码确认"
+                    },
+                    "placeholders": {
+                        "email": "输入电子邮件",
+                        "first_name": "输入名字",
+                        "last_name": "输入姓氏",
+                        "mid_name": "输入中间名",
+                        "phone": "输入电话",
+                        "address": "输入地址",
+                        "postal_code": "输入邮政编码",
+                        "password": "输入密码",
+                        "password_confirmation": "输入密码确认"
+                    },
+                    "submit": "创建新的并保存"
+                },
+                "clients-panel-edit": {
+                    "labels": {
+                        "name": "名称",
+                        "permissions": "权限"
+                    },
+                    "placeholders": {
+                        "name": "输入角色名称",
+                        "permissions": "选择权限"
+                    },
+                    "submit": "更新并保存"
+                },
+                "clients-panel-search": {
+                    "placeholder": "搜索客户..."
+                }
+            },
+            "index": {
+                "title": "客户",
+                "subtitle": "客户列表"
+            }
+        },
+        "dashboard": {},
+        "profile": {},
+        "referral": {},
+        "settings": {
+            "title": "设置",
+            "tabs": {
+                "general": "常规",
+                "appearance": "外观",
+                "secure": "安全"
+            },
+            "tables": {
+                "appearance": {
+                    "variable": "变量名称",
+                    "preview": "预览",
+                    "picker": "颜色选择器",
+                    "background": "背景",
+                    "text": "示例文本",
+                    "button": "按钮"
+                },
+                "security": {
+                    "key": "键",
+                    "value": "值（秒）"
+                },
+                "general": {
+                    "button": "上传"
+                }
+            }
+        },
+        "support": {
+            "title": "支持"
+        }
+    }
+}

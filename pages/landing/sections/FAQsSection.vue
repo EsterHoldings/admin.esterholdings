@@ -10,7 +10,7 @@
           <!-- Accordion not working -->
           <!-- <UiAccordion :data="faqData" /> -->
           <div class="help-link">
-            <UiTextParagraph class="help-link__text">Visit our </UiTextParagraph>
+            <UiTextParagraph class="help-link__text">{{ t('landing.sections.helpSection') }} </UiTextParagraph>
             <a
               href="#"
               class="help-block__link"
@@ -22,31 +22,24 @@
         <!-- Need Help Form Column -->
         <div class="form-column">
           <div class="help-form">
-            <UiTextH3 class="form-title">Need Help?</UiTextH3>
-            <UiTextParagraph class="form-subtitle"
-              >We'll get back to you
-              <a
-                href="#"
-                class="help-block__link"
-                >within a day.</a
-              ></UiTextParagraph
-            >
+            <UiTextH3 class="form-title">{{ t('landing.sections.faqs__form_title') }}</UiTextH3>
+            <UiTextParagraph class="form-subtitle">{{ t('landing.sections.faqs__form_subtitle') }} </UiTextParagraph>
 
             <div class="form-fields">
               <UiInput
                 v-model="formData.name"
-                placeholder="Your Name"
+                :placeholder="t('landing.sections.faqs__form_placeholders.name')"
                 @input="(val) => (formData.name = val)" />
 
               <UiInput
                 v-model="formData.email"
                 type="email"
-                placeholder="Your Email"
+                :placeholder="t('landing.sections.faqs__form_placeholders.email')"
                 @input="(val) => (formData.email = val)" />
 
               <UiTextarea
                 v-model="formData.description"
-                placeholder="Describe your question..."
+                :placeholder="t('landing.sections.faqs__form_placeholders.description')"
                 @input="(val) => (formData.description = val)" />
 
               <div class="drag-drop-wrapper">
@@ -56,7 +49,7 @@
               <UiButtonDefault
                 state="primary"
                 class="send-button">
-                Send
+                {{ t('landing.sections.faqs__form_button') }}
               </UiButtonDefault>
             </div>
           </div>
@@ -67,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+  import { useI18n } from 'vue-i18n';
   import { ref } from 'vue';
   import TheFaqAccordion from '~/components/block/TheFaqAccordion.vue';
   import UiInput from '~/components/ui/UiInput.vue';
@@ -81,38 +75,17 @@
 
   const { t, tm } = useI18n();
 
-  const faqData = ref([
-    {
-      title: 'How do I open a trading account?',
-      description:
-        'To open a trading account, simply sign up, verify your identity, and choose your preferred account type.',
-      isActive: true,
-    },
-    {
-      title: 'What is the minimum deposit required?',
-      description:
-        'The minimum deposit varies depending on your account type. Please check our account types section for specific details.',
-      isActive: false,
-    },
-    {
-      title: 'Can I try the platform without risk?',
-      description:
-        'Yes, we offer demo accounts where you can practice trading with virtual funds before committing real money.',
-      isActive: false,
-    },
-    {
-      title: 'Is my money safe with your platform?',
-      description:
-        'Absolutely. We use industry-standard security measures and keep client funds in segregated accounts.',
-      isActive: false,
-    },
-    {
-      title: 'What trading instruments are available?',
-      description:
-        'We offer a wide range of instruments including Forex, CFDs, commodities, indices, and cryptocurrencies.',
-      isActive: false,
-    },
-  ]);
+  const faqDataRaw = tm('landing.sections.faqs__items') as any[];
+
+  const faqData = ref(
+    Array.isArray(faqDataRaw)
+      ? faqDataRaw.map((_, index) => ({
+          title: t(`landing.sections.faqs__items[${index}].title`),
+          description: t(`landing.sections.faqs__items[${index}].description`),
+          isActive: index === 0,
+        }))
+      : [],
+  );
 
   const formData = ref({
     name: '',
@@ -196,8 +169,8 @@
   }
 
   .help-form {
-    background: #000028;
-    border: 1px solid #0037ae;
+    background: var(--ui-background);
+    border: 1px solid var(--color-stroke-ui-light);
     border-radius: 15px;
     padding: 24px;
     display: flex;

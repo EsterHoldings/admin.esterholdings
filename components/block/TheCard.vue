@@ -69,16 +69,19 @@
         state="warning"
         :outline="true"
         class="badge">
-        <span class="badge-text">Recommended</span>
+        <span class="badge-text">{{ $t('landing.sections.accounts__badge_recommended') }}</span>
       </UiBadge>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+  import { useI18n } from 'vue-i18n';
   import UiIconCardCheck from '~/components/ui/UiIconCardCheck.vue';
   import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
   import UiBadge from '~/components/ui/UiBadge.vue';
+
+  const { t } = useI18n();
 
   interface Props {
     type: 'demo' | 'standard' | 'pro' | 'tandem' | 'islamic';
@@ -105,11 +108,11 @@
   }
 
   .card-wrapper:has(.badge-wrapper) {
-    height: 400px;
+    height: 440px;
   }
 
   .card-wrapper:not(:has(.badge-wrapper)) {
-    height: 356px;
+    height: 396px;
     padding: 10px;
   }
 
@@ -135,8 +138,9 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     padding: 17px 21px 21px 21px;
+    overflow: hidden;
   }
 
   .card-wrapper:has(.badge-wrapper) .card-content {
@@ -150,50 +154,56 @@
     display: flex;
     align-items: baseline;
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   .title {
     font-family: Muli, sans-serif;
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.15;
+    word-break: break-word;
   }
 
   .subtitle {
     font-family: Muli, sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.15;
     color: #b8b8c3;
+    word-break: break-word;
   }
 
   .description {
     font-family: Muli, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
-    line-height: 1.2;
+    line-height: 1.3;
     color: #ffffff;
+    word-break: break-word;
   }
 
   .features-group {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
   .feature-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
-    height: 26px;
+    min-height: 26px;
   }
 
   .feature-text {
     font-family: Muli, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.3;
     color: #ffffff;
+    word-break: break-word;
+    flex: 1;
   }
 
   .button-wrapper {
@@ -239,11 +249,11 @@
     }
 
     .card-wrapper:has(.badge-wrapper) {
-      height: 380px;
+      height: 420px;
     }
 
     .card-wrapper:not(:has(.badge-wrapper)) {
-      height: 340px;
+      height: 380px;
     }
 
     .card-content {
@@ -284,11 +294,11 @@
     }
 
     .card-wrapper:has(.badge-wrapper) {
-      height: 360px;
+      height: 400px;
     }
 
     .card-wrapper:not(:has(.badge-wrapper)) {
-      height: 330px;
+      height: 360px;
     }
 
     .blur-layer {
@@ -325,12 +335,12 @@
     }
 
     .feature-item {
-      height: auto;
+      min-height: auto;
     }
 
     .feature-text {
       font-size: 12px;
-      text-align: left;
+      line-height: 1.3;
     }
 
     .card-button {

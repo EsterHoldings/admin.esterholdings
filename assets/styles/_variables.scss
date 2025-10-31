@@ -44,7 +44,7 @@
   --color-ui-grey: #b8b8c3;
 
   //MAIN COLOR VAR-----
-  --ui-primary-main: #0051FF;
+  --ui-primary-main: #0051ff;
   --ui-primary-accent: #f75709;
   --ui-primary-neutral: #ffffff;
 
@@ -52,11 +52,7 @@
   --ui-sticker-danger: rgba(244, 17, 18, 0.38);
 
   --ui-stroke: linear-gradient(137.67deg, #1b63ffff 2.397%, #011644ff 99.041%);
-  --color-stroke-ui: linear-gradient(
-    137.67deg,
-    #1b63ff 2.397%,
-    #011644 99.041%
-  );
+  --color-stroke-ui: linear-gradient(137.67deg, #1b63ff 2.397%, #011644 99.041%);
 
   --ui-gray: #b8b8c3;
   --ui-background: #000028;
@@ -80,6 +76,17 @@
   --ui-input--border-radius: var(--ui-border--raduis);
   --ui-input--height: 40px;
   // Buttons
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --ui-background: #ffffff;
+    --ui-background-secondary: #f5f5f5;
+    --ui-text-main: #070707;
+    --ui-text-secondary: #666666;
+    --color-stroke-ui-light: #e0e0e0;
+    --color-stroke-ui-dark: #cccccc;
+  }
 }
 
 // Static variables

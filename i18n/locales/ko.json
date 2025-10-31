@@ -1,0 +1,1198 @@
+{
+    "ui-components": {
+        "modals": {
+            "cookie-modal": {
+                "text": "이 사이트는 사용자 경험을 향상시키기 위해 쿠키를 사용합니다. 사이트를 계속 사용하면 쿠키 사용에 동의하는 것입니다.",
+                "btn-successful": "동의",
+                "btn-negative": "거부"
+            }
+        },
+        "lines": {
+            "running-line-btn": "거래"
+        },
+        "tables": {
+            "table-default": "표시할 내용이 없습니다..."
+        },
+        "ui-select": "선택되지 않음..."
+    },
+    "landing": {
+        "header": {
+            "nav": {
+                "trading": "거래",
+                "partnership": "파트너십",
+                "company": "회사"
+            },
+            "auth": {
+                "login": "로그인",
+                "register": "등록"
+            },
+            "megaMenu": {
+                "Trading": [
+                    {
+                        "section": "계좌 개요",
+                        "items": [
+                            "스탠다드",
+                            "프로",
+                            "이슬람",
+                            "데모"
+                        ]
+                    },
+                    {
+                        "section": "시장 상품",
+                        "items": [
+                            "외환",
+                            "귀금속",
+                            "암호화폐 CFD",
+                            "지수",
+                            "주식",
+                            "에너지",
+                            "ETF"
+                        ]
+                    },
+                    {
+                        "section": "플랫폼",
+                        "items": [
+                            "MT4 데스크톱",
+                            "MT4 모바일"
+                        ]
+                    },
+                    {
+                        "section": "거래 조건",
+                        "items": [
+                            "계좌 입금",
+                            "출금"
+                        ]
+                    },
+                    {
+                        "section": "트레이더 HUB",
+                        "items": [
+                            "트레이더 블로그",
+                            "경제 캘린더",
+                            "시장 뉴스"
+                        ]
+                    },
+                    {
+                        "section": "TANDEM 거래",
+                        "items": [
+                            "트레이더용",
+                            "투자자용"
+                        ]
+                    }
+                ],
+                "Partnership": [
+                    {
+                        "section": "파트너십",
+                        "items": [
+                            "IB/파트너십 등록",
+                            "IB 수익 창출 방법"
+                        ]
+                    }
+                ],
+                "Company": [
+                    {
+                        "section": "회사",
+                        "items": [
+                            "회사 소개",
+                            "문서",
+                            "회사 뉴스",
+                            "연락처",
+                            "채용"
+                        ]
+                    }
+                ]
+            }
+        },
+        "slider": {
+            "general-slide": {
+                "title": {
+                    "before": "더",
+                    "highlight": "스마트하게",
+                    "after": "더 빠르게 거래하세요!"
+                },
+                "text": "빠른 실행, 낮은 스프레드, 실시간 시장 분석으로 \n외환, 주식, CFD를 포함한 글로벌 시장에 접근하세요.",
+                "btn": "지금 거래"
+            },
+            "top-trader-slide": {
+                "title": {
+                    "before": "전략 복사",
+                    "highlight": "톱 트레이더",
+                    "after": ""
+                },
+                "text": "전문가의 실제 거래에 접근하고 거래를 개선하세요.",
+                "btn": "시작"
+            },
+            "ten_years_slide": {
+                "title": {
+                    "highlight": "년",
+                    "after": "거래 경험"
+                },
+                "text": "시간으로 검증된 경험. 결과로 확인된 신뢰성.",
+                "btn": "가입하기"
+            }
+        },
+        "sections": {
+            "advantages": [
+                {
+                    "value": "10+",
+                    "label": "업계 경력 연수"
+                },
+                {
+                    "value": "1,160,000+",
+                    "label": "고객"
+                },
+                {
+                    "value": "5성급 평가",
+                    "label": "고객 서비스"
+                }
+            ],
+            "platform__title": "성공적인 외환 및 CFD 거래를 위한\n전설적인 플랫폼",
+            "platform__features": [
+                {
+                    "title": "거래 플랫폼",
+                    "text": "우리 제품으로 레벨업하세요"
+                },
+                {
+                    "title": "모바일 거래",
+                    "text": "언제든지 거래를 완전히 제어할 수 있습니다."
+                },
+                {
+                    "title": "Ester MetaTrader 4",
+                    "text": "인기 있는 클래식 솔루션"
+                },
+                {
+                    "title": "높은 속도와 신뢰성",
+                    "text": "낮은 사양 PC에서도 작동합니다."
+                }
+            ],
+            "feature__title": "왜 우리를 선택해야 하나요?",
+            "features__items": [
+                {
+                    "title": "상품",
+                    "text": "외환/현물\n주식/지수",
+                    "icon": "/static/F-Wrench & Screwdriver.png"
+                },
+                {
+                    "title": "유동성:\n200+ 최상위 레벨",
+                    "text": "금융 기관",
+                    "icon": "/static/F-Building Library.png"
+                },
+                {
+                    "title": "변동 스프레드",
+                    "text": "0핍부터",
+                    "icon": "/static/F-Money.png"
+                },
+                {
+                    "title": "지정가 및 손절 레벨",
+                    "text": "= 0",
+                    "icon": "/static/LIMIT AND STOP LEVELS.png"
+                },
+                {
+                    "title": "가장 빠른 서버 기술",
+                    "text": "높은 주문 처리 속도",
+                    "icon": "/static/F-Rocket.png"
+                },
+                {
+                    "title": "은행급 보안",
+                    "text": "거래 계좌의",
+                    "icon": "/static/L-Shield Done.png"
+                }
+            ],
+            "account_types__categories": [
+                {
+                    "id": "Standard",
+                    "label": "스탠다드"
+                },
+                {
+                    "id": "Pro",
+                    "label": "프로"
+                },
+                {
+                    "id": "Tandem",
+                    "label": "탠덤"
+                },
+                {
+                    "id": "Islamic",
+                    "label": "이슬람"
+                }
+            ],
+            "accounts__title": "거래 계좌 옵션 살펴보기",
+            "accounts__btn": "계좌 개설",
+            "accounts__options": [
+                {
+                    "id": "demo",
+                    "type": "demo",
+                    "title": "데모",
+                    "subtitle": "계좌",
+                    "description": "가상 자금으로 무위험 거래, 초보자가 시장을 탐색하기에 완벽합니다.",
+                    "features": [
+                        "최대 1:500 레버리지",
+                        "0.0핍부터 스프레드",
+                        "입금 불필요"
+                    ],
+                    "buttonText": "지금 데모 체험",
+                    "isRecommended": true
+                },
+                {
+                    "id": "standard",
+                    "type": "standard",
+                    "title": "스탠다드",
+                    "subtitle": "계좌",
+                    "description": "낮은 수수료로 현물 시장에 쉽게 접근 — 초보자와 활발한 트레이더에게 이상적입니다.",
+                    "features": [
+                        "최대 1:500 레버리지",
+                        "1.2핍부터 스프레드",
+                        "최초 입금 $50"
+                    ],
+                    "buttonText": "스탠다드 계좌 개설",
+                    "isRecommended": false
+                },
+                {
+                    "id": "pro",
+                    "type": "pro",
+                    "title": "프로",
+                    "subtitle": "계좌",
+                    "description": "타이트한 스프레드, 더 높은 레버리지, 모든 거래에 대한 완전한 제어를 경험하세요.",
+                    "features": [
+                        "최대 1:500 레버리지",
+                        "0.0핍부터 스프레드",
+                        "최초 입금 $1000"
+                    ],
+                    "buttonText": "프로처럼 거래",
+                    "isRecommended": false
+                },
+                {
+                    "id": "tandem",
+                    "type": "tandem",
+                    "title": "탠덤",
+                    "subtitle": "계좌",
+                    "description": "파트너, 멘토 또는 공동 트레이더와 짝을 이루고 동기화된 전략으로 함께 성장하세요.",
+                    "features": [
+                        "최대 1:200 레버리지",
+                        "공유 계좌 접근",
+                        "실시간 거래 미러링"
+                    ],
+                    "buttonText": "함께 거래",
+                    "isRecommended": false
+                },
+                {
+                    "id": "islamic",
+                    "type": "islamic",
+                    "title": "이슬람",
+                    "subtitle": "계좌",
+                    "description": "스왑 없음. 샤리아 준수. 이자 없이 거래, 플랫폼에 완전 접근.",
+                    "features": [
+                        "최대 1:500 레버리지",
+                        "스왑/이자 수수료 없음",
+                        "모든 거래 상품 접근"
+                    ],
+                    "buttonText": "이슬람 계좌 개설",
+                    "isRecommended": false
+                }
+            ],
+            "wide_range__title": "폭넓은 제품 범위",
+            "wide_range__categories": [
+                {
+                    "id": "forex",
+                    "label": "외환"
+                },
+                {
+                    "id": "metals",
+                    "label": "귀금속"
+                },
+                {
+                    "id": "cryptocurrency CDs",
+                    "label": "암호화폐 CD"
+                },
+                {
+                    "id": "indices",
+                    "label": "지수"
+                },
+                {
+                    "id": "shares",
+                    "label": "주식"
+                },
+                {
+                    "id": "energy",
+                    "label": "에너지"
+                },
+                {
+                    "id": "ETFS",
+                    "label": "ETF"
+                }
+            ],
+            "wide_range_tabs": {
+                "Forex": {
+                    "title": "외환",
+                    "description": "경쟁력 있는 거래 조건으로 70개의 메이저, 마이너, 엑조틱\n통화쌍을 거래하세요.",
+                    "btn": "외환 거래"
+                },
+                "Metals": {
+                    "title": "귀금속",
+                    "description": "금, 은, 백금과 같은\n금속 상품을 거래하세요.",
+                    "btn": "귀금속 거래"
+                },
+                "CryptocurrencyCDs": {
+                    "title": "암호화폐 CD",
+                    "description": "비트코인 CFD, 이더리움 CFD, 도지 CFD\n및 더 많은 암호화폐 CD와 알트코인 CFD를 거래하세요",
+                    "btn": "암호화폐 CFD 거래"
+                },
+                "Indices": {
+                    "title": "지수",
+                    "description": "전 세계의 메이저 및 마이너 현물 및\n선물 지수 CFD를 거래하세요.",
+                    "btn": "지수 거래"
+                },
+                "Shares": {
+                    "title": "주식",
+                    "description": "미국, 영국 및 EU의 수천 개\n상장 기업을 거래할 수 있습니다.",
+                    "btn": "주식 거래"
+                },
+                "Energy": {
+                    "title": "에너지",
+                    "description": "영국 및 미국 원유와\n천연가스 현물 및 선물 계약의 기회를 발견하세요.",
+                    "btn": "에너지 거래"
+                },
+                "ETFS": {
+                    "title": "ETF",
+                    "description": "ETF CFD로 시장의 세계에 접근 - \n채권부터 상품, 부동산부터 변동성까지.",
+                    "btn": "ETF 거래"
+                }
+            },
+            "four_steps_section": {
+                "title": {
+                    "before": "계좌 개설",
+                    "highlight": "4가지 간단한 단계"
+                },
+                "button": "계좌 개설",
+                "items": [
+                    {
+                        "title": "등록",
+                        "text": "계좌 유형을 선택하고 빠르고 안전한 신청서를 작성하세요"
+                    },
+                    {
+                        "title": "인증",
+                        "text": "빠른 인증을 위해 디지털 온보딩 시스템을 사용하세요"
+                    },
+                    {
+                        "title": "자금 조달",
+                        "text": "다양한 자금 조달 방법을 사용하여 거래 계좌에 자금을 입금하세요"
+                    },
+                    {
+                        "title": "거래",
+                        "text": "실계좌에서 거래를 시작하고 2,100개 이상의 상품에 접근하세요"
+                    }
+                ]
+            },
+            "banner_section": {
+                "title": "시장 거래",
+                "title_highlight": "프로처럼!",
+                "subtitle": "초보자든 프로든, 우리의 고급 도구와 리소스가 정보에 입각한 거래 결정을 내리는 데 도움을 줍니다.",
+                "button_primary": "거래 시작",
+                "button_secondary": "데모 계좌 체험"
+            },
+            "latest_updates__title": "최신 업데이트",
+            "latest_updates__items": [
+                {
+                    "title": "NVIDIA 주가 보고서 후 15% 급등",
+                    "subtitle": "칩 제조사 NVIDIA(NVDA)는 월스트리트의 모든 기대를 뛰어넘는 분기 보고서를 발표했습니다...",
+                    "time": "15분"
+                },
+                {
+                    "title": "테슬라 1:10 주식 분할 발표 - 주가 12% 상승",
+                    "subtitle": "이 소식으로 주가가 12% 상승했으며, 테슬라는 현재 주당 $1,180에 거래되고 있습니다.",
+                    "time": "30분"
+                },
+                {
+                    "title": "SEC 스테이블코인 금지 발표 후 비트코인 12% 급락",
+                    "subtitle": "미국 증권거래위원회(SEC)가 새로운 규정을 도입하는 깜짝 발표를 했습니다...",
+                    "time": "1시간 전"
+                }
+            ],
+            "faqs__form_title": "도움이 필요하신가요?",
+            "faqs__form_subtitle": "하루 내에 답변 드리겠습니다.",
+            "faqs__form_placeholders": {
+                "name": "이름",
+                "email": "이메일",
+                "description": "질문을 설명해주세요..."
+            },
+            "faqs__form_button": "전송",
+            "faqs__items": [
+                {
+                    "title": "거래 계좌를 어떻게 개설하나요?",
+                    "description": "거래 계좌를 개설하려면 가입하고, 신원을 확인하고, 선호하는 계좌 유형을 선택하면 됩니다."
+                },
+                {
+                    "title": "필요한 최소 입금액은 얼마인가요?",
+                    "description": "최소 입금액은 계좌 유형에 따라 다릅니다. 구체적인 세부 사항은 계좌 유형 섹션을 확인하세요."
+                },
+                {
+                    "title": "위험 없이 플랫폼을 시도할 수 있나요?",
+                    "description": "예, 실제 돈을 투자하기 전에 가상 자금으로 거래를 연습할 수 있는 데모 계좌를 제공합니다."
+                },
+                {
+                    "title": "제 돈이 귀사의 플랫폼에서 안전한가요?",
+                    "description": "물론입니다. 업계 표준 보안 조치를 사용하며 고객 자금을 분리 계좌에 보관합니다."
+                },
+                {
+                    "title": "어떤 거래 상품을 사용할 수 있나요?",
+                    "description": "외환, CFD, 상품, 지수 및 암호화폐를 포함한 폭넓은 상품을 제공합니다."
+                }
+            ],
+            "accounts__badge_recommended": "추천",
+            "helpSection": "도움이 필요하신가요?",
+            "helpLinkText": "도움말 섹션"
+        },
+        "pages": {
+            "company": {
+                "about": {
+                    "title": "회사 소개",
+                    "intro_1": {
+                        "highlight": "국제 금융 지주 회사 Ester Holdings Inc.",
+                        "text": "— 고효율 경영을 갖춘 안정적인 회사입니다."
+                    },
+                    "intro_2": "모든 새로운 것에 개방적인 Ester 회사는 전체 금융 시장을 위한 높은 작업 표준을 형성하고 지원하는 리더입니다.",
+                    "intro_3": "우리의 특징 — 수익성 있는 거래 조건, 고품질 서비스 및 법적 보안.",
+                    "intro_4": "회사는 고객의 성공적인 활동을 최우선으로 생각합니다. 이것이 우리 성공의 주요 기준입니다.",
+                    "intro_5": {
+                        "highlight": "Ester 회사의 사명",
+                        "text": "— 고객에게 복지를 보장하는 지식과 자문 서비스를 제공하는 것입니다. 우리는 안정적인 기반 위에서 높은 품질의 작업을 유지하는 범용 금융 회사입니다."
+                    },
+                    "business_model_title": "비즈니스 모델",
+                    "business_model_subtitle": "회사의 비즈니스 모델은 고객과의 투명하고 신뢰할 수 있는 관계를 기반으로 합니다.",
+                    "business_model_list": [
+                        "회사는 주요 유동성 공급 은행의 ECN 플랫폼에서 호가를 받고 최고의 가격에서 고객을 위한 호가 흐름을 형성합니다.",
+                        "거래 터미널에서 고객은 각 금융 상품에 대한 최고의 매수 및 매도 가격을 보고 거래할 수 있습니다.",
+                        "고객 주문의 결과로 현재 순간에 최고의 구매 또는 판매 가격을 제공하는 유동성 공급자의 가격이 실행됩니다.",
+                        "우리의 프라임 브로커는 회사와 유동성 공급 은행 간의 청산(의무의 상호 인정)을 수행합니다."
+                    ],
+                    "activity_title": "활동 분야",
+                    "activity_list": [
+                        "인터넷을 통해 외화 및 기타 금융 상품과의 거래 작업을 수행하기 위한 고객 접근 제공.",
+                        "투자자 자산 관리 및 투자 활동 문제에 대한 컨설팅.",
+                        "정보 및 분석 서비스.",
+                        "자격을 갖춘 거래 교육."
+                    ]
+                },
+                "career": {
+                    "title": "채용",
+                    "subtitle": "현재 회사는 다음 전문가를 찾고 있습니다:",
+                    "positions": [
+                        "영업 관리자",
+                        "분석 부서장"
+                    ],
+                    "cta": "역동적인 성장을 준비하고 있고, 야심차고 재능이 있다면 이력서를 보내주세요.",
+                    "button": "이력서 보내기"
+                },
+                "news": {
+                    "title": "회사 뉴스",
+                    "items": [
+                        {
+                            "title": "NVIDIA 주가 보고서 후 15% 급등",
+                            "subtitle": "칩 제조사 NVIDIA(NVDA)는 월스트리트의 모든 기대를 뛰어넘는 분기 보고서를 발표했습니다...",
+                            "time": "15분"
+                        },
+                        {
+                            "title": "테슬라 1:10 주식 분할 발표 - 주가 12% 상승",
+                            "subtitle": "이 소식으로 주가가 12% 상승했으며, 테슬라는 현재 주당 $1,180에 거래되고 있습니다.",
+                            "time": "30분"
+                        },
+                        {
+                            "title": "SEC 스테이블코인 금지 발표 후 비트코인 12% 급락",
+                            "subtitle": "미국 증권거래위원회(SEC)가 새로운 규정을 도입하는 깜짝 발표를 했습니다...",
+                            "time": "1시간 전"
+                        },
+                        {
+                            "title": "거래 전략",
+                            "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                            "time": "17.04.2024 | 04:04 PM"
+                        }
+                    ],
+                    "button": "더 알아보기"
+                },
+                "contacts": {
+                    "title": "연락처",
+                    "office_title": "본사",
+                    "office_name": "Ester Holdings Ltd",
+                    "office_address": "1층, 소더비 빌딩, 로드니 빌리지, 로드니 베이, 그로스 아일렛, 세인트루시아",
+                    "office_registration": "등록 번호 2023-00477",
+                    "support_label": "기술 지원 서비스:",
+                    "support_email": "support{'@'}esterholdings.com",
+                    "finance_label": "금융 서비스:",
+                    "finance_email": "finance{'@'}esterholdings.com",
+                    "marketing_label": "마케팅 서비스:",
+                    "marketing_email": "marketing{'@'}esterholdings.com"
+                },
+                "documents": {
+                    "title": "문서",
+                    "intro": "Ester Holdings Inc.와의 모든 상호 작용 프로세스는 표준 문서로 규제됩니다",
+                    "regulations_title": "호가 규정",
+                    "regulations_subtitle": "규정은 다음을 규정합니다:",
+                    "regulations_list": [
+                        "고객의 거래 작업에 사용되는 용어;",
+                        "마진 거래 원칙;",
+                        "포지션 개설/마감, 배치/제거, 변경 및 대기 주문 이행 규칙;",
+                        "고객 승인 순서 및 MetaTrader 4 거래 시스템에서 고객 작업의 프로토콜 순서;",
+                        "분쟁 해결 절차 등."
+                    ],
+                    "contract_title": "계약",
+                    "contract_description": "계약에는 고객과 Ester Holdings Inc.의 협력 규칙이 포함되어 있습니다. 의무 이행에 관한 당사자의 책임이 그 안에 정의되어 있습니다.",
+                    "button": "다운로드"
+                }
+            },
+            "partnership": {
+                "title": "파트너십",
+                "subtitle": "파트너십 변형",
+                "button_agent": "에이전트 프로그램",
+                "button_franchising": "프랜차이즈",
+                "intro_1": {
+                    "highlight": "Ester의 파트너가 되어 브랜드와 함께 수익을 얻으세요"
+                },
+                "intro_2": {
+                    "highlight": "Ester Holdings Inc.",
+                    "text": "— 고효율 경영을 갖춘 안정적인 회사. Ester Holdings 회사는 모든 새로운 것에 개방적이며, 전체 금융 시장을 위한 높은 작업 표준을 형성하고 지원하는 리더입니다."
+                },
+                "intro_3": "인터넷 거래 분야에서 국제 기업 Ester Holdings 브랜드로 자신의 비즈니스를 구축할 기회를 제공합니다. 귀하의 도시에서 첫 번째가 되기 위해 서두르세요. Ester Holdings 사무실을 개설하고 가장 수익성 있는 협력 조건과 가장 중요한 높은 수준의 수입을 얻으세요.",
+                "offer_title": "우리는 제공합니다",
+                "offer_list": [
+                    "우리 브랜드로 일하기;",
+                    "수익을 창출하는 완성된 모델;",
+                    "편안한 작업을 위한 기술 솔루션;",
+                    "수익성 있는 협력 조건;",
+                    "대표 사무소 개설을 위한 기술 지원;",
+                    "최고의 전문가로부터 24/7 지원."
+                ],
+                "agent_title": "에이전트 프로그램",
+                "agent_description": "참여한 고객의 거래 활동으로부터 수익을 얻으세요! 인터넷 사용자 수가 동적으로 증가하는 덕분에 오늘날 쉽습니다. Ester Holdings 회사의 가장 중요한 우선 순위는 높은 수준의 서비스 품질과 장기적인 관계 형성입니다. 이것이 외환 시장의 참가자가 아니더라도 참여 회원의 거래 활동에서 수수료로 일정한 수입을 얻을 수 있게 해줍니다.",
+                "agent_how_title": "어떻게 작동하나요?",
+                "agent_how_list": [
+                    "우리에게 새 고객을 데려오세요",
+                    "그들은 등록하고 돈을 벌 것입니다",
+                    "당신은 그들의 이익에서 수수료를 받을 것입니다"
+                ],
+                "agent_how_cta": "더 많은 고객 – 더 많은 이익",
+                "franchising_title": "프랜차이즈",
+                "franchising_description_1": "Ester Holdings 회사의 파트너는 경험 많은 전문가로부터 포괄적인 지원과 개별적인 접근 방식을 받습니다. 실제 필요와 개인 목표에 해당하는 솔루션을 선택할 수 있습니다. 우리 회사의 긍정적인 이미지와 완벽한 평판도 당신을 위해 작동한다는 것을 기억하세요.",
+                "franchising_description_2": "Ester Holdings와의 프랜차이즈 - 귀하의 도시에서 회사 사무실을 개설하고 세계 최대 브로커 중 하나의 브랜드로 일할 수 있는 기회입니다. 개발된 비즈니스 기술과 전문가의 포괄적인 지원을 받게 됩니다.",
+                "franchising_business_title": "Ester Holdings와 함께 비즈니스 개설:",
+                "franchising_business_list": [
+                    "회사는 거래 작업을 실행하여 스프레드를 받습니다. 귀하는 고객 스프레드의 %를 받게 됩니다.",
+                    "또한 귀하의 사무실에서 제공되는 정보 및 자문 서비스로부터 모든 수입을 받게 됩니다."
+                ],
+                "franchising_how_title": "이것을 어떻게 하나요?",
+                "franchising_how_list": [
+                    "신청서 보내기",
+                    "귀하를 위한 최상의 솔루션을 선택합니다",
+                    "구현을 돕습니다",
+                    "교육을 실시하고 지원을 제공합니다"
+                ],
+                "button_receive": "프랜차이즈 받기",
+                "generate_income_title": "IB 수익 창출 방법",
+                "register_ib_title": "IB/파트너십 등록"
+            },
+            "trading": {
+                "account_overview_title": "계좌 개요",
+                "account_replenishment_title": "계좌 입금",
+                "economic_calendar_title": "경제 캘린더",
+                "for_investor_title": "투자자용",
+                "for_trader_title": "트레이더용",
+                "market_instruments_title": "도구",
+                "market_instruments_text": [
+                    "Ester Holdings 회사의 거래 터미널에 있는 모든 통화쌍 스프레드는 은행 간 수준입니다. 스프레드는 각 현재 순간에 유동성 공급자로부터 최상의 가격을 선택하는 거래 집계기의 도움으로 형성됩니다. 우리는 외환 시장에서 최고의 유동성을 제공합니다. 스왑은 시장 참가자가 포지션을 다음 날로 이월하기 위한 지불을 의미합니다.",
+                    "열린 포지션을 다음 날로 이전하는 프로세스는 회사 서버 시간으로 23:59:59부터 00:00:00까지 열려 있는 모든 포지션에 대해 수행됩니다. 포지션을 다음 날로 이전하기 위해 고객 계좌에는 해당 포지션에 대한 스왑이 입금되거나 출금될 수 있습니다.",
+                    "스왑의 크기와 입금/출금 방법은 각각의 사양에 명시되어 있습니다.",
+                    "23:55부터 00:05(GMT 시간)까지의 롤오버 기간 동안 유동성이 감소하며, 스프레드와 고객 주문 처리 시간이 증가할 수 있습니다.",
+                    "웹사이트 및/또는 플랫폼에 대한 귀하의 접근 및 사용은 이러한 거래 조건 및 기타 법적 고지 및 명세서의 수락을 구성합니다. Ester는 언제든지 사전 통지 없이 이러한 거래 조건을 수정할 수 있습니다. 웹사이트 및/또는 플랫폼에 대한 귀하의 지속적인 접근 및 사용은 수정된 이러한 거래 조건의 수락을 구성합니다."
+                ],
+                "market_news_title": "시장 뉴스",
+                "market_news_items": [
+                    {
+                        "title": "거래에서 위험을 효과적으로 관리하는 방법",
+                        "subtitle": "거래는 의심할 여지 없이 흥미진진하고 잠재적으로 수익성 있는 활동입니다. 그러나 이 분야에서의 성공은 시장을 분석하는 능력뿐만 아니라...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "데모 계좌에서 실제 계좌로 언제 전환해야 하나요?",
+                        "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "전설적인 투자자 워렌 버핏",
+                        "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "거래 전략",
+                        "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "mt4_title": "МТ4",
+                "mt4_subtitle": "거래 터미널을 다운로드하고 수익을 창출하기 시작하세요",
+                "mt4_button": "MT-4 다운로드",
+                "mt4_about_title": "플랫폼에 대해",
+                "mt4_about_text": "MetaTrader 4 - 세계에서 가장 인기 있는 거래 플랫폼. 이 플랫폼과의 다년간의 작업 경험과 개발에 대한 적극적인 참여 덕분에 가장 수익성 있고 편안한 조건을 제공합니다.",
+                "mt4_about_highlight": "왜냐하면 MetaTrader 4는:",
+                "mt4_features": [
+                    "다양한 기술 분석 도구를 갖춘 쉽고 이해하기 쉬운 인터페이스;",
+                    "스마트폰, iPad 및 PDA에서 거래할 수 있는 기회;",
+                    "자체 거래 어드바이저 및 지표를 만들 수 있는 내장 프로그래밍 언어 MQL4;",
+                    "МТ4 Bridge 기술의 도움으로 은행 간 유동성에 접근, 재호가 없는 실행(노딜링 데스크);",
+                    "다우 존스의 금융 뉴스"
+                ],
+                "mt4_requirements_title": "시스템 요구사항:",
+                "mt4_requirements_text": "Windows XP 이상.",
+                "mt4_requirements_link": "Mac OS 지침",
+                "platform_title": "플랫폼",
+                "traders_blog_title": "트레이더 블로그",
+                "traders_blog_items": [
+                    {
+                        "title": "거래에서 위험을 효과적으로 관리하는 방법",
+                        "subtitle": "거래는 의심할 여지 없이 흥미진진하고 잠재적으로 수익성 있는 활동입니다. 그러나 이 분야에서의 성공은 시장을 분석하는 능력뿐만 아니라...",
+                        "time": "4.06.2024 | 01:40 PM"
+                    },
+                    {
+                        "title": "데모 계좌에서 실제 계좌로 언제 전환해야 하나요?",
+                        "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                        "time": "17.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "전설적인 투자자 워렌 버핏",
+                        "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                        "time": "5.05.2024 | 11:00 AM"
+                    },
+                    {
+                        "title": "거래 전략",
+                        "subtitle": "죄송합니다. 이 항목은 러시아어로만 제공됩니다.",
+                        "time": "17.04.2024 | 04:04 PM"
+                    }
+                ],
+                "trading_conditions_title": "거래 조건",
+                "trading_hub_title": "거래 HUB",
+                "tandem_trading_title": "탠덤 거래",
+                "withdrawal_funds_title": "출금"
+            }
+        },
+        "footer": {
+            "description": "Ester의 주요 목표는 소매 및 기업 트레이더를 위한 최상의 가장 투명한 조건을 만드는 것입니다.",
+            "trading": {
+                "title": "거래",
+                "items": [
+                    "계좌 개요",
+                    "시장",
+                    "플랫폼",
+                    "거래 조건",
+                    "탠덤 거래"
+                ]
+            },
+            "partnership": {
+                "title": "파트너십",
+                "items": [
+                    "IB/파트너십 등록",
+                    "IB 수익 창출 방법"
+                ]
+            },
+            "company": {
+                "title": "회사",
+                "items": [
+                    "회사 소개",
+                    "문서",
+                    "회사 뉴스",
+                    "연락처",
+                    "채용"
+                ]
+            },
+            "legal": {
+                "regulated": "Ester는 세이셸 금융 서비스 당국(FSA)의 규제를 받으며 증권 딜러 라이선스 SD018을 보유한 공식 거래 이름입니다.",
+                "risk": "위험 경고: CFD 거래는 높은 수준의 위험을 수반하며 자본 손실을 초래할 수 있습니다. 잃을 수 있는 돈으로만 투자해야 합니다. 라이브 상품 거래는 어떤 상황에서도 중단할 수 없으므로 관련 위험을 완전히 이해하고 필요한 경우 독립적인 조언을 구하는 것이 중요합니다. 위험 공개를 읽고 완전히 이해했는지 확인하십시오.",
+                "restricted": "제한 국가: Raw Trading Ltd는 미국, 캐나다, 이스라엘, 뉴질랜드, 이란 및 북한(조선민주주의인민공화국)을 포함한 여러 국가의 거주자 및 그러한 활동이 현지 법률에 위배되는 기타 관할권에 서비스를 제공하지 않습니다.",
+                "age": "Ester에 계좌를 등록하려면 최소 18세 이상이거나 귀하 국가의 법률에 따라 성인에 도달해야 합니다. 계좌를 만들면 Ester의 권유나 제안 없이 자발적으로 등록하는 것을 확인합니다.",
+                "compliance": "Ester는 현지 법률에 의해 사용이 금지된 국가의 사용자에게 서비스 또는 웹사이트 콘텐츠를 제공하지 않습니다. 제한 국가에서 이 웹사이트에 액세스하는 경우 현지 법률 준수에 대한 책임은 귀하에게 있습니다. 회사는 또한 제공된 정보가 모든 관할권의 요구 사항을 준수한다고 보증하지 않습니다.",
+                "copyrightStart": "© 2025 Ester",
+                "copyrightEnd": "모든 권리 보유."
+            }
+        }
+    },
+    "cabinet": {
+        "menu": {
+            "dashboard": "대시보드",
+            "payment_details": "결제 세부정보",
+            "accounts": "계좌",
+            "referral_system": "추천 시스템",
+            "billing": "청구",
+            "support": "지원",
+            "settings": "설정"
+        },
+        "dashboard": {
+            "title": "대시보드",
+            "accountVerification": {
+                "title": "계좌 인증",
+                "subtitle": "인증 진행 중",
+                "addressFailed": "주소 인증 실패!",
+                "documentVerified": "문서가 성공적으로 인증되었습니다!",
+                "paymentInProgress": "결제 인증 진행 중!",
+                "profileInProgress": "프로필 인증 진행 중!",
+                "profileButton": "프로필"
+            },
+            "actions": {
+                "newDeposit": "신규 입금",
+                "newWithdrawal": "신규 출금",
+                "chartPlaceholder": "차트가 여기에 표시됩니다"
+            },
+            "mt4": {
+                "title": "MT4 계좌",
+                "openNewAccount": "새 계좌 개설",
+                "table": {
+                    "account": "계좌",
+                    "type": "유형",
+                    "balance": "잔액",
+                    "status": "상태",
+                    "active": "활성",
+                    "inactive": "비활성"
+                }
+            }
+        },
+        "billing": {
+            "title": "청구",
+            "create": "신규 결제 생성",
+            "search": "검색",
+            "columns": {
+                "id": "Id",
+                "paysystem": "결제 시스템",
+                "status": "상태",
+                "currency": "통화",
+                "amount": "금액",
+                "createdAt": "생성일"
+            },
+            "nothingToShow": "표시할 내용이 없습니다 =(",
+            "pagination": {
+                "prev": "이전",
+                "next": "다음"
+            },
+            "panel-title": "새 관리자 추가"
+        },
+        "payments": {
+            "title": "결제 세부정보",
+            "search": "검색",
+            "create": "새 결제 세부정보 생성",
+            "columns": {
+                "title": "제목",
+                "paysystem": "결제 시스템",
+                "currency": "통화",
+                "createdAt": "생성일"
+            },
+            "nothingToShow": "표시할 내용이 없습니다 =(",
+            "pagination": {
+                "prev": "이전",
+                "next": "다음"
+            }
+        },
+        "profile": {
+            "components": {
+                "tab-change-password": {
+                    "labels": {
+                        "old_password": "기존 비밀번호",
+                        "new_password": "새 비밀번호",
+                        "new_password_confirmation": "새 비밀번호 확인"
+                    },
+                    "placeholders": {
+                        "old_password": "*********",
+                        "new_password": "*********",
+                        "new_password_confirmation": "*********"
+                    },
+                    "button": "새 비밀번호 저장",
+                    "success": "비밀번호가 성공적으로 업데이트되었습니다!"
+                },
+                "tab-general": {
+                    "labels": {
+                        "email": "이메일",
+                        "first_name": "이름",
+                        "last_name": "성",
+                        "mid_name": "중간 이름",
+                        "birthdate": "생년월일",
+                        "phone": "전화",
+                        "country": "국가",
+                        "state": "주",
+                        "city": "도시",
+                        "address": "주소",
+                        "postal_code": "우편번호"
+                    },
+                    "placeholders": {
+                        "email": "example1test.com",
+                        "first_name": "홍",
+                        "last_name": "길동",
+                        "mid_name": "중",
+                        "birthdate": "",
+                        "phone": "",
+                        "country": "국가",
+                        "state": "주",
+                        "city": "도시",
+                        "address": "베이커 스트리트 2b, 아파트 8",
+                        "postal_code": "00000"
+                    },
+                    "button": "저장 및 인증에 전송",
+                    "success": "사용자 데이터가 성공적으로 업데이트되어 인증에 전송되었습니다!"
+                },
+                "tab-user-documents": {
+                    "buttons": {
+                        "choose": "파일 선택",
+                        "upload": "업로드"
+                    },
+                    "messages": {
+                        "upload_success": "프로필 사진이 성공적으로 업데이트되어 인증에 전송되었습니다!",
+                        "upload_error": "사진 업로드 실패",
+                        "delete_error": "사진 삭제 실패"
+                    },
+                    "errors": {
+                        "type": "이미지만 허용됩니다",
+                        "size": "최대 크기는 2MB입니다"
+                    }
+                },
+                "tab-user-photo": {
+                    "buttons": {
+                        "choose": "파일 선택",
+                        "upload": "업로드"
+                    },
+                    "messages": {
+                        "upload_success": "프로필 사진이 성공적으로 업데이트되었습니다",
+                        "delete_success": "프로필 사진이 삭제되었습니다",
+                        "upload_error": "사진 업로드 실패",
+                        "delete_error": "사진 삭제 실패"
+                    },
+                    "errors": {
+                        "type": "이미지만 허용됩니다",
+                        "size": "최대 크기는 2MB입니다"
+                    }
+                }
+            },
+            "index": {
+                "tabs": {
+                    "general": "일반",
+                    "photo": "사용자 사진",
+                    "documents": "문서",
+                    "verification": "인증",
+                    "change_password": "비밀번호 변경"
+                },
+                "title": "프로필"
+            }
+        },
+        "accounts": {
+            "account": {
+                "title": "계좌"
+            },
+            "title": "계좌",
+            "openNew": "새 계좌 개설",
+            "search": "검색",
+            "columns": {
+                "type": "계좌 유형",
+                "currency": "통화",
+                "leverage": "레버리지",
+                "number": "계좌 번호",
+                "balance": "MT 잔액"
+            },
+            "nothingToShow": "표시할 활성 계좌가 없습니다!",
+            "openAccount": "새 계좌 개설!",
+            "pagination": {
+                "prev": "이전",
+                "next": "다음"
+            },
+            "accounts-form": {
+                "title": "새 계좌 개설",
+                "fields": {
+                    "accountType": "계좌 유형",
+                    "phonePassword": "전화 비밀번호",
+                    "phonePasswordPlaceholder": "전화 비밀번호 입력"
+                },
+                "actions": {
+                    "submit": "새 계좌 개설"
+                }
+            }
+        },
+        "referrals": {
+            "components": {},
+            "index": {
+                "tabs": {
+                    "general": "일반",
+                    "settings": "설정",
+                    "terms": "약관"
+                },
+                "title": "추천 시스템"
+            }
+        }
+    },
+    "admin": {
+        "menu": {
+            "dashboard": "대시보드",
+            "verificationRequests": "인증 요청",
+            "clients": "고객",
+            "accounts": "계좌",
+            "referral": "추천 시스템",
+            "payments": "결제",
+            "settings": "설정",
+            "support": "지원",
+            "news": "뉴스",
+            "mail": "메일",
+            "access": "액세스"
+        },
+        "access": {
+            "components": {
+                "admins-panel": {
+                    "title": "# 관리자",
+                    "columns": {
+                        "id": "Id",
+                        "nickname": "닉네임",
+                        "email": "이메일",
+                        "roles": "역할",
+                        "createdAt": "생성일",
+                        "options": "옵션"
+                    },
+                    "actions": {
+                        "addNewAdmin": "새 관리자 추가"
+                    }
+                },
+                "admins-panel-add-new": {
+                    "title": "새 관리자 생성",
+                    "fields": {
+                        "nickname": "닉네임",
+                        "email": "이메일",
+                        "password": "비밀번호",
+                        "roles": "역할"
+                    },
+                    "placeholders": {
+                        "nickname": "관리자 닉네임 입력",
+                        "email": "example\\u0040gmail.com",
+                        "roles": "역할 선택"
+                    },
+                    "actions": {
+                        "submit": "새로 만들고 저장"
+                    }
+                },
+                "admins-panel-edit": {
+                    "title": "관리자 역할 편집",
+                    "labels": {
+                        "nickname": "닉네임",
+                        "email": "이메일",
+                        "roles": "역할"
+                    },
+                    "placeholders": {
+                        "nickname": "역할 닉네임 입력",
+                        "email": "example1gmail.com",
+                        "roles": "역할 선택"
+                    },
+                    "actions": {
+                        "submit": "업데이트 및 저장"
+                    }
+                },
+                "admins-panel-search": {
+                    "placeholder": "검색"
+                },
+                "permissions-panel": {
+                    "title": "# 권한",
+                    "searchPlaceholder": "검색",
+                    "columns": {
+                        "id": "ID",
+                        "name": "이름"
+                    }
+                },
+                "roles-panel": {
+                    "title": "# 역할",
+                    "addTitle": "새 역할 추가",
+                    "editTitle": "역할 편집",
+                    "columns": {
+                        "name": "이름",
+                        "permissions": "권한"
+                    }
+                },
+                "roles-panel-add-new": {
+                    "labels": {
+                        "name": "이름",
+                        "permissions": "권한"
+                    },
+                    "placeholders": {
+                        "name": "역할 이름 입력",
+                        "permissions": "권한 선택"
+                    },
+                    "actions": {
+                        "createAndSave": "새로 만들고 저장"
+                    }
+                },
+                "roles-panel-edit": {
+                    "labels": {
+                        "name": "이름",
+                        "permissions": "권한"
+                    },
+                    "placeholders": {
+                        "name": "역할 이름 입력",
+                        "permissions": "권한 선택"
+                    },
+                    "actions": {
+                        "updateAndSave": "업데이트 및 저장"
+                    }
+                },
+                "roles-panel-search": {
+                    "placeholder": "검색"
+                }
+            },
+            "index": {
+                "title": "액세스 제어",
+                "subtitle": "(역할 및 권한)"
+            }
+        },
+        "accounts": {
+            "components": {
+                "accounts-panel": {
+                    "title": "# 고객",
+                    "addTitle": "새 고객 추가",
+                    "editTitle": "고객 편집",
+                    "columns": {
+                        "id": "ID",
+                        "name": "이름",
+                        "email": "이메일",
+                        "phone": "전화",
+                        "created_at": "생성일",
+                        "options": "작업"
+                    }
+                },
+                "accounts-panel-add-new": {
+                    "labels": {
+                        "email": "이메일",
+                        "first_name": "이름",
+                        "last_name": "성",
+                        "mid_name": "중간 이름",
+                        "birthdate": "생년월일",
+                        "phone": "전화",
+                        "country": "국가",
+                        "city": "도시",
+                        "address": "주소",
+                        "postal_code": "우편번호",
+                        "password": "비밀번호",
+                        "password_confirmation": "비밀번호 확인"
+                    },
+                    "placeholders": {
+                        "email": "이메일 입력",
+                        "first_name": "이름 입력",
+                        "last_name": "성 입력",
+                        "mid_name": "중간 이름 입력",
+                        "phone": "전화 입력",
+                        "address": "주소 입력",
+                        "postal_code": "우편번호 입력",
+                        "password": "비밀번호 입력",
+                        "password_confirmation": "비밀번호 확인 입력"
+                    },
+                    "submit": "새로 만들고 저장"
+                },
+                "accounts-panel-edit": {
+                    "labels": {
+                        "name": "이름",
+                        "permissions": "권한"
+                    },
+                    "placeholders": {
+                        "name": "역할 이름 입력",
+                        "permissions": "권한 선택"
+                    },
+                    "submit": "업데이트 및 저장"
+                },
+                "accounts-panel-search": {
+                    "placeholder": "고객 검색..."
+                }
+            },
+            "index": {
+                "title": "계좌",
+                "subtitle": "계좌 목록"
+            }
+        },
+        "clients": {
+            "components": {
+                "clients-panel": {
+                    "title": "# 고객",
+                    "addTitle": "새 고객 추가",
+                    "editTitle": "고객 편집",
+                    "columns": {
+                        "id": "ID",
+                        "email": "이메일",
+                        "first_name": "이름",
+                        "last_name": "성",
+                        "phone": "전화",
+                        "created_at": "생성일",
+                        "options": "작업"
+                    }
+                },
+                "clients-panel-add-new": {
+                    "labels": {
+                        "email": "이메일",
+                        "first_name": "이름",
+                        "last_name": "성",
+                        "mid_name": "중간 이름",
+                        "birthdate": "생년월일",
+                        "phone": "전화",
+                        "country": "국가",
+                        "city": "도시",
+                        "address": "주소",
+                        "postal_code": "우편번호",
+                        "password": "비밀번호",
+                        "password_confirmation": "비밀번호 확인"
+                    },
+                    "placeholders": {
+                        "email": "이메일 입력",
+                        "first_name": "이름 입력",
+                        "last_name": "성 입력",
+                        "mid_name": "중간 이름 입력",
+                        "phone": "전화 입력",
+                        "address": "주소 입력",
+                        "postal_code": "우편번호 입력",
+                        "password": "비밀번호 입력",
+                        "password_confirmation": "비밀번호 확인 입력"
+                    },
+                    "submit": "새로 만들고 저장"
+                },
+                "clients-panel-edit": {
+                    "labels": {
+                        "name": "이름",
+                        "permissions": "권한"
+                    },
+                    "placeholders": {
+                        "name": "역할 이름 입력",
+                        "permissions": "권한 선택"
+                    },
+                    "submit": "업데이트 및 저장"
+                },
+                "clients-panel-search": {
+                    "placeholder": "고객 검색..."
+                }
+            },
+            "index": {
+                "title": "고객",
+                "subtitle": "고객 목록"
+            }
+        },
+        "dashboard": {},
+        "profile": {},
+        "referral": {},
+        "settings": {
+            "title": "설정",
+            "tabs": {
+                "general": "일반",
+                "appearance": "외관",
+                "secure": "보안"
+            },
+            "tables": {
+                "appearance": {
+                    "variable": "변수 이름",
+                    "preview": "미리보기",
+                    "picker": "색상 선택기",
+                    "background": "배경",
+                    "text": "예시 텍스트",
+                    "button": "버튼"
+                },
+                "security": {
+                    "key": "키",
+                    "value": "값(초)"
+                },
+                "general": {
+                    "button": "업로드"
+                }
+            }
+        },
+        "support": {
+            "title": "지원"
+        }
+    }
+}
