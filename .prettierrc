@@ -1,0 +1,15 @@
+{
+    "arrowParens": "avoid",
+    "htmlWhitespaceSensitivity": "css",
+    "proseWrap": "preserve",
+    "quoteProps": "as-needed",
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "bracketSameLine": true,
+    "semi": true,
+    "singleQuote": false,
+    "vueIndentScriptAndStyle": true,
+    "tabWidth": 2,
+    "printWidth": 120,
+    "singleAttributePerLine": true
+}
