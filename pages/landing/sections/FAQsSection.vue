@@ -213,15 +213,17 @@
     margin-top: 8px;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1200px) {
     .faqs-content {
       grid-template-columns: 1fr;
       gap: 40px;
     }
 
+    .faq-column,
     .form-column {
       max-width: 600px;
       margin: 0 auto;
+      width: 100%;
     }
   }
 
