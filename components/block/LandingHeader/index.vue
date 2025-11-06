@@ -55,7 +55,7 @@
                   :class="{
                     'is-theme-light': isThemeLight || isWithPicture || forceSvgInvert,
                   }">
-                  {{ t('landing.header.auth.login') }}
+                  {{ t("landing.header.auth.login") }}
                 </UiButtonDefault>
               </NuxtLink>
 
@@ -65,7 +65,7 @@
                 <UiButtonDefault
                   state="primary"
                   v-if="!isMobileMenuOpen">
-                  {{ t('landing.header.auth.register') }}
+                  {{ t("landing.header.auth.register") }}
                 </UiButtonDefault>
               </nuxt-link>
 
@@ -80,7 +80,7 @@
                   <span
                     :key="themeStore.currentTheme"
                     @click="themeStore.toggleTheme()"
-                    class="icon">
+                    class="icon mt-[1px]">
                     <UiIconMoon
                       v-if="themeStore.currentTheme === 'dark'"
                       :class="{
@@ -122,14 +122,14 @@
                   <UiButtonDefault
                     state="primary"
                     v-if="isMobileMenuOpen">
-                    {{ t('landing.header.auth.register') }}
+                    {{ t("landing.header.auth.register") }}
                   </UiButtonDefault>
                 </nuxt-link>
 
                 <UiButtonDefault
                   state="link"
                   :class="{ 'is-theme-light': isThemeLight }">
-                  {{ t('landing.header.auth.login') }}
+                  {{ t("landing.header.auth.login") }}
                 </UiButtonDefault>
               </div>
 
@@ -175,26 +175,26 @@
 </template>
 
 <script setup>
-  import { useI18n } from 'vue-i18n';
-  import { ref, computed, onMounted, onBeforeUnmount, watch, provide } from 'vue';
-  import { useRoute } from 'vue-router';
-  import { useUiStore } from '~/stores/uiStore';
-  import { useThemeStore } from '~/stores/themeStore.js';
-  import useTrackScroll from './composables/trackScroll';
-  import { isSlideWithoutPicture } from './composables/trackScroll';
+  import { useI18n } from "vue-i18n";
+  import { ref, computed, onMounted, onBeforeUnmount, watch, provide } from "vue";
+  import { useRoute } from "vue-router";
+  import { useUiStore } from "~/stores/uiStore";
+  import { useThemeStore } from "~/stores/themeStore.js";
+  import useTrackScroll from "./composables/trackScroll";
+  import { isSlideWithoutPicture } from "./composables/trackScroll";
 
-  import UiIconLogo from '~/components/ui/UiIconLogo.vue';
-  import UiIconMoon from '~/components/ui/UiIconMoon.vue';
-  import UiIconSun from '~/components/ui/UiIconSun.vue';
-  import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
-  import HeaderLink from './components/HeaderLink.vue';
-  import HeaderMobileLink from './components/HeaderMobileLink.vue';
-  import UiContainer from '~/components/ui/UiContainer.vue';
-  import UiTextH6 from '~/components/ui/UiTextH6.vue';
-  import TradingMenu from './components/TradingMenu.vue';
-  import PartnershipMenu from './components/PartnershipMenu.vue';
-  import CompanyMenu from './components/CompanyMenu.vue';
-  import LanguageSwitcher from './components/LanguageSwitcher.vue';
+  import UiIconLogo from "~/components/ui/UiIconLogo.vue";
+  import UiIconMoon from "~/components/ui/UiIconMoon.vue";
+  import UiIconSun from "~/components/ui/UiIconSun.vue";
+  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+  import HeaderLink from "./components/HeaderLink.vue";
+  import HeaderMobileLink from "./components/HeaderMobileLink.vue";
+  import UiContainer from "~/components/ui/UiContainer.vue";
+  import UiTextH6 from "~/components/ui/UiTextH6.vue";
+  import TradingMenu from "./components/TradingMenu.vue";
+  import PartnershipMenu from "./components/PartnershipMenu.vue";
+  import CompanyMenu from "./components/CompanyMenu.vue";
+  import LanguageSwitcher from "./components/LanguageSwitcher.vue";
 
   const themeStore = useThemeStore();
   const uiStore = useUiStore();
@@ -203,8 +203,8 @@
   const { isBlurred } = useTrackScroll();
   const { t } = useI18n();
 
-  const activeLink = ref('');
-  provide('stateLink', activeLink);
+  const activeLink = ref("");
+  provide("stateLink", activeLink);
   const headerItems = ref();
   const isMobileMenuOpen = ref(false);
   const menuRef = ref(null);
@@ -212,24 +212,24 @@
 
   const linksList = computed(() => {
     return [
-      { key: 'Trading', name: t('landing.header.nav.trading') },
-      { key: 'Partnership', name: t('landing.header.nav.partnership') },
-      { key: 'Company', name: t('landing.header.nav.company') },
+      { key: "Trading", name: t("landing.header.nav.trading") },
+      { key: "Partnership", name: t("landing.header.nav.partnership") },
+      { key: "Company", name: t("landing.header.nav.company") },
     ];
   });
 
   const isThemeLight = computed(() => {
     return (
-      (uiStore.headerScrolled && themeStore.currentTheme !== 'dark') ||
-      (themeStore.currentTheme !== 'dark' && isMobileMenuOpen.value)
+      (uiStore.headerScrolled && themeStore.currentTheme !== "dark") ||
+      (themeStore.currentTheme !== "dark" && isMobileMenuOpen.value)
     );
   });
 
   const isWithPicture = computed(() => {
-    console.log('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-');
-    console.log('IS WITH PICTURE', themeStore.currentTheme);
-    console.log('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-');
-    if (themeStore.currentTheme === 'dark') {
+    console.log("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+    console.log("IS WITH PICTURE", themeStore.currentTheme);
+    console.log("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+    if (themeStore.currentTheme === "dark") {
       return false;
     } else {
       return isSlideWithoutPicture.value;
@@ -237,8 +237,8 @@
   });
 
   const forceSvgInvert = computed(() => {
-    const baseRouteName = route.name?.toString().split('___')[0];
-    return themeStore.currentTheme === 'light' && baseRouteName !== 'index';
+    const baseRouteName = route.name?.toString().split("___")[0];
+    return themeStore.currentTheme === "light" && baseRouteName !== "index";
   });
 
   const updateWindowWidth = () => {
@@ -247,22 +247,22 @@
     }
   };
 
-  const handleClick = (name) => {
+  const handleClick = name => {
     if (activeLink.value !== name) {
       activeLink.value = name;
       uiStore.showMenu = true;
     } else {
-      activeLink.value = '';
+      activeLink.value = "";
       uiStore.showMenu = false;
     }
   };
-  const handleClickOutside = (event) => {
+  const handleClickOutside = event => {
     const menuEl = menuRef.value;
 
     if (!menuEl || !activeLink.value) return;
 
     if (!menuEl.contains(event.target)) {
-      activeLink.value = '';
+      activeLink.value = "";
       uiStore.showMenu = false;
     }
   };
@@ -270,40 +270,40 @@
   const toggleMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value;
     uiStore.showMenu = false;
-    activeLink.value = '';
+    activeLink.value = "";
 
     if (isMobileMenuOpen.value) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
     }
   };
 
   onMounted(() => {
     updateWindowWidth();
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', updateWindowWidth);
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", updateWindowWidth);
     }
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
   });
 
   onBeforeUnmount(() => {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', updateWindowWidth);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", updateWindowWidth);
     }
-    document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener("click", handleClickOutside);
   });
 
-  watch(windowWidth, (width) => {
+  watch(windowWidth, width => {
     if (width > 991 && isMobileMenuOpen.value) {
       isMobileMenuOpen.value = false;
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
     }
   });
 </script>
@@ -327,7 +327,9 @@
     align-items: center;
     height: 80px;
     background: transparent;
-    transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+    transition:
+      backdrop-filter 0.3s ease,
+      background-color 0.3s ease;
     z-index: 9999;
 
     &__wrapper {
@@ -441,7 +443,9 @@
     z-index: 10;
     overflow-y: auto;
     transform: translateY(-30px) scale(0.98);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition:
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
 
     nav {
       padding: 20px;
@@ -486,15 +490,26 @@
     width: auto;
     align-items: center;
     gap: 10px;
-    margin-right: 20px;
 
     .icon {
       cursor: pointer;
-      margin-right: 16px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
     }
 
     &-icons {
       display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 10px;
     }
   }
 
@@ -527,7 +542,7 @@
     }
 
     .actions-wrapper {
-      padding-right: 50px;
+      padding-right: 70px;
     }
 
     .actions-icons {
