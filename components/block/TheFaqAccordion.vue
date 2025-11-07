@@ -25,9 +25,8 @@
 </template>
 
 <script setup lang="ts">
-  import { PropType, ref } from 'vue';
-  import UiIconArrowDown from '~/components/ui/UiIconArrowDown.vue';
-
+  import { PropType, ref } from "vue";
+  import UiIconArrowDown from "~/components/ui/UiIconArrowDown.vue";
 
   interface IFaqItem {
     title: string;
@@ -62,6 +61,10 @@
   .faq-item {
     width: 100%;
     max-width: 450px;
+
+    @media (max-width: 991px) {
+      max-width: none;
+    }
   }
 
   .faq-question {
