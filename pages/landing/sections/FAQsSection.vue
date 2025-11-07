@@ -10,11 +10,11 @@
           <!-- Accordion not working -->
           <!-- <UiAccordion :data="faqData" /> -->
           <div class="help-link">
-            <UiTextParagraph class="help-link__text">{{ t('landing.sections.helpSection') }} </UiTextParagraph>
+            <UiTextParagraph class="help-link__text">{{ t("landing.sections.helpSection") }} </UiTextParagraph>
             <a
               href="#"
               class="help-block__link"
-              >{{ t('landing.sections.helpLinkText') }}</a
+              >{{ t("landing.sections.helpLinkText") }}</a
             >
           </div>
         </div>
@@ -22,25 +22,25 @@
         <!-- Need Help Form Column -->
         <div class="form-column">
           <div class="help-form">
-            <UiTextH3 class="form-title">{{ t('landing.sections.faqs__form_title') }}</UiTextH3>
-            <UiTextParagraph class="form-subtitle">{{ t('landing.sections.faqs__form_subtitle') }} </UiTextParagraph>
+            <UiTextH3 class="form-title">{{ t("landing.sections.faqs__form_title") }}</UiTextH3>
+            <UiTextParagraph class="form-subtitle">{{ t("landing.sections.faqs__form_subtitle") }} </UiTextParagraph>
 
             <div class="form-fields">
               <UiInput
                 v-model="formData.name"
                 :placeholder="t('landing.sections.faqs__form_placeholders.name')"
-                @input="(val) => (formData.name = val)" />
+                @input="val => (formData.name = val)" />
 
               <UiInput
                 v-model="formData.email"
                 type="email"
                 :placeholder="t('landing.sections.faqs__form_placeholders.email')"
-                @input="(val) => (formData.email = val)" />
+                @input="val => (formData.email = val)" />
 
               <UiTextarea
                 v-model="formData.description"
                 :placeholder="t('landing.sections.faqs__form_placeholders.description')"
-                @input="(val) => (formData.description = val)" />
+                @input="val => (formData.description = val)" />
 
               <div class="drag-drop-wrapper">
                 <UiDragAndDrop @files="handleFiles" />
@@ -49,7 +49,7 @@
               <UiButtonDefault
                 state="primary"
                 class="send-button">
-                {{ t('landing.sections.faqs__form_button') }}
+                {{ t("landing.sections.faqs__form_button") }}
               </UiButtonDefault>
             </div>
           </div>
@@ -60,22 +60,22 @@
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n';
-  import { ref } from 'vue';
-  import TheFaqAccordion from '~/components/block/TheFaqAccordion.vue';
-  import UiInput from '~/components/ui/UiInput.vue';
-  import UiTextarea from '~/components/ui/UiTextarea.vue';
-  import UiDragAndDrop from '~/components/ui/UiDragAndDrop.vue';
-  import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
-  import UiTextH2 from '~/components/ui/UiTextH2.vue';
-  import UiTextH3 from '~/components/ui/UiTextH3.vue';
-  import UiTextParagraph from '~/components/ui/UiTextParagraph.vue';
+  import { useI18n } from "vue-i18n";
+  import { ref } from "vue";
+  import TheFaqAccordion from "~/components/block/TheFaqAccordion.vue";
+  import UiInput from "~/components/ui/UiInput.vue";
+  import UiTextarea from "~/components/ui/UiTextarea.vue";
+  import UiDragAndDrop from "~/components/ui/UiDragAndDrop.vue";
+  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+  import UiTextH2 from "~/components/ui/UiTextH2.vue";
+  import UiTextH3 from "~/components/ui/UiTextH3.vue";
+  import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
   // Accordion not working
   // import UiAccordion from '~/components/ui/UiAccordion.vue';
 
   const { t, tm } = useI18n();
 
-  const faqDataRaw = tm('landing.sections.faqs__items') as any[];
+  const faqDataRaw = tm("landing.sections.faqs__items") as any[];
 
   const faqData = ref(
     Array.isArray(faqDataRaw)
@@ -84,13 +84,13 @@
           description: t(`landing.sections.faqs__items[${index}].description`),
           isActive: index === 0,
         }))
-      : [],
+      : []
   );
 
   const formData = ref({
-    name: '',
-    email: '',
-    description: '',
+    name: "",
+    email: "",
+    description: "",
     files: [] as File[],
   });
 
@@ -213,7 +213,7 @@
     margin-top: 8px;
   }
 
-  @media (max-width: 1200px) {
+  @media (max-width: 991px) {
     .faqs-content {
       grid-template-columns: 1fr;
       gap: 40px;
