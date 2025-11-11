@@ -707,13 +707,21 @@
                 ]
             },
             "legal": {
-                "regulated": "Ester, Seychelles Financial Services Authority (FSA) tarafından düzenlenen ve SD018 No'lu Securities Dealer License'a sahip resmi ticari isimdir.",
-                "risk": "Risk Uyarısı: CFD ticareti yüksek risk taşır ve sermaye kaybına neden olabilir. Sadece kaybetmeyi göze alabileceğiniz parayla yatırım yapmalısınız. Canlı enstrümanlarla işlem hiçbir koşulda durdurulamaz, bu nedenle içerdiği riskleri tam olarak anlamanız ve gerekirse bağımsız tavsiye almanız önemlidir. Lütfen risk açıklamamızı okuyun ve tam olarak anladığınızdan emin olun.",
-                "restricted": "Kısıtlı Ülkeler: Raw Trading Ltd, Amerika Birleşik Devletleri, Kanada, İsrail, Yeni Zelanda, İran ve Kuzey Kore (Kore Demokratik Halk Cumhuriyeti) dahil olmak üzere birçok ülkenin sakinlerine ve yerel yasalara aykırı olan diğer yargı bölgelerinde hizmet sağlamamaktadır.",
-                "age": "Ester'de hesap açmak için en az 18 yaşında olmanız veya ülkenizin yasalarına göre reşit olmanız gerekmektedir. Bir hesap oluşturarak, Ester'den herhangi bir talep veya teklif olmaksızın kendi inisiyatifinizle kaydolduğunuzu onaylarsınız.",
-                "compliance": "Ester, hizmetlerini veya web sitesi içeriğini kullanımının yerel yasalarla yasaklandığı ülkelerdeki kullanıcılara yönlendirmez. Bu web sitesine kısıtlı bir ülkeden erişirseniz, yerel yasalara uygunluktan siz sorumlusunuz. Şirket ayrıca sağlanan bilgilerin tüm yargı bölgelerinin gerekliliklerine uygun olduğunu garanti etmez.",
-                "copyrightStart": "© 2025 Ester",
-                "copyrightEnd": "Tüm hakları saklıdır."
+                "company_name": "Ester Holdings Ltd.,",
+                "company_address": "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia, kayıt numarası 2023-00477",
+                "support_service_label": "Destek servisi:",
+                "support_service_email": "support{'@'}esterholdings.com",
+                "support_telegram": "Support EsterHoldings",
+                "finance_service_label": "Finans servisi:",
+                "finance_service_email": "finance{'@'}esterholdings.com",
+                "marketing_service_label": "Pazarlama servisi:",
+                "marketing_service_email": "marketing{'@'}esterholdings.com",
+                "risk_warning": "Yatırımcılar yüksek düzeyde risk taşır ve finansal piyasalarda işlem yapmak tüm yatırımcılar için uygun olmayabilir, çünkü yatırılan tüm sermayenin kaybı meydana gelebilir.",
+                "restricted_info": "Bu sitedeki bilgiler, bu tür bir dağıtım veya kullanımın yerel yasa veya düzenlemeye aykırı olacağı herhangi bir ülke veya yargı bölgesindeki sakinlere yönelik değildir.",
+                "restricted_countries": "ABD, İran, Kuzey Kore ve Rusya'nın sakinleri ve vatandaşları sitenin hizmetlerini kullanamazlar.",
+                "age_requirement": "Ester'de bir hesap açmak için en az 18 yaşında olmanız veya ülkenizin yasalarına göre reşit olmanız gerekmektedir. Bir hesap oluşturarak, kendi inisiyatifinizle kayıt olduğunuzu onaylarsınız.",
+                "compliance": "Ester, hizmetlerini veya web sitesi içeriğini, kullanımının yerel yasalarla yasaklandığı ülkelerdeki kullanıcılara yönlendirmez. Web sitesine kısıtlı bir ülkeden erişirseniz, geçerli mevzuata uygunluktan yalnızca siz sorumlusunuz. Şirket ayrıca sağlanan bilgilerin tüm yargı bölgelerinin gerekliliklerini karşıladığını garanti etmez.",
+                "copyright": "Fikri mülkiyet hakları Ester Holdings Ltd.'ye aittir. © 2025 Tüm hakları saklıdır"
             }
         }
     },

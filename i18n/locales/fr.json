@@ -707,13 +707,21 @@
                 ]
             },
             "legal": {
-                "regulated": "Ester est le nom commercial officiel qui est réglementé par la Seychelles Financial Services Authority (FSA) et détient une licence de Securities Dealer n° SD018.",
-                "risk": "Avertissement sur les risques: le trading de CFD comporte un niveau de risque élevé et peut entraîner la perte de capital. Vous ne devez investir qu'avec de l'argent que vous pouvez vous permettre de perdre. Le trading d'instruments en direct ne peut être arrêté en aucune circonstance, il est donc important que vous compreniez parfaitement les risques encourus et que vous demandiez des conseils indépendants si nécessaire. Veuillez lire notre divulgation des risques et assurez-vous de la comprendre parfaitement.",
-                "restricted": "Pays restreints: Raw Trading Ltd ne fournit pas ses services aux résidents d'un certain nombre de pays, notamment les États-Unis, le Canada, Israël, la Nouvelle-Zélande, l'Iran et la Corée du Nord (République populaire démocratique de Corée), ainsi que d'autres juridictions où de telles activités sont contraires à la loi locale.",
-                "age": "Pour ouvrir un compte chez Ester, vous devez avoir au moins 18 ans ou avoir atteint l'âge de la majorité conformément aux lois de votre pays. En créant un compte, vous confirmez que vous vous inscrivez de votre propre initiative, sans aucune sollicitation ou offre d'Ester.",
-                "compliance": "Ester ne dirige pas ses services ou le contenu de son site web vers les utilisateurs dans les pays où leur utilisation est interdite par les lois locales. Si vous accédez à ce site web depuis un pays restreint, vous êtes responsable du respect des lois locales. L'Entreprise ne garantit pas non plus que les informations fournies sont conformes aux exigences de toutes les juridictions.",
-                "copyrightStart": "© 2025 Ester",
-                "copyrightEnd": "Tous droits réservés."
+                "company_name": "Ester Holdings Ltd.,",
+                "company_address": "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia, numéro d'enregistrement 2023-00477",
+                "support_service_label": "Service d'assistance:",
+                "support_service_email": "support{'@'}esterholdings.com",
+                "support_telegram": "Support EsterHoldings",
+                "finance_service_label": "Service financier:",
+                "finance_service_email": "finance{'@'}esterholdings.com",
+                "marketing_service_label": "Service marketing:",
+                "marketing_service_email": "marketing{'@'}esterholdings.com",
+                "risk_warning": "Les investisseurs supportent un niveau de risque élevé et le trading sur les marchés financiers peut ne pas convenir à tous les investisseurs, car une perte de tout le capital investi peut survenir.",
+                "restricted_info": "Les informations sur ce site ne sont pas destinées aux résidents de tout pays ou juridiction où une telle distribution ou utilisation serait contraire à la loi ou à la réglementation locale.",
+                "restricted_countries": "Les résidents et citoyens des États-Unis, de l'Iran, de la Corée du Nord et de la Russie ne peuvent pas utiliser les services du site.",
+                "age_requirement": "Pour ouvrir un compte chez Ester, vous devez avoir au moins 18 ans ou avoir atteint l'âge de la majorité selon les lois de votre pays. En créant un compte, vous confirmez que vous vous inscrivez de votre propre initiative.",
+                "compliance": "Ester ne dirige pas ses services ou le contenu de son site web vers les utilisateurs de pays où leur utilisation est interdite par les lois locales. Si vous accédez au site web depuis un pays restreint, vous êtes seul responsable du respect de la législation applicable. L'Entreprise ne garantit pas non plus que les informations fournies répondent aux exigences de toutes les juridictions.",
+                "copyright": "Les droits de propriété intellectuelle appartiennent à Ester Holdings Ltd. © 2025 Tous droits réservés"
             }
         }
     },

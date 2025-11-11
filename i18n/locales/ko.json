@@ -707,13 +707,21 @@
                 ]
             },
             "legal": {
-                "regulated": "Ester는 세이셸 금융 서비스 당국(FSA)의 규제를 받으며 증권 딜러 라이선스 SD018을 보유한 공식 거래 이름입니다.",
-                "risk": "위험 경고: CFD 거래는 높은 수준의 위험을 수반하며 자본 손실을 초래할 수 있습니다. 잃을 수 있는 돈으로만 투자해야 합니다. 라이브 상품 거래는 어떤 상황에서도 중단할 수 없으므로 관련 위험을 완전히 이해하고 필요한 경우 독립적인 조언을 구하는 것이 중요합니다. 위험 공개를 읽고 완전히 이해했는지 확인하십시오.",
-                "restricted": "제한 국가: Raw Trading Ltd는 미국, 캐나다, 이스라엘, 뉴질랜드, 이란 및 북한(조선민주주의인민공화국)을 포함한 여러 국가의 거주자 및 그러한 활동이 현지 법률에 위배되는 기타 관할권에 서비스를 제공하지 않습니다.",
-                "age": "Ester에 계좌를 등록하려면 최소 18세 이상이거나 귀하 국가의 법률에 따라 성인에 도달해야 합니다. 계좌를 만들면 Ester의 권유나 제안 없이 자발적으로 등록하는 것을 확인합니다.",
-                "compliance": "Ester는 현지 법률에 의해 사용이 금지된 국가의 사용자에게 서비스 또는 웹사이트 콘텐츠를 제공하지 않습니다. 제한 국가에서 이 웹사이트에 액세스하는 경우 현지 법률 준수에 대한 책임은 귀하에게 있습니다. 회사는 또한 제공된 정보가 모든 관할권의 요구 사항을 준수한다고 보증하지 않습니다.",
-                "copyrightStart": "© 2025 Ester",
-                "copyrightEnd": "모든 권리 보유."
+                "company_name": "Ester Holdings Ltd.,",
+                "company_address": "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia, 등록 번호 2023-00477",
+                "support_service_label": "지원 서비스:",
+                "support_service_email": "support{'@'}esterholdings.com",
+                "support_telegram": "Support EsterHoldings",
+                "finance_service_label": "금융 서비스:",
+                "finance_service_email": "finance{'@'}esterholdings.com",
+                "marketing_service_label": "마케팅 서비스:",
+                "marketing_service_email": "marketing{'@'}esterholdings.com",
+                "risk_warning": "투자자는 높은 수준의 위험을 부담하며 금융 시장에서의 거래는 모든 투자자에게 적합하지 않을 수 있습니다. 투자된 모든 자본의 손실이 발생할 수 있습니다.",
+                "restricted_info": "이 사이트의 정보는 그러한 배포 또는 사용이 현지 법률 또는 규정에 위배되는 국가 또는 관할권의 거주자를 대상으로 하지 않습니다.",
+                "restricted_countries": "미국, 이란, 북한 및 러시아의 거주자 및 시민은 사이트 서비스를 사용할 수 없습니다.",
+                "age_requirement": "Ester에 계좌를 등록하려면 최소 18세 이상이거나 귀하 국가의 법률에 따라 성인에 도달해야 합니다. 계좌를 만들면 자발적으로 등록하는 것을 확인합니다.",
+                "compliance": "Ester는 현지 법률에 의해 사용이 금지된 국가의 사용자에게 서비스 또는 웹사이트 콘텐츠를 제공하지 않습니다. 제한 국가에서 웹사이트에 액세스하는 경우 해당 법률 준수에 대한 책임은 전적으로 귀하에게 있습니다. 회사는 또한 제공된 정보가 모든 관할권의 요구 사항을 충족한다고 보증하지 않습니다.",
+                "copyright": "지적 재산권은 Ester Holdings Ltd.에 귀속됩니다. © 2025 모든 권리 보유"
             }
         }
     },

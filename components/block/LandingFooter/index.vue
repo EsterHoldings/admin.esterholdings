@@ -6,26 +6,17 @@
           <li>
             <UiIconLogo
               class="logo-svg"
-              :class="{ 'svg-invert': themeStore.currentTheme !== 'dark' }"
-            />
+              :class="{ 'svg-invert': themeStore.currentTheme !== 'dark' }" />
           </li>
 
           <li>
-            <UiTextH6 class="logo-text"
-              >{{ t("landing.footer.description") }}
-            </UiTextH6>
+            <UiTextH6 class="logo-text">{{ t("landing.footer.description") }} </UiTextH6>
           </li>
 
           <li class="logo-icons">
-            <UiIconFacebook
-              :class="{ 'svg-fill': themeStore.currentTheme === 'dark' }"
-            />
-            <UiIconLinkedIn
-              :class="{ 'svg-fill': themeStore.currentTheme === 'dark' }"
-            />
-            <UiIconInstagram
-              :class="{ 'svg-fill': themeStore.currentTheme === 'dark' }"
-            />
+            <UiIconFacebook :class="{ 'svg-fill': themeStore.currentTheme === 'dark' }" />
+            <UiIconLinkedIn :class="{ 'svg-fill': themeStore.currentTheme === 'dark' }" />
+            <UiIconInstagram :class="{ 'svg-fill': themeStore.currentTheme === 'dark' }" />
           </li>
         </ul>
 
@@ -38,156 +29,232 @@
 
       <div class="line"></div>
 
+      <div class="company-info">
+        <div class="company-info__left">
+          <UiTextSmall class="text">
+            <strong>{{ t("landing.footer.legal.company_name") }}</strong>
+          </UiTextSmall>
+
+          <UiTextSmall class="text">
+            {{ t("landing.footer.legal.company_address") }}
+          </UiTextSmall>
+        </div>
+
+        <div class="company-info__right">
+          <div class="contact-block">
+            <UiTextSmall class="text">
+              <strong>{{ t("landing.footer.legal.support_service_label") }}</strong>
+            </UiTextSmall>
+            <UiTextSmall class="text">
+              {{ t("landing.footer.legal.support_service_email") }}
+            </UiTextSmall>
+          </div>
+
+          <div class="contact-block">
+            <UiTextSmall class="text">
+              <strong>{{ t("landing.footer.legal.finance_service_label") }}</strong>
+            </UiTextSmall>
+            <UiTextSmall class="text">
+              {{ t("landing.footer.legal.finance_service_email") }}
+            </UiTextSmall>
+          </div>
+
+          <div class="contact-block">
+            <UiTextSmall class="text">
+              <strong>{{ t("landing.footer.legal.marketing_service_label") }}</strong>
+            </UiTextSmall>
+            <UiTextSmall class="text">
+              {{ t("landing.footer.legal.marketing_service_email") }}
+            </UiTextSmall>
+          </div>
+        </div>
+      </div>
+
+      <div class="line"></div>
+
       <div class="text-wrapper">
         <UiTextSmall class="text">
-          {{ t("landing.footer.legal.regulated") }}
+          {{ t("landing.footer.legal.risk_warning") }}
         </UiTextSmall>
 
         <UiTextSmall class="text">
-          <strong>{{ t("landing.footer.legal.risk").split(":")[0] }}:</strong>
-          {{ t("landing.footer.legal.risk").split(":")[1] }}
+          {{ t("landing.footer.legal.restricted_info") }}
         </UiTextSmall>
 
         <UiTextSmall class="text">
-          <strong
-            >{{ t("landing.footer.legal.restricted").split(":")[0] }}:</strong
-          >
-          {{ t("landing.footer.legal.restricted").split(":")[1] }}
+          {{ t("landing.footer.legal.restricted_countries") }}
         </UiTextSmall>
 
         <UiTextSmall class="text">
-          {{ t("landing.footer.legal.age") }}
+          {{ t("landing.footer.legal.age_requirement") }}
         </UiTextSmall>
 
         <UiTextSmall class="text">
           {{ t("landing.footer.legal.compliance") }}
         </UiTextSmall>
-      </div>
 
-      <UiTextSmall class="text center">
-        {{ t("landing.footer.legal.copyrightStart") }} |
-        {{ t("landing.footer.legal.copyrightEnd") }}
-      </UiTextSmall>
+        <UiTextSmall class="text">
+          {{ t("landing.footer.legal.copyright") }}
+        </UiTextSmall>
+      </div>
     </footer>
   </UiContainer>
 </template>
 
 <script setup>
-import { useI18n } from "vue-i18n";
-import UiContainer from "~/components/ui/UiContainer.vue";
-import UiIconFacebook from "~/components/ui/UiIconFacebook.vue";
-import UiIconInstagram from "~/components/ui/UiIconInstagram.vue";
-import UiIconLinkedIn from "~/components/ui/UiIconLinkedIn.vue";
-import UiIconLogo from "~/components/ui/UiIconLogo.vue";
-import UiTextH6 from "~/components/ui/UiTextH6.vue";
-import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+  import { useI18n } from "vue-i18n";
+  import UiContainer from "~/components/ui/UiContainer.vue";
+  import UiIconFacebook from "~/components/ui/UiIconFacebook.vue";
+  import UiIconInstagram from "~/components/ui/UiIconInstagram.vue";
+  import UiIconLinkedIn from "~/components/ui/UiIconLinkedIn.vue";
+  import UiIconLogo from "~/components/ui/UiIconLogo.vue";
+  import UiTextH6 from "~/components/ui/UiTextH6.vue";
+  import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 
-import FooterLink from "./components/FooterLink.vue";
+  import FooterLink from "./components/FooterLink.vue";
 
-import { useThemeStore } from "~/stores/themeStore.js";
+  import { useThemeStore } from "~/stores/themeStore.js";
 
-const themeStore = useThemeStore();
-const { t } = useI18n();
+  const themeStore = useThemeStore();
+  const { t } = useI18n();
 </script>
 
 <style lang="scss" scoped>
-footer {
-  margin-top: 75px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-
-  h3 {
-    color: var(--ui-text-main);
-    text-align: center;
-  }
-
-  .footer__content {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-  }
-
-  .logo {
-    list-style: none;
+  footer {
+    margin-top: 75px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 30px;
 
-    &-svg {
-      padding-right: 30px;
+    h3 {
+      color: var(--ui-text-main);
+      text-align: center;
     }
 
-    &-text {
-      width: 206px;
+    .footer__content {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .logo {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      &-svg {
+        padding-right: 30px;
+      }
+
+      &-text {
+        width: 206px;
+        color: var(--ui-text-secondary);
+      }
+
+      &-icons {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 17px;
+      }
+    }
+
+    .line {
+      height: 1px;
+      width: 100%;
+      background: var(--color-stroke-ui);
+    }
+
+    .company-info {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+
+      &__left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      &__right {
+        flex: 1;
+        display: flex;
+        // flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    .contact-block {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .text-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .text {
       color: var(--ui-text-secondary);
     }
 
-    &-icons {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 17px;
+    .center {
+      text-align: center;
     }
   }
 
-  .line {
-    height: 1px;
-    width: 100%;
-    background: var(--color-stroke-ui);
+  .svg-invert {
+    filter: invert(1);
   }
 
-  .text-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  .svg-fill {
+    color: #0d6efd;
+    fill: currentColor;
   }
 
-  .text {
-    color: var(--ui-text-secondary);
+  @media (max-width: 991px) {
+    footer {
+      padding: 40px;
+      margin-top: 35px;
+    }
+
+    .company-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
   }
 
-  .center {
-    text-align: center;
-  }
-}
+  @media (max-width: 767px) {
+    footer {
+      padding: 15px;
+      margin-top: 0;
+    }
+    .footer__content {
+      flex-direction: column;
+      gap: 30px;
+    }
 
-.svg-invert {
-  filter: invert(1);
-}
+    .logo {
+      .logo-text {
+        width: 100%;
+      }
+    }
 
-.svg-fill {
-  color: #0d6efd;
-  fill: currentColor;
-}
-
-@media (max-width: 991px) {
-  footer {
-    padding: 40px;
-    margin-top: 35px;
-  }
-}
-
-@media (max-width: 767px) {
-  footer {
-    padding: 15px;
-    margin-top: 0;
-  }
-  .footer__content {
-    flex-direction: column;
-    gap: 30px;
+    .company-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
   }
 
-  .logo {
-    .logo-text {
+  @media (max-width: 576px) {
+    .logo {
       width: 100%;
     }
   }
-}
-
-@media (max-width: 576px) {
-  .logo {
-    width: 100%;
-  }
-}
 </style>

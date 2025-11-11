@@ -707,13 +707,21 @@
                 ]
             },
             "legal": {
-                "regulated": "Ester é o nome comercial oficial que é regulado pela Seychelles Financial Services Authority (FSA) e detém uma Securities Dealer License No. SD018.",
-                "risk": "Aviso de Risco: a negociação de CFD carrega um alto nível de risco e pode resultar na perda de capital. Você deve investir apenas com dinheiro que pode dar-se ao luxo de perder. A negociação de instrumentos ao vivo não pode ser interrompida em nenhuma circunstância, por isso é importante que você compreenda completamente os riscos envolvidos e procure aconselhamento independente se necessário. Por favor, leia nossa divulgação de riscos e certifique-se de compreendê-la completamente.",
-                "restricted": "Países Restritos: Raw Trading Ltd não fornece seus serviços a residentes de vários países, incluindo Estados Unidos, Canadá, Israel, Nova Zelândia, Irã e Coreia do Norte (República Popular Democrática da Coreia), bem como outras jurisdições onde tais atividades são contrárias à lei local.",
-                "age": "Para registrar uma conta com a Ester, você deve ter pelo menos 18 anos ou ter atingido a maioridade de acordo com as leis de seu país. Ao criar uma conta, você confirma que está se registrando por sua própria iniciativa, sem qualquer solicitação ou oferta da Ester.",
-                "compliance": "A Ester não direciona seus serviços ou conteúdo do site para usuários em países onde seu uso é proibido pelas leis locais. Se você acessar este site de um país restrito, você é responsável pela conformidade com as leis locais. A Empresa também não garante que as informações fornecidas estejam em conformidade com os requisitos de todas as jurisdições.",
-                "copyrightStart": "© 2025 Ester",
-                "copyrightEnd": "Todos os direitos reservados."
+                "company_name": "Ester Holdings Ltd.,",
+                "company_address": "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia, número de registro 2023-00477",
+                "support_service_label": "Serviço de suporte:",
+                "support_service_email": "support{'@'}esterholdings.com",
+                "support_telegram": "Support EsterHoldings",
+                "finance_service_label": "Serviço financeiro:",
+                "finance_service_email": "finance{'@'}esterholdings.com",
+                "marketing_service_label": "Serviço de marketing:",
+                "marketing_service_email": "marketing{'@'}esterholdings.com",
+                "risk_warning": "Os investidores assumem um alto nível de risco e a negociação em mercados financeiros pode não ser adequada para todos os investidores, pois pode ocorrer a perda de todo o capital investido.",
+                "restricted_info": "As informações neste site não são direcionadas a residentes de nenhum país ou jurisdição onde tal distribuição ou uso seja contrário à lei ou regulamentação local.",
+                "restricted_countries": "Residentes e cidadãos dos EUA, Irã, Coreia do Norte e Rússia não podem usar os serviços do site.",
+                "age_requirement": "Para registrar uma conta com a Ester, você deve ter pelo menos 18 anos ou ter atingido a maioridade de acordo com as leis do seu país. Ao criar uma conta, você confirma que está se registrando por sua própria iniciativa.",
+                "compliance": "A Ester não direciona seus serviços ou conteúdo do site para usuários de países onde seu uso é proibido pelas leis locais. Se você acessar o site de um país restrito, você é o único responsável pela conformidade com a legislação aplicável. A Empresa também não garante que as informações fornecidas atendam aos requisitos de todas as jurisdições.",
+                "copyright": "Os direitos de propriedade intelectual pertencem a Ester Holdings Ltd. © 2025 Todos os direitos reservados"
             }
         }
     },

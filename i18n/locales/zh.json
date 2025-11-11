@@ -707,13 +707,21 @@
                 ]
             },
             "legal": {
-                "regulated": "Ester是由塞舌尔金融服务管理局（FSA）监管并持有证券交易商许可证SD018的官方交易名称。",
-                "risk": "风险警告：差价合约交易具有高风险，可能导致资本损失。您应该只用您能承受损失的资金进行投资。实时工具的交易在任何情况下都无法停止，因此重要的是您完全了解所涉及的风险，如有必要，请寻求独立建议。请阅读我们的风险披露并确保您完全理解。",
-                "restricted": "受限国家：Raw Trading Ltd不向包括美国、加拿大、以色列、新西兰、伊朗和朝鲜（朝鲜民主主义人民共和国）在内的许多国家的居民以及此类活动违反当地法律的其他司法管辖区提供服务。",
-                "age": "要在Ester注册账户，您必须年满18岁或根据您所在国家的法律达到法定年龄。通过创建账户，您确认您是自己主动注册的，没有任何来自Ester的征求或要约。",
-                "compliance": "Ester不会将其服务或网站内容定向到当地法律禁止使用的国家的用户。如果您从受限国家访问本网站，您有责任遵守当地法律。公司也不保证所提供的信息符合所有司法管辖区的要求。",
-                "copyrightStart": "© 2025 Ester",
-                "copyrightEnd": "保留所有权利。"
+                "company_name": "Ester Holdings Ltd.,",
+                "company_address": "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia，注册号 2023-00477",
+                "support_service_label": "支持服务：",
+                "support_service_email": "support{'@'}esterholdings.com",
+                "support_telegram": "Support EsterHoldings",
+                "finance_service_label": "财务服务：",
+                "finance_service_email": "finance{'@'}esterholdings.com",
+                "marketing_service_label": "营销服务：",
+                "marketing_service_email": "marketing{'@'}esterholdings.com",
+                "risk_warning": "投资者承担高风险水平，金融市场交易可能不适合所有投资者，因为可能会发生所有投资资本的损失。",
+                "restricted_info": "本网站上的信息不针对任何国家或司法管辖区的居民，在这些地方，这种分发或使用将违反当地法律或法规。",
+                "restricted_countries": "美国、伊朗、朝鲜和俄罗斯的居民和公民不能使用该网站的服务。",
+                "age_requirement": "要在Ester注册账户，您必须年满18岁或根据您所在国家的法律达到法定年龄。通过创建账户，您确认您是自己主动注册的。",
+                "compliance": "Ester不会将其服务或网站内容定向到使用被当地法律禁止的国家的用户。如果您从受限国家访问网站，您将对遵守适用法律承担全部责任。公司也不保证所提供的信息符合所有司法管辖区的要求。",
+                "copyright": "知识产权归Ester Holdings Ltd.所有。© 2025 保留所有权利"
             }
         }
     },

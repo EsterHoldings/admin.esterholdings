@@ -707,13 +707,21 @@
         ]
       },
       "legal": {
-        "regulated": "Ester is the official trading name which is regulated by the Seychelles Financial Services Authority (FSA) and holds a Securities Dealer License No. SD018.",
-        "risk": "Risk Warning: and CFD trading carries a high level of risk and can result in the loss of capital. You should only invest with money you can afford to lose. Trading live instruments cannot be stopped under any circumstances, so it is important that you fully understand the risks involved and seek independent advice if necessary. Please read our risk disclosure and ensure you fully understand it.",
-        "restricted": "Restricted Countries: Raw Trading Ltd does not provide its services to residents of a number of countries, including the United States, Canada, Israel, New Zealand, Iran and North Korea (Democratic People's Republic of Korea), as well as other jurisdictions where such activities are contrary to local law.",
-        "age": "To register an account with Ester, you must be at least 18 years old or have reached the age of majority in accordance with the laws of your country. By creating an account, you confirm that you are registering on your own initiative, without any solicitation or offer from Ester.",
-        "compliance": "Ester does not direct its services or website content to users in countries where their use is prohibited by local laws. If you access this website from a restricted country, you are responsible for compliance with local laws. The Company also does not warrant that the information provided complies with the requirements of all jurisdictions.",
-        "copyrightStart": "© 2025 Ester",
-        "copyrightEnd": "All rights reserved."
+        "company_name": "Ester Holdings Ltd.,",
+        "company_address": "Ground Floor, The Sotheby Building, Rodney Village, Rodney Bay, Gros-Islet, Saint Lucia, under registered number 2023-00477",
+        "support_service_label": "Support service:",
+                "support_service_email": "support{'@'}esterholdings.com",
+                "support_telegram": "Support EsterHoldings",
+                "finance_service_label": "Financial service:",
+                "finance_service_email": "finance{'@'}esterholdings.com",
+                "marketing_service_label": "Marketing service:",
+                "marketing_service_email": "marketing{'@'}esterholdings.com",
+        "risk_warning": "Investors carry a high level of risk and trading in financial markets may not be suitable for all investors, as loss of all invested capital may occur.",
+        "restricted_info": "Information on this site is not directed at residents in any country or jurisdiction where such distribution or use would be contrary to local law or regulation.",
+        "restricted_countries": "Residents and citizens of USA, Iran, North Korea and Russia can not use the services of the site.",
+        "age_requirement": "To register an account with Ester, you must be at least 18 years old or have reached the age of majority according to the laws of your country. By creating an account, you confirm that you are registering on your own initiative.",
+        "compliance": "Ester does not direct its services or website content to users from countries where their use is prohibited by local laws. If you access the website from a restricted country, you are solely responsible for complying with applicable legislation. The Company also does not guarantee that the information provided meets the requirements of all jurisdictions.",
+        "copyright": "Ownership's of intellectual property belong to Ester Holdings Ltd. © 2025 All rights reserved"
       }
     }
   },
