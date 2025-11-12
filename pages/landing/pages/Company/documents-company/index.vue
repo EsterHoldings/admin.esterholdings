@@ -1,11 +1,11 @@
 <template>
   <UiContainer>
     <div>
-      <UiTextH3 class="text-[var(--ui-text-main)] text-center">
+      <UiTextH3 class="!text-[var(--ui-text-main)] text-center">
         {{ t('landing.pages.company.documents.title') }}
       </UiTextH3>
 
-      <UiTextH5 class="text-[var(--ui-text-main)] text-center mb-5">
+      <UiTextH5 class="!text-[var(--ui-text-main)] text-center mb-5">
         {{ t('landing.pages.company.documents.intro') }}
       </UiTextH5>
 
