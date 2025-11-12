@@ -10,6 +10,13 @@ export default defineNuxtConfig({
     },
     compatibilityDate: '2024-04-03',
     devtools: {enabled: true},
+
+    // Додаємо явні налаштування дев-сервера
+    devServer: {
+        host: process.env.NUXT_DEV_HOST || 'localhost',
+        port: Number(process.env.NUXT_DEV_PORT || process.env.PORT || 3000),
+    },
+
     ssr: true,
     routeRules: {
         '/**': {ssr: false} as any,
@@ -144,6 +151,8 @@ export default defineNuxtConfig({
             navigateFallback: '/',
         },
         devOptions: {enabled: false},
+        // ✳️ Головне: примусово знищує старий SW у деві/локалі, щоб він не ламав HMR
+        selfDestroying: true,
     },
 
     vite: {
@@ -155,8 +164,37 @@ export default defineNuxtConfig({
                     secure: false,
                 },
             },
+
+            // ✳️ Стабілізація HMR
+            hmr: {
+                host: process.env.NUXT_DEV_HMR_HOST || process.env.NUXT_DEV_HOST || 'localhost',
+                // якщо дев по HTTPS (через проксі) — встанови NUXT_DEV_HTTPS=1
+                protocol: (process.env.NUXT_DEV_HTTPS === '1' || process.env.HTTPS === '1') ? 'wss' : 'ws',
+                // порт WS-сервера (як правило дорівнює devServer.port)
+                port: Number(process.env.NUXT_DEV_HMR_PORT || process.env.NUXT_DEV_PORT || process.env.PORT || 3000),
+                // порт, який бачить БРАУЗЕР (через проксі/домен)
+                clientPort: Number(process.env.NUXT_DEV_CLIENT_PORT || process.env.NUXT_DEV_PORT || process.env.PORT || 3000),
+                timeout: 30000,
+                overlay: true,
+            },
+
+            // ✳️ Вотчер менш нервовий і ігнорує службові папки
             watch: {
                 usePolling: true,
+                interval: 100,
+                awaitWriteFinish: {
+                    stabilityThreshold: 200,
+                    pollInterval: 100,
+                },
+                ignored: [
+                    '**/.nuxt/**',
+                    '**/.output/**',
+                    '**/node_modules/**',
+                    '**/dist/**',
+                    '**/coverage/**',
+                    '**/public/**/pwa-*',
+                    '**/public/**/sw.js',
+                ],
             },
         },
     },
@@ -180,7 +218,7 @@ export default defineNuxtConfig({
                 process.env.NUXT_PUBLIC_CLI_GOOGLE ||
                 '351197430667-flnael7gi4buja9a203e7rgebc6ug5dq.apps.googleusercontent.com',
             cliLinkIdIn: process.env.NUXT_PUBLIC_CLI_LINK_ID_IN || '784gmiujlnm9h2',
-            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P',
+            reCaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LcxyW8rAAAAAB7veVQONзCAW9W1JBdWAXjHUg0P',
         },
     },
 
@@ -194,7 +232,7 @@ export default defineNuxtConfig({
                     defer: true,
                 },
                 // {
-                //     src: 'https://www.google.com/recaptcha/api.js?render=6LcxyW8rAAAAAB7veVQONzCAW9W1JBdWAXjHUg0P',
+                //     src: 'https://www.google.com/recaptcha/api.js?render=6LcxyW8rAAAAAB7veVQONзCAW9W1JBdWAXjHUg0P',
                 //     async: true,
                 //     defer: true,
                 // },

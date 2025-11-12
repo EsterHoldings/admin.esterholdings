@@ -16,7 +16,7 @@ import UiImage from "~/components/ui/UiImage.vue";
 <style lang="scss" scoped>
 .page {
   width: 100%;
-  height: 100vh;
+  //height: 100vh;
   overflow: hidden;
 
   &__wrapper {

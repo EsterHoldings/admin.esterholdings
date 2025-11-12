@@ -2,34 +2,39 @@
   <UiContainer>
     <div class="mt4">
       <UiTextH3 class="mt4_title">{{ t('landing.pages.trading.mt4_title') }}</UiTextH3>
-      <div class="mt4_img">
+
+      <PanelDefault class="p-4 mt-5">
         <UiTextH4 class="mt4_subtitle">{{ t('landing.pages.trading.mt4_subtitle') }}</UiTextH4>
-        <div>
+        <div class="mt-5">
           <UiButtonDefault state="warning">{{ t('landing.pages.trading.mt4_button') }}</UiButtonDefault>
         </div>
-      </div>
+      </PanelDefault>
 
-      <UiTextH4 class="mt4_title-platform">{{ t('landing.pages.trading.mt4_about_title') }}</UiTextH4>
+      <PanelDefault class="p-4 mt-5">
+        <UiTextH4 class="mt4_title-platform">{{ t('landing.pages.trading.mt4_about_title') }}</UiTextH4>
 
-      <UiTextParagraph class="mt4_text">
-        {{ t('landing.pages.trading.mt4_about_text') }}
-        <strong>{{ t('landing.pages.trading.mt4_about_highlight') }}</strong>
-      </UiTextParagraph>
+        <UiTextParagraph class="mt4_text mb-5">
+          {{ t('landing.pages.trading.mt4_about_text') }}
+          <strong>{{ t('landing.pages.trading.mt4_about_highlight') }}</strong>
+        </UiTextParagraph>
 
-      <ul class="mt4_list">
-        <li
-          v-for="(feature, index) in mt4Features"
-          :key="index">
-          <UiIconSuccess />
-          <span>{{ feature }}</span>
-        </li>
-      </ul>
+        <ul class="mt4_list">
+          <li
+              v-for="(feature, index) in mt4Features"
+              :key="index">
+            <UiIconSuccess />
+            <span>{{ feature }}</span>
+          </li>
+        </ul>
 
-      <div class="mt4_footer">
-        <UiTextParagraph class="mt4_text">{{ t('landing.pages.trading.mt4_requirements_title') }}</UiTextParagraph>
-        <UiTextParagraph class="mt4_text">{{ t('landing.pages.trading.mt4_requirements_text') }}</UiTextParagraph>
-        <a href="#">{{ t('landing.pages.trading.mt4_requirements_link') }}</a>
-      </div>
+        <UiHorizontalLine />
+
+        <div class="mt4_footer mt-5">
+          <UiTextH4 class="mt4_text">{{ t('landing.pages.trading.mt4_requirements_title') }}</UiTextH4>
+          <UiTextParagraph class="mt4_text">{{ t('landing.pages.trading.mt4_requirements_text') }}</UiTextParagraph>
+          <a href="#">{{ t('landing.pages.trading.mt4_requirements_link') }}</a>
+        </div>
+      </PanelDefault>
     </div>
   </UiContainer>
 </template>
@@ -44,6 +49,8 @@
   import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
   import UiTextParagraph from '~/components/ui/UiTextParagraph.vue';
   import UiIconSuccess from '~/components/ui/UiIconSuccess.vue';
+  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
+  import UiHorizontalLine from "~/components/ui/UiHorizontalLine.vue";
 
   definePageMeta({
     layout: 'main',
@@ -65,18 +72,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-
-    &_img {
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 50px;
-      background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
-        url('/static/mt4Bg.jpeg') center / cover no-repeat;
-      border-radius: 15px;
-      min-height: 200px;
-      justify-content: end;
-    }
 
     &_title {
       text-align: center;
@@ -113,7 +108,6 @@
       flex-direction: column;
       gap: 10px;
       color: var(--ui-text-main);
-      margin-bottom: 50px;
 
       a {
         color: var(--ui-text-link);

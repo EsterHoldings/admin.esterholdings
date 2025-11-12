@@ -3,23 +3,29 @@
     <div class="career">
       <UiTextH3 class="career_title">{{ t('landing.pages.company.career.title') }}</UiTextH3>
 
-      <div class="career_img"></div>
 
-      <UiTextH5 class="career_subtitle">{{ t('landing.pages.company.career.subtitle') }}</UiTextH5>
+        <div class="flex justify-between items-start gap-4">
+          <PanelDefault class="w-[50%] p-5">
+            <UiTextH5 class="career_subtitle !text-[var(--ui-primary-main] mb-5">{{ t('landing.pages.company.career.subtitle') }}</UiTextH5>
 
-      <ul class="career_list">
-        <li
-          v-for="(position, index) in positions"
-          :key="index">
-          {{ position }}
-        </li>
-      </ul>
+            <ul class="career_list">
+              <li
+                  v-for="(position, index) in positions"
+                  :key="index">
+                {{ position }}
+              </li>
+            </ul>
+          </PanelDefault>
 
-      <UiTextH5>{{ t('landing.pages.company.career.cta') }}</UiTextH5>
+          <PanelDefault class="w-[50%] p-5">
+            <UiTextH5>{{ t('landing.pages.company.career.cta') }}</UiTextH5>
 
-      <div>
-        <UiButtonDefault>{{ t('landing.pages.company.career.button') }}</UiButtonDefault>
-      </div>
+            <div>
+              <UiButtonDefault state="info" class="mt-5">{{ t('landing.pages.company.career.button') }}</UiButtonDefault>
+            </div>
+          </PanelDefault>
+        </div>
+
     </div>
   </UiContainer>
 </template>
@@ -32,6 +38,7 @@
   import UiTextH3 from '~/components/ui/UiTextH3.vue';
   import UiTextH5 from '~/components/ui/UiTextH5.vue';
   import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
+  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 
   definePageMeta({
     layout: 'main',
@@ -48,26 +55,17 @@
 
 <style lang="scss" scoped>
   .career {
-    padding: 40px;
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 20px;
 
     &_title {
       color: var(--ui-text-main);
       text-align: center;
-      margin-top: 50px;
     }
 
     &_subtitle {
       color: var(--ui-text-main);
-    }
-
-    &_img {
-      background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
-        url('/static/careerBg.jpg') center / cover no-repeat;
-      min-height: 500px;
-      border-radius: 15px;
     }
 
     &_list {

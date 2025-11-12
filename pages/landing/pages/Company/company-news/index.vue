@@ -2,7 +2,6 @@
   <UiContainer>
     <div class="company-news">
       <UiTextH3 class="company-news_title">{{ t('landing.pages.company.news.title') }}</UiTextH3>
-      <div class="company-news_img"></div>
 
       <div class="company-news_wrapper">
         <NewsCard
@@ -53,28 +52,18 @@
   .company-news {
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    padding: 40px;
+    gap: 20px;
 
     &_title {
       color: var(--ui-text-main);
       text-align: center;
-      margin-top: 50px;
-    }
-
-    &_img {
-      background: linear-gradient(rgba(21, 21, 21, 0.6), rgba(21, 21, 21, 0.6)),
-        url('/static/newsBg.jpg') center / cover no-repeat;
-      min-height: 500px;
-      border-radius: 15px;
     }
 
     &_wrapper {
-      margin-top: 50px;
       display: flex;
       flex-direction: column;
       align-items: baseline;
-      gap: 30px;
+      gap: 20px;
     }
   }
 </style>
