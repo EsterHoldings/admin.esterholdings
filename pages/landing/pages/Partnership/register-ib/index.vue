@@ -5,8 +5,8 @@
         {{ t('landing.pages.partnership.register_ib_title') }}
       </UiTextH3>
 
-      <PanelDefault class="panel p-5">
-        <h4>Коротко</h4>
+      <UiTextH4 class="text-center mt-5">Коротко</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ul>
           <li>Ви отримуєте <strong>персональне посилання</strong> та <strong>QR-код</strong>.</li>
           <li>Кожен, хто зареєструється через них, <strong>автоматично стає вашим рефералом</strong>.</li>
@@ -18,8 +18,8 @@
           кабінеті.</p>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Як це працює — покроково</h4>
+      <UiTextH4 class="text-center mt-5">Як це працює — покроково</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ol>
           <li><strong>Отримайте посилання/QR</strong> у розділі «Партнерство / IB» вашого кабінету.</li>
           <li><strong>Поділіться</strong> ним у соцмережах, месенджерах, на сайті або офлайн-матеріалах (QR).</li>
@@ -33,8 +33,8 @@
         </ol>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Схема 3 рівнів</h4>
+      <UiTextH4 class="text-center mt-5">Схема 3 рівнів</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <pre class="text-[var(--ui-text-main)]">
 Ви (IB)
 <span class="text-[var(--color-text-muted)]">├─</span> Рівень 1: Ваші прямі реферали
@@ -49,8 +49,8 @@
         <p class="muted">> Більше 3 рівнів зарахування не ведеться.</p>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Як відслідковується перехід</h4>
+      <UiTextH4 class="text-center mt-5">Як відслідковується перехід</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ul>
           <li>Реферальне посилання містить ваш <strong>PID</strong>; при переході він зберігається й передається у
             форму.
@@ -62,8 +62,8 @@
           реєстрацією.</p>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Коли саме зараховується реферал</h4>
+      <UiTextH4 class="text-center mt-5">Коли саме зараховується реферал</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ul>
           <li>Після натискання «Зареєструватися» і створення акаунта з валідним PID — <strong>акаунт одразу з’являється
             у вашому кабінеті</strong>.
@@ -72,8 +72,8 @@
         </ul>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Де це видно у кабінеті</h4>
+      <UiTextH4 class="text-center mt-5">Де це видно у кабінеті</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ul>
           <li><strong>Партнерський кабінет → Реферали</strong>:
             <ul>
@@ -85,8 +85,8 @@
         </ul>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Часті питання</h4>
+      <UiTextH4 class="text-center mt-5">Часті питання</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <div class="faq">
           <p class="q">Що, якщо користувач перейшов за посиланням, але зареєструвався пізніше?</p>
           <p class="a">Його буде зараховано за Last-Click, якщо на момент реєстрації збережений PID ще валідний.</p>
@@ -105,8 +105,8 @@
         </div>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Правила та обмеження</h4>
+      <UiTextH4 class="text-center mt-5">Правила та обмеження</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ul>
           <li>Заборонені спам-розсилки, оманлива реклама та «чорні» практики залучення трафіку.</li>
           <li>Дотримуйтесь правил майданчиків (наприклад, позначення <code>#реклама</code>, якщо це вимагається).</li>
@@ -117,8 +117,8 @@
         </ul>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Умови винагороди (узагальнено)</h4>
+      <UiTextH4 class="text-center mt-5">Умови винагороди (узагальнено)</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <p class="muted">
           На цій сторінці описано саме механіку зарахування. Детальні умови винагород і тарифів публікуються
           в окремому розділі «Партнерська програма».
@@ -130,8 +130,8 @@
         </ul>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Мікрокопі для UI</h4>
+      <UiTextH4 class="text-center mt-5">Мікрокопі для UI</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <ul>
           <li><strong>Кнопки:</strong> «Скопіювати посилання», «Завантажити QR», «Поділитися».</li>
           <li><strong>Підказка до поля коду:</strong> «Поле заповнилося автоматично за вашим посиланням. За потреби —
@@ -146,8 +146,8 @@
         </ul>
       </PanelDefault>
 
-      <PanelDefault class="panel p-5">
-        <h4>Юридичний дисклеймер</h4>
+      <UiTextH4 class="text-center mt-5">Юридичний дисклеймер</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <p>
           Реферальна система працює відповідно до <strong>Партнерської угоди</strong> та
           <strong>Політики конфіденційності</strong>. Використовуючи посилання/QR, ви погоджуєтесь із цими документами.
@@ -155,9 +155,9 @@
         </p>
       </PanelDefault>
 
-      <!-- Підсумок -->
-      <PanelDefault class="panel p-5">
-        <h4>Підсумок</h4>
+
+      <UiTextH4 class="text-center mt-5">Підсумок</UiTextH4>
+      <PanelDefault class="panel p-5 mb-5">
         <p>
           Поділіться своїм посиланням або QR-кодом — і кожна успішна реєстрація за ними автоматично зарахується до вашої
           мережі з глибиною до 3 рівнів. Усі дані та структура прозоро відображаються у вашому кабінеті.
@@ -173,6 +173,7 @@ import {useI18n} from 'vue-i18n';
 import UiContainer from '~/components/ui/UiContainer.vue';
 import UiTextH3 from '~/components/ui/UiTextH3.vue';
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
+import UiTextH4 from "~/components/ui/UiTextH4.vue";
 
 
 definePageMeta({
