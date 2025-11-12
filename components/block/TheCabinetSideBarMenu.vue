@@ -1,5 +1,5 @@
 <template>
-  <ul class="w-full p-3 flex flex-row items-start justify-evenly gap-0 lg:flex-col lg:justify-start lg:gap-1">
+  <ul class="w-full p-3 lg:p-0 flex flex-row items-start justify-evenly gap-0 lg:flex-col lg:justify-start lg:gap-1">
     <TheCabinetSideBarMenuItem
       v-for="menuItem in menuItems"
       :key="menuItem.title"

@@ -3,7 +3,7 @@
     class="relative md:w-[120px] lg:w-full mt-px h-[40px] flex justify-center transition-colors duration-300 cursor-pointer rounded-md"
     :class="isActive ? 'bg-[var(--color-ui-primary)]' : 'hover:bg-[var(--color-stroke-ui-dark)] hover:opacity-80'"
     @click="handleClickMenuItem">
-    <div class="text-[var(--ui-text-main)] flex items-center justify-center h-full w-[60px] relative">
+    <div class="text-[var(--ui-text-main)] flex items-center justify-center h-full w-[60px] max-sm:w-[50px] relative">
       <component :is="icon" />
       <span
         class="absolute top-1 right-2 min-h-[16px] min-w-[16px] bg-[var(--ui-sticker-danger)] flex items-center justify-center rounded-full text-sm"
