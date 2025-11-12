@@ -1,6 +1,8 @@
 <template>
   <div class="bg-[var(--ui-background-panel)] border border-[var(--ui-primary-main)] rounded-[10px]">
-    <div v-if="title.length > 0" class="px-[10px] h-10 flex items-center font-semibold">
+    <div
+      v-if="title.length > 0"
+      class="px-[10px] h-10 flex items-center font-semibold">
       <div class="flex items-center justify-between w-full">
         <span>{{ props.title }}</span>
         <div>
@@ -14,16 +16,15 @@
   </div>
 </template>
 
-
 <script lang="ts" setup>
-const props = defineProps({
-  title: {
-    type: String,
-    default: "",
-  },
-  state: {
-    type: String,
-    default: "",
-  },
-});
+  const props = defineProps({
+    title: {
+      type: String,
+      default: "",
+    },
+    state: {
+      type: String,
+      default: "",
+    },
+  });
 </script>
