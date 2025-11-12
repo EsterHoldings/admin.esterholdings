@@ -22,6 +22,7 @@
   import UiIconWarningFull from "~/components/ui/UiIconWarningFull.vue";
   import UiIconDangerFull from "~/components/ui/UiIconDangerFull.vue";
   import UiIconInfoFull from "~/components/ui/UiIconInfoFull.vue";
+  import UiIconSupport from "~/components/ui/UiIconSupport.vue";
 
   const authStore = useAuthStore();
   const themeStore = useThemeStore();
@@ -88,7 +89,15 @@
 </script>
 
 <template>
-  <header class="h-[60px] flex items-center justify-end border-b border-[--color-stroke-ui-light] ml-[240px] pl-5 pr-5">
+  <header
+    class="h-[60px] flex items-center justify-end border-b border-[--color-stroke-ui-light] ml-[240px] pl-5 pr-5 gap-4">
+    <div class="h-[60px] flex items-center justify-center">
+      <LanguageSwitcher
+        isSidebar
+        :isInvert="isThemeLight"
+        class="icon" />
+    </div>
+
     <div
       ref="notificationsRef"
       class="relative flex items-center justify-center">
@@ -161,52 +170,28 @@
       </div>
     </div>
 
-    <div class="h-[60px] px-2.5 flex items-center justify-center gap-2.5">
-      <LanguageSwitcher
-        isSidebar
-        :isInvert="isThemeLight"
-        class="icon" />
-      <transition
-        name="fade"
-        mode="out-in">
-        <button
-          :key="themeStore.currentTheme"
-          @click="themeStore.toggleTheme()"
-          class="icon"
-          aria-label="Toggle theme">
-          <UiIconMoon v-if="themeStore.currentTheme === 'dark'" />
-          <UiIconSun v-else />
-        </button>
-      </transition>
-    </div>
-
-    <div class="flex items-center justify-end gap-4">
-      <NuxtLink
-        to="/ru/profile"
-        aria-label="Profile">
-        <div
-          :class="[
-            'mx-auto h-[32px] w-[32px] rounded-full flex items-center justify-center overflow-hidden',
-            isProfileRoute ? 'ring-2 ring-[var(--ui-primary-main)]' : 'ring-2 ring-[var(--ui-text-main)]',
-          ]">
-          <UiIconUser
-            v-if="!authStore.photoUrl"
-            class="text-[--ui-text-main]" />
-          <img
-            v-else
-            :src="authStore.photoUrl"
-            alt="User Photo"
-            class="h-[32px] w-[32px] object-cover rounded-full" />
-        </div>
-      </NuxtLink>
-
+    <div
+      ref="profileContainerRef"
+      class="flex items-center justify-end gap-4 cursor-pointer"
+      @click="handleClickProfileMenu">
       <div
-        ref="profileContainerRef"
-        class="text-[var(--ui-text-main)] flex items-center justify-center gap-2 relative">
-        <span @click="handleClickProfileMenu">John Connor</span>
-        <UiIconArrowDown
-          :rotate180="profileMenuIsOpen"
-          @click="handleClickProfileMenu" />
+        :class="[
+          'mx-auto h-[32px] w-[32px] rounded-full flex items-center justify-center overflow-hidden',
+          isProfileRoute ? 'ring-2 ring-[var(--ui-primary-main)]' : 'ring-2 ring-[var(--ui-text-main)]',
+        ]">
+        <UiIconUser
+          v-if="!authStore.photoUrl"
+          class="text-[--ui-text-main]" />
+        <img
+          v-else
+          :src="authStore.photoUrl"
+          alt="User Photo"
+          class="h-[32px] w-[32px] object-cover rounded-full" />
+      </div>
+
+      <div class="text-[var(--ui-text-main)] flex items-center justify-center gap-2 relative">
+        <span>John Connor</span>
+        <UiIconArrowDown :class="{ 'rotate-180': profileMenuIsOpen }" />
 
         <div
           ref="profileMenuRef"
@@ -216,30 +201,40 @@
             to="/ru/profile"
             aria-label="Profile">
             <div
-              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-3 rounded-md">
+              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
               <UiIconSetting />
               <UiTextSmall class="w-full whitespace-nowrap">Account Settings</UiTextSmall>
             </div>
           </NuxtLink>
 
-          <NuxtLink
-            to="/ru/profile"
-            aria-label="Profile">
+          <NuxtLink aria-label="Toggle theme">
             <div
-              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-3 rounded-md">
-              <UiIconMoon />
-              <UiTextSmall class="w-full whitespace-nowrap">Switch to Dark</UiTextSmall>
+              @click="themeStore.toggleTheme()"
+              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md cursor-pointer">
+              <transition
+                name="fade"
+                mode="out-in">
+                <UiIconSun
+                  v-if="themeStore.currentTheme === 'dark'"
+                  :key="'sun'" />
+                <UiIconMoon
+                  v-else
+                  :key="'moon'" />
+              </transition>
+              <UiTextSmall class="w-full whitespace-nowrap">
+                {{ themeStore.currentTheme === "dark" ? "Switch to Light" : "Switch to Dark" }}
+              </UiTextSmall>
             </div>
           </NuxtLink>
 
           <UiSpacer :heightNone="true" />
 
           <NuxtLink
-            to="/ru/profile"
-            aria-label="Profile">
+            to="/ru/support"
+            aria-label="Help Center">
             <div
-              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-3 rounded-md">
-              <UiIconMoon />
+              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
+              <UiIconSupport />
               <UiTextSmall class="w-full whitespace-nowrap">Help Center</UiTextSmall>
             </div>
           </NuxtLink>
@@ -247,10 +242,10 @@
           <UiSpacer :heightNone="true" />
 
           <NuxtLink
-            to="/ru/profile"
-            aria-label="Profile">
+            @click="handleClickLogout()"
+            aria-label="Log Out">
             <div
-              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-3 rounded-md">
+              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
               <UiIconLogout />
               <UiTextSmall class="w-full whitespace-nowrap">Log Out</UiTextSmall>
             </div>
