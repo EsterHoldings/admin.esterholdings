@@ -61,11 +61,11 @@
     font-size: 32px;
     line-height: 1.2;
     text-align: center;
-    color: #ffffff;
+    color: var(--ui-text-main);
     margin: 0;
 
     .accent {
-      color: #f75709;
+      color: var(--ui-primary-accent);
     }
   }
 
@@ -94,7 +94,7 @@
     font-weight: 700;
     font-size: 32px;
     line-height: 1.2;
-    color: #ffffff;
+    color: var(--ui-text-main);
     white-space: nowrap;
   }
 
@@ -110,7 +110,7 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 1.2;
-    color: #b8b8c3;
+    color: var(--ui-text-secondary);
   }
 
   .divider {

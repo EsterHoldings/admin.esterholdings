@@ -3,8 +3,8 @@
     <UiContainer>
       <div class="four-steps">
         <UiTextH3 class="four-steps__title">
-          {{ t('landing.sections.four_steps_section.title.before') }} <br />
-          <span class="highlight">{{ t('landing.sections.four_steps_section.title.highlight') }}</span>
+          {{ t("landing.sections.four_steps_section.title.before") }} <br />
+          <span class="highlight">{{ t("landing.sections.four_steps_section.title.highlight") }}</span>
         </UiTextH3>
 
         <div class="four-steps__container">
@@ -24,7 +24,7 @@
           <UiButtonDefault
             state="primary"
             class="four-steps__button"
-            >{{ t('landing.sections.four_steps_section.button') }}
+            >{{ t("landing.sections.four_steps_section.button") }}
           </UiButtonDefault>
         </NuxtLink>
       </div>
@@ -33,18 +33,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { useI18n } from 'vue-i18n';
-  import { ref } from 'vue';
+  import { useI18n } from "vue-i18n";
+  import { ref } from "vue";
 
-  import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
-  import UiTextH3 from '~/components/ui/UiTextH3.vue';
-  import UiTextH4 from '~/components/ui/UiTextH4.vue';
-  import UiTextH5 from '~/components/ui/UiTextH5.vue';
-  import UiContainer from '~/components/ui/UiContainer.vue';
+  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+  import UiTextH3 from "~/components/ui/UiTextH3.vue";
+  import UiTextH4 from "~/components/ui/UiTextH4.vue";
+  import UiTextH5 from "~/components/ui/UiTextH5.vue";
+  import UiContainer from "~/components/ui/UiContainer.vue";
 
   const { t, tm } = useI18n();
 
-  const stepsRaw = tm('landing.sections.four_steps_section.items');
+  const stepsRaw = tm("landing.sections.four_steps_section.items");
 
   const steps = ref(
     Array.isArray(stepsRaw)
@@ -52,7 +52,7 @@
           title: t(`landing.sections.four_steps_section.items[${index}].title`),
           text: t(`landing.sections.four_steps_section.items[${index}].text`),
         }))
-      : [],
+      : []
   );
 </script>
 
@@ -99,7 +99,7 @@
     min-height: 105px;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: 35px;
       top: 0;
@@ -127,12 +127,12 @@
   .four-steps__heading {
     font-weight: 700;
     font-size: 24px;
-    color: #ffffff;
+    color: var(--ui-text-main);
   }
 
   .four-steps__description {
     font-size: 16px;
-    color: #b8b8c3;
+    color: var(--ui-text-secondary);
     text-align: left;
   }
 
