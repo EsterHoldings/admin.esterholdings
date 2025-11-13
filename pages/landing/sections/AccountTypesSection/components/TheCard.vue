@@ -23,7 +23,7 @@
       <div class="title-section">
         <h2
           class="title"
-          :class="type === 'demo' ? 'text-[var(--ui-primary-accent)]' : 'text-[var(--ui-text-main)]'">
+          :class="type === 'demo' ? 'text-[var(--ui-primary-accent)]' : 'text-[#ffffff]'">
           {{ title }}
         </h2>
         <span class="subtitle">
@@ -69,22 +69,22 @@
         state="warning"
         :outline="true"
         class="badge">
-        <span class="badge-text">{{ $t('landing.sections.accounts__badge_recommended') }}</span>
+        <span class="badge-text">{{ $t("landing.sections.accounts__badge_recommended") }}</span>
       </UiBadge>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n';
-  import UiIconCardCheck from '~/components/ui/UiIconCardCheck.vue';
-  import UiButtonDefault from '~/components/ui/UiButtonDefault.vue';
-  import UiBadge from '~/components/ui/UiBadge.vue';
+  import { useI18n } from "vue-i18n";
+  import UiIconCardCheck from "~/components/ui/UiIconCardCheck.vue";
+  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+  import UiBadge from "~/components/ui/UiBadge.vue";
 
   const { t } = useI18n();
 
   interface Props {
-    type: 'demo' | 'standard' | 'pro' | 'tandem' | 'islamic';
+    type: "demo" | "standard" | "pro" | "tandem" | "islamic";
     title: string;
     subtitle: string;
     description: string;

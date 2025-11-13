@@ -81,9 +81,9 @@
                   @click="themeStore.toggleTheme()"
                   class="icon mt-[1px]">
                   <UiIconMoon
-                    v-if="themeStore.currentTheme === 'dark'"
+                    v-if="themeStore.currentTheme === 'light'"
                     :class="{
-                      'svg-invert': isThemeLight || isWithPicture || forceSvgInvert,
+                      'svg-invert': !(isThemeLight || isWithPicture || forceSvgInvert),
                     }" />
 
                   <UiIconSun

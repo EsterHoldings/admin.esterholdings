@@ -129,12 +129,12 @@
 
     .swiper-container-wrapper::before {
       left: 0;
-      background: linear-gradient(to right, #000b1f 0%, transparent 100%);
+      background: linear-gradient(to right, var(--ui-background) 0%, transparent 100%);
     }
 
     .swiper-container-wrapper::after {
       right: 0;
-      background: linear-gradient(to left, #000b1f 0%, transparent 100%);
+      background: linear-gradient(to left, var(--ui-background) 0%, transparent 100%);
     }
   }
 
