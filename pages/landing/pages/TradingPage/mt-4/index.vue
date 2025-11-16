@@ -8,6 +8,7 @@
         <UiButtonDefault state="warning">{{ t('landing.pages.trading.mt4_button') }}</UiButtonDefault>
       </div>
 
+
       <UiTextH4 class="mt4_title-platform mt-8">{{ t('landing.pages.trading.mt4_about_title') }}</UiTextH4>
       <UiTextParagraph class="mt4_text mb-5">
         {{ t('landing.pages.trading.mt4_about_text') }}
