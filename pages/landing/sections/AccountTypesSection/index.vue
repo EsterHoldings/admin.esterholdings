@@ -27,7 +27,8 @@
               :description="card.description"
               :features="card.features"
               :button-text="card.buttonText"
-              :is-recommended="card.isRecommended" />
+              :is-recommended="card.isRecommended"
+              :theme="themeStore.currentTheme" />
           </SwiperSlide>
         </Swiper>
       </div>
@@ -42,8 +43,10 @@
   import "swiper/css";
   import UiTextH3 from "~/components/ui/UiTextH3.vue";
   import TheCard from "~/pages/landing/sections/AccountTypesSection/components/TheCard.vue";
+  import { useThemeStore } from "~/stores/themeStore";
 
   const { t, tm } = useI18n();
+  const themeStore = useThemeStore();
 
   /**
    * Ширина градієнтних “шторок” по боках = 100px (див. CSS нижче)
