@@ -361,6 +361,10 @@
     }
   }
 
+  .logo {
+    margin-bottom: 20px;
+  }
+
   .blurred {
     background: rgba(0, 0, 40, 0.05);
     backdrop-filter: blur(10px);

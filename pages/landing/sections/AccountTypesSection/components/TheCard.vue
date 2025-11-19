@@ -5,15 +5,22 @@
       class="absolute inset-0 rounded-[20px] p-[1px]"
       :style="{
         background:
-          type === 'demo'
-            ? 'linear-gradient(138deg, rgba(247, 87, 9, 1) 2%, rgba(1, 22, 68, 1) 100%)'
-            : 'linear-gradient(138deg, rgba(27, 99, 255, 1) 2%, rgba(1, 22, 68, 1) 100%)',
+          theme === 'light'
+            ? type === 'demo'
+              ? '#F75709'
+              : '#E5E5E5'
+            : type === 'demo'
+              ? 'linear-gradient(138deg, rgba(247, 87, 9, 1) 2%, rgba(1, 22, 68, 1) 100%)'
+              : 'linear-gradient(138deg, rgba(27, 99, 255, 1) 2%, rgba(1, 22, 68, 1) 100%)',
       }">
-      <div class="w-full h-full rounded-[20px] bg-[#031743]" />
+      <div
+        class="w-full h-full rounded-[20px]"
+        :class="theme === 'light' ? 'bg-[#F5F5F5]' : 'bg-[#031743]'" />
     </div>
 
     <!-- Blur layer -->
     <div
+      v-if="theme === 'dark'"
       class="blur-layer"
       :class="type === 'demo' ? 'bg-[var(--ui-primary-accent)]' : 'bg-[var(--color-stroke-ui-light)]'" />
 
@@ -23,7 +30,15 @@
       <div class="title-section">
         <h2
           class="title"
-          :class="type === 'demo' ? 'text-[var(--ui-primary-accent)]' : 'text-[#ffffff]'">
+          :class="
+            theme === 'light'
+              ? type === 'demo'
+                ? 'text-[#F75709]'
+                : 'text-[#151515]'
+              : type === 'demo'
+                ? 'text-[var(--ui-primary-accent)]'
+                : 'text-[#ffffff]'
+          ">
           {{ title }}
         </h2>
         <span class="subtitle">
@@ -32,7 +47,9 @@
       </div>
 
       <!-- Description -->
-      <p class="description">
+      <p
+        class="description"
+        :class="theme === 'light' ? 'text-[#151515]' : 'text-[#ffffff]'">
         {{ description }}
       </p>
 
@@ -44,8 +61,11 @@
           class="feature-item">
           <UiIconCardCheck
             :is-recommended="isRecommended"
+            :theme="theme"
             class="shrink-0" />
-          <span class="feature-text">
+          <span
+            class="feature-text"
+            :class="theme === 'light' ? 'text-[#151515]' : 'text-[#ffffff]'">
             {{ feature }}
           </span>
         </div>
@@ -69,7 +89,11 @@
         state="warning"
         :outline="true"
         class="badge">
-        <span class="badge-text">{{ $t("landing.sections.accounts__badge_recommended") }}</span>
+        <span
+          class="badge-text"
+          :class="theme === 'light' ? 'text-[#151515]' : 'text-[#ffffff]'">
+          {{ $t("landing.sections.accounts__badge_recommended") }}
+        </span>
       </UiBadge>
     </div>
   </div>
@@ -81,8 +105,6 @@
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiBadge from "~/components/ui/UiBadge.vue";
 
-  const { t } = useI18n();
-
   interface Props {
     type: "demo" | "standard" | "pro" | "tandem" | "islamic";
     title: string;
@@ -91,12 +113,16 @@
     features: string[];
     buttonText: string;
     isRecommended?: boolean;
+    theme?: "dark" | "light";
   }
 
   const props = withDefaults(defineProps<Props>(), {
     isRecommended: false,
+    theme: "dark",
   });
 </script>
+
+<!-- висота картки більше дизайна томущо на інших мовах довше текст -->
 
 <style scoped>
   /* Desktop  */
@@ -179,7 +205,6 @@
     font-size: 13px;
     font-weight: 400;
     line-height: 1.3;
-    color: #ffffff;
     word-break: break-word;
   }
 
@@ -191,7 +216,7 @@
 
   .feature-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     min-height: 26px;
   }
@@ -201,7 +226,6 @@
     font-size: 13px;
     font-weight: 600;
     line-height: 1.3;
-    color: #ffffff;
     word-break: break-word;
     flex: 1;
   }
@@ -238,7 +262,6 @@
     font-size: 12px;
     font-weight: 600;
     line-height: 1.2;
-    color: #ffffff;
   }
 
   /* Tablet (md: 768px - 1279px) */

@@ -177,7 +177,7 @@ onUnmounted(() => resetValidationRegistrationForm());
 
 <style lang="scss" scoped>
 .registration-form {
-  color: #c4c4c4;
+  color:var(--ui-text-main);
   display: flex;
   justify-content: center;
   flex-direction: column;

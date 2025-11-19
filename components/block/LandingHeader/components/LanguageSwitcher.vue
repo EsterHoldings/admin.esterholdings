@@ -28,9 +28,9 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import UiIconGlobe from '~/components/ui/UiIconGlobe.vue';
+  import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+  import { useI18n } from "vue-i18n";
+  import UiIconGlobe from "~/components/ui/UiIconGlobe.vue";
 
   const props = defineProps({
     isInvert: Boolean,
@@ -43,54 +43,54 @@
   const wrapperRef = ref(null);
 
   const languages = {
-    en: 'English',
-    uk: 'Українська',
-    de: 'Deutsch',
-    es: 'Español',
-    fr: 'Français',
-    it: 'Italiano',
-    pt: 'Português',
-    ru: 'Русский',
-    tr: 'Türkçe',
-    he: 'עברית',
-    hi: 'हिन्दी',
-    ja: '日本語',
-    ko: '한국어',
-    zh: '中文',
+    en: "English",
+    uk: "Українська",
+    de: "Deutsch",
+    es: "Español",
+    fr: "Français",
+    it: "Italiano",
+    pt: "Português",
+    ru: "Русский",
+    tr: "Türkçe",
+    he: "עברית",
+    hi: "हिन्दी",
+    ja: "日本語",
+    ko: "한국어",
+    zh: "中文",
   };
 
-  const getFlag = (code) => {
+  const getFlag = code => {
     switch (code) {
-      case 'en':
-        return '🇬🇧';
-      case 'ru':
-        return '?';
-      case 'de':
-        return '🇩🇪';
-      case 'es':
-        return '🇪🇸';
-      case 'fr':
-        return '🇫🇷';
-      case 'it':
-        return '🇮🇹';
-      case 'pt':
-        return '🇵🇹';
-      case 'tr':
-        return '🇹🇷';
-      case 'uk':
-        return '🇺🇦';
-      case 'he':
-        return '🇮🇱';
-      case 'hi':
-        return '🇮🇳';
-      case 'ja':
-        return '🇯🇵';
-      case 'ko':
-        return '🇰🇷';
-      case 'zh':
-        return '🇨🇳';
+      case "en":
+        return "🇬🇧";
+      case "ru":
+        return "?";
+      case "de":
+        return "🇩🇪";
+      case "es":
+        return "🇪🇸";
+      case "fr":
+        return "🇫🇷";
+      case "it":
+        return "🇮🇹";
+      case "pt":
+        return "🇵🇹";
+      case "tr":
+        return "🇹🇷";
+      case "uk":
+        return "🇺🇦";
+      case "he":
+        return "🇮🇱";
+      case "hi":
+        return "🇮🇳";
+      case "ja":
+        return "🇯🇵";
+      case "ko":
+        return "🇰🇷";
+      case "zh":
+        return "🇨🇳";
       default:
-        return '🌐';
+        return "🌐";
     }
   };
 
@@ -98,22 +98,22 @@
     isOpen.value = !isOpen.value;
   };
 
-  const switchLanguage = async (code) => {
+  const switchLanguage = async code => {
     await setLocale(code);
     isOpen.value = false;
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = event => {
     if (!wrapperRef.value?.contains(event.target)) {
       isOpen.value = false;
     }
   };
 
   onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
   });
   onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener("click", handleClickOutside);
   });
 </script>
 
@@ -132,7 +132,7 @@
       top: 40px;
       right: 0;
       width: fit-content;
-      background-color: var(--color-ui-background-opacity-80);
+      background-color: var(--ui-background);
       border-radius: 8px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
       padding: 10px;
@@ -155,7 +155,7 @@
         height: 30px;
         font-size: 16px;
         padding: 0 10px 0 0;
-        color: var(--ui-text-main)
+        color: var(--ui-text-main);
       }
 
       .label {
@@ -179,7 +179,7 @@
         &:hover {
           background-color: var(--color-stroke-ui-dark);
           color: var(--ui-primary-accent);
-          opacity: .7;
+          opacity: 0.7;
         }
 
         &.active {
