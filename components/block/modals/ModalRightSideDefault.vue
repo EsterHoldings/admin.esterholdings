@@ -1,13 +1,29 @@
 <template>
   <div>
-    <div class="modal-overlay"
-         :class="{ open: isOpen }"
-         @click="handleOverlayClick"
+    <div
+        class="modal-overlay"
+        :class="{ open: isOpen }"
+        @click="handleOverlayClick"
     ></div>
-    <div class="modal-right-side"
-         :class="{ open: isOpen }"
-         @click.stop
+
+    <div
+        class="modal-right-side"
+        :class="{ open: isOpen }"
+        @click.stop
+        @touchstart.passive="onTouchStart"
+        @touchend.passive="onTouchEnd"
     >
+      <!-- Хрестик -->
+      <button
+          class="modal-close-btn"
+          type="button"
+          aria-label="Закрити"
+          @click="closeModal"
+      >
+        ×
+      </button>
+
+      <!-- Контент модалки -->
       <slot :close="closeModal" />
     </div>
   </div>
@@ -18,10 +34,36 @@ import { ref } from "vue";
 
 const isOpen = ref(false);
 
-const openModal = () => isOpen.value = true;
-const closeModal = () => isOpen.value = false;
-const openCloseModal = () => isOpen.value ? closeModal() : openModal();
+const openModal = () => (isOpen.value = true);
+const closeModal = () => (isOpen.value = false);
+const openCloseModal = () => (isOpen.value ? closeModal() : openModal());
 const handleOverlayClick = () => closeModal();
+
+/**
+ * Свайп для закриття:
+ * якщо користувач провів пальцем по модалці горизонтально
+ * (в будь-який бік) більше ніж на 50px — закриваємо.
+ */
+const touchStartX = ref<number | null>(null);
+
+const onTouchStart = (event: TouchEvent) => {
+  const touch = event.touches[0];
+  touchStartX.value = touch.clientX;
+};
+
+const onTouchEnd = (event: TouchEvent) => {
+  if (touchStartX.value === null) return;
+
+  const touch = event.changedTouches[0];
+  const deltaX = touch.clientX - touchStartX.value;
+
+  // Поріг "свайпа" — 50px
+  if (Math.abs(deltaX) > 50) {
+    closeModal();
+  }
+
+  touchStartX.value = null;
+};
 
 defineExpose({
   openModal,
@@ -64,5 +106,17 @@ defineExpose({
   &.open {
     transform: translateX(0);
   }
+}
+
+/* Хрестик */
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
 }
 </style>
