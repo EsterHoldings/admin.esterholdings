@@ -54,7 +54,8 @@ defineExpose({
   top: 0;
   right: 0;
   height: 100vh;
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   background-color: var(--ui-background);
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
