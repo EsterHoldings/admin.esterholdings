@@ -77,7 +77,7 @@ const handleChangePerPage = (value: any) => {
 <template>
   <div
       v-if="showPagination"
-      class="mt-5 flex items-center justify-between gap-4"
+      class="flex items-center justify-between gap-4"
   >
     <div class="flex items-center">
       <span class="text-sm text-[var(--ui-text-main)]">

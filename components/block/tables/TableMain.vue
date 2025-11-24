@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto relative">
     <table
         class="w-full text-[var(--ui-text-main)] text-sm border-separate border-spacing-0"
     >

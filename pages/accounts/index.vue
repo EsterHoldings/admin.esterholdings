@@ -14,15 +14,14 @@
 </template>
 
 <script lang="ts" setup>
+import AccountsCreateNew from "~/pages/accounts/components/AccountsCreateNew.vue";
 import AccountsPanel from '~/pages/accounts/components/AccountsPanel.vue'
+import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiContainer from '~/components/ui/UiContainer.vue'
+import UiIconPlus from "~/components/ui/UiIconPlus.vue";
 import UiTextH4 from '~/components/ui/UiTextH4.vue'
-
 import { definePageMeta } from '~/.nuxt/imports'
 import { useI18n } from 'vue-i18n'
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconPlus from "~/components/ui/UiIconPlus.vue";
-import AccountsCreateNew from "~/pages/accounts/components/AccountsCreateNew.vue";
 import {inject} from "vue";
 
 definePageMeta({ layout: 'cabinet', middleware: ['auth-client', 'client-check-auth'] })

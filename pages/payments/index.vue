@@ -156,6 +156,12 @@
             </template>
 
             <template #tbody>
+              <div
+                  class="backdrop-blur-[2px] w-full absolute bottom-0 top-[45px] flex items-center justify-center z-10"
+                  v-if="isLoading"
+              >
+                <UiIconSpinnerDefault />
+              </div>
               <template v-if="payments.length">
                 <tr
                     v-for="payment in payments"
@@ -179,28 +185,14 @@
                   <td
                       class="px-4 py-3 truncate max-w-[170px]"
                       :title="payment.payment_system_name"
-                  >
-                    <span>TRC-20</span>
-                  </td>
-
-                  <td class="px-4 py-3 truncate">
-                    {{ payment.currency }}
-                  </td>
-
+                  ><span>TRC-20</span></td>
+                  <td class="px-4 py-3 truncate">{{ payment.currency }}</td>
                   <td
                       class="px-4 py-3 font-bold whitespace-nowrap"
-                      :class="Math.random() < 0.5 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'"
-                  >
-                    {{ payment.amount }}
-                  </td>
-
-                  <td class="px-4 py-3 capitalize whitespace-nowrap">
-                    {{ payment.status }}
-                  </td>
-
-                  <td class="px-4 py-3 text-sm whitespace-nowrap">
-                    {{ new Date(payment.created_at).toLocaleString() }}
-                  </td>
+                      :class="true ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'"
+                  >{{ payment.amount }}</td>
+                  <td class="px-4 py-3 capitalize whitespace-nowrap">{{ payment.status }}</td>
+                  <td class="px-4 py-3 text-sm whitespace-nowrap">{{ new Date(payment.created_at).toLocaleString() }}</td>
                 </tr>
               </template>
             </template>
@@ -218,7 +210,7 @@
 
             <template #pagination>
               <PaginationMain
-                  class="p-5"
+                  class="px-5 py-2"
                   :current-page="currentPage"
                   :total-pages="totalPages"
                   :total="total"
@@ -239,23 +231,24 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n'
-import { computed, onMounted, reactive, ref } from 'vue'
-import { definePageMeta } from '~/.nuxt/imports'
-
+import AccountsCreateNew from "~/pages/accounts/components/AccountsCreateNew.vue";
+import PageStructureContent from '~/components/block/pages/PageStructureContent.vue'
+import PageStructureDefault from '~/components/block/pages/PageStructureDefault.vue'
+import PaginationMain from '~/components/block/paginations/PaginationMain.vue'
+import TableMain from '~/components/block/tables/TableMain.vue'
 import UiButtonDefault from '~/components/ui/UiButtonDefault.vue'
+import UiIconCopy from '~/components/ui/UiIconCopy.vue'
+import UiIconSearch from '~/components/ui/UiIconSearch.vue'
+import UiIconSort from '~/components/ui/UiIconSort.vue'
+import UiIconSpinnerDefault from '~/components/ui/UiIconSpinnerDefault.vue'
 import UiIconUpdate from '~/components/ui/UiIconUpdate.vue'
 import UiInput from '~/components/ui/UiInput.vue'
-import UiIconSort from '~/components/ui/UiIconSort.vue'
-import useAppCore from '~/composables/useAppCore'
-import UiIconCopy from '~/components/ui/UiIconCopy.vue'
 import UiTextH4 from '~/components/ui/UiTextH4.vue'
-import UiIconSpinnerDefault from '~/components/ui/UiIconSpinnerDefault.vue'
-import UiIconSearch from '~/components/ui/UiIconSearch.vue'
-import PageStructureDefault from '~/components/block/pages/PageStructureDefault.vue'
-import PageStructureContent from '~/components/block/pages/PageStructureContent.vue'
-import TableMain from '~/components/block/tables/TableMain.vue'
-import PaginationMain from '~/components/block/paginations/PaginationMain.vue'
+import CreateNewDeposit from '~/pages/payments/create/index.vue'
+import useAppCore from '~/composables/useAppCore'
+import { definePageMeta } from '~/.nuxt/imports'
+import { useI18n } from 'vue-i18n'
+import {computed, inject, onMounted, reactive, ref} from 'vue'
 
 definePageMeta({
   layout: 'cabinet',
@@ -263,6 +256,8 @@ definePageMeta({
 })
 
 const { t } = useI18n({ useScope: 'global' })
+const { openModal } = inject("modalControl") as { openModal: Function };
+
 const appCore = useAppCore()
 
 const ORDER_DIRECTION_ASC = 'asc'
@@ -270,7 +265,7 @@ const ORDER_DIRECTION_DESC = 'desc'
 
 const search = ref('')
 const total = ref(0)
-const perPage = ref(5)
+const perPage = ref(6)
 const currentPage = ref(1)
 const orderBy = ref<string>('created_at')
 const orderDirection = ref<string>(ORDER_DIRECTION_DESC)
@@ -367,6 +362,9 @@ const copyToClipboard = (paymentId: string) => {
 
 const handleClickCreateNewDeposit = async () => {
   console.log('clickCreateNewDeposit')
+  openModal(CreateNewDeposit, {
+    title: t("cabinet.accounts.accounts-form.title"),
+  });
 }
 
 const handleClickUpdate = async () => {

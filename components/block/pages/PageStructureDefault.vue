@@ -11,6 +11,3 @@ import UiContainer from '~/components/ui/UiContainer.vue'
     <slot name="content" />
   </UiContainer>
 </template>
-
-<style scoped lang="scss">
-</style>
