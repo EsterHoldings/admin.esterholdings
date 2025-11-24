@@ -31,6 +31,7 @@
   </UiContainer>
 </template>
 
+
 <script lang="ts" setup>
 import useAppCore from '~/composables/useAppCore'
 import { definePageMeta } from '~/.nuxt/imports'
