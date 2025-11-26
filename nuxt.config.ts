@@ -141,9 +141,9 @@ export default defineNuxtConfig({
             theme_color: '#0f172a',
             background_color: '#0b1220',
             icons: [
-                {src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png'},
-                {src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png'},
-                {src: '/pwa-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable'},
+                {src: '/favicon/favicon.png', sizes: '192x192', type: 'image/png'},
+                {src: '/favicon/favicon.png', sizes: '512x512', type: 'image/png'},
+                {src: '/favicon/favicon.png', sizes: '512x512', type: 'image/png', purpose: 'maskable'},
             ],
         },
         workbox: {
