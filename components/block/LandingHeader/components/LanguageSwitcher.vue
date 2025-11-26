@@ -144,7 +144,7 @@
         height: max-content;
         top: 30px;
         bottom: 0;
-        left: 0;
+        right: 0;
       }
 
       .flag {
