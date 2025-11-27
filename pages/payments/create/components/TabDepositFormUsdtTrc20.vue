@@ -1,181 +1,26 @@
-<!--<template>-->
-<!--  <div class="tab-deposit__wrapper">-->
-<!--    <UiTextH5 class="tab-deposit__title">USDT TRC-20</UiTextH5>-->
-
-<!--    <div class="tab-deposit__form">-->
-<!--      <UiFormControl-->
-<!--          class="tab-deposit__form_field"-->
-<!--          label="Номер счета (аккаунт)"-->
-<!--          :errors="validatorUsdtTrcDataForm?.errorsFormData?.accountId?.errors"-->
-<!--      >-->
-<!--        <UiSelect-->
-<!--            :data="accounts"-->
-<!--            :isDirty="validatorUsdtTrcDataForm.errorsFormData?.accountId?.isDirty"-->
-<!--            :isInvalid="validatorUsdtTrcDataForm.errorsFormData?.accountId?.errors?.length > 0"-->
-<!--            @change="handleChangeAccount"-->
-<!--            @loadMore="handleLoadMoreAccounts"-->
-<!--        />-->
-<!--      </UiFormControl>-->
-
-<!--      <pre>{{accounts}}</pre>-->
-
-<!--      <UiFormControl-->
-<!--          class="tab-deposit__form_field"-->
-<!--          label="Сумма"-->
-<!--          :errors="validatorUsdtTrcDataForm?.errorsFormData?.amount?.errors"-->
-<!--      >-->
-<!--        <UiInput-->
-<!--            type="number"-->
-<!--            placeholder="Сумма USD"-->
-<!--            @input="validatorUsdtTrcDataForm.doValidateField('amount', $event.target.value)"-->
-<!--            @blur="validatorUsdtTrcDataForm.doValidateField('amount', $event.target.value)"-->
-<!--            :value="formData.amount"-->
-<!--            :isDirty="validatorUsdtTrcDataForm.errorsFormData?.amount?.isDirty"-->
-<!--            :isInvalid="validatorUsdtTrcDataForm.errorsFormData?.amount?.errors?.length > 0"-->
-<!--        />-->
-<!--      </UiFormControl>-->
-
-<!--      <UiFormControl-->
-<!--          class="tab-deposit__form_field"-->
-<!--          label="Комментарий"-->
-<!--          :errors="validatorUsdtTrcDataForm.errorsFormData?.comment?.errors"-->
-<!--      >-->
-<!--        <UiTextarea-->
-<!--            type="text"-->
-<!--            placeholder="Ваш коментарий"-->
-<!--            @input="validatorUsdtTrcDataForm.doValidateField('comment', $event.target.value)"-->
-<!--            @blur="validatorUsdtTrcDataForm.doValidateField('comment', $event.target.value)"-->
-<!--            :value="formData.comment"-->
-<!--            :isDirty="validatorUsdtTrcDataForm.errorsFormData?.comment?.isDirty"-->
-<!--            :isInvalid="validatorUsdtTrcDataForm.errorsFormData?.comment?.errors?.length > 0"-->
-<!--        />-->
-<!--      </UiFormControl>-->
-
-<!--      <UiButtonDefault-->
-<!--          state="info&#45;&#45;outline"-->
-<!--          @click="validateUsdtTrcDataForm(handleSubmit)"-->
-<!--      >-->
-<!--        Создать депозит-->
-<!--      </UiButtonDefault>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</template>-->
-
-<!--<script lang="ts" setup>-->
-<!--import useAppCore from "~/composables/useAppCore";-->
-<!--import {formData} from "~/pages/payments/create/composables/TabDepositFormUsdtTrc20";-->
-<!--import {onMounted, ref} from "vue";-->
-<!--import {resetFormData, resetValidationUsdtTrcDataForm, validateUsdtTrcDataForm, validatorUsdtTrcDataForm} from "~/pages/payments/create/composables/TabDepositFormUsdtTrc20/validation";-->
-
-<!--import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";-->
-<!--import UiFormControl from "~/components/ui/UiFormControl.vue";-->
-<!--import UiInput from "~/components/ui/UiInput.vue";-->
-<!--import UiSelect from "~/components/ui/UiSelect.vue";-->
-<!--import UiTextH5 from "~/components/ui/UiTextH5.vue";-->
-<!--import UiTextarea from "~/components/ui/UiTextarea.vue";-->
-<!--import {useToast} from "vue-toastification";-->
-<!--import {navigateTo} from "nuxt/app";-->
-
-<!--interface ResponseDTO {-->
-<!--  success: Boolean;-->
-<!--  data: any;-->
-<!--  errors: any;-->
-<!--}-->
-
-<!--const props = defineProps({-->
-<!--  paymentSystem: {-->
-<!--    type: Object,-->
-<!--    required: true-->
-<!--  }-->
-<!--})-->
-
-<!--const toast = useToast();-->
-<!--const appCore = useAppCore()-->
-<!--const accounts = [];-->
-
-<!--const handleSubmit = async () => {-->
-<!--  try {-->
-<!--    formData.paymentSystemId = props.paymentSystem.id;-->
-<!--    const response:any = await appCore.deposit.post(formData);-->
-<!--    const redirectUrl = response.data.data.redirectUrl;-->
-<!--    window.open(redirectUrl, '_blank', 'noopener');-->
-<!--    navigateTo("/payments");-->
-<!--  } catch (e) {-->
-<!--    toast.error('Oops =( We have some problems.')-->
-<!--  }-->
-<!--}-->
-
-<!--const handleChangeAccount = (value: any) => {-->
-<!--  formData.accountId = value;-->
-
-<!--  validatorUsdtTrcDataForm.errorsFormData.accountId.isDirty = true;-->
-<!--  validatorUsdtTrcDataForm.doValidateField('accountId', value)-->
-<!--}-->
-
-<!--const handleLoadMoreAccounts = async () => {-->
-<!--  console.log("Load More Accounts");-->
-<!--  loadAccountsPage.value = loadAccountsPage.value + 1;-->
-<!--  await loadAccounts();-->
-<!--}-->
-
-<!--const loadAccountsPage = ref(1);-->
-<!--const loadAccountsPerPage = ref(10);-->
-<!--const loadAccounts = async () => {-->
-<!--  const response = await appCore.accounts.get({-->
-<!--    perPage: loadAccountsPerPage.value,-->
-<!--    page: loadAccountsPage.value,-->
-<!--  })-->
-
-<!--  const accountsList = response.data.data.data-->
-
-<!--  accounts.push(-->
-<!--      ...accountsList.map(account => ({-->
-<!--        id: account.id,-->
-<!--        value: account.id,-->
-<!--        text: `-->
-<!--        <div style="display:flex; justify-content: space-between; width: 100%;">-->
-<!--          <strong class="w-[33%] flex justify-start">${account.account_type.name}</strong>-->
-<!--          <span class="w-[33%] flex justify-center">${account.number}</span>-->
-<!--          <span class="w-[33%] flex justify-end">$ ${account.balance}</span>-->
-<!--        </div>-->
-<!--      `,-->
-<!--      }))-->
-<!--  )-->
-<!--}-->
-
-<!--onMounted(() => {-->
-<!--  resetFormData();-->
-<!--  resetValidationUsdtTrcDataForm();-->
-<!--  loadAccounts();-->
-<!--})-->
-<!--</script>-->
-
-<!--<style lang="scss" scoped>-->
-<!--.tab-deposit {-->
-<!--  &__wrapper {-->
-
-<!--  }-->
-
-<!--  &__title {-->
-<!--    margin-bottom: 20px;-->
-<!--  }-->
-
-<!--  &__form {-->
-<!--    &_field {-->
-<!--      margin-bottom: 10px;-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-<!--</style>-->
-
-
 <template>
-  <div class="tab-deposit__wrapper">
-    <UiTextH5 class="tab-deposit__title">USDT TRC-20</UiTextH5>
+  <div class="relative">
+    <!-- Overlay while submitting -->
+    <div
+        v-if="isLoadingSubmitBtn"
+        class="absolute inset-0 z-50 flex items-center justify-center rounded-2xl bg-black/20 backdrop-blur-[2px]"
+        aria-live="polite"
+        aria-busy="true"
+    >
+      <div class="flex flex-col items-center gap-3 px-6 py-5 text-center">
+        <UiIconSpinnerDefault />
+        <div class="text-[15px] font-semibold text-white/90">
+          Processing...
+        </div>
+      </div>
+    </div>
 
-    <div class="tab-deposit__form">
+    <UiTextH5 class="mb-5 text-[var(--ui-text-main)]">
+      USDT TRC-20
+    </UiTextH5>
+
+    <div class="flex flex-col gap-3">
       <UiFormControl
-          class="tab-deposit__form_field"
           label="Номер счета (аккаунт)"
           :errors="validatorUsdtTrcDataForm?.errorsFormData?.accountId?.errors"
       >
@@ -190,7 +35,6 @@
       </UiFormControl>
 
       <UiFormControl
-          class="tab-deposit__form_field"
           label="Сумма"
           :errors="validatorUsdtTrcDataForm?.errorsFormData?.amount?.errors"
       >
@@ -206,7 +50,6 @@
       </UiFormControl>
 
       <UiFormControl
-          class="tab-deposit__form_field"
           label="Комментарий"
           :errors="validatorUsdtTrcDataForm.errorsFormData?.comment?.errors"
       >
@@ -221,9 +64,14 @@
         />
       </UiFormControl>
 
-      <UiButtonDefault state="info--outline" @click="validateUsdtTrcDataForm(handleSubmit)">
+      <UiButtonDefault
+          state="info--outline"
+          class="mt-1 inline-flex items-center justify-center gap-2"
+          :disabled="isLoadingSubmitBtn"
+          @click="validateUsdtTrcDataForm(handleSubmit)"
+      >
+        <span>Создать депозит</span>
         <UiIconSpinnerDefault v-if="isLoadingSubmitBtn" />
-        <span v-else>Создать депозит</span>
       </UiButtonDefault>
     </div>
   </div>
@@ -232,7 +80,7 @@
 <script lang="ts" setup>
 import useAppCore from "~/composables/useAppCore";
 import { formData } from "~/pages/payments/create/composables/TabDepositFormUsdtTrc20";
-import {inject, onMounted, ref} from "vue";
+import { inject, onMounted, ref } from "vue";
 import {
   resetFormData,
   resetValidationUsdtTrcDataForm,
@@ -246,27 +94,26 @@ import UiInput from "~/components/ui/UiInput.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiTextarea from "~/components/ui/UiTextarea.vue";
+import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
+
 import { useToast } from "vue-toastification";
 import { navigateTo } from "nuxt/app";
 import useEventBus from "~/composables/useEventBus";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 
 const props = defineProps({
-  paymentSystem: {
-    type: Object,
-    required: true
-  }
+  paymentSystem: { type: Object, required: true }
 });
 
-const { closeModal } = inject("modalControl");
+const modalControl = inject<any>("modalControl", null);
+const closeModal = () => modalControl?.closeModal?.();
 
 const toast = useToast();
 const appCore = useAppCore();
 
-
 const accounts = ref<any[]>([]);
 const loadAccountsPage = ref(1);
 const loadAccountsPerPage = ref(10);
+
 const isLoadingSubmitBtn = ref(false);
 const isLoadingAccounts = ref(false);
 const hasMoreAccounts = ref(true);
@@ -274,9 +121,12 @@ const hasMoreAccounts = ref(true);
 const handleSubmit = async () => {
   try {
     isLoadingSubmitBtn.value = true;
+
     formData.paymentSystemId = props.paymentSystem.id;
+
     const response: any = await appCore.deposit.post(formData);
     const redirectUrl = response.data.data.redirectUrl;
+
     navigateTo("/payments");
     closeModal();
     useEventBus.emit("loadDataForPayments");
@@ -341,14 +191,14 @@ const loadAccounts = async (page: number) => {
     });
 
     const list = extractList(response);
+
     if (!list.length) {
       hasMoreAccounts.value = false;
       loadAccountsPage.value = Math.max(1, page - 1);
       return;
     }
 
-    const next = normalizeAccounts(list);
-    appendUnique(next);
+    appendUnique(normalizeAccounts(list));
     hasMoreAccounts.value = true;
   } catch (e) {
     loadAccountsPage.value = Math.max(1, page - 1);
@@ -367,26 +217,11 @@ const handleLoadMoreAccounts = async () => {
 onMounted(async () => {
   resetFormData();
   resetValidationUsdtTrcDataForm();
+
   accounts.value = [];
   loadAccountsPage.value = 1;
   hasMoreAccounts.value = true;
+
   await loadAccounts(1);
 });
 </script>
-
-<style lang="scss" scoped>
-.tab-deposit {
-  &__wrapper {
-  }
-
-  &__title {
-    margin-bottom: 20px;
-  }
-
-  &__form {
-    &_field {
-      margin-bottom: 10px;
-    }
-  }
-}
-</style>
