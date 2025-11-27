@@ -25,13 +25,13 @@
                 :placeholder="t('cabinet.accounts.search')"
             >
               <template #icon-left>
-                <UiIconSearch />
+                <UiIconSearch/>
               </template>
             </UiInput>
           </div>
 
           <UiButtonDefault state="info--small" @click="handleClickUpdate">
-            <UiIconUpdate :spinning="isLoading" />
+            <UiIconUpdate :spinning="isLoading"/>
           </UiButtonDefault>
         </template>
 
@@ -160,7 +160,7 @@
                   class="backdrop-blur-[2px] w-full absolute bottom-0 top-[45px] flex items-center justify-center z-10"
                   v-if="isLoading"
               >
-                <UiIconSpinnerDefault />
+                <UiIconSpinnerDefault/>
               </div>
               <template v-if="payments.length">
                 <tr
@@ -174,25 +174,42 @@
                         class="cursor-pointer"
                         aria-label="Copy id"
                     >
-                      <UiIconCopy />
+                      <UiIconCopy/>
                     </button>
                   </td>
 
                   <td class="px-4 py-3 truncate max-w-[220px]" :title="payment.account_number">
-                    <span>{{ payment?.account_number }}</span>
+                    <strong>{{ payment?.account_number }}</strong>
                   </td>
 
                   <td
                       class="px-4 py-3 truncate max-w-[170px]"
                       :title="payment.payment_system_name"
-                  ><span>TRC-20</span></td>
-                  <td class="px-4 py-3 truncate">{{ payment.currency }}</td>
+                  >
+                    <span>TRC-20</span>
+                  </td>
+
+                  <td class="px-4 py-3 truncate text-xs text-[var(--ui-primary-main)]">
+                    {{ payment.currency }}
+                  </td>
+
                   <td
                       class="px-4 py-3 font-bold whitespace-nowrap"
                       :class="true ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'"
-                  >{{ payment.amount }}</td>
-                  <td class="px-4 py-3 capitalize whitespace-nowrap">{{ payment.status }}</td>
-                  <td class="px-4 py-3 text-sm whitespace-nowrap">{{ new Date(payment.created_at).toLocaleString() }}</td>
+                  >
+                    {{ payment.amount }}
+                  </td>
+
+                  <td
+                      class="px-4 py-3 capitalize whitespace-nowrap"
+                      :class="statusClass(payment.status)"
+                  >
+                    {{ payment.status }}
+                  </td>
+
+                  <td class="px-4 py-3 text-xs whitespace-nowrap">
+                    {{ new Date(payment.created_at).toLocaleString() }}
+                  </td>
                 </tr>
               </template>
             </template>
@@ -203,7 +220,7 @@
                   <span v-if="!isLoading" class="text-[var(--ui-text-main)]">
                     {{ t('cabinet.billing.nothingToShow') }}
                   </span>
-                  <UiIconSpinnerDefault v-else />
+                  <UiIconSpinnerDefault v-else/>
                 </div>
               </template>
             </template>
@@ -247,8 +264,8 @@ import UiTextH4 from '~/components/ui/UiTextH4.vue'
 import useAppCore from '~/composables/useAppCore'
 import useEventBus from "~/composables/useEventBus";
 
-import { definePageMeta } from '~/.nuxt/imports'
-import { useI18n } from 'vue-i18n'
+import {definePageMeta} from '~/.nuxt/imports'
+import {useI18n} from 'vue-i18n'
 import {computed, inject, onMounted, reactive, ref} from 'vue'
 
 definePageMeta({
@@ -256,8 +273,8 @@ definePageMeta({
   middleware: ['auth-client', 'client-check-auth'],
 })
 
-const { t } = useI18n({ useScope: 'global' })
-const { openModal } = inject("modalControl") as { openModal: Function };
+const {t} = useI18n({useScope: 'global'})
+const {openModal} = inject("modalControl") as { openModal: Function };
 
 const appCore = useAppCore()
 
@@ -307,6 +324,22 @@ async function goNext() {
     currentPage.value++
     await loadData()
   }
+}
+
+const statusClass = (status?: string) => {
+  const s = (status ?? '').trim().toLowerCase()
+
+  const map: Record<string, string> = {
+    pending: 'text-yellow-500',
+    processing: 'text-blue-500',
+    failed: 'text-red-600',
+    rejected: 'text-rose-600',
+    approved: 'text-emerald-600',
+    success: 'text-green-600',
+    successful: 'text-green-600',
+  }
+
+  return map[s] ?? 'text-[var(--ui-text-main)]'
 }
 
 const handleIconClick = (id: string) => {
