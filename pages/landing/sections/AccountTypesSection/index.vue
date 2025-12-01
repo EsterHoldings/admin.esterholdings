@@ -5,6 +5,13 @@
         {{ t("landing.sections.accounts__title") }}
       </UiTextH3>
 
+      <div class="mb-8 md:hidden justify-center flex">
+        <TabsDefault
+          :tabsList="tabsList"
+          @selectTab="handleActiveTab"
+          :activeTabIndex="activeTabIndex" />
+      </div>
+
       <div class="swiper-container-wrapper">
         <Swiper
           class="account-cards-swiper"
@@ -18,7 +25,7 @@
           :slides-offset-after="baseOffset"
           :breakpoints="breakpoints">
           <SwiperSlide
-            v-for="(card, index) in accountCards"
+            v-for="(card, index) in displayedCards"
             :key="index">
             <TheCard
               :type="card.type"
@@ -38,15 +45,29 @@
 
 <script lang="ts" setup>
   import { useI18n } from "vue-i18n";
-  import { computed } from "vue";
+  import { computed, ref, onMounted, onUnmounted } from "vue";
   import { Swiper, SwiperSlide } from "swiper/vue";
   import "swiper/css";
   import UiTextH3 from "~/components/ui/UiTextH3.vue";
   import TheCard from "~/pages/landing/sections/AccountTypesSection/components/TheCard.vue";
   import { useThemeStore } from "~/stores/themeStore";
+  import TabsDefault from "~/components/block/tabs/TabsDefault.vue";
 
   const { t, tm } = useI18n();
   const themeStore = useThemeStore();
+  const activeTabIndex = ref(0);
+
+  const accountTypes = ["Demo", "Standard", "Tandem", "Islamic"] as const;
+
+  const tabsList = computed(() => {
+    return accountTypes.map(type => ({
+      label: type,
+    }));
+  });
+
+  const handleActiveTab = (tabIndex: number) => {
+    activeTabIndex.value = tabIndex;
+  };
 
   /**
    * Ширина градієнтних “шторок” по боках = 100px (див. CSS нижче)
@@ -60,14 +81,14 @@
 
   const breakpoints = {
     320: {
-      slidesPerView: 1.1,
-      slidesOffsetBefore: baseOffset,
-      slidesOffsetAfter: baseOffset,
+      slidesPerView: 1,
+      slidesOffsetBefore: 0,
+      slidesOffsetAfter: 0,
     },
     640: {
-      slidesPerView: 1.5,
-      slidesOffsetBefore: baseOffset,
-      slidesOffsetAfter: baseOffset,
+      slidesPerView: 1,
+      slidesOffsetBefore: 0,
+      slidesOffsetAfter: 0,
     },
     768: {
       slidesPerView: 2.5,
@@ -109,6 +130,23 @@
           .filter(card => card.type !== "pro")
       : [];
   });
+
+  const isMobile = ref(false);
+
+  const displayedCards = computed(() => {
+    if (!isMobile.value) return accountCards.value;
+    const selectedType = accountTypes[activeTabIndex.value].toLowerCase();
+    return accountCards.value.filter(card => card.type === selectedType);
+  });
+
+  onMounted(() => {
+    const checkMobile = () => {
+      isMobile.value = window.innerWidth < 768;
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    onUnmounted(() => window.removeEventListener("resize", checkMobile));
+  });
 </script>
 
 <style scoped>
@@ -118,7 +156,7 @@
   }
 
   /* Бокові градієнтні маски. Вони НЕ перехоплюють події (pointer-events:none) */
-  @media (max-width: 1279px) {
+  @media (min-width: 768px) and (max-width: 1279px) {
     .swiper-container-wrapper::before,
     .swiper-container-wrapper::after {
       content: "";
