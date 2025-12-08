@@ -6,7 +6,7 @@ import UiTextH3 from "~/components/ui/UiTextH3.vue";
 </script>
 
 <template>
-  <PanelDefault class="relative p-3 sm:p-4 md:p-5">
+  <PanelDefault class="relative h-full max-h-[260px] p-3 sm:p-4 md:p-5">
     <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
       <div class="flex flex-col items-center space-y-1 sm:items-start">
         <UiTextSmall class="!text-[var(--color-success)] text-center sm:text-left">
