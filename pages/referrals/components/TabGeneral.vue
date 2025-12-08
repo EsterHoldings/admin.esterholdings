@@ -1,96 +1,124 @@
 <template>
   <div class="flex flex-col gap-5">
-    <div class="grid gap-5 lg:grid-cols-[2fr_1fr]">
-      <PanelDefault>
-        <div class="grid gap-4 p-4 md:grid-cols-[1.4fr_1fr]">
-          <div class="flex flex-col gap-3">
-            <UiTextH4 class="text-[var(--ui-text-main)]">
-              {{ t("cabinet.referrals.general.linkTitle") }}
-            </UiTextH4>
+    <PanelDefault>
+      <div class="grid gap-3 p-4 lg:grid-cols-[2fr_1fr]">
+        <div class="flex min-w-0 flex-col gap-3 rounded-xl bg-[var(--color-stroke-ui-dark)] p-3">
+          <UiTextH4 class="text-[var(--ui-text-main)]">
+            {{ t("cabinet.referrals.general.linkTitle") }}
+          </UiTextH4>
 
-            <div class="rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] p-3">
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.referrals.general.linkHint") }}
-              </UiTextSmall>
-              <UiTextH5
-                class="mt-2 relative inline-flex w-full items-center rounded-lg bg-[var(--ui-background-sidebar)] px-3 py-2.5 pr-10"
-              >
-                <UiTextSmall
-                  ref="referralText"
-                  class="inline-block w-full overflow-hidden text-ellipsis whitespace-nowrap text-[var(--ui-text-main)]"
-                >
-                  {{ referralLink }}
-                </UiTextSmall>
-                <button
-                  type="button"
-                  class="absolute right-2.5 flex items-center justify-center text-[var(--ui-text-main)] transition hover:opacity-80"
-                  :title="t('cabinet.referrals.general.copy')"
-                  @click="copyReferral"
-                >
-                  <UiIconCopy :title="t('cabinet.referrals.general.copy')" />
-                </button>
-              </UiTextH5>
+          <UiTextSmall class="text-[var(--ui-text-secondary)]">
+            {{ t("cabinet.referrals.general.linkHint") }}
+          </UiTextSmall>
 
-              <div class="mt-3 flex flex-wrap items-center gap-3">
-                <UiButtonDefault state="info--small" @click="copyReferral">
-                  {{ t("cabinet.referrals.general.copyButton") }}
-                </UiButtonDefault>
-                <a
-                  :href="telegramShareLink"
-                  target="_blank"
-                  rel="noreferrer"
-                  class="inline-flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-3 py-2 text-sm text-[var(--ui-text-main)] transition hover:bg-[var(--color-stroke-ui-dark)]"
-                >
-                  <UiIconInfo name="telegram" :title="t('cabinet.referrals.general.share')" />
-                  {{ t("cabinet.referrals.general.share") }}
-                </a>
-              </div>
-            </div>
+          <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <UiTextSmall
+              ref="referralText"
+              class="inline-block w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-[var(--ui-background-sidebar)] px-3 py-2 text-[var(--ui-text-main)]"
+            >
+              {{ referralLink }}
+            </UiTextSmall>
+            <button
+              type="button"
+              class="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-sidebar)] text-[var(--ui-text-main)] transition hover:bg-[var(--ui-text-main)] hover:text-[var(--ui-background)]"
+              :title="t('cabinet.referrals.general.copyButton')"
+              @click="copyReferral"
+            >
+              <UiIconCopy class="!h-4 !w-4" />
+            </button>
           </div>
 
-          <div class="flex flex-col items-center justify-center gap-3 rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] p-3">
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              class="share-btn"
+              :title="t('cabinet.referrals.general.shareTelegram')"
+              @click="openShare(telegramShareLink)"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M9.97 16.73 9.82 20c.36 0 .52-.15.71-.33l1.7-1.62 3.52 2.58c.65.36 1.11.17 1.28-.6l2.33-10.94c.21-.95-.34-1.33-.97-1.1L3.94 11.3c-.93.36-.92.88-.16 1.11l3.59 1.12 8.35-5.27c.39-.26.74-.12.45.13"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="share-btn"
+              :title="t('cabinet.referrals.general.shareWhatsApp')"
+              @click="openShare(whatsappShareLink)"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M12.04 2a10 10 0 0 0-8.66 14.94L2 22l5.17-1.35A10 10 0 1 0 12.04 2Zm5.87 14.27c-.24.67-1.4 1.3-1.95 1.38-.5.08-1.1.12-1.77-.11-.41-.13-.94-.3-1.63-.59-2.86-1.23-4.71-4.11-4.85-4.31-.14-.2-1.16-1.54-1.16-2.94 0-1.4.73-2.08 .99-2.36.27-.29.59-.36.79-.36h.57c.18 0 .43-.07.67.5.24.58.82 2 .89 2.14.07.14.12.32.02.52-.1.2-.15.32-.3.49-.15.17-.31.38-.44.52-.15.15-.3.32-.13.63.17.32.76 1.25 1.62 2.02 1.12.99 2.04 1.3 2.35 1.45.3.15.48.12.66-.07.18-.2.77-.9.98-1.2.22-.3.41-.25.69-.15.28.1 1.76.83 2.06.98.3.15.5.22.57.34.07.12.07.69-.17 1.36Z"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="share-btn"
+              :title="t('cabinet.referrals.general.shareMessenger')"
+              @click="openShare(messengerShareLink)"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M12 2C6.48 2 2 6 2 11c0 2.86 1.5 5.42 3.89 7.04v3.1l3.55-1.95c.84.23 1.72.36 2.56.36 5.52 0 10-4 10-9s-4.48-9-10-9Zm4.33 9.4-2.47 2.62-2.46-2.62-4.68 2.62 5.15-5.54 2.46 2.62 4.68-2.62-2.68 2.92Z"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="share-btn"
+              :title="t('cabinet.referrals.general.shareMail')"
+              @click="openShare(mailShareLink)"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M20 4H4a2 2 0 0 0-2 2v.01l10 5.99 10-6V6a2 2 0 0 0-2-2Zm0 4.24-7.6 4.55a1 1 0 0 1-1.05 0L4 8.24V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2Z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center rounded-xl bg-[var(--color-stroke-ui-dark)] p-3">
+          <div class="flex flex-col items-center gap-2">
             <UiQRCode :link="referralLink" />
             <UiTextSmall class="text-center text-[var(--ui-text-secondary)]">
               {{ t("cabinet.referrals.general.qrHint") }}
             </UiTextSmall>
           </div>
         </div>
-      </PanelDefault>
+      </div>
+    </PanelDefault>
 
-      <PanelDefault>
-        <div class="flex h-full flex-col gap-4 p-4">
-          <UiTextH4 class="text-[var(--ui-text-main)]">
-            {{ t("cabinet.referrals.general.summaryTitle") }}
-          </UiTextH4>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="stat-card">
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.referrals.general.totalEarned") }}
-              </UiTextSmall>
-              <UiTextH5 class="text-[var(--ui-text-main)]">${{ summary.totalEarned.toLocaleString() }}</UiTextH5>
-            </div>
-            <div class="stat-card">
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.referrals.general.activeReferrals") }}
-              </UiTextSmall>
-              <UiTextH5 class="text-[var(--ui-text-main)]">{{ summary.active }}</UiTextH5>
-            </div>
-            <div class="stat-card">
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.referrals.general.pendingPayouts") }}
-              </UiTextSmall>
-              <UiTextH5 class="text-[var(--ui-text-main)]">${{ summary.pendingPayouts.toLocaleString() }}</UiTextH5>
-            </div>
-            <div class="stat-card">
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.referrals.general.conversion") }}
-              </UiTextSmall>
-              <UiTextH5 class="text-[var(--ui-text-main)]">{{ summary.conversion }}%</UiTextH5>
-            </div>
-          </div>
+    <PanelDefault>
+      <div class="grid gap-3 p-4 md:grid-cols-2">
+        <div class="stat-card">
+          <UiTextSmall class="text-[var(--ui-text-secondary)]">
+            {{ t("cabinet.referrals.general.totalEarned") }}
+          </UiTextSmall>
+          <UiTextH5 class="text-[var(--ui-text-main)]">${{ summary.totalEarned.toLocaleString() }}</UiTextH5>
         </div>
-      </PanelDefault>
-    </div>
+        <div class="stat-card">
+          <UiTextSmall class="text-[var(--ui-text-secondary)]">
+            {{ t("cabinet.referrals.general.pendingPayouts") }}
+          </UiTextSmall>
+          <UiTextH5 class="text-[var(--ui-text-main)]">${{ summary.pendingPayouts.toLocaleString() }}</UiTextH5>
+        </div>
+        <div class="stat-card">
+          <UiTextSmall class="text-[var(--ui-text-secondary)]">
+            {{ t("cabinet.referrals.general.activeReferrals") }}
+          </UiTextSmall>
+          <UiTextH5 class="text-[var(--ui-text-main)]">{{ summary.active }}</UiTextH5>
+        </div>
+        <div class="stat-card">
+          <UiTextSmall class="text-[var(--ui-text-secondary)]">
+            {{ t("cabinet.referrals.general.conversion") }}
+          </UiTextSmall>
+          <UiTextH5 class="text-[var(--ui-text-main)]">{{ summary.conversion }}%</UiTextH5>
+        </div>
+      </div>
+    </PanelDefault>
 
     <PanelDefault>
       <div class="flex flex-col gap-5 p-4">
@@ -196,7 +224,6 @@ import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-import UiBadge from "~/components/ui/UiBadge.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiIconCopy from "~/components/ui/UiIconCopy.vue";
 import UiIconInfo from "~/components/ui/UiIconInfo.vue";
@@ -318,6 +345,27 @@ const telegramShareLink = computed(() => {
   return `https://t.me/share/url?url=${url}&text=${text}`;
 });
 
+const whatsappShareLink = computed(() => {
+  const url = encodeURIComponent(referralLink);
+  const text = encodeURIComponent(t("cabinet.referrals.general.shareText"));
+  return `https://wa.me/?text=${text}%20${url}`;
+});
+
+const messengerShareLink = computed(() => {
+  const url = encodeURIComponent(referralLink);
+  return `https://www.facebook.com/dialog/send?app_id=000000000&link=${url}`;
+});
+
+const mailShareLink = computed(() => {
+  const subject = encodeURIComponent(t("cabinet.referrals.general.linkTitle"));
+  const body = encodeURIComponent(`${t("cabinet.referrals.general.shareText")} ${referralLink}`);
+  return `mailto:?subject=${subject}&body=${body}`;
+});
+
+const openShare = (link: string) => {
+  window.open(link, "_blank", "noopener,noreferrer");
+};
+
 const statusLabel = (status: string) => {
   const map: Record<string, string> = {
     active: t("cabinet.referrals.general.status.active"),
@@ -334,5 +382,33 @@ const statusLabel = (status: string) => {
   border-radius: 10px;
   padding: 12px;
   background: var(--color-stroke-ui-dark);
+}
+
+.pill {
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: var(--ui-text-main);
+  background: var(--ui-background-sidebar);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.share-btn {
+  height: 36px;
+  width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--color-stroke-ui-light);
+  color: var(--ui-text-main);
+  background: var(--ui-background-sidebar);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.share-btn:hover {
+  background: var(--ui-text-main);
+  color: var(--ui-background);
 }
 </style>
