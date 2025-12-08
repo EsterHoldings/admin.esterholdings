@@ -8,18 +8,96 @@
       </div>
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- LEFT COLUMN: widgets + MT4 -->
+        <div class="col-span-1 flex flex-col gap-6">
+          <!-- 4 widgets -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:max-h-[260px]">
+            <TotalAmountWidget />
+            <PendingTransactionsWidget />
+            <MissedNotificationsWidget />
+            <ReferralTotalAmount />
+          </div>
 
-        <div class="col-span-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TotalAmountWidget />
-          <PendingTransactionsWidget />
-          <MissedNotificationsWidget />
-          <ReferralTotalAmount />
+          <!-- MT4 accounts -->
+          <PanelDefault>
+            <div class="rounded-2xl p-4 sm:p-[1.6rem]">
+              <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div class="text-[18px] font-semibold text-[var(--ui-text-main)]">
+                  {{ t("cabinet.dashboard.mt4.title") }}
+                </div>
+
+                <NuxtLink to="/accounts" class="w-full sm:w-auto">
+                  <UiButtonDefault state="primary" class="w-full sm:w-auto">
+                    {{ t("cabinet.dashboard.mt4.openNewAccount") }}
+                  </UiButtonDefault>
+                </NuxtLink>
+              </div>
+
+              <div
+                  class="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              >
+                <table class="min-w-[520px] w-full border-collapse text-sm text-white">
+                  <thead>
+                  <tr>
+                    <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)] whitespace-nowrap">
+                      {{ t("cabinet.dashboard.mt4.table.account") }}
+                    </th>
+                    <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)] whitespace-nowrap">
+                      {{ t("cabinet.dashboard.mt4.table.type") }}
+                    </th>
+                    <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)] whitespace-nowrap">
+                      {{ t("cabinet.dashboard.mt4.table.balance") }}
+                    </th>
+                    <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)] whitespace-nowrap">
+                      {{ t("cabinet.dashboard.mt4.table.status") }}
+                    </th>
+                  </tr>
+                  </thead>
+
+                  <tbody>
+                  <tr>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">123456</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">Real</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">$5,000.00</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">
+                        <span class="font-medium text-[#1cbf73]">
+                          {{ t("cabinet.dashboard.mt4.table.active") }}
+                        </span>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">234567</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">Real</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">$5,000.00</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">
+                        <span class="font-medium text-[#1cbf73]">
+                          {{ t("cabinet.dashboard.mt4.table.active") }}
+                        </span>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">345678</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">Demo</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">$10,000.00</td>
+                    <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)] whitespace-nowrap">
+                        <span class="font-medium text-[#a3aed0]">
+                          {{ t("cabinet.dashboard.mt4.table.inactive") }}
+                        </span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </PanelDefault>
         </div>
 
-        <!-- Статус верификации -->
+        <!-- RIGHT COLUMN: verification -->
         <PanelDefault class="col-span-1">
-          <div class="rounded-2xl p-2">
-            <div class="mb-2 flex items-center justify-between gap-4">
+          <div class="rounded-2xl p-2 sm:p-3">
+            <div class="mb-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div class="text-[18px] font-semibold text-[var(--ui-text-main)]">
                   {{ t("cabinet.dashboard.accountVerification.title") }}
@@ -29,165 +107,107 @@
                 </div>
               </div>
 
-              <div class="flex items-center justify-end">
-                <div class="flex flex-col mr-3">
-                  <UiTextH5 class="flex justify-end items-center">Родіон Максименко</UiTextH5>
-                  <UiTextParagraph class="flex justify-end items-center">
+              <div class="flex items-center justify-between gap-3 sm:justify-end sm:gap-4">
+                <div class="flex flex-col text-left sm:mr-3 sm:text-right">
+                  <UiTextH5 class="flex items-center justify-start sm:justify-end">Родіон Максименко</UiTextH5>
+                  <UiTextParagraph class="flex items-center justify-start sm:justify-end">
                     <strong>test@gmail.com</strong>
                   </UiTextParagraph>
-                  <UiTextSmall class="flex justify-end items-center">10.05.1993</UiTextSmall>
+                  <UiTextSmall class="flex items-center justify-start sm:justify-end">10.05.1993</UiTextSmall>
                 </div>
-                <NuxtLink to="/profile">
-                  <UiImageCircle
-                      :twoChars="'TU'"
-                      :src="''"
-                  />
+
+                <NuxtLink to="/profile" class="shrink-0">
+                  <UiImageCircle :twoChars="'TU'" :src="''" />
                 </NuxtLink>
               </div>
             </div>
 
             <ul class="mt-5 list-none p-0 text-sm text-[var(--ui-text-secondary)]">
-
-              <!-- Фото пользователя -->
-              <!-- Данные пользователя -->
-              <!-- Верификация почты -->
-              <!-- Верификация документов -->
-              <!-- Верификация первого платежа -->
-
-              <li class="border-b border-b-[var(--color-stroke-ui-light)] mb-2 p-2 bg-[--color-stroke-ui-dark] rounded-sm hover:opacity-75">
-                <div class="flex h-[35px] items-center justify-start pb-3">
-                  <span class="w-28 shrink-0 truncate cursor-pointer" title="Фото користувача">Фото користувача</span>
+              <li
+                  class="mb-2 rounded-sm border-b border-b-[var(--color-stroke-ui-light)] bg-[--color-stroke-ui-dark] p-2 hover:opacity-75 sm:p-3"
+              >
+                <div class="flex min-h-[35px] items-start gap-3 pb-2 sm:items-center sm:pb-3">
+                  <span class="w-24 shrink-0 cursor-pointer truncate sm:w-28" title="Фото користувача">
+                    Фото користувача
+                  </span>
                   <UiIconFailed />
-                  <span class="ml-5">{{ t("cabinet.dashboard.accountVerification.profilePhoto") }}</span>
+                  <span class="flex-1 min-w-0 leading-snug sm:ml-5 sm:truncate">
+                    {{ t("cabinet.dashboard.accountVerification.profilePhoto") }}
+                  </span>
                 </div>
                 <UiTextSmall class="mb-2 !text-[var(--ui-primary-accent)]">
                   Загрузите фото пользователя, система в скоро времени проведет автоматическую ферификацию!
                 </UiTextSmall>
               </li>
 
-              <li class="border-b border-b-[var(--color-stroke-ui-light)] mb-2 p-2 bg-[--color-stroke-ui-dark] rounded-sm hover:opacity-75">
-                <div class="flex h-[35px] items-center justify-start pb-3">
-                  <span class="w-28 shrink-0 truncate cursor-pointer" title="Дані користувача">Дані користувача</span>
+              <li
+                  class="mb-2 rounded-sm border-b border-b-[var(--color-stroke-ui-light)] bg-[--color-stroke-ui-dark] p-2 hover:opacity-75 sm:p-3"
+              >
+                <div class="flex min-h-[35px] items-start gap-3 pb-2 sm:items-center sm:pb-3">
+                  <span class="w-24 shrink-0 cursor-pointer truncate sm:w-28" title="Дані користувача">
+                    Дані користувача
+                  </span>
                   <UiIconWarning />
-                  <span class="ml-5">{{ t("cabinet.dashboard.accountVerification.profileInProgress") }}</span>
+                  <span class="flex-1 min-w-0 leading-snug sm:ml-5 sm:truncate">
+                    {{ t("cabinet.dashboard.accountVerification.profileInProgress") }}
+                  </span>
                 </div>
                 <UiTextSmall class="mb-2 !text-[var(--ui-primary-accent)]">
                   Заповніть персональні дані в профілі — після цього система автоматично продовжить верифікацію.
                 </UiTextSmall>
               </li>
 
-              <li class="border-b border-b-[var(--color-stroke-ui-light)] mb-2 p-2 bg-[--color-stroke-ui-dark] rounded-sm hover:opacity-75">
-                <div class="flex h-[35px] items-center justify-start pb-3">
-                  <span class="w-28 shrink-0 truncate cursor-pointer" title="Верифікація пошти">Верифікація пошти</span>
+              <li
+                  class="mb-2 rounded-sm border-b border-b-[var(--color-stroke-ui-light)] bg-[--color-stroke-ui-dark] p-2 hover:opacity-75 sm:p-3"
+              >
+                <div class="flex min-h-[35px] items-start gap-3 pb-2 sm:items-center sm:pb-3">
+                  <span class="w-24 shrink-0 cursor-pointer truncate sm:w-28" title="Верифікація пошти">
+                    Верифікація пошти
+                  </span>
                   <UiIconWarning />
-                  <span class="ml-5">{{ t("cabinet.dashboard.accountVerification.profileInProgress") }}</span>
+                  <span class="flex-1 min-w-0 leading-snug sm:ml-5 sm:truncate">
+                    {{ t("cabinet.dashboard.accountVerification.profileInProgress") }}
+                  </span>
                 </div>
                 <UiTextSmall class="mb-2 !text-[var(--ui-primary-accent)]">
                   Підтвердіть email через лист — інколи він потрапляє в «Спам» або «Промоакції».
                 </UiTextSmall>
               </li>
 
-              <li class="border-b border-b-[var(--color-stroke-ui-light)] mb-2 p-2 bg-[--color-stroke-ui-dark] rounded-sm hover:opacity-75">
-                <div class="flex h-[35px] items-center justify-start">
-                  <span class="w-28 shrink-0 truncate cursor-pointer" title="Документи">Документи</span>
+              <li
+                  class="mb-2 rounded-sm border-b border-b-[var(--color-stroke-ui-light)] bg-[--color-stroke-ui-dark] p-2 hover:opacity-75 sm:p-3"
+              >
+                <div class="flex min-h-[35px] items-start gap-3 sm:items-center">
+                  <span class="w-24 shrink-0 cursor-pointer truncate sm:w-28" title="Документи">
+                    Документи
+                  </span>
                   <UiIconSuccess />
-                  <span class="ml-5">{{ t("cabinet.dashboard.accountVerification.documentVerified") }}</span>
+                  <span class="flex-1 min-w-0 leading-snug sm:ml-5 sm:truncate">
+                    {{ t("cabinet.dashboard.accountVerification.documentVerified") }}
+                  </span>
                 </div>
-                <!--<UiTextSmall class="mb-2 !text-[var(&#45;&#45;ui-primary-accent)]"></UiTextSmall>-->
               </li>
 
-              <li class="p-2 bg-[--color-stroke-ui-dark] rounded-sm hover:opacity-75">
-                <div class="flex h-[35px] items-center justify-start pb-3">
-                  <span class="w-28 shrink-0 truncate cursor-pointer" title="1-й депозит">1-й депозит</span>
+              <li class="rounded-sm bg-[--color-stroke-ui-dark] p-2 hover:opacity-75 sm:p-3">
+                <div class="flex min-h-[35px] items-start gap-3 pb-2 sm:items-center sm:pb-3">
+                  <span class="w-24 shrink-0 cursor-pointer truncate sm:w-28" title="1-й депозит">
+                    1-й депозит
+                  </span>
                   <UiIconWarning />
-                  <span class="ml-5">{{ t("cabinet.dashboard.accountVerification.paymentInProgress") }}</span>
+                  <span class="flex-1 min-w-0 leading-snug sm:ml-5 sm:truncate">
+                    {{ t("cabinet.dashboard.accountVerification.paymentInProgress") }}
+                  </span>
                 </div>
                 <UiTextSmall class="mb-2 !text-[var(--ui-primary-accent)]">
                   Зробіть перший депозит — після зарахування система автоматично оновить статус.
                 </UiTextSmall>
               </li>
-
             </ul>
           </div>
         </PanelDefault>
 
-        <!-- Краткий список аккаунтов или избранные (не более 5 шт.) -->
-        <div class="col-span-2">
-          <PanelDefault>
-            <div class="rounded-2xl p-[1.6rem]">
-              <div class="mb-5 flex items-center justify-between gap-4">
-                <div class="text-[18px] font-semibold text-[var(--ui-text-main)]">
-                  {{ t("cabinet.dashboard.mt4.title") }}
-                </div>
-
-                <div>
-                  <NuxtLink to="/accounts">
-                    <UiButtonDefault state="primary">
-                      {{ t("cabinet.dashboard.mt4.openNewAccount") }}
-                    </UiButtonDefault>
-                  </NuxtLink>
-                </div>
-              </div>
-
-              <table class="w-full border-collapse text-sm text-white">
-                <thead>
-                <tr>
-                  <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)]">
-                    {{ t("cabinet.dashboard.mt4.table.account") }}
-                  </th>
-                  <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)]">
-                    {{ t("cabinet.dashboard.mt4.table.type") }}
-                  </th>
-                  <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)]">
-                    {{ t("cabinet.dashboard.mt4.table.balance") }}
-                  </th>
-                  <th class="pb-2 text-left font-normal text-[var(--ui-text-secondary)]">
-                    {{ t("cabinet.dashboard.mt4.table.status") }}
-                  </th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">123456</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">Real</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">$5,000.00</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">
-                      <span class="font-medium text-[#1cbf73]">
-                        {{ t("cabinet.dashboard.mt4.table.active") }}
-                      </span>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">234567</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">Real</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">$5,000.00</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">
-                      <span class="font-medium text-[#1cbf73]">
-                        {{ t("cabinet.dashboard.mt4.table.active") }}
-                      </span>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">345678</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">Demo</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">$10,000.00</td>
-                  <td class="border-t border-[#2e335a] py-2 text-[var(--ui-text-secondary)]">
-                      <span class="font-medium text-[#a3aed0]">
-                        {{ t("cabinet.dashboard.mt4.table.inactive") }}
-                      </span>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </PanelDefault>
-        </div>
-
-        <!-- Список транзакций (Сортировка от новых к старым, и сначала всегда идут те транзакции которые в обработке) -->
-        <TransactionsWidget class="col-span-2" />
+        <!-- FULL WIDTH: transactions -->
+        <TransactionsWidget class="col-span-1 lg:col-span-2" />
       </div>
     </div>
   </UiContainer>
