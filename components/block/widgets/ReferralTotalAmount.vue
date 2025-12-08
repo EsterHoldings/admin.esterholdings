@@ -8,15 +8,19 @@ import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 </script>
 
 <template>
-  <PanelDefault class="p-4 relative">
-    <div class="flex flex-col justify-center items-center w-full h-full">
-      <div class="flex flex-col justify-center items-center w-full">
-        <UiTextSmall class="!text-[var(--color-success)]">Referral total amount</UiTextSmall>
-        <UiTextH3 class="!text-[var(--color-success)]">$ 24.00</UiTextH3>
+  <PanelDefault class="relative p-3 sm:p-4 md:p-5">
+    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+      <div class="flex flex-col items-center space-y-1 sm:items-start">
+        <UiTextSmall class="!text-[var(--color-success)] text-center sm:text-left">
+          Referral total amount
+        </UiTextSmall>
+        <UiTextH3 class="!text-[var(--color-success)] text-center sm:text-left">
+          $ 24.00
+        </UiTextH3>
       </div>
-      <div class="absolute right-2 top-2 flex items-center justify-center gap-2 px-1">
-        <UiIconWithdraw class="text-[var(--ui-text-main)] !w-[16px] !h-[16px] !hover:text-[red]" />
-        <UiIconPayment class="text-[var(--ui-text-main)] !w-[16px] !h-[16px] !hover:text-[red]" />
+      <div class="flex items-start justify-center gap-2 sm:justify-end">
+        <UiIconWithdraw class="text-[var(--ui-text-main)] !h-4 !w-4 !hover:text-[red] sm:!h-5 sm:!w-5" />
+        <UiIconPayment class="text-[var(--ui-text-main)] !h-4 !w-4 !hover:text-[red] sm:!h-5 sm:!w-5" />
       </div>
     </div>
   </PanelDefault>
@@ -25,4 +29,3 @@ import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 <style scoped lang="scss">
 
 </style>
-
