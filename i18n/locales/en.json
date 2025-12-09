@@ -1031,7 +1031,17 @@
         },
         "empty": "No referrals yet",
         "copied": "Link copied",
-        "copyError": "Could not copy link"
+        "copyError": "Could not copy link",
+        "account": {
+          "title": "Your referral account",
+          "description": "Commissions land here automatically. You can transfer available funds to any MT account.",
+          "balance": "Balance",
+          "available": "Available",
+          "pending": "In transit",
+          "select": "Choose MT account",
+          "transferHint": "Transfer available balance to selected MT account (backend needed)."
+        },
+        "transferLabel": "Transfer"
       },
       "settings": {
         "title": "Referral settings",

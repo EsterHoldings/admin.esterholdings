@@ -1,5 +1,5 @@
 <template>
-  <PanelDefault>
+  <PanelDefault class="border-none bg-transparent shadow-none">
     <div class="flex flex-col gap-4 p-4">
       <UiTextH4 class="text-[var(--ui-text-main)]">
         {{ t("cabinet.referrals.settings.title") }}
@@ -74,9 +74,8 @@ const { t } = useI18n({ useScope: "global" });
 
 <style scoped>
 .setting-card {
-  border: 1px solid var(--color-stroke-ui-light);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 14px;
-  background: var(--color-stroke-ui-dark);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.05));
 }
 </style>
