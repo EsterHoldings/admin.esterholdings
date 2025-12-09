@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-dvh flex flex-col bg-[var(--ui-background)] bg-blend-multiply">
+  <div class="min-h-dvh flex flex-col bg-[var(--ui-background)] bg-blend-multiply pb-safe-area">
     <TheCabinetHeader class="shrink-0" />
 
     <div class="flex-1 min-h-0 flex">
@@ -16,14 +16,14 @@
       >
         <main
           :key="route.fullPath"
-          class="flex-1 min-h-0 overflow-y-auto no-scrollbar box-border w-full p-1 lg:pl-[250px] text-white"
+          class="flex-1 min-h-0 overflow-y-auto no-scrollbar box-border w-full p-1 lg:pl-[250px] text-white pb-safe-area"
         >
           <slot />
         </main>
       </Transition>
     </div>
 
-    <TheFooter class="h-[60px] shrink-0" />
+    <TheFooter class="h-[60px] shrink-0 pb-safe-area" />
   </div>
 </template>
 

@@ -37,6 +37,10 @@ body {
   padding-right: env(safe-area-inset-right, 0px);
 }
 
+.pb-safe-area {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 table {
   tr {
     border: none;
