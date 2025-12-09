@@ -54,7 +54,7 @@
             </UiSelect>
 
             <div
-              class="!h-[40px] overflow-hidden order-3 md:order-none flex flex-wrap items-center justify-start rounded-2xl border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] sm:flex-nowrap sm:justify-center"
+              class="!h-[40px] overflow-hidden order-3 md:order-none flex flex-wrap items-center justify-start rounded-[8px] border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] sm:flex-nowrap sm:justify-center"
             >
               <button
                 v-for="option in viewOptions"
