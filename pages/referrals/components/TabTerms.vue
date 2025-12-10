@@ -1,5 +1,5 @@
 <template>
-  <PanelDefault class="!border-none">
+  <PanelDefault class="!border-none text-[var(--ui-text-main)]">
     <div class="flex flex-col gap-4 p-4">
       <UiTextH4 class="text-[var(--ui-text-main)]">
         {{ t("cabinet.referrals.terms.title") }}
@@ -222,6 +222,7 @@ const networkIncome = [
   background: transparent;
   border-radius: 12px;
   padding: 12px 2px;
+  color: var(--ui-text-main);
 }
 
 .term-head {
@@ -352,6 +353,7 @@ const networkIncome = [
   padding: 8px 10px;
   display: grid;
   gap: 2px;
+  color: var(--ui-text-main);
 }
 
 .bulletless {

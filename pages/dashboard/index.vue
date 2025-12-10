@@ -16,7 +16,7 @@
 
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <!-- LEFT COLUMN: widgets + MT4 -->
-        <div class="col-span-1 flex flex-col gap-5">
+        <div class="col-span-1 flex flex-col gap-5 text-[var(--ui-text-main)]">
           <!-- 4 widgets -->
           <div class="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
             <TotalAmountWidget />
@@ -29,7 +29,7 @@
           <PanelDefault>
             <div class="rounded-2xl p-2 sm:p-3">
               <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <div class="text-[18px] font-semibold text-[var(--ui-text-main)]">
+                <div class="text-[18px] font-semibold">
                   {{ t("cabinet.dashboard.mt4.title") }}
                 </div>
 
@@ -46,10 +46,10 @@
                   :key="account.id"
                   class="mt4-card"
                 >
-                  <div class="flex flex-wrap items-center gap-4 text-sm text-[var(--ui-text-main)] sm:flex-nowrap sm:gap-5">
+                  <div class="flex flex-wrap items-center gap-4 text-sm sm:flex-nowrap sm:gap-5">
                     <button
                       type="button"
-                      class="flex h-8 w-8 items-center justify-center rounded-md transition hover:opacity-80"
+                      class="flex h-8 w-8 items-center justify-center rounded-md transition hover:bg-[var(--ui-background-panel)] text-[var(--ui-text-secondary)]"
                       :aria-pressed="account.favorite"
                       :title="account.favorite ? 'Remove from favorites' : 'Add to favorites'"
                       @click="toggleFavorite(account.id)"
@@ -58,7 +58,7 @@
                         viewBox="0 0 24 24"
                         class="h-4 w-4"
                         :fill="account.favorite ? '#f5c542' : 'none'"
-                        :stroke="account.favorite ? '#f5c542' : 'var(--color-stroke-ui-light)'"
+                        :stroke="account.favorite ? '#f5c542' : 'var(--ui-text-secondary)'"
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -67,7 +67,7 @@
                         <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                       </svg>
                     </button>
-                    <div class="min-w-0">
+                    <div class="min-w-0 text-[var(--ui-text-main)]">
                       <UiTextSmall class="text-[var(--ui-text-secondary)]">
                         {{ t("cabinet.dashboard.mt4.table.type") }}
                       </UiTextSmall>
@@ -76,13 +76,13 @@
                         {{ t("cabinet.accounts.columns.leverage") }}: {{ account.leverage }}
                       </UiTextSmall>
                     </div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 text-[var(--ui-text-main)]">
                       <UiTextSmall class="text-[var(--ui-text-secondary)]">
                         {{ t("cabinet.dashboard.mt4.table.account") }}
                       </UiTextSmall>
                       <UiTextSmall class="text-[var(--ui-text-main)] font-semibold truncate">MT4 {{ account.id }}</UiTextSmall>
                     </div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 text-[var(--ui-text-main)]">
                       <UiTextSmall class="text-[var(--ui-text-secondary)]">
                         {{ t("cabinet.dashboard.mt4.table.balance") }}
                       </UiTextSmall>
@@ -102,7 +102,7 @@
         </div>
 
         <!-- RIGHT COLUMN: verification -->
-        <PanelDefault class="col-span-1">
+        <PanelDefault class="col-span-1 text-[var(--ui-text-main)]">
           <div class="rounded-2xl p-2 sm:p-3">
             <div class="mb-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -341,15 +341,14 @@ const toggleFavorite = (id: string) => {
 }
 
 .mt4-card {
-  background: var(--color-stroke-ui-dark);
-  border-bottom: 1px solid var(--color-stroke-ui-light);
+  background: transparent;
   border-radius: 8px;
   padding: 12px;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
 .mt4-card:hover {
-  background: var(--ui-background-sidebar);
+  background: var(--color-stroke-ui-dark);
   opacity: 0.95;
 }
 </style>

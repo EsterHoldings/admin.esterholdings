@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-5 text-[var(--ui-text-main)]">
     <PanelDefault class="border-none bg-transparent shadow-none">
       <div class="flex flex-col gap-4">
         <div class="referral-card soft narrow">
@@ -10,20 +10,20 @@
                 {{ t("cabinet.referrals.general.account.description") }}
               </UiTextSmall>
             </div>
-            <div class="grid gap-3 md:grid-cols-3">
-              <div class="stat-chip">
-                <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ t("cabinet.referrals.general.account.balance") }}</UiTextSmall>
-                <div class="font-semibold text-[var(--ui-text-main)]">${{ referralAccount.balance.toLocaleString() }}</div>
-              </div>
-              <div class="stat-chip">
-                <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ t("cabinet.referrals.general.account.available") }}</UiTextSmall>
-                <div class="font-semibold text-[var(--ui-text-main)]">${{ referralAccount.available.toLocaleString() }}</div>
-              </div>
-              <div class="stat-chip">
-                <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ t("cabinet.referrals.general.account.pending") }}</UiTextSmall>
-                <div class="font-semibold text-[var(--ui-text-main)]">${{ referralAccount.pending.toLocaleString() }}</div>
-              </div>
+          <div class="grid gap-3 md:grid-cols-3">
+            <div class="stat-chip">
+              <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ t("cabinet.referrals.general.account.balance") }}</UiTextSmall>
+              <div class="font-semibold text-[var(--ui-text-main)]">${{ referralAccount.balance.toLocaleString() }}</div>
             </div>
+            <div class="stat-chip">
+              <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ t("cabinet.referrals.general.account.available") }}</UiTextSmall>
+              <div class="font-semibold text-[var(--ui-text-main)]">${{ referralAccount.available.toLocaleString() }}</div>
+            </div>
+            <div class="stat-chip">
+              <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ t("cabinet.referrals.general.account.pending") }}</UiTextSmall>
+              <div class="font-semibold text-[var(--ui-text-main)]">${{ referralAccount.pending.toLocaleString() }}</div>
+            </div>
+          </div>
           </div>
 
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
@@ -43,7 +43,7 @@
           </div>
         </div>
 
-        <div class="referral-card mt-2">
+        <div class="referral-card mt-2 link-qr-grid">
           <div class="flex min-w-0 flex-col gap-3">
             <UiTextH4 class="text-[var(--ui-text-main)]">
               {{ t("cabinet.referrals.general.linkTitle") }}
@@ -55,16 +55,18 @@
 
             <div class="mt-2 flex flex-col gap-2">
               <div
-                class="relative flex w-full items-center gap-2 rounded-lg bg-[var(--ui-background-sidebar)] px-3 py-2 text-[var(--ui-text-main)]"
+                class="relative flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[var(--ui-text-main)]"
+                style="background: var(--ui-background-sidebar); border: 1px solid var(--color-stroke-ui-light);"
               >
-                <span
-                  ref="referralText"
-                  class="flex-1 truncate text-sm"
-                >
-                  {{ referralLink }}
-                </span>
+                <input
+                  class="flex-1 bg-transparent text-sm outline-none text-[var(--ui-text-main)]"
+                  type="text"
+                  :value="referralLink"
+                  readonly
+                  @focus="$event.target.select()"
+                />
                 <UiIconCopy
-                  :text="copyReferral.toString()"
+                  :text="referralLink"
                   class="h-[18px] w-[18px] cursor-pointer text-[var(--ui-text-secondary)] transition hover:text-[var(--ui-text-main)]"
                   :title="t('cabinet.referrals.general.copyButton')"
                 />
@@ -76,9 +78,9 @@
                 {{ t("cabinet.referrals.general.shareText") }}
               </UiTextSmall>
               <div class="flex flex-wrap items-center justify-center gap-3">
-                <button
-                  type="button"
-                  class="share-btn share-btn-lg"
+                <UiButtonDefault
+                  state="info--outline"
+                  class="share-btn share-btn-lg !p-0"
                   :title="t('cabinet.referrals.general.shareTelegram')"
                   @click="openShare(telegramShareLink)"
                 >
@@ -87,10 +89,10 @@
                       d="M9.97 16.73 9.82 20c.36 0 .52-.15.71-.33l1.7-1.62 3.52 2.58c.65.36 1.11.17 1.28-.6l2.33-10.94c.21-.95-.34-1.33-.97-1.1L3.94 11.3c-.93.36-.92.88-.16 1.11l3.59 1.12 8.35-5.27c.39-.26.74-.12.45.13"
                     />
                   </svg>
-                </button>
-                <button
-                  type="button"
-                  class="share-btn share-btn-lg"
+                </UiButtonDefault>
+                <UiButtonDefault
+                  state="info--outline"
+                  class="share-btn share-btn-lg !p-0"
                   :title="t('cabinet.referrals.general.shareWhatsApp')"
                   @click="openShare(whatsappShareLink)"
                 >
@@ -99,10 +101,10 @@
                       d="M12.04 2a10 10 0 0 0-8.66 14.94L2 22l5.17-1.35A10 10 0 1 0 12.04 2Zm5.87 14.27c-.24.67-1.4 1.3-1.95 1.38-.5.08-1.1.12-1.77-.11-.41-.13-.94-.3-1.63-.59-2.86-1.23-4.71-4.11-4.85-4.31-.14-.2-1.16-1.54-1.16-2.94 0-1.4.73-2.08 .99-2.36.27-.29.59-.36.79-.36h.57c.18 0 .43-.07.67.5.24.58.82 2 .89 2.14.07.14.12.32.02.52-.1.2-.15.32-.3.49-.15.17-.31.38-.44.52-.15.15-.3.32-.13.63.17.32.76 1.25 1.62 2.02 1.12.99 2.04 1.3 2.35 1.45.3.15.48.12.66-.07.18-.2.77-.9.98-1.2.22-.3.41-.25.69-.15.28.1 1.76.83 2.06.98.3.15.5.22.57.34.07.12.07.69-.17 1.36Z"
                     />
                   </svg>
-                </button>
-                <button
-                  type="button"
-                  class="share-btn share-btn-lg"
+                </UiButtonDefault>
+                <UiButtonDefault
+                  state="info--outline"
+                  class="share-btn share-btn-lg !p-0"
                   :title="t('cabinet.referrals.general.shareMessenger')"
                   @click="openShare(messengerShareLink)"
                 >
@@ -111,10 +113,10 @@
                       d="M12 2C6.48 2 2 6 2 11c0 2.86 1.5 5.42 3.89 7.04v3.1l3.55-1.95c.84.23 1.72.36 2.56.36 5.52 0 10-4 10-9s-4.48-9-10-9Zm4.33 9.4-2.47 2.62-2.46-2.62-4.68 2.62 5.15-5.54 2.46 2.62 4.68-2.62-2.68 2.92Z"
                     />
                   </svg>
-                </button>
-                <button
-                  type="button"
-                  class="share-btn share-btn-lg"
+                </UiButtonDefault>
+                <UiButtonDefault
+                  state="info--outline"
+                  class="share-btn share-btn-lg !p-0"
                   :title="t('cabinet.referrals.general.shareMail')"
                   @click="openShare(mailShareLink)"
                 >
@@ -123,7 +125,7 @@
                       d="M20 4H4a2 2 0 0 0-2 2v.01l10 5.99 10-6V6a2 2 0 0 0-2-2Zm0 4.24-7.6 4.55a1 1 0 0 1-1.05 0L4 8.24V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2Z"
                     />
                   </svg>
-                </button>
+                </UiButtonDefault>
               </div>
             </div>
           </div>
@@ -131,7 +133,7 @@
           <div class="referral-card__qr">
             <UiQRCode :link="referralLink" />
           </div>
-      </div>
+        </div>
       </div>
     </PanelDefault>
 
@@ -286,7 +288,6 @@ const { t } = useI18n({ useScope: "global" });
 const toast = useToast();
 
 const referralLink = "https://stage.esterholdings.website?ref=w23dhDf73l4fcs1";
-const referralText = ref<HTMLElement | null>(null);
 const qrDataUrl = ref<string | null>(null);
 
 const levels = reactive([
@@ -391,7 +392,7 @@ const summary = computed(() => {
 });
 
 const copyReferral = async () => {
-  const text = referralText.value?.textContent ?? referralLink;
+  const text = referralLink;
   try {
     await navigator.clipboard.writeText(text);
     toast.success(t("cabinet.referrals.general.copied"));
@@ -481,6 +482,7 @@ onMounted(async () => {
   border-radius: 12px;
   padding: 14px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.05));
+  color: var(--ui-text-main);
 }
 
 .pill {
@@ -527,12 +529,14 @@ onMounted(async () => {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+  color: var(--ui-text-main);
 }
 
 .stat-chip {
   border-radius: 12px;
   padding: 10px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.05));
+  color: var(--ui-text-main);
 }
 
 .referral-card__qr {
@@ -540,6 +544,17 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+}
+
+.link-qr-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .link-qr-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
 }
 
 .referral-card__divider {

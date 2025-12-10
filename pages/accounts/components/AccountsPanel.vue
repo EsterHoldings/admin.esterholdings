@@ -748,16 +748,18 @@ const handleClickCreateNewAccount = () =>
   border-radius: 10px;
   padding: 10px 14px;
   overflow: visible;
-  transition: background-color 0.2s ease;
+  transition: opacity 0.2s ease;
+  color: var(--ui-text-main);
 }
 
 .account-card:hover:not(.card-open) {
-  background: var(--ui-background-secondary);
+  opacity: 0.6;
 }
 
 .account-card.card-open,
 .account-card.card-open:hover {
   background: var(--ui-background-panel);
+  opacity: 1;
 }
 
 .account-card__body {
@@ -765,7 +767,6 @@ const handleClickCreateNewAccount = () =>
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 14px;
-  color: var(--ui-text-main);
 }
 
 .account-card__body > div {
