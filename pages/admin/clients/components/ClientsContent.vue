@@ -1,9 +1,9 @@
 <template>
-  <div class="clients-panel__content">
+  <div class="clients-panel__content" :class="layoutClass">
     <div
         v-for="item in props.data"
         :key="item.id"
-        class="clients-panel__content_row"
+        :class="['clients-panel__content_row', layoutClass === 'full' ? 'full' : '']"
     >
       <div class="user-photo" @click="handleOpenClientPage(item.id)">
         <UiImageCircle
@@ -67,6 +67,10 @@ const props = defineProps({
   data: {
     type: Array,
     default: []
+  },
+  layoutClass: {
+    type: String,
+    default: ""
   }
 });
 
@@ -81,7 +85,6 @@ const getTwoCharsByFullName = (firstName: string, lastName: string): string => {
 
 <style scoped lang="scss">
 .clients-panel__content {
-
   color: var(--ui-text-main);
 
   .user-row-options {
@@ -125,13 +128,14 @@ const getTwoCharsByFullName = (firstName: string, lastName: string): string => {
   }
 
   &_row {
-    padding: 10px;
-    border: 1px solid var(--color-stroke-ui-dark);
+    padding: 16px;
     margin-bottom: 10px;
-    border-radius: 10px;
-
+    border-radius: 12px;
+    background: var(--ui-background-panel);
+    transition: background-color 0.2s ease, opacity 0.2s ease;
     display: grid;
     grid-template-columns: 60px 1fr 1fr 200px;
+    border: 1px solid transparent;
 
     @media (max-width: 800px) {
       display: flex;
@@ -195,7 +199,14 @@ const getTwoCharsByFullName = (firstName: string, lastName: string): string => {
     }
 
     &:hover {
-      background-color: var(--ui-background);
+      background: var(--color-stroke-ui-dark);
+      border-color: transparent;
+      opacity: 0.95;
+    }
+
+    &.full {
+      grid-template-columns: 60px 1fr;
+      row-gap: 10px;
     }
   }
 }
