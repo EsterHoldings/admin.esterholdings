@@ -13,6 +13,7 @@
 
 <script lang="ts" setup>
 import {ref, provide, onMounted} from "vue";
+import { useHead } from "#imports";
 
 import ModalRightSideDefault from "./components/block/modals/ModalRightSideDefault.vue";
 import {useThemeStore} from './stores/themeStore'
@@ -35,12 +36,17 @@ const closeModal = () => modalRef.value?.closeModal()
 
 provide("modalControl", {openModal, closeModal});
 
+useHead({
+  meta: [
+    { name: "theme-color", content: "#000028" },
+    { name: "apple-mobile-web-app-status-bar-style", content: "black" },
+  ],
+});
+
 onMounted(() => {
   const themeStore = useThemeStore()
   themeStore.initTheme()
 })
-
-
 </script>
 
 <style lang="scss" scoped>
