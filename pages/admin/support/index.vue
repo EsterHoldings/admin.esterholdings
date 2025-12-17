@@ -230,11 +230,7 @@
           :ticket-id="currentTicketIdForChat"
           :currentUser="currentUser"
           @close="handleCloseChat"
-          class="fixed bottom-4 right-4 z-50
-             w-[calc(100vw-1rem)] md:w-[380px]
-             h-[70vh] md:h-[540px]
-             rounded-2xl border border-[var(--ui-primary-main)] dark:border-slate-700
-             bg-[var(--ui-background)] shadow-2xl overflow-hidden"
+          class="fixed inset-0 z-50"
       />
     </div>
   </UiContainer>
