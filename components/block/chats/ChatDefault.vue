@@ -2,14 +2,14 @@
   <!-- РЕЖИМ БЛОЧНОГО КОМПОНЕНТА (asBlock === true) -->
   <div v-if="asBlockMode" class="w-full max-w-full">
     <!-- нет Teleport, нет fixed, нет draggable, и ВАЖНО: мы НЕ навешиваем attrs сюда -->
-    <div class="support-chat flex w-full max-w-full flex-col overflow-hidden rounded-[10px] border border-[var(--ui-primary-main)] bg-[var(--color-stroke-ui-dark)] shadow-none">
-      <div class="drag-handle relative flex select-none items-center justify-between border-b border-[#2a3f73] px-4 py-3">
+    <div class="support-chat flex h-full w-full max-w-full flex-col overflow-hidden rounded-[10px] border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] shadow-none max-h-[calc(100vh-200px)]">
+      <div class="drag-handle relative flex select-none items-center justify-between border-b border-[var(--color-stroke-ui-light)] px-4 py-3">
         <div class="flex items-center gap-3">
-          <h3 class="text-lg font-semibold text-white/95">Support Chat</h3>
-          <div class="flex items-center gap-2 text-sm text-white/80">
+          <h3 class="text-lg font-semibold text-[var(--ui-text-main)]">Support Chat</h3>
+          <div class="flex items-center gap-2 text-sm text-[var(--ui-text-secondary)]">
             <span
                 class="inline-flex h-2.5 w-2.5 rounded-full"
-                :class="isCounterpartyOnline ? 'bg-emerald-500' : 'bg-gray-400'"
+                :class="isCounterpartyOnline ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'"
             />
             <span>{{ isCounterpartyOnline ? 'Online' : 'Offline' }}</span>
           </div>
@@ -27,20 +27,20 @@
 
       <div
           ref="listRef"
-          class="messages no-scrollbar max-h-[60vh] overflow-y-auto px-4 py-5 space-y-6"
-          :style="{ overflowAnchor: 'none', visibility: booting ? 'hidden' : 'visible' }"
+          class="messages no-scrollbar flex-1 overflow-y-auto px-4 py-5 space-y-6"
+          :style="{ visibility: booting ? 'hidden' : 'visible' }"
           @scroll.passive="onScroll"
       >
         <template v-for="item in renderItems" :key="item.key">
           <div
               v-if="item.kind==='sep'"
-              class="flex items-center gap-3 text-white/70 select-none"
+              class="flex items-center gap-3 text-[var(--ui-text-secondary)] select-none"
           >
-            <span class="h-px flex-1 bg-white/10"></span>
-            <span class="text-xs uppercase tracking-wider opacity-80">
+            <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
+            <span class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">
               — {{ item.label }} —
             </span>
-            <span class="h-px flex-1 bg-white/10"></span>
+            <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
           </div>
 
           <template v-else>
@@ -50,15 +50,15 @@
                 :data-mid="item.msg.id"
             >
               <div
-                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2962ff] text-sm font-semibold text-white"
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--ui-primary-main)] text-sm font-semibold text-[var(--ui-text-main)]"
               >
                 S
               </div>
               <div
-                  class="max-w-[80%] rounded-[10px] bg-[#2c61ff] p-2 text-[15px] leading-6 text-white ring-1 ring-[#5b8cff]"
+                  class="max-w-[80%] rounded-[10px] bg-[var(--ui-background-card)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]"
               >
                 <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
-                <div class="mt-1 text-[12px] text-white/70">
+                <div class="mt-1 text-[12px] text-[var(--ui-text-secondary)]">
                   {{ formatDateTime(item.msg.createdAt) }}
                 </div>
               </div>
@@ -70,15 +70,15 @@
                 :data-mid="item.msg.id"
             >
               <div
-                  class="max-w-[82%] rounded-[10px] bg-[#2563ff] p-2 text-[15px] leading-6 text-white ring-1 ring-[#5b8cff]"
+                  class="max-w-[82%] rounded-[10px] bg-[var(--ui-primary-main)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]"
               >
                 <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
-                <div class="mt-1 text-right text-[12px] text-white/80">
+                <div class="mt-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
                   {{ formatDateTime(item.msg.createdAt) }}
                 </div>
               </div>
               <div
-                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#ff7a1a] text-sm font-semibold text-white"
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--ui-primary-accent)] text-sm font-semibold text-[var(--ui-text-main)]"
               >
                 M
               </div>
@@ -88,15 +88,15 @@
 
         <div
             v-if="!messages.length && !booting"
-            class="text-center text-white/60"
+            class="text-center text-[var(--ui-text-secondary)]"
         >
           No messages yet
         </div>
       </div>
 
-      <div class="border-t border-[#2a3f73] p-3">
+      <div class="border-t border-[var(--color-stroke-ui-light)] p-3">
         <div
-            class="flex items-center gap-2 rounded-2xl bg-[#0a2a74]/50 p-2 ring-1 ring-[#2a3f73]"
+            class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]"
         >
           <textarea
               ref="inputRef"
@@ -104,13 +104,13 @@
               rows="1"
               @keydown.enter.prevent="send"
               @keydown.shift.enter.stop
-              class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-white placeholder:text-white/60 outline-none"
+              class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
               placeholder="Write your message"
           />
           <button
               :disabled="!canSend"
               @click="send"
-              class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#2563ff] text-white ring-1 ring-[#5b8cff] hover:bg-[#2b6dff] disabled:cursor-not-allowed disabled:opacity-50"
+              class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-primary-main)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
               title="Send"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor">
@@ -146,28 +146,28 @@
             @resizestop="onResizeStop"
         >
           <div
-              class="support-chat flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[var(--ui-primary-main)] bg-[var(--color-stroke-ui-dark)] shadow-[0_8px_40px_rgba(0,0,0,0.45)]"
+              class="support-chat flex h-full w-full flex-col overflow-hidden rounded-2xl border border-[var(--ui-primary-main)] bg-[var(--ui-background)] shadow-[0_8px_40px_var(--color-stroke-ui-dark)]"
           >
             <div
-                class="drag-handle relative flex select-none items-center justify-between border-b border-[#2a3f73] px-4 py-3"
+                class="drag-handle relative flex select-none items-center justify-between border-b border-[var(--color-stroke-ui-light)] px-4 py-3"
             >
               <div class="flex items-center gap-3">
-                <h3 class="text-lg font-semibold text-white/95">
+                <h3 class="text-lg font-semibold text-[var(--ui-text-main)]">
                   Support Chat
                 </h3>
                 <div
-                    class="flex items-center gap-2 text-sm text-white/80"
+                    class="flex items-center gap-2 text-sm text-[var(--ui-text-secondary)]"
                 >
                   <span
                       class="inline-flex h-2.5 w-2.5 rounded-full"
-                      :class="isCounterpartyOnline ? 'bg-emerald-500' : 'bg-gray-400'"
+                      :class="isCounterpartyOnline ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'"
                   />
                   <span>{{ isCounterpartyOnline ? 'Online' : 'Offline' }}</span>
                 </div>
               </div>
               <button
                   @click="emit('close')"
-                  class="no-drag rounded-lg p-2 text-white/60 hover:bg-white/5 hover:text-white/90"
+                  class="no-drag rounded-lg p-2 text-[var(--ui-text-secondary)] hover:bg-[var(--color-stroke-ui-dark)] hover:text-[var(--ui-text-main)]"
                   title="Close"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor">
@@ -195,13 +195,13 @@
               <template v-for="item in renderItems" :key="item.key">
                 <div
                     v-if="item.kind==='sep'"
-                    class="flex items-center gap-3 text-white/70 select-none"
+                    class="flex items-center gap-3 text-[var(--ui-text-secondary)] select-none"
                 >
-                  <span class="h-px flex-1 bg-white/10"></span>
+                  <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
                   <span
-                      class="text-xs uppercase tracking-wider opacity-80"
+                      class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]"
                   >— {{ item.label }} —</span>
-                  <span class="h-px flex-1 bg-white/10"></span>
+                  <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
                 </div>
 
                 <template v-else>
@@ -211,15 +211,15 @@
                       :data-mid="item.msg.id"
                   >
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2962ff] text-sm font-semibold text-white"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--ui-primary-main)] text-sm font-semibold text-[var(--ui-text-main)]"
                     >
                       S
                     </div>
                     <div
-                        class="max-w-[80%] rounded-[10px] bg-[#2c61ff] p-2 text-[15px] leading-6 text-white ring-1 ring-[#5b8cff]"
+                        class="max-w-[80%] rounded-[10px] bg-[var(--ui-background-card)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]"
                     >
                       <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
-                      <div class="mt-1 text-[12px] text-white/70">
+                      <div class="mt-1 text-[12px] text-[var(--ui-text-secondary)]">
                         {{ formatDateTime(item.msg.createdAt) }}
                       </div>
                     </div>
@@ -231,17 +231,17 @@
                       :data-mid="item.msg.id"
                   >
                     <div
-                        class="max-w-[82%] rounded-[10px] bg-[#2563ff] p-2 text-[15px] leading-6 text-white ring-1 ring-[#5b8cff]"
+                        class="max-w-[82%] rounded-[10px] bg-[var(--ui-primary-main)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]"
                     >
                       <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
                       <div
-                          class="mt-1 text-right text-[12px] text-white/80"
+                          class="mt-1 text-right text-[12px] text-[var(--ui-text-secondary)]"
                       >
                         {{ formatDateTime(item.msg.createdAt) }}
                       </div>
                     </div>
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#ff7a1a] text-sm font-semibold text-white"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--ui-primary-accent)] text-sm font-semibold text-[var(--ui-text-main)]"
                     >
                       M
                     </div>
@@ -251,15 +251,15 @@
 
               <div
                   v-if="!messages.length && !booting"
-                  class="text-center text-white/60"
+                  class="text-center text-[var(--ui-text-secondary)]"
               >
                 No messages yet
               </div>
             </div>
 
-            <div class="border-t border-[#2a3f73] p-3">
+            <div class="border-t border-[var(--color-stroke-ui-light)] p-3">
               <div
-                  class="flex items-center gap-2 rounded-2xl bg-[#0a2a74]/50 p-2 ring-1 ring-[#2a3f73]"
+                  class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]"
               >
                 <textarea
                     ref="inputRef"
@@ -267,13 +267,13 @@
                     rows="1"
                     @keydown.enter.prevent="send"
                     @keydown.shift.enter.stop
-                    class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-white placeholder:text-white/60 outline-none"
+                    class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                     placeholder="Write your message"
                 />
                 <button
                     :disabled="!canSend"
                     @click="send"
-                    class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#2563ff] text-white ring-1 ring-[#5b8cff] hover:bg-[#2b6dff] disabled:cursor-not-allowed disabled:opacity-50"
+                    class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-primary-main)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                     title="Send"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor">
@@ -821,23 +821,31 @@ async function send() {
   transition: box-shadow 120ms ease;
   border-radius: 16px;
 }
+.support-chat {
+  height: 100%;
+  min-height: 0;
+}
+.messages {
+  min-height: 0;
+  flex: 1 1 auto;
+}
 .chat-frame.dragging,
 .chat-frame.resizing {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 12px 48px var(--color-stroke-ui-dark);
 }
 
 .vdr .handle {
   width: 10px;
   height: 10px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.16);
-  outline: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+  background: var(--color-stroke-ui-dark);
+  outline: 1px solid var(--color-stroke-ui-light);
+  box-shadow: 0 0 0 1px var(--color-stroke-ui-dark) inset;
   z-index: 20;
   pointer-events: auto;
 }
 .vdr .handle:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: var(--color-stroke-ui-light);
 }
 .vdr .handle.handle-tl {
   transform: translate(-2px, -2px);

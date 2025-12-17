@@ -4,15 +4,15 @@ import { ref } from "vue";
 export const useThemeStore = defineStore("theme", () => {
   const currentTheme = ref<"light" | "dark">("dark");
   const lightTheme = {
-    "--ui-background": "#ffffff",
+    "--ui-background": "#fafafa",
     "--ui-background-secondary": "#2a5bbd",
     "--ui-background-admin": "rgba(255, 255, 255, 0.95)",
-    "--ui-background-card": "#F9F9F9",
-    "--ui-background-panel": "#f9f9f9",
+    "--ui-background-card": "#f2f2f2",
+    "--ui-background-panel": "#ffffff",
     "--ui-background-sidebar": "#f9f9f9",
     "--ui-background-sidebar-link": "#9CA9B3",
 
-    "--ui-primary-main": "#5778c5",
+    "--ui-primary-main": "#0391ff66",
     "--ui-primary-accent": "#f75709",
 
     "--ui-text-invert": "#faf9f9",
@@ -30,7 +30,7 @@ export const useThemeStore = defineStore("theme", () => {
   const darkTheme = {
     "--ui-background": "#000028",
     "--ui-background-admin": "rgba(0, 0, 40, 0.95)",
-    "--ui-background-card": "#01014E",
+    "--ui-background-card": "#021238",
     "--ui-background-panel": "#011644b5",
     "--ui-background-secondary": "#031743",
     "--ui-background-sidebar": "rgba(0, 0, 40, 0.95)",

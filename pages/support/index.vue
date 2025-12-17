@@ -202,10 +202,6 @@
           >
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <div class="flex items-center gap-2 text-xs text-[var(--ui-text-secondary)]">
-                  <span>#{{ ticket.id }}</span>
-                  <UiIconCopy @click.stop :text="ticket.id" />
-                </div>
                 <div class="truncate font-semibold">{{ ticket.subject }}</div>
               </div>
               <UiBadge :outline="true" state="info" class="whitespace-nowrap">{{ ticket.status }}</UiBadge>
@@ -218,7 +214,14 @@
 
             <div class="mt-3 flex items-center justify-end gap-2">
               <button
-                class="h-[36px] w-[36px] flex items-center justify-center rounded-full hover:bg-[var(--color-stroke-ui-light)] active:bg-[var(--color-stroke-ui-dark)]"
+                class="h-[36px] w-[36px] flex items-center justify-center rounded-md hover:bg-[var(--color-stroke-ui-light)] active:opacity-[.5]"
+                @click.stop
+                aria-label="Copy ID"
+              >
+                <UiIconCopy :text="ticket.id" />
+              </button>
+              <button
+                class="h-[36px] w-[36px] flex items-center justify-center rounded-md hover:bg-[var(--color-stroke-ui-light)] active:opacity-[.5]"
                 @click.stop="() => currentTicketIdForChat = ticket.id"
                 aria-label="Open chat"
               >
