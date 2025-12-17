@@ -22,8 +22,7 @@
         </main>
       </Transition>
     </div>
-
-    <TheFooter class="h-[60px] shrink-0 pb-safe-area" />
+    <!--<TheFooter class="h-[60px] shrink-0 pb-safe-area" />-->
   </div>
 </template>
 
