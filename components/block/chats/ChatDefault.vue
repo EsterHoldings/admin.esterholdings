@@ -146,7 +146,7 @@
             :draggable="true"
             :resizable="true"
             :handles="['tl','tm','tr','mr','br','bm','bl','ml']"
-            drag-handle=".drag-handle"
+            :drag-handle="dragHandle"
             drag-cancel=".no-drag, textarea, button"
             :min-width="minW"
             :min-height="minH"
@@ -360,6 +360,7 @@ const minW = 320,
     minH = 420,
     margin = 16
 const pos = reactive({ top: 0, left: 0, width: 380, height: 540 })
+const dragHandle = ref('.drag-handle')
 
 // режим компонента
 const asBlockMode = computed(() => props.asBlock === true)
@@ -725,6 +726,8 @@ let resizeListenerAttached = false
 
 onMounted(async () => {
   mounted.value = true
+  const prefersTouch = window.matchMedia?.('(pointer: coarse)').matches
+  dragHandle.value = prefersTouch ? '.drag-handle' : '.support-chat'
 
   // позиціонування тільки для плавающего окна
   if (!asBlockMode.value) {
