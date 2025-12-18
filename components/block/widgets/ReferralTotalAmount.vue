@@ -9,7 +9,7 @@ import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 
 <template>
   <PanelDefault class="relative h-full max-h-[260px] p-3 sm:p-4 md:p-5">
-    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-1 sm:items-center">
       <div class="flex flex-col items-center space-y-1 sm:items-start">
         <UiTextSmall class="!text-[var(--color-success)] text-center sm:text-left">
           Referral total amount
@@ -19,10 +19,6 @@ import PanelDefault from "~/components/block/panels/PanelDefault.vue";
         >
           $ 24.00
         </UiTextH3>
-      </div>
-      <div class="flex w-full items-start justify-end gap-1 pr-3 sm:gap-2 sm:pr-4">
-        <UiIconWithdraw class="shrink-0 text-[var(--ui-text-main)] !h-[14px] !w-[14px] !hover:text-[red] sm:!h-5 sm:!w-5" />
-        <UiIconPayment class="shrink-0 text-[var(--ui-text-main)] !h-[14px] !w-[14px] !hover:text-[red] sm:!h-5 sm:!w-5" />
       </div>
     </div>
   </PanelDefault>

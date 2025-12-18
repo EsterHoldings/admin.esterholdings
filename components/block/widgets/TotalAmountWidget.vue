@@ -7,7 +7,7 @@ import UiTextH3 from "~/components/ui/UiTextH3.vue";
 
 <template>
   <PanelDefault class="relative h-full max-h-[260px] p-3 sm:p-4 md:p-5">
-    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-1 sm:items-center">
       <div class="flex flex-col items-center space-y-1 sm:items-start">
         <UiTextSmall class="!text-[var(--color-success)] text-center sm:text-left">
           Total amount
@@ -17,9 +17,6 @@ import UiTextH3 from "~/components/ui/UiTextH3.vue";
         >
           $ 4 292.00
         </UiTextH3>
-      </div>
-      <div class="flex w-full items-start justify-end pr-3 sm:pr-4">
-        <UiIconClients class="shrink-0 !h-[14px] !w-[14px] sm:!h-5 sm:!w-5" />
       </div>
     </div>
   </PanelDefault>

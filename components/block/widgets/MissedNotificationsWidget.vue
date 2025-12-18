@@ -7,7 +7,7 @@ import UiIconBell from "~/components/ui/UiIconBell.vue";
 
 <template>
   <PanelDefault class="relative h-full max-h-[260px] p-3 sm:p-4 md:p-5">
-    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+    <div class="grid h-full w-full grid-cols-1 gap-3 sm:grid-cols-1 sm:items-center">
       <div class="flex flex-col items-center space-y-2 sm:items-start">
         <UiTextSmall class="!text-[var(--color-warning)] text-center sm:text-left">
           Missed Notifications
@@ -17,9 +17,6 @@ import UiIconBell from "~/components/ui/UiIconBell.vue";
         >
           3
         </UiTextH3>
-      </div>
-      <div class="flex w-full items-start justify-end pr-3 sm:pr-4">
-        <UiIconBell class="shrink-0 !h-[14px] !w-[14px] sm:!h-5 sm:!w-5" />
       </div>
     </div>
   </PanelDefault>

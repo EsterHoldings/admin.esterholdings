@@ -18,7 +18,7 @@
         <!-- LEFT COLUMN: widgets + MT4 -->
         <div class="col-span-1 flex flex-col gap-5 text-[var(--ui-text-main)]">
           <!-- 4 widgets -->
-          <div class="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
+          <div class="grid grid-cols-2 items-stretch gap-2">
             <TotalAmountWidget />
             <PendingTransactionsWidget />
             <MissedNotificationsWidget />
