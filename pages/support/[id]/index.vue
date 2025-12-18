@@ -525,7 +525,7 @@ onMounted(async () => {
   border-radius: 14px;
   border: 1px solid var(--color-stroke-ui-dark);
   background: var(--ui-background-panel);
-  padding: 4px 14px;
+  padding: 5px 10px;
 }
 
 .support-side__profile {
@@ -539,17 +539,13 @@ onMounted(async () => {
 
 .support-side__status-card {
   background: var(--ui-background-card);
-  border-color: var(--color-stroke-ui-light);
+  border-color: var(--color-stroke-ui-dark);
 }
 
 .support-side__status-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--color-stroke-ui-light);
-  background: var(--ui-background-card);
   color: var(--ui-text-main);
 }
 
