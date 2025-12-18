@@ -1,40 +1,59 @@
 <template>
   <ul class="breadcrumb">
-    <li
-      class="breadcrumb__item"
-      v-for="(item, index) in props.list"
-      :key="item?.name"
-    >
-      <span>{{ item?.name }}</span>
-      <UiIconArrowRightShort v-if="index + 1 !== props.list.length" />
+    <li v-for="(item, index) in list" :key="item.name + index" class="breadcrumb__item">
+      <NuxtLink v-if="item.to" :to="item.to" class="breadcrumb__link">
+        {{ item.name }}
+      </NuxtLink>
+      <span v-else class="breadcrumb__link">
+        {{ item.name }}
+      </span>
+      <UiIconArrowRightShort v-if="index + 1 !== list.length" class="breadcrumb__sep" />
     </li>
   </ul>
 </template>
 
 <script lang="ts" setup>
-import IBreadcrumb from "~/composables/intefaces/IBreadcrumb";
+import UiIconArrowRightShort from "~/components/ui/UiIconArrowRightShort.vue";
 
-const props = defineProps({
-  list: {
-    type: Array<IBreadcrumb>,
-    default: [],
-  },
-});
+type BreadcrumbItem = {
+  name: string;
+  to?: string;
+};
+
+defineProps<{
+  list: BreadcrumbItem[];
+}>();
 </script>
 
 <style lang="scss" scoped>
 .breadcrumb {
   list-style: none;
   display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: 13px;
 
   &__item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
 
-    &_separator {
-      margin: 0 10px;
-    }
+  &__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &__link:hover {
+    color: var(--ui-text-main);
+  }
+
+  &__sep {
+    color: var(--ui-text-secondary);
   }
 }
 </style>

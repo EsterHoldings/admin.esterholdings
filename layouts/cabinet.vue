@@ -18,6 +18,11 @@
           :key="route.fullPath"
           class="flex-1 min-h-0 overflow-y-auto no-scrollbar box-border w-full p-1 lg:pl-[250px] text-white pb-safe-area mb-[90px] lg:mb-0"
         >
+          <UiContainer>
+            <div v-if="breadcrumbs.length" class="text-sm text-[var(--ui-text-secondary)]">
+              <UiBreadcrumb :list="breadcrumbs" />
+            </div>
+          </UiContainer>
           <slot />
         </main>
       </Transition>
@@ -27,13 +32,51 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 import TheCabinetSideBar from "~/components/block/TheCabinetSideBar.vue";
 import TheFooter from "~/components/block/TheFooter.vue";
 import TheCabinetHeader from "~/components/block/TheCabinetHeader.vue";
+import UiBreadcrumb from "~/components/ui/UiBreadcrumb.vue";
+import UiContainer from "~/components/ui/UiContainer.vue";
 
 const route = useRoute();
+const { t, locale } = useI18n({ useScope: "global" });
+
+const resolveLabel = (key: string, fallback: string) => {
+  const val = t(key);
+  return val === key ? fallback : val;
+};
+
+const labels: Record<string, string> = {
+  dashboard: resolveLabel("cabinet.dashboard.title", "Dashboard"),
+  accounts: resolveLabel("cabinet.accounts.account.title", "Accounts"),
+  payments: resolveLabel("cabinet.dashboard.transactions.title", "Payments"),
+  support: resolveLabel("cabinet.support.title", "Support"),
+  referrals: resolveLabel("cabinet.referrals.title", "Referrals"),
+  profile: resolveLabel("cabinet.profile.title", "Profile"),
+};
+
+const breadcrumbs = computed(() => {
+  const segments = route.path.split("/").filter(Boolean);
+  const currentLocale = locale.value?.toLowerCase?.();
+  const startIdx = currentLocale && segments[0]?.toLowerCase() === currentLocale ? 1 : 0;
+  const basePrefix = startIdx ? "/" + segments.slice(0, startIdx).join("/") : "";
+  const visibleSegments = segments.slice(startIdx);
+
+  const list = visibleSegments.map((seg, idx) => {
+    const key = seg.toLowerCase();
+    const name = labels[key] ?? decodeURIComponent(seg);
+    const to = basePrefix + "/" + visibleSegments.slice(0, idx + 1).join("/");
+    return { name, to };
+  });
+  const dashCrumb = { name: labels.dashboard ?? "Dashboard", to: basePrefix + "/dashboard" };
+  if (!list.length) return [dashCrumb];
+  if (list[0].name.toLowerCase() !== "dashboard") return [dashCrumb, ...list];
+  return [dashCrumb, ...list.slice(1)];
+});
 </script>
 
 <style>

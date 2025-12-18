@@ -31,7 +31,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-background": "#000028",
     "--ui-background-admin": "rgba(0, 0, 40, 0.95)",
     "--ui-background-card": "#021238",
-    "--ui-background-panel": "#011644b5",
+    "--ui-background-panel": "rgba(1, 22, 68, 0.6)",
     "--ui-background-secondary": "#031743",
     "--ui-background-sidebar": "rgba(0, 0, 40, 0.95)",
     "--ui-background-sidebar-link": "#011644;",

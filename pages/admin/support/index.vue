@@ -1,7 +1,7 @@
 <template>
   <UiContainer>
     <div class="space-y-5">
-      <div class="my-5 flex items-center justify-between w-full text-[var(--ui-text-main)]">
+      <div class="flex items-center justify-between w-full text-[var(--ui-text-main)]">
         <UiTextH4>{{ t("admin.support.title") }}</UiTextH4>
 
         <UiButtonDefault state="info" @click="handleClickCreateNewTicket">
