@@ -7,53 +7,51 @@
       </div>
     </template>
     <div v-else class="space-y-5 text-[var(--ui-text-main)]">
-      <div class="my-5 flex items-center justify-between w-full text-[var(--ui-text-main)]">
-        <UiTextH4>{{ t("support.page.title") }}</UiTextH4>
+      <div class="my-5 flex w-full flex-col gap-3 text-[var(--ui-text-main)] sm:flex-row sm:items-center sm:justify-between">
+        <UiTextH4 class="truncate">{{ t("support.page.title") }}</UiTextH4>
 
-        <UiButtonDefault state="info" @click="handleClickCreateNewTicket">
-          <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]"/>
-          <span>{{ t("support.page.newTicket") }}</span>
+        <UiButtonDefault state="info" class="w-full sm:w-auto" @click="handleClickCreateNewTicket">
+          <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]" />
+          <span class="truncate">{{ t("support.page.newTicket") }}</span>
         </UiButtonDefault>
       </div>
 
-      <div class="flex items-center justify-between mb-5">
-        <div class="flex items-center justify-between gap-1 w-full max-w-60">
+      <div class="mb-5 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex w-full items-center gap-2 sm:w-auto sm:flex-1 sm:max-w-[360px]">
           <UiInput
-              class="w-full max-w-[240px]"
-              @input="handleInputSearch"
-              :value="search"
-              :placeholder="t('support.page.searchPlaceholder')"
+            class="w-full min-w-0"
+            @input="handleInputSearch"
+            :value="search"
+            :placeholder="t('support.page.searchPlaceholder')"
           >
             <template #icon-left>
-              <UiIconSearch/>
+              <UiIconSearch />
             </template>
           </UiInput>
-        </div>
-        <div class="flex items-center justify-center gap-2">
-
-          <UiButtonDefault state="info--small" class="mr-2" @click="handleClickUpdate">
-            <UiIconUpdate v-if="!isLoading"/>
-            <UiIconSpinnerDefault v-if="isLoading"/>
+          <UiButtonDefault state="info--small" @click="handleClickUpdate">
+            <UiIconUpdate v-if="!isLoading" />
+            <UiIconSpinnerDefault v-if="isLoading" />
           </UiButtonDefault>
-
+        </div>
+        <div class="flex w-full items-center gap-2 sm:w-auto sm:justify-end">
           <UiSelect
-              class="mr-2"
-              :value="orderBy"
-              :data="sortByFilterData"
-              :withoutNoSelect="true"
-              @change="handleChangeFilterSortBy"
+            class="w-full min-w-0 sm:w-[220px]"
+            :value="orderBy"
+            :data="sortByFilterData"
+            :withoutNoSelect="true"
+            @change="handleChangeFilterSortBy"
           >
             <template #icon-left>
               <UiIconSortBy
-                  class="mr-2 !w-[16px] !h-[16px]"
-                  :orderDirectionEnabled="true"
-                  :orderDirection="orderDirection"
+                class="mr-2 !w-[16px] !h-[16px]"
+                :orderDirectionEnabled="true"
+                :orderDirection="orderDirection"
               />
             </template>
           </UiSelect>
 
           <ViewModeToggle
-            class="w-full sm:w-auto"
+            class="w-full sm:w-[160px]"
             bordered
             :modelValue="viewMode"
             :options="viewOptions"

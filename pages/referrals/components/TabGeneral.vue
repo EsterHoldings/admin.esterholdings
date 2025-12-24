@@ -76,10 +76,6 @@
               {{ t("cabinet.referrals.general.nextLevelHint", { level: currentLevel.nextName, xp: currentLevel.nextXp - currentLevel.xp }) }}
             </UiTextSmall>
           </div>
-          <div class="grid gap-2 sm:grid-cols-2">
-            <SummaryCard :label="t('cabinet.referrals.general.badges')" :value="currentLevel.badges.join(', ')" />
-            <SummaryCard :label="t('cabinet.referrals.general.lastAchievements')" :value="achievements.join(', ')" />
-          </div>
         </div>
       </div>
 
@@ -323,9 +319,7 @@ const currentLevel = {
   nextName: "Expert",
   xp: 6200,
   nextXp: 20000,
-  badges: ["Bronze", "Silver"],
 };
-const achievements = ["Top recruiter", "Spring event"];
 
 const progressPercent = computed(() => Math.min(100, Math.round((currentLevel.xp / currentLevel.nextXp) * 100)));
 
@@ -559,21 +553,17 @@ const handlePerPageChange = (next: number) => {
 
 .panel {
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, rgba(1, 22, 68, 0.8) 96%, transparent),
-    color-mix(in srgb, rgba(1, 12, 40, 0.7) 96%, transparent)
-  );
+  border: 1px solid var(--color-stroke-ui-light);
+  background: var(--referral-panel);
   padding: 18px 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ui-background) 70%, transparent);
 }
 
 .network-card {
   border-radius: 12px;
   padding: 14px;
   background: var(--referral-panel);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-stroke-ui-light);
   color: var(--ui-text-main);
   height: 100%;
   display: flex;
@@ -659,7 +649,7 @@ const handlePerPageChange = (next: number) => {
   width: 100%;
   border-radius: 12px;
   background: var(--referral-panel);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-stroke-ui-light);
   padding: 12px 14px;
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
