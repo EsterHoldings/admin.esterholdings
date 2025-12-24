@@ -83,7 +83,7 @@ defineExpose({
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease-in-out;
-  z-index: 998;
+  z-index: 9998;
 
   &.open {
     opacity: 1;
@@ -95,13 +95,13 @@ defineExpose({
   position: fixed;
   top: 0;
   right: 0;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   max-width: 600px;
   background-color: var(--ui-background);
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
-  z-index: 999;
+  z-index: 9999;
   box-sizing: border-box;
   overflow-y: auto;
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);

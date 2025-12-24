@@ -2,6 +2,7 @@
   import { useRoute } from "vue-router";
   import { navigateTo } from "nuxt/app";
   import { computed, reactive, ref, onMounted, onUnmounted } from "vue";
+  import { useI18n } from "vue-i18n";
 
   import { useThemeStore } from "~/stores/themeStore.js";
   import { useAuthStore } from "~/stores/authStore";
@@ -25,9 +26,12 @@
   import UiIconSupport from "~/components/ui/UiIconSupport.vue";
   import UiIconLogo from "~/components/ui/UiIconLogo.vue";
   import UiIconLogoLight from "~/components/ui/UiIconLogoLight.vue";
+  import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
 
   const authStore = useAuthStore();
   const themeStore = useThemeStore();
+  const { t, locale } = useI18n({ useScope: "global" });
+  const addCurrentLocaleToPath = (path = "") => `/${locale.value}/${path}`;
 
   const isOpen = ref(false);
   const isLoading = ref(false);
@@ -59,6 +63,9 @@
   };
 
   const isThemeLight = computed(() => themeStore.currentTheme !== "dark");
+  const handleToggleTheme = () => {
+    themeStore.toggleTheme();
+  };
 
   const route = useRoute();
   const isProfileRoute = computed(() => route.path.split("/").pop() === "profile");
@@ -115,7 +122,7 @@
         <button
           class="relative"
           @click="handleClickNotifications"
-          aria-label="Notifications">
+          :aria-label="t('cabinet.header.notifications')">
           <UiIconBell />
           <span
             class="absolute -top-2 -right-2 h-5 w-5 text-[10px] font-bold rounded-full bg-[var(--color-warning)] text-[var(--ui-text-main)] flex items-center justify-center"
@@ -127,12 +134,12 @@
           v-if="isOpen"
           class="fixed sm:absolute top-[80px] sm:top-9 left-5 right-5 sm:left-auto sm:right-0 z-50 sm:w-[320px] md:w-[360px] lg:w-[400px] max-h-[400px] sm:max-h-[500px] lg:max-h-[600px] rounded-xl !bg-[var(--ui-background)] border border-[var(--color-stroke-ui-light)] flex flex-col">
           <div class="flex items-center justify-between p-3 sm:p-4 lg:p-5 flex-shrink-0">
-            <span class="text-[var(--ui-text-main)]">Notifications</span>
+            <span class="text-[var(--ui-text-main)]">{{ t("cabinet.header.notifications") }}</span>
             <div>
               <UiTextSmall
                 state="info--outline--small"
                 class="cursor-pointer"
-                >Mark all read</UiTextSmall
+              >{{ t("cabinet.header.markAllRead") }}</UiTextSmall
               >
             </div>
           </div>
@@ -175,7 +182,7 @@
               v-if="!isLoading && notifications.length === 0"
               class="h-[150px] sm:h-[200px] rounded-xl flex flex-col items-center justify-center gap-4">
               <UiIconBell />
-              <span>You have no notifications yet</span>
+              <span>{{ t("cabinet.header.emptyNotifications") }}</span>
             </div>
           </div>
         </div>
@@ -211,44 +218,53 @@
             class="fixed sm:absolute top-[80px] sm:top-9 left-5 right-5 sm:left-auto sm:right-0 sm:w-fit bg-[var(--ui-background)] border border-[var(--color-stroke-ui-light)] rounded-md z-10"
             v-if="profileMenuIsOpen">
             <NuxtLink
-              to="/ru/profile"
-              aria-label="Profile">
+              :to="addCurrentLocaleToPath('profile')"
+              :aria-label="t('cabinet.header.profile')">
               <div
                 class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
                 <UiIconSetting />
-                <UiTextSmall class="w-full whitespace-nowrap">Account Settings</UiTextSmall>
+                <UiTextSmall class="w-full whitespace-nowrap">{{ t("cabinet.header.accountSettings") }}</UiTextSmall>
               </div>
             </NuxtLink>
 
-            <NuxtLink aria-label="Toggle theme">
-              <div
-                @click="themeStore.toggleTheme()"
-                class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md cursor-pointer">
-                <transition
-                  name="fade"
-                  mode="out-in">
-                  <UiIconSun
-                    v-if="themeStore.currentTheme === 'dark'"
-                    :key="'sun'" />
-                  <UiIconMoon
-                    v-else
-                    :key="'moon'" />
-                </transition>
-                <UiTextSmall class="w-full whitespace-nowrap">
-                  {{ themeStore.currentTheme === "dark" ? "Switch to Light" : "Switch to Dark" }}
-                </UiTextSmall>
+            <div
+              aria-label="Toggle theme"
+              @click.stop="handleToggleTheme"
+              class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md cursor-pointer"
+            >
+              <transition
+                name="fade"
+                mode="out-in"
+              >
+                <UiIconSun
+                  v-if="themeStore.currentTheme === 'dark'"
+                  :key="'sun'"
+                />
+                <UiIconMoon
+                  v-else
+                  :key="'moon'"
+                />
+              </transition>
+              <UiTextSmall class="w-full whitespace-nowrap">
+                {{ themeStore.currentTheme === "dark" ? t("cabinet.header.switchToLight") : t("cabinet.header.switchToDark") }}
+              </UiTextSmall>
+              <div class="shrink-0" @click.stop>
+                <UiSwitchToggle
+                  :model-value="isThemeLight"
+                  @update:modelValue="handleToggleTheme"
+                />
               </div>
-            </NuxtLink>
+            </div>
 
             <UiSpacer :heightNone="true" />
 
             <NuxtLink
-              to="/ru/support"
-              aria-label="Help Center">
+              :to="addCurrentLocaleToPath('support')"
+              :aria-label="t('cabinet.header.helpCenter')">
               <div
                 class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
                 <UiIconSupport />
-                <UiTextSmall class="w-full whitespace-nowrap">Help Center</UiTextSmall>
+                <UiTextSmall class="w-full whitespace-nowrap">{{ t("cabinet.header.helpCenter") }}</UiTextSmall>
               </div>
             </NuxtLink>
 
@@ -256,11 +272,11 @@
 
             <NuxtLink
               @click="handleClickLogout()"
-              aria-label="Log Out">
+              :aria-label="t('cabinet.header.logout')">
               <div
                 class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
                 <UiIconLogout />
-                <UiTextSmall class="w-full whitespace-nowrap">Log Out</UiTextSmall>
+                <UiTextSmall class="w-full whitespace-nowrap">{{ t("cabinet.header.logout") }}</UiTextSmall>
               </div>
             </NuxtLink>
           </div>

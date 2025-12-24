@@ -740,6 +740,17 @@
       "support": "サポート",
       "settings": "設定"
     },
+    "header": {
+      "notifications": "Notifications",
+      "markAllRead": "Mark all read",
+      "emptyNotifications": "You have no notifications yet",
+      "accountSettings": "Account Settings",
+      "switchToLight": "Switch to Light",
+      "switchToDark": "Switch to Dark",
+      "helpCenter": "Help Center",
+      "logout": "Log Out",
+      "profile": "Profile"
+    },
     "dashboard": {
       "title": "ダッシュボード",
       "accountVerification": {

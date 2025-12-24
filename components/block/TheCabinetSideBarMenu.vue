@@ -46,7 +46,7 @@
 
   const menuItems = computed(() => [
     { title: t("cabinet.menu.dashboard"), to: addCurrentLocaleToPath("dashboard"), icon: UiIconHome },
-    { title: "Deposit", to: addCurrentLocaleToPath("payments"), icon: UiIconPayment },
+    { title: t("cabinet.menu.billing"), to: addCurrentLocaleToPath("payments"), icon: UiIconPayment },
     {
       title: t("cabinet.menu.payment_details"),
       to: addCurrentLocaleToPath("payments/details"),

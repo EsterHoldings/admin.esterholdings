@@ -740,6 +740,17 @@
       "support": "Підтримка",
       "settings": "Налаштування"
     },
+    "header": {
+      "notifications": "Сповіщення",
+      "markAllRead": "Позначити все прочитаним",
+      "emptyNotifications": "У вас поки немає сповіщень",
+      "accountSettings": "Налаштування акаунта",
+      "switchToLight": "Перемкнути на світлу",
+      "switchToDark": "Перемкнути на темну",
+      "helpCenter": "Центр допомоги",
+      "logout": "Вийти",
+      "profile": "Профіль"
+    },
     "dashboard": {
       "title": "Панель керування",
       "accountVerification": {
