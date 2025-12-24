@@ -102,6 +102,9 @@ defineExpose({
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
   z-index: 999;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
 
   &.open {
     transform: translateX(0);

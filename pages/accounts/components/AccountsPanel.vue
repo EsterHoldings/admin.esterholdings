@@ -301,7 +301,7 @@
 
     <template v-if="!isInitialLoading && accounts.length === 0">
       <div class="flex items-center justify-center flex-col gap-5 h-[calc(100vh-370px)]">
-        <span>{{ t("cabinet.accounts.nothingToShow") }}</span>
+        <span class="text-[var(--ui-text-main)]">{{ t("cabinet.accounts.nothingToShow") }}</span>
         <UiButtonDefault state="success--outline" @click="handleClickCreateNewAccount">
           {{ t("cabinet.accounts.openAccount") }}
           &nbsp;
