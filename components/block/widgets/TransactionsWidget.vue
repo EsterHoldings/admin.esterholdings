@@ -160,7 +160,7 @@ onBeforeUnmount(() => {});
       <div class="flex flex-col gap-3">
         <div class="flex items-center justify-between gap-3">
           <UiTextH5 class="!text-[var(--ui-text-main)]">{{ t("cabinet.dashboard.transactions.title") }}</UiTextH5>
-          <NuxtLink to="/payments/create" class="shrink-0">
+          <NuxtLink to="/payments?openDeposit=1" class="shrink-0">
             <UiButtonDefault state="success">
               {{ t("cabinet.dashboard.actions.newDeposit") }}
             </UiButtonDefault>
@@ -300,11 +300,10 @@ onBeforeUnmount(() => {});
             </div>
           </div>
           <div
-            v-else
+            v-else-if="!isLoading"
             class="mt-4 flex flex-col items-center justify-center gap-2 rounded-xl border border-[var(--color-stroke-ui-light)] bg-[--color-stroke-ui-dark] p-6 text-center text-[var(--ui-text-main)]"
           >
             <UiTextH5>{{ t("cabinet.dashboard.transactions.empty") }}</UiTextH5>
-            <UiIconSpinnerDefault />
           </div>
         </div>
 

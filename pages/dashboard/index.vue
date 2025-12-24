@@ -1,13 +1,13 @@
 <template>
   <UiContainer>
     <template v-if="isInitialLoading">
-      <div class="flex min-h-[55vh] w-full flex-col items-center justify-center text-white">
+      <div class="flex min-h-[55vh] w-full flex-col items-center justify-center text-[var(--ui-text-main)]">
         <UiIconLogo class="mb-4 h-[44px] w-[44px]" />
         <UiIconSpinnerDefault class="h-[44px] w-[44px]" />
       </div>
     </template>
     <template v-else>
-      <div class="text-white">
+      <div class="text-[var(--ui-text-main)]">
         <div class="mb-6">
           <UiTextH4 class="text-[var(--ui-text-main)]">
             {{ t("cabinet.dashboard.title") }}
@@ -46,7 +46,7 @@
                 class="mt4-card verification-item mt4-grid"
               >
                 <button
-                  class="mt4-star flex h-8 w-8 items-center justify-center rounded-md transition hover:bg-[var(--ui-background-panel)] text-[var(--ui-text-secondary)]"
+                  class="mt4-star flex h-8 w-8 items-center justify-center rounded-md transition text-[var(--ui-text-secondary)]"
                   type="button"
                   :aria-pressed="account.favorite"
                   :title="account.favorite ? 'Remove from favorites' : 'Add to favorites'"
@@ -55,8 +55,8 @@
                   <svg
                     viewBox="0 0 24 24"
                     class="h-4 w-4"
-                    :fill="account.favorite ? '#f5c542' : 'none'"
-                    :stroke="account.favorite ? '#f5c542' : 'var(--ui-text-secondary)'"
+                    :fill="account.favorite ? 'var(--ui-primary-accent)' : 'none'"
+                    :stroke="account.favorite ? 'var(--ui-primary-accent)' : 'var(--ui-text-secondary)'"
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -352,7 +352,7 @@ const badgeState = (state: "warn" | "error" | "success") => {
 }
 
 .mt4-card:hover {
-  background: var(--color-stroke-ui-dark);
+  background: var(--ui-background-card);
   opacity: 0.95;
 }
 
@@ -370,6 +370,9 @@ const badgeState = (state: "warn" | "error" | "success") => {
 
 .mt4-star {
   grid-area: star;
+}
+.mt4-star:hover {
+  background: var(--ui-background-card);
 }
 .mt4-type {
   grid-area: type;
@@ -399,15 +402,15 @@ const badgeState = (state: "warn" | "error" | "success") => {
 
 .verification-item {
   border-radius: 12px;
-  background: rgba(1, 22, 68, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--ui-background-panel);
+  border: 1px solid var(--color-stroke-ui-light);
   padding: 14px 16px;
   transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
 .verification-item:hover {
-  background: rgba(1, 22, 68, 0.82);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--ui-background-card);
+  border-color: var(--color-stroke-ui-light);
 }
 
 .step-icon {
@@ -416,16 +419,16 @@ const badgeState = (state: "warn" | "error" | "success") => {
   border-radius: 10px;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--ui-background-card);
 }
 
 .step-icon.warn {
-  color: #f5a524;
+  color: var(--color-ui-warning);
 }
 .step-icon.error {
-  color: #f75555;
+  color: var(--color-danger);
 }
 .step-icon.success {
-  color: #2ad177;
+  color: var(--color-success);
 }
 </style>

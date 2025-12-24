@@ -4,7 +4,7 @@ import { ref } from "vue";
 export const useThemeStore = defineStore("theme", () => {
   const currentTheme = ref<"light" | "dark">("dark");
   const lightTheme = {
-    "--ui-background": "#fafafa",
+    "--ui-background": "#ffffff",
     "--ui-background-secondary": "#2a5bbd",
     "--ui-background-admin": "rgba(255, 255, 255, 0.95)",
     "--ui-background-card": "#f2f2f2",
@@ -12,7 +12,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-background-sidebar": "#f9f9f9",
     "--ui-background-sidebar-link": "#9CA9B3",
 
-    "--ui-primary-main": "#0391ff66",
+    "--ui-primary-main": "#0391ff",
     "--ui-primary-accent": "#f75709",
 
     "--ui-text-invert": "#faf9f9",
@@ -23,7 +23,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-sticker-danger": "#d93025",
 
     "--color-stroke-ui-dark": "#e4e4e7",
-    "--color-stroke-ui-light": "#eeeef1",
+    "--color-stroke-ui-light": "#dcdce1",
     "--color-stroke-ui": "#b8b8c3",
   };
 

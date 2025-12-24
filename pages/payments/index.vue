@@ -371,9 +371,10 @@ import useEventBus from "~/composables/useEventBus";
 
 import {definePageMeta} from '~/.nuxt/imports'
 import {useI18n} from 'vue-i18n'
-import {computed, h, inject, onMounted, reactive, ref, watch} from 'vue'
+import {computed, h, inject, onMounted, reactive, ref, watch, nextTick} from 'vue'
 import UiBadge from "~/components/ui/UiBadge.vue";
 import UiIconLogo from "~/components/ui/UiIconLogo.vue";
+import { useRoute, useRouter } from "vue-router";
 
 definePageMeta({
   layout: 'cabinet',
@@ -382,6 +383,8 @@ definePageMeta({
 
 const {t} = useI18n({useScope: 'global'})
 const {openModal} = inject("modalControl") as { openModal: Function };
+const route = useRoute();
+const router = useRouter();
 
 const appCore = useAppCore()
 
@@ -615,6 +618,11 @@ onMounted(async () => {
   initViewMode()
   useEventBus.on("loadDataForPayments", loadData);
   await loadData()
+  await nextTick();
+  const openDeposit = route.query?.openDeposit;
+  if (openDeposit === "1" || openDeposit === "true" || openDeposit === "yes") {
+    handleClickCreateNewDeposit();
+  }
 })
 </script>
 
