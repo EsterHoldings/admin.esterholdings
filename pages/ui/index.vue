@@ -151,7 +151,7 @@ import UiIconTriangleUp from "~/components/ui/UiIconTriangleUp.vue";
 import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
 import UiIconTriangleDown from "~/components/ui/UiIconTriangleDown.vue";
 
-import LandingHeader from "~/components/block/LandingHeader";
+import LandingHeader from "~/components/block/LandingHeader.vue";
 import LandingFooter from "~/components/block/LandingFooter";
 </script>
 

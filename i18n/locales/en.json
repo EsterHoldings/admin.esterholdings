@@ -1370,6 +1370,9 @@
       "users": "Users",
       "deposits": "Deposits",
       "withdrawals": "Withdrawals",
+      "processingTransactions": "Transactions in processing",
+      "processingRequisites": "Requisites in processing",
+      "processingVerifications": "Verifications in processing",
       "recentUsers": "Recent users",
       "recentPayments": "Recent payments"
     },

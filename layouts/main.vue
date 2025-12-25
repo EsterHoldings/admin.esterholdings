@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import LandingHeader from "~/components/block/LandingHeader";
+import LandingHeader from "~/components/block/LandingHeader.vue";
 import LandingFooter from "~/components/block/LandingFooter";
 </script>
 

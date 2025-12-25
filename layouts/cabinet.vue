@@ -1,9 +1,9 @@
 <template>
   <div class="cabinet-layout min-h-dvh flex flex-col bg-[var(--ui-background)] bg-blend-multiply pb-safe-area">
-    <TheCabinetHeader class="cabinet-header shrink-0" />
+    <CabinetHeader class="cabinet-header shrink-0" />
 
     <div class="flex-1 min-h-0 flex">
-      <TheCabinetSideBar class="shrink-0" />
+      <CabinetSidebar class="shrink-0" />
 
       <Transition
         mode="out-in"
@@ -36,9 +36,9 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
-import TheCabinetSideBar from "~/components/block/TheCabinetSideBar.vue";
+import CabinetSidebar from "~/components/block/CabinetSidebar.vue";
 import TheFooter from "~/components/block/TheFooter.vue";
-import TheCabinetHeader from "~/components/block/TheCabinetHeader.vue";
+import CabinetHeader from "~/components/block/CabinetHeader.vue";
 import UiBreadcrumb from "~/components/ui/UiBreadcrumb.vue";
 import UiContainer from "~/components/ui/UiContainer.vue";
 

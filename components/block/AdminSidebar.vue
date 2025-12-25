@@ -9,10 +9,13 @@
             }" />
         </NuxtLink>
       </div>
+      <button class="side-bar-cabinet__close" type="button" aria-label="Close menu" @click="emit('close')">
+        ×
+      </button>
     </div>
 
     <div class="side-bar-cabinet__content">
-      <TheHeaderSideBarMenu />
+      <AdminSidebarMenu />
     </div>
 
     <div class="side-bar-cabinet__logout">
@@ -34,12 +37,14 @@
   import { useLocalePath } from "~/.nuxt/imports";
 
   import LanguageSwitcher from "~/components/block/LandingHeader/components/LanguageSwitcher.vue";
-  import TheHeaderSideBarMenu from "~/components/block/!!!TheHeaderSideBarMenu.vue";
+  import AdminSidebarMenu from "~/components/block/AdminSidebarMenu.vue";
   import UiIconLogo from "~/components/ui/UiIconLogo.vue";
   import UiIconLogout from "~/components/ui/UiIconLogout.vue";
   import UiIconMoon from "~/components/ui/UiIconMoon.vue";
   import UiIconSun from "~/components/ui/UiIconSun.vue";
   import UiImageCircle from "~/components/ui/UiImageCircle.vue";
+
+  const emit = defineEmits(["close"]);
 
   const authStore = useAuthStore();
   const localePath = useLocalePath();
@@ -53,7 +58,7 @@
     localStorage.setItem("access_token", "");
     localStorage.setItem("remember_token", "");
 
-    console.log("!!!TheHeaderSideBar -> handleClickLogout");
+    console.log("AdminSidebar -> handleClickLogout");
 
     navigateTo(localePath("/admin/auth/login"));
   };
@@ -211,5 +216,33 @@
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;
+  }
+
+  .side-bar-cabinet__close {
+    display: none;
+    height: 36px;
+    width: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui);
+    background: transparent;
+    color: var(--ui-text-main);
+    font-size: 20px;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  @media (max-width: 1023px) {
+    .side-bar-cabinet__top {
+      position: relative;
+    }
+
+    .side-bar-cabinet__close {
+      display: inline-flex;
+      position: absolute;
+      right: 16px;
+      top: 12px;
+    }
   }
 </style>

@@ -181,21 +181,21 @@
   import { useRoute, onBeforeRouteLeave } from "vue-router";
   import { useUiStore } from "~/stores/uiStore";
   import { useThemeStore } from "~/stores/themeStore.js";
-  import useTrackScroll from "./composables/trackScroll";
-  import { isSlideWithoutPicture } from "./composables/trackScroll";
+import useTrackScroll from "./LandingHeader/composables/trackScroll";
+import { isSlideWithoutPicture } from "./LandingHeader/composables/trackScroll";
 
   import UiIconLogo from "~/components/ui/UiIconLogo.vue";
   import UiIconMoon from "~/components/ui/UiIconMoon.vue";
   import UiIconSun from "~/components/ui/UiIconSun.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-  import HeaderLink from "./components/HeaderLink.vue";
-  import HeaderMobileLink from "./components/HeaderMobileLink.vue";
+  import HeaderLink from "./LandingHeader/components/HeaderLink.vue";
+  import HeaderMobileLink from "./LandingHeader/components/HeaderMobileLink.vue";
   import UiContainer from "~/components/ui/UiContainer.vue";
   import UiTextH6 from "~/components/ui/UiTextH6.vue";
-  import TradingMenu from "./components/TradingMenu.vue";
-  import PartnershipMenu from "./components/PartnershipMenu.vue";
-  import CompanyMenu from "./components/CompanyMenu.vue";
-  import LanguageSwitcher from "./components/LanguageSwitcher.vue";
+  import TradingMenu from "./LandingHeader/components/TradingMenu.vue";
+  import PartnershipMenu from "./LandingHeader/components/PartnershipMenu.vue";
+  import CompanyMenu from "./LandingHeader/components/CompanyMenu.vue";
+  import LanguageSwitcher from "./LandingHeader/components/LanguageSwitcher.vue";
 
   const themeStore = useThemeStore();
   const uiStore = useUiStore();

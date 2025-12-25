@@ -1370,6 +1370,9 @@
       "users": "Пользователи",
       "deposits": "Депозиты",
       "withdrawals": "Выводы",
+      "processingTransactions": "Транзакции в обработке",
+      "processingRequisites": "Реквизиты в обработке",
+      "processingVerifications": "Верификации в обработке",
       "recentUsers": "Новые пользователи",
       "recentPayments": "Недавние платежи"
     },

@@ -1370,6 +1370,9 @@
       "users": "Користувачі",
       "deposits": "Депозити",
       "withdrawals": "Виведення",
+      "processingTransactions": "Транзакції в обробці",
+      "processingRequisites": "Реквізити в обробці",
+      "processingVerifications": "Верифікації в обробці",
       "recentUsers": "Нові користувачі",
       "recentPayments": "Останні платежі"
     },

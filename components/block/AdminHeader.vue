@@ -2,7 +2,13 @@
   <header class="header">
     <nav>
       <div class="header__menu">
-        <div class="header__menu-left"></div>
+        <div class="header__menu-left">
+          <button class="header__burger" type="button" aria-label="Open menu" @click="emit('toggle-sidebar')">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
         <div class="header__menu-right">
           <div class="mr-5 flex justify-end items-center gap-2">
 
@@ -54,6 +60,7 @@ import UiIconArrowDown from "~/components/ui/UiIconArrowDown.vue";
 import UiIconBell from "~/components/ui/UiIconBell.vue";
 
 const themeStore = useThemeStore();
+const emit = defineEmits(["toggle-sidebar"]);
 
 const route = useRoute();
 const currentRouteName = computed(() => route.name);
@@ -87,6 +94,7 @@ const isThemeLight = computed(() => {
 
     &-left {
       display: flex;
+      align-items: center;
 
       &_item {
         margin-left: 20px;
@@ -111,6 +119,38 @@ const isThemeLight = computed(() => {
           margin-right: 0;
         }
       }
+    }
+  }
+
+  .header__burger {
+    display: none;
+    height: 36px;
+    width: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+
+    span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--ui-text-main);
+      border-radius: 2px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .header__menu-right {
+      gap: 12px;
+    }
+
+    .header__burger {
+      display: inline-flex;
     }
   }
 }

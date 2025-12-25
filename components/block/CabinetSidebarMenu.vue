@@ -1,6 +1,6 @@
 <template>
   <ul class="w-full p-3 lg:p-0 flex flex-row items-start justify-evenly gap-0 lg:flex-col lg:justify-start lg:gap-1">
-    <TheCabinetSideBarMenuItem
+    <CabinetSidebarMenuItem
       v-for="menuItem in menuItems"
       :key="menuItem.title"
       :title="menuItem.title"
@@ -11,7 +11,7 @@
 
     <UiSpacer />
 
-    <TheCabinetSideBarMenuItem
+    <CabinetSidebarMenuItem
       v-for="menuItem in secondMenuItems"
       :key="menuItem.title"
       :title="menuItem.title"
@@ -28,7 +28,7 @@
   import { useRouter } from "vue-router";
   import { useI18n } from "vue-i18n";
 
-  import TheCabinetSideBarMenuItem from "~/components/block/TheCabinetSideBarMenuItem.vue";
+  import CabinetSidebarMenuItem from "~/components/block/CabinetSidebarMenuItem.vue";
   import UiIconHome from "~/components/ui/UiIconHome.vue";
   import UiIconUser from "~/components/ui/UiIconUser.vue";
   import UiIconReferral from "~/components/ui/UiIconReferral.vue";

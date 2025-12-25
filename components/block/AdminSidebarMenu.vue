@@ -1,6 +1,6 @@
 <template>
   <ul class="side-bar-cabinet__menu">
-    <TheHeaderSideBarMenuItem
+    <AdminSidebarMenuItem
         v-for="menuItem in menuItems"
         :title="menuItem.title"
         :to="menuItem.to"
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import TheHeaderSideBarMenuItem from "~/components/block/!!!TheHeaderSideBarMenuItem.vue";
+import AdminSidebarMenuItem from "~/components/block/AdminSidebarMenuItem.vue";
 import UiIconHome from "~/components/ui/UiIconHome.vue";
 import UiIconClients from "~/components/ui/UiIconClients.vue";
 import UiIconUser from "~/components/ui/UiIconUser.vue";

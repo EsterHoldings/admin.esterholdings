@@ -7,6 +7,20 @@
       </div>
     </div>
 
+    <div class="admin-dashboard__grid admin-dashboard__grid--priority">
+      <PanelDefault v-for="card in priorityCards" :key="card.id" class="stat-card stat-card--priority">
+        <div class="flex items-center justify-between">
+          <div>
+            <UiTextSmall class="text-[var(--ui-text-secondary)]">{{ card.label }}</UiTextSmall>
+            <UiTextH5 class="text-[var(--ui-text-main)]">{{ card.value }}</UiTextH5>
+          </div>
+          <div class="rounded-full bg-[var(--ui-primary-main)]/20 p-2 text-[var(--ui-primary-accent)]">
+            <component :is="card.icon" class="!h-5 !w-5" />
+          </div>
+        </div>
+      </PanelDefault>
+    </div>
+
     <div class="admin-dashboard__grid">
       <PanelDefault v-for="card in statCards" :key="card.id" class="stat-card">
         <div class="flex items-center justify-between">
@@ -83,8 +97,31 @@ import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 import UiIconUsers from "~/components/ui/UiIconClients.vue";
 import UiIconPayment from "~/components/ui/UiIconPayment.vue";
 import UiIconWithdraw from "~/components/ui/UiIconWithdraw.vue";
+import UiIconSetting from "~/components/ui/UiIconSetting.vue";
+import UiIconWarningFull from "~/components/ui/UiIconWarningFull.vue";
 
 const { t } = useI18n({ useScope: "global" });
+
+const priorityCards = computed(() => [
+  {
+    id: "processing_transactions",
+    label: t("admin.dashboard.processingTransactions", "Transactions in processing"),
+    value: 14,
+    icon: UiIconPayment,
+  },
+  {
+    id: "processing_requisites",
+    label: t("admin.dashboard.processingRequisites", "Requisites in processing"),
+    value: 6,
+    icon: UiIconSetting,
+  },
+  {
+    id: "processing_verifications",
+    label: t("admin.dashboard.processingVerifications", "Verifications in processing"),
+    value: 9,
+    icon: UiIconWarningFull,
+  },
+]);
 
 const statCards = computed(() => [
   {
@@ -138,6 +175,10 @@ const recentPayments = [
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.admin-dashboard__grid--priority {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
 .admin-dashboard__panels {
   display: grid;
   gap: 12px;
@@ -146,5 +187,10 @@ const recentPayments = [
 
 .stat-card {
   padding: 14px;
+}
+
+.stat-card--priority {
+  border: 1px solid var(--ui-primary-accent);
+  background: color-mix(in srgb, var(--ui-primary-main) 12%, var(--ui-background-panel));
 }
 </style>
