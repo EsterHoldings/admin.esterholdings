@@ -84,7 +84,7 @@ const appCore = useAppCore();
 const toast = useToast();
 const emit = defineEmits(['input2Fa'])
 
-let twoFaErrors = reactive([])
+const twoFaErrors = ref<string[]>([])
 
 const handleTwoFaCodeInput = (value: string) => {
   emit('input2Fa', value);
@@ -102,17 +102,19 @@ const doSendForm = async () => {
     toast.success("Welcome!");
     navigateTo("/dashboard");
   } catch (e: any) {
-    if (e.status === 401) {
-      if (e.response.data?.data?.two_fa_is_required) {
-        if (!twoFaEnabled.value) {
-          toast.info(e.response.data.message)
-          twoFaEnabled.value = true;
-        } else {
-          twoFaErrors = [e.response.data.message]
-        }
-      } else {
-        toast.error(errors.currentMessage("Invalid credentials"));
+    const responseData = e.response?.data;
+    const twoFaRequired =
+      responseData?.data?.two_fa_is_required ||
+      responseData?.errors?.twoFaCode?.length > 0 ||
+      String(responseData?.message ?? "").toLowerCase().includes("two fa");
+    if (twoFaRequired) {
+      if (!twoFaEnabled.value) {
+        toast.info(responseData?.message ?? "")
+        twoFaEnabled.value = true;
       }
+      twoFaErrors.value = responseData?.errors?.twoFaCode ?? [responseData?.message ?? ""].filter(Boolean);
+    } else if (e.status === 401) {
+      toast.error(errors.currentMessage("Invalid credentials"));
     } else {
       toast.error("Invalid credentials");
     }

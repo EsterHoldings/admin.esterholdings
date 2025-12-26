@@ -88,18 +88,18 @@
             Відскануйте QR-код або введіть секретний ключ вручну
           </div>
         </div>
-        <UiSwitchToggle :model-value="true" />
+        <UiSwitchToggle :model-value="twoFaSwitchOn" @update:modelValue="handleToggleTwoFa" />
       </div>
 
-      <div class="relative rounded-xl border border-[var(--color-stroke-ui-dark)] p-4 md:p-5">
+      <div v-if="twoFaSwitchOn" class="relative rounded-xl border border-[var(--color-stroke-ui-dark)] p-4 md:p-5">
         <div v-if="qrIsLoading && !twoFaEnabled" class="flex h-48 items-center justify-center">
           <UiIconSpinnerDefault />
         </div>
 
-        <div v-else-if="!qrIsLoading && twoFaEnabled" class="grid gap-5 md:grid-cols-2">
-          <div class="flex flex-col items-center justify-center gap-4 rounded-xl bg-[var(--ui-background)] p-4">
+        <div v-else-if="!qrIsLoading && twoFaEnabled" class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background)] px-3 py-2">
             <UiIconSuccess />
-            <div class="w-full max-w-[220px]" v-html="qrSvg"></div>
+            <UiTextSmall class="!text-[var(--ui-text-main)]">{{ twoFaEnabledLabel }}</UiTextSmall>
           </div>
           <div class="flex items-center justify-center">
             <UiButtonDefault state="danger--outline" @click="handleClickTwoFaDisable">
@@ -151,6 +151,7 @@ import UiFormControl from '~/components/ui/UiFormControl.vue'
 import UiInput from '~/components/ui/UiInput.vue'
 import UiIconSpinnerDefault from '~/components/ui/UiIconSpinnerDefault.vue'
 import UiIconSuccess from '~/components/ui/UiIconSuccess.vue'
+import UiTextSmall from '~/components/ui/UiTextSmall.vue'
 
 import useAppCore from '~/composables/useAppCore'
 import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
@@ -167,10 +168,16 @@ const success = ref(false)
 const loading = ref(false)
 
 const twoFaEnabled = ref(false)
+const twoFaUiEnabled = ref(false)
 const loadingDisable = ref(false)
 const errorDisable = ref<string | null>(null)
 const qrIsLoading = ref(false)
 const qrSvg = ref('')
+const twoFaEnabledLabel = computed(() => {
+  const raw = String(qrSvg.value ?? '')
+  const plain = raw.replace(/<[^>]*>/g, '').trim()
+  return plain.length > 0 ? plain : '2FA enabled'
+})
 
 const handleInputOtp = (value: string) => { otp.value = value }
 
@@ -236,6 +243,7 @@ const handleClickTwoFaDisable = async () => {
     await loadTwoFaQr()
     loadingDisable.value = false
     twoFaEnabled.value = false
+    twoFaUiEnabled.value = false
     loading.value = false
   }
 }
@@ -258,7 +266,28 @@ const loadTwoFaQr = async () => {
   qrIsLoading.value = false
 }
 
-onMounted(async () => { await loadTwoFaQr() })
+const handleToggleTwoFa = async (value: boolean) => {
+  if (!value) {
+    if (twoFaEnabled.value) {
+      await handleClickTwoFaDisable()
+      return
+    }
+    twoFaUiEnabled.value = false
+    return
+  }
+
+  twoFaUiEnabled.value = true
+  if (!qrSvg.value && !qrIsLoading.value) {
+    await loadTwoFaQr()
+  }
+}
+
+const twoFaSwitchOn = computed(() => twoFaEnabled.value || twoFaUiEnabled.value)
+
+onMounted(async () => {
+  await loadTwoFaQr()
+  twoFaUiEnabled.value = twoFaEnabled.value
+})
 
 /* === Password rules highlighting (лише UI, логіку не змінює) === */
 const pwd = computed(() => (formData.newPassword ?? '') as string)

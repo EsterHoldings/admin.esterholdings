@@ -50,7 +50,7 @@
       />
     </UiFormControl>
 
-    <div class="registration-form__checkbox">
+    <label class="registration-form__checkbox">
       <UiInput
           class="input"
           type="checkbox"
@@ -63,9 +63,9 @@
         and the
         <NuxtLink to="/quoting-regulations" target="_blank">quotation rules</NuxtLink>
       </UiTextH6>
-    </div>
+    </label>
 
-    <div class="registration-form__checkbox">
+    <label class="registration-form__checkbox">
       <UiInput
           class="input"
           type="checkbox"
@@ -78,7 +78,7 @@
         and warned about the
         <NuxtLink to="/risks-statement" target="_blank">risks</NuxtLink>
       </UiTextH6>
-    </div>
+    </label>
 
     <UiButtonPrimary
         class="registration-form__btn"

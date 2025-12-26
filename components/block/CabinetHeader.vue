@@ -222,7 +222,7 @@
               :aria-label="t('cabinet.header.profile')">
               <div
                 class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
-                <UiIconSetting />
+                <UiIconSetting class="menu-icon" />
                 <UiTextSmall class="w-full whitespace-nowrap">{{ t("cabinet.header.accountSettings") }}</UiTextSmall>
               </div>
             </NuxtLink>
@@ -239,10 +239,12 @@
                 <UiIconSun
                   v-if="themeStore.currentTheme === 'dark'"
                   :key="'sun'"
+                  class="menu-icon"
                 />
                 <UiIconMoon
                   v-else
                   :key="'moon'"
+                  class="menu-icon"
                 />
               </transition>
               <UiTextSmall class="w-full whitespace-nowrap">
@@ -263,7 +265,7 @@
               :aria-label="t('cabinet.header.helpCenter')">
               <div
                 class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
-                <UiIconSupport />
+                <UiIconSupport class="menu-icon" />
                 <UiTextSmall class="w-full whitespace-nowrap">{{ t("cabinet.header.helpCenter") }}</UiTextSmall>
               </div>
             </NuxtLink>
@@ -275,7 +277,7 @@
               :aria-label="t('cabinet.header.logout')">
               <div
                 class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md">
-                <UiIconLogout />
+                <UiIconLogout class="menu-icon" />
                 <UiTextSmall class="w-full whitespace-nowrap">{{ t("cabinet.header.logout") }}</UiTextSmall>
               </div>
             </NuxtLink>
@@ -285,3 +287,11 @@
     </div>
   </header>
 </template>
+
+<style lang="scss" scoped>
+.menu-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+</style>

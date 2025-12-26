@@ -61,7 +61,6 @@
       title: t("cabinet.menu.support"),
       to: addCurrentLocaleToPath("support"),
       icon: UiIconSupport,
-      notificationsCount: 3,
     },
     { title: t("cabinet.menu.settings"), to: addCurrentLocaleToPath("profile"), icon: UiIconSetting },
   ]);
