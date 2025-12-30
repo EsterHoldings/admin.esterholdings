@@ -1006,6 +1006,12 @@
         "prev": "पिछला",
         "next": "अगला"
       },
+      "autoRefresh": {
+        "label": "स्वचालित रिफ्रेश",
+        "off": "बंद",
+        "offShort": "बंद",
+        "secondsShort": "से"
+      },
       "accounts-form": {
         "title": "नया खाता खोलें",
         "fields": {

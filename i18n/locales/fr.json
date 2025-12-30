@@ -1006,6 +1006,12 @@
         "prev": "Préc",
         "next": "Suiv"
       },
+      "autoRefresh": {
+        "label": "Actualisation automatique",
+        "off": "Désactivé",
+        "offShort": "Dés.",
+        "secondsShort": "s"
+      },
       "accounts-form": {
         "title": "Ouvrir un nouveau compte",
         "fields": {

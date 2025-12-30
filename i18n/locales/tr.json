@@ -1006,6 +1006,12 @@
         "prev": "Önceki",
         "next": "Sonraki"
       },
+      "autoRefresh": {
+        "label": "Otomatik yenileme",
+        "off": "Kapalı",
+        "offShort": "Kap.",
+        "secondsShort": "s"
+      },
       "accounts-form": {
         "title": "Yeni hesap aç",
         "fields": {

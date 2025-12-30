@@ -1006,6 +1006,12 @@
         "prev": "Попер",
         "next": "Наст"
       },
+      "autoRefresh": {
+        "label": "Автооновлення",
+        "off": "Вимкнено",
+        "offShort": "Вимк.",
+        "secondsShort": "с"
+      },
       "accounts-form": {
         "title": "Відкрити новий рахунок",
         "fields": {

@@ -94,6 +94,7 @@ import UiIconWarning from "~/components/ui/UiIconWarning.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 
 import useAppCore from "~/composables/useAppCore";
+import useEventBus from "~/composables/useEventBus";
 import { useAuthStore } from "~/stores/authStore";
 
 type VerificationStatus = "pending" | "approved" | "rejected";
@@ -126,8 +127,7 @@ const initials = computed(() => {
 
 const isLoading = ref(false);
 const verificationRequestData = reactive<Record<string, any>>({});
-const refreshIntervalMs = 10000;
-let refreshTimer: ReturnType<typeof setInterval> | null = null;
+const handleDashboardRefresh = () => loadVerificationData();
 
 const emailStatus = ref<VerificationStatus>("pending");
 const infoStatus = ref<VerificationStatus>("pending");
@@ -272,13 +272,11 @@ const loadVerificationData = async () => {
 
 onMounted(async () => {
   await loadVerificationData();
-  refreshTimer = setInterval(loadVerificationData, refreshIntervalMs);
+  useEventBus.on("dashboardRefresh", handleDashboardRefresh);
 });
 
 onBeforeUnmount(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer);
-  }
+  useEventBus.off("dashboardRefresh", handleDashboardRefresh);
 });
 </script>
 

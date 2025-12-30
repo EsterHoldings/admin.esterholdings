@@ -103,26 +103,29 @@
                   class="border-t border-[var(--color-ui-border)] hover:bg-[var(--color-stroke-ui-dark)]"
               >
                 <td class="px-4 py-3 align-middle">
-                  <button
-                    class="flex h-8 w-8 items-center justify-center rounded-md transition text-[var(--ui-text-secondary)]"
-                    type="button"
-                    :aria-pressed="account.is_favorite"
-                    :title="account.is_favorite ? 'Remove from favorites' : 'Add to favorites'"
-                    @click.stop="handleToggleFavorite(account)"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      class="h-4 w-4"
-                      :fill="account.is_favorite ? 'var(--ui-primary-accent)' : 'none'"
-                      :stroke="account.is_favorite ? 'var(--ui-primary-accent)' : 'var(--ui-text-secondary)'"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
+                  <div class="flex items-center gap-2">
+                    <button
+                      class="flex h-8 w-8 items-center justify-center rounded-md transition text-[var(--ui-text-secondary)]"
+                      type="button"
+                      :aria-pressed="account.is_favorite"
+                      :title="account.is_favorite ? 'Remove from favorites' : 'Add to favorites'"
+                      @click.stop="handleToggleFavorite(account)"
                     >
-                      <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                  </button>
+                      <svg
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        :fill="account.is_favorite ? 'var(--ui-primary-accent)' : 'none'"
+                        :stroke="account.is_favorite ? 'var(--ui-primary-accent)' : 'var(--ui-text-secondary)'"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                    </button>
+                    <UiIconCopy :text="account.number" />
+                  </div>
                 </td>
                 <td class="px-5 py-3 align-middle">
                   <div class="font-bold">
@@ -131,7 +134,10 @@
                 </td>
 
                 <td class="px-5 py-3 align-middle">
-                  {{ account.number }}
+                  <div class="flex items-center gap-2">
+                    <span>{{ account.number }}</span>
+                    <UiIconCopy :text="account.number" />
+                  </div>
                 </td>
 
                 <td class="px-5 py-3 align-middle">
@@ -267,15 +273,6 @@
                 <button class="menu-btn" aria-label="Copy number">
                   <UiIconCopy :text="account.number" />
                 </button>
-                <button
-                    type="button"
-                    class="menu-btn"
-                    @click.stop="toggleCardMenu(account.id)"
-                    :ref="el => (cardMenuTriggerRefs[account.id] = el as HTMLElement | null)"
-                    aria-label="Open menu"
-                >
-                  <UiIconDotsVertical class="h-4 w-4" />
-                </button>
                 <Teleport to="body">
                   <div
                       v-if="cardMenuOpenId === account.id"
@@ -309,6 +306,15 @@
                   </div>
                 </Teleport>
               </div>
+              <button
+                  type="button"
+                  class="menu-btn card-menu-trigger"
+                  @click.stop="toggleCardMenu(account.id)"
+                  :ref="el => (cardMenuTriggerRefs[account.id] = el as HTMLElement | null)"
+                  aria-label="Open menu"
+              >
+                <UiIconDotsVertical class="h-4 w-4" />
+              </button>
 
               <div class="account-card__body" :class="viewMode === 'full' ? 'account-card__body--row' : ''">
                 <div class="min-w-[140px]">
@@ -890,7 +896,7 @@ const handleClickCreateNewAccount = () =>
 }
 
 .card-with-menu {
-  padding-left: 58px;
+  padding-left: 110px;
 }
 
 .card-menu-actions {
@@ -937,6 +943,12 @@ const handleClickCreateNewAccount = () =>
 
 .card-menu-actions {
   pointer-events: auto;
+}
+
+.card-menu-trigger {
+  position: absolute;
+  top: 6px;
+  right: 6px;
 }
 
 .card-menu__item {

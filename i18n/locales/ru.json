@@ -1006,6 +1006,12 @@
         "prev": "Назад",
         "next": "Вперёд"
       },
+      "autoRefresh": {
+        "label": "Автообновление",
+        "off": "Выключено",
+        "offShort": "Выкл.",
+        "secondsShort": "с"
+      },
       "accounts-form": {
         "title": "Открыть новый счёт",
         "fields": {

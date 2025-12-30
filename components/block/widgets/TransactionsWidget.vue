@@ -8,6 +8,7 @@ import useAppCore from "~/composables/useAppCore";
 import { onMounted, onBeforeUnmount, reactive, ref, watch, computed } from "vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+import useEventBus from "~/composables/useEventBus";
 
 const { t } = useI18n({ useScope: "global" });
 const appCore = useAppCore();
@@ -72,6 +73,7 @@ const amountClass = (payment: any) => {
 };
 
 const loadPaymentsData = async () => {
+  if (isLoading.value) return;
   isLoading.value = true;
   errorMsg.value = null;
   try {
@@ -136,8 +138,11 @@ const handleChangeFilterSortBy = async (value: string) => {
 
 onMounted(() => {
   loadPaymentsData();
+  useEventBus.on("dashboardRefresh", loadPaymentsData);
 });
-onBeforeUnmount(() => {});
+onBeforeUnmount(() => {
+  useEventBus.off("dashboardRefresh", loadPaymentsData);
+});
 </script>
 
 <style scoped>

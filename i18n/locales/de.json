@@ -1006,6 +1006,12 @@
         "prev": "Zurück",
         "next": "Weiter"
       },
+      "autoRefresh": {
+        "label": "Auto-Aktualisierung",
+        "off": "Aus",
+        "offShort": "Aus",
+        "secondsShort": "s"
+      },
       "accounts-form": {
         "title": "Neues Konto eröffnen",
         "fields": {

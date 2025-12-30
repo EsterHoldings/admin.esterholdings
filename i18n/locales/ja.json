@@ -1006,6 +1006,12 @@
         "prev": "前へ",
         "next": "次へ"
       },
+      "autoRefresh": {
+        "label": "自動更新",
+        "off": "オフ",
+        "offShort": "オフ",
+        "secondsShort": "秒"
+      },
       "accounts-form": {
         "title": "新しい口座を開設",
         "fields": {

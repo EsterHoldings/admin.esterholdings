@@ -1006,6 +1006,12 @@
         "prev": "Ant",
         "next": "Próx"
       },
+      "autoRefresh": {
+        "label": "Atualização automática",
+        "off": "Desativado",
+        "offShort": "Des.",
+        "secondsShort": "s"
+      },
       "accounts-form": {
         "title": "Abrir nova conta",
         "fields": {

@@ -1006,6 +1006,12 @@
         "prev": "קודם",
         "next": "הבא"
       },
+      "autoRefresh": {
+        "label": "רענון אוטומטי",
+        "off": "כבוי",
+        "offShort": "כבוי",
+        "secondsShort": "s"
+      },
       "accounts-form": {
         "title": "פתח חשבון חדש",
         "fields": {
