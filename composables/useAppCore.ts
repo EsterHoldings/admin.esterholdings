@@ -16,6 +16,7 @@ import RolesModule from "~/composables/core/modules/roles/roles.module";
 import S3Module from "~/composables/core/modules/s3/s3.module";
 import UsersModule from "~/composables/core/modules/users/users.module";
 import NewsModule from "~/composables/core/modules/news/news.module";
+import ReferralsModule from "~/composables/core/modules/referrals/referrals.module";
 
 import VerificationsModule from "~/composables/core/modules/verification/verifications.module";
 import TicketsModule from "~/composables/core/modules/tickets/tickets.module";
@@ -53,6 +54,7 @@ export interface ICoreModules {
     messages: MessagesModule;
     verifications: VerificationsModule;
     news: NewsModule;
+    referrals: ReferralsModule;
 
     adminModules: {
         auth : AdminAuthModule;
@@ -89,6 +91,7 @@ export const useAppCore = (): ICoreModules => {
         users: new UsersModule(), // TODO :: Move to adminModules or remove
         verifications: new VerificationsModule(),
         news: new NewsModule(),
+        referrals: new ReferralsModule(),
 
         adminModules: {
             auth: new AdminAuthModule(),

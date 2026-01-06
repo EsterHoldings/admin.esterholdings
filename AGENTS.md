@@ -9,6 +9,7 @@
 - Nuxt setup is in `nuxt.config.ts`; router overrides in `router.options.ts`; server routes/handlers under `server/`.
 - This repo is the frontend; backend lives in the sibling `server/` folder next to this `client/` folder.
 - All client API calls go through `useAppCore` (see `composables/useAppCore`); follow its patterns when adding or updating requests.
+- Backend path from this directory ../server (Backend by Laravel)
 
 ## Build, Test, and Development Commands
 ```bash
