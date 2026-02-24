@@ -24,16 +24,16 @@
         </UiFormControl>
       </div>
     </div>
-  </div>
 
-  <div class="accounts__edit__bottom">
-    <UiButtonDefault
-      class="accounts__edit__bottom__save-btn"
-      state="secondary"
-      @click="handleSubmitForm">
-      <span v-if="!isLoading">{{ t("cabinet.accounts.accounts-form.actions.submit") }}</span>
-      <UiIconSpinnerDefault v-if="isLoading" />
-    </UiButtonDefault>
+    <div class="accounts__edit__bottom">
+      <UiButtonDefault
+        class="accounts__edit__bottom__save-btn"
+        state="secondary"
+        @click="handleSubmitForm">
+        <span v-if="!isLoading">{{ t("cabinet.accounts.accounts-form.actions.submit") }}</span>
+        <UiIconSpinnerDefault v-if="isLoading" />
+      </UiButtonDefault>
+    </div>
   </div>
 </template>
 
@@ -68,7 +68,6 @@
   const { closeModal } = inject("modalControl") as { closeModal: Function };
 
   const handleChangeSelectAccountType = val => {
-    console.log("handleChangeSelectAccountType", val);
     validatorAccountForm.doValidateField("accountType", val);
     formData.accountType = val;
   };
@@ -97,7 +96,7 @@
       } catch (errorResponse) {
         console.log("handleSubmitForm -> errorResponse", errorResponse);
       } finally {
-        // isLoading.value = false;
+        isLoading.value = false;
       }
     });
   };
@@ -109,8 +108,13 @@
 
 <style lang="scss" scoped>
   .accounts__edit {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
     &__top {
-      height: 50px;
+      min-height: 50px;
 
       padding-left: 40px;
       padding-right: 20px;
@@ -123,10 +127,13 @@
     }
 
     &__content {
-      height: calc(100vh - 120px);
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
 
       &.without-top {
-        height: calc(100vh - 50px);
+        border-top: none;
       }
 
       &__fields {
@@ -143,10 +150,12 @@
     }
 
     &__bottom {
-      height: 70px;
+      min-height: 70px;
 
       padding-left: 40px;
       padding-right: 40px;
+      padding-top: 14px;
+      padding-bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px));
 
       display: flex;
       align-items: center;
@@ -156,6 +165,30 @@
 
       .btn {
         height: 40px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .accounts__edit {
+      &__top {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      &__content {
+        &__fields {
+          padding: 20px;
+        }
+      }
+
+      &__bottom {
+        padding-left: 20px;
+        padding-right: 20px;
+
+        .btn {
+          width: 100%;
+        }
       }
     }
   }
