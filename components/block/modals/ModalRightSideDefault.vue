@@ -144,8 +144,8 @@
     top: 0;
     right: 0;
     bottom: 0;
-    height: 100vh;
-    height: 100dvh;
+    height: 100%;
+    max-height: 100dvh;
     width: 100%;
     max-width: 600px;
     background-color: var(--ui-background);
@@ -166,11 +166,15 @@
   .modal-right-side__content {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+    padding-top: max(56px, calc(env(safe-area-inset-top, 0px) + 42px));
+    padding-bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+    scrollbar-gutter: stable;
   }
 
   .modal-close-btn {
@@ -190,5 +194,11 @@
   :global(body.modal-right-side-open) {
     overflow: hidden;
     overscroll-behavior: none;
+  }
+
+  @supports (height: 100svh) {
+    .modal-right-side {
+      max-height: 100svh;
+    }
   }
 </style>

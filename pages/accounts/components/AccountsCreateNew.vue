@@ -22,17 +22,17 @@
             :isInvalid="validatorAccountForm?.errorsFormData?.accountType?.errors?.length > 0"
             @blur="validatorAccountForm?.doValidateField('accountType', $event)" />
         </UiFormControl>
-      </div>
-    </div>
 
-    <div class="accounts__edit__bottom">
-      <UiButtonDefault
-        class="accounts__edit__bottom__save-btn"
-        state="secondary"
-        @click="handleSubmitForm">
-        <span v-if="!isLoading">{{ t("cabinet.accounts.accounts-form.actions.submit") }}</span>
-        <UiIconSpinnerDefault v-if="isLoading" />
-      </UiButtonDefault>
+        <div class="accounts__edit__actions">
+          <UiButtonDefault
+            class="accounts__edit__save-btn"
+            state="info"
+            @click="handleSubmitForm">
+            <span v-if="!isLoading">{{ t("cabinet.accounts.accounts-form.actions.submit") }}</span>
+            <UiIconSpinnerDefault v-if="isLoading" />
+          </UiButtonDefault>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -149,23 +149,16 @@
       }
     }
 
-    &__bottom {
-      min-height: 70px;
-
-      padding-left: 40px;
-      padding-right: 40px;
-      padding-top: 14px;
-      padding-bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px));
-
+    &__actions {
+      margin-top: 24px;
+      padding-bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) + 6px));
       display: flex;
       align-items: center;
       justify-content: flex-start;
+    }
 
-      border-top: 1px solid var(--color-stroke-ui-dark);
-
-      .btn {
-        height: 40px;
-      }
+    &__save-btn {
+      min-height: 40px;
     }
   }
 
@@ -182,13 +175,12 @@
         }
       }
 
-      &__bottom {
-        padding-left: 20px;
-        padding-right: 20px;
+      &__actions {
+        margin-top: 20px;
+      }
 
-        .btn {
-          width: 100%;
-        }
+      &__save-btn {
+        width: 100%;
       }
     }
   }
