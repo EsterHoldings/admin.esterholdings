@@ -775,7 +775,19 @@
         "profileRejected": "Профіль відхилено!",
         "profilePhotoVerified": "Фото профілю успішно перевірено!",
         "profilePhotoInProgress": "Перевірка фото профілю триває!",
-        "profilePhotoRejected": "Фото профілю відхилено!"
+        "profilePhotoRejected": "Фото профілю відхилено!",
+        "notComplete": "Рахунок ще не повністю верифіковано",
+        "complete": "Рахунок повністю верифіковано",
+        "progressTitle": "Прогрес верифікації",
+        "verifiedCount": "Перевірено {done}/{total}",
+        "stepsRemaining": "Залишилось кроків: {count}",
+        "steps": {
+          "photo": "Фото профілю",
+          "profile": "Дані профілю",
+          "email": "Email",
+          "documents": "Документи",
+          "deposit": "Перший депозит"
+        }
       },
       "actions": {
         "newDeposit": "Новий депозит",

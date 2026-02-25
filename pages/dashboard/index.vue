@@ -1,6 +1,6 @@
 <template>
   <UiContainer>
-    <div class="text-[var(--ui-text-main)]">
+    <div class="dashboard-page text-[var(--ui-text-main)]">
       <div class="mb-6 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <UiTextH4 class="text-[var(--ui-text-main)]">
           {{ t("cabinet.dashboard.title") }}
@@ -102,7 +102,7 @@
               :is-loading="isMt4Refreshing"
               @toggle-favorite="toggleFavorite"
             />
-            <div v-else class="rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-4 text-sm text-[var(--ui-text-secondary)] min-h-[300px]">
+            <div v-else class="rounded-xl bg-[var(--ui-background-panel)] p-4 text-sm text-[var(--ui-text-secondary)] min-h-[300px]">
               {{ t("cabinet.dashboard.mt4.empty") }}
             </div>
           </div>
@@ -547,6 +547,27 @@ const handleManualRefresh = () => {
   min-width: 136px;
   left: auto;
   right: 0;
+}
+
+.dashboard-page :deep(.dashboard-widget-card) {
+  border: none !important;
+}
+
+.dashboard-page :deep(.transactions-widget__loading),
+.dashboard-page :deep(.transactions-widget__error),
+.dashboard-page :deep(.transactions-widget__empty) {
+  border: none !important;
+}
+
+.dashboard-page :deep(.transaction-row) {
+  border: none !important;
+}
+
+.dashboard-page :deep(.verification-header-card),
+.dashboard-page :deep(.verification-progress-card),
+.dashboard-page :deep(.verification-step),
+.dashboard-page :deep(.verification-item) {
+  border: none !important;
 }
 
 /* MT4 and verification styles moved into widgets */

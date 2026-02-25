@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
 
-            <div class="md:hidden transaction-row__mobile">
+            <div class="md:hidden flex flex-col gap-[10px]">
               <div class="flex items-start justify-between gap-2">
                 <div class="min-w-0">
                   <div class="transaction-label">{{ t("cabinet.dashboard.transactions.accountNumber") }}</div>
@@ -298,16 +298,9 @@ onBeforeUnmount(() => {
 }
 
 .transaction-row__desktop {
-  display: grid;
   grid-template-columns: 1.2fr 0.9fr 0.8fr 0.9fr 1fr auto;
   gap: 10px;
   align-items: center;
-}
-
-.transaction-row__mobile {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .transaction-row__mobile-grid {

@@ -775,7 +775,19 @@
         "profileRejected": "Профиль отклонен!",
         "profilePhotoVerified": "Фото профиля успешно проверено!",
         "profilePhotoInProgress": "Проверка фото профиля в процессе!",
-        "profilePhotoRejected": "Фото профиля отклонено!"
+        "profilePhotoRejected": "Фото профиля отклонено!",
+        "notComplete": "Аккаунт не верифицирован полностью",
+        "complete": "Аккаунт полностью верифицирован",
+        "progressTitle": "Прогресс верификации",
+        "verifiedCount": "Проверено {done}/{total}",
+        "stepsRemaining": "Осталось шагов: {count}",
+        "steps": {
+          "photo": "Фото профиля",
+          "profile": "Данные профиля",
+          "email": "Email",
+          "documents": "Документы",
+          "deposit": "Первый депозит"
+        }
       },
       "actions": {
         "newDeposit": "Новый депозит",

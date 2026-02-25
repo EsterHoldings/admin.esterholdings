@@ -775,7 +775,19 @@
         "profilePhotoRejected": "Profile photo was rejected!",
         "profileButton": "Profile",
         "addressFailed": "Address verification failed!",
-        "profilePhoto": "Profile photo verification in progress!"
+        "profilePhoto": "Profile photo verification in progress!",
+        "notComplete": "Account is not fully verified",
+        "complete": "Account is fully verified",
+        "progressTitle": "Verification progress",
+        "verifiedCount": "Verified {done}/{total}",
+        "stepsRemaining": "Remaining steps: {count}",
+        "steps": {
+          "photo": "Profile photo",
+          "profile": "Profile data",
+          "email": "Email",
+          "documents": "Documents",
+          "deposit": "First deposit"
+        }
       },
       "actions": {
         "newDeposit": "New Deposit",
