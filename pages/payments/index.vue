@@ -330,38 +330,39 @@
               </div>
             </div>
 
-            <Teleport to="body">
-              <div
-                v-if="activePaymentMenuId !== null"
-                ref="paymentMenuRef"
-                class="fixed z-[9999] max-h-[70vh] overflow-auto text-[var(--ui-text-main)]"
-                :class="[
-                  'flex min-w-[150px] max-w-[70vw] flex-col gap-1 rounded-md border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] p-2 shadow-lg transition-opacity duration-100',
-                  paymentMenuReady ? 'opacity-100' : 'opacity-0 pointer-events-none',
-                ]"
-                :style="paymentMenuStyle"
-              >
-                <button
-                  type="button"
-                  class="flex h-8 items-center justify-start gap-2 rounded-md px-2 hover:bg-[var(--color-stroke-ui-light)] hover:opacity-70"
-                  @click="handleOpenPayment(activePaymentMenuId)"
-                >
-                  <UiIconEye class="!h-[14px] !w-[14px]" />
-                  <UiTextSmall class="whitespace-nowrap">{{ openMenuLabel }}</UiTextSmall>
-                </button>
-
-                <button
-                  type="button"
-                  class="flex h-8 items-center justify-start gap-2 rounded-md px-2 hover:bg-[var(--color-stroke-ui-light)] hover:opacity-70"
-                  :disabled="deletingPaymentId === activePaymentMenuId"
-                  @click="handleDeletePayment(activePaymentMenuId)"
-                >
-                  <UiIconTrash class="!h-[14px] !w-[14px] stroke-[var(--ui-sticker-danger)]" />
-                  <UiTextSmall class="whitespace-nowrap">{{ deleteMenuLabel }}</UiTextSmall>
-                </button>
-              </div>
-            </Teleport>
           </div>
+
+          <Teleport to="body">
+            <div
+              v-if="activePaymentMenuId !== null"
+              ref="paymentMenuRef"
+              class="fixed z-[9999] max-h-[70vh] overflow-auto text-[var(--ui-text-main)]"
+              :class="[
+                'flex min-w-[150px] max-w-[70vw] flex-col gap-1 rounded-md border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] p-2 shadow-lg transition-opacity duration-100',
+                paymentMenuReady ? 'opacity-100' : 'opacity-0 pointer-events-none',
+              ]"
+              :style="paymentMenuStyle"
+            >
+              <button
+                type="button"
+                class="flex h-8 items-center justify-start gap-2 rounded-md px-2 hover:bg-[var(--color-stroke-ui-light)] hover:opacity-70"
+                @click="handleOpenPayment(activePaymentMenuId)"
+              >
+                <UiIconEye class="!h-[14px] !w-[14px]" />
+                <UiTextSmall class="whitespace-nowrap">{{ openMenuLabel }}</UiTextSmall>
+              </button>
+
+              <button
+                type="button"
+                class="flex h-8 items-center justify-start gap-2 rounded-md px-2 hover:bg-[var(--color-stroke-ui-light)] hover:opacity-70"
+                :disabled="deletingPaymentId === activePaymentMenuId"
+                @click="handleDeletePayment(activePaymentMenuId)"
+              >
+                <UiIconTrash class="!h-[14px] !w-[14px] stroke-[var(--ui-sticker-danger)]" />
+                <UiTextSmall class="whitespace-nowrap">{{ deleteMenuLabel }}</UiTextSmall>
+              </button>
+            </div>
+          </Teleport>
         </template>
       </PageStructureContent>
 
