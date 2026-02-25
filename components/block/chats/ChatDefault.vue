@@ -2,10 +2,10 @@
   <!-- РЕЖИМ БЛОЧНОГО КОМПОНЕНТА (asBlock === true) -->
   <div
     v-if="asBlockMode"
-    class="w-full max-w-full">
+    class="h-full min-h-0 w-full max-w-full">
     <!-- нет Teleport, нет fixed, нет draggable, и ВАЖНО: мы НЕ навешиваем attrs сюда -->
     <div
-      class="support-chat flex h-full w-full max-w-full flex-col overflow-hidden rounded-[10px] border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] shadow-none max-h-[calc(100vh-170px)]">
+      class="support-chat flex h-full min-h-0 w-full max-w-full flex-col overflow-hidden rounded-[10px] border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] shadow-none">
       <div
         class="drag-handle relative flex select-none items-center justify-between border-b border-[var(--color-stroke-ui-light)] px-4 py-3"
         @touchstart="handleHeaderTouchStart"
