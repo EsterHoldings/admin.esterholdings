@@ -142,13 +142,21 @@
         @touchcancel="handleInputAreaTouchEnd">
         <div
           class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
-          <component
-            :is="messageInputTag"
+          <input
+            v-if="mobileTextInputMode"
             ref="inputRef"
             v-model="draft"
-            :rows="mobileTextInputMode ? undefined : 1"
-            :type="mobileTextInputMode ? 'text' : undefined"
+            type="text"
             @keydown.enter.prevent="send"
+            class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
+            placeholder="Write your message" />
+          <textarea
+            v-else
+            ref="inputRef"
+            v-model="draft"
+            rows="1"
+            @keydown.enter.prevent="send"
+            @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             placeholder="Write your message" />
           <button
@@ -306,13 +314,21 @@
               @touchcancel="handleInputAreaTouchEnd">
               <div
                 class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
-                <component
-                  :is="messageInputTag"
+                <input
+                  v-if="mobileTextInputMode"
                   ref="inputRef"
                   v-model="draft"
-                  :rows="mobileTextInputMode ? undefined : 1"
-                  :type="mobileTextInputMode ? 'text' : undefined"
+                  type="text"
                   @keydown.enter.prevent="send"
+                  class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
+                  placeholder="Write your message" />
+                <textarea
+                  v-else
+                  ref="inputRef"
+                  v-model="draft"
+                  rows="1"
+                  @keydown.enter.prevent="send"
+                  @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   placeholder="Write your message" />
                 <button
@@ -405,7 +421,6 @@
   const asBlockMode = computed(() => props.asBlock === true);
   const showMobileControls = computed(() => props.mobileControls === true);
   const mobileTextInputMode = ref(false);
-  const messageInputTag = computed<"input" | "textarea">(() => (mobileTextInputMode.value ? "input" : "textarea"));
   const HEADER_SWIPE_THRESHOLD = 42;
   const MESSAGES_SWIPE_DOWN_THRESHOLD = 56;
   const MESSAGES_HORIZONTAL_DRIFT_LIMIT = 48;
