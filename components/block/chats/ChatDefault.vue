@@ -74,7 +74,11 @@
         ref="listRef"
         class="messages no-scrollbar flex-1 overflow-y-auto px-4 py-5 space-y-6"
         :style="{ visibility: booting ? 'hidden' : 'visible' }"
-        @scroll.passive="onScroll">
+        @scroll.passive="onScroll"
+        @touchstart="handleMessagesTouchStart"
+        @touchmove="handleMessagesTouchMove"
+        @touchend="handleMessagesTouchEnd"
+        @touchcancel="handleMessagesTouchEnd">
         <template
           v-for="item in renderItems"
           :key="item.key">
@@ -139,6 +143,11 @@
             rows="1"
             @keydown.enter.prevent="send"
             @keydown.shift.enter.stop
+            inputmode="text"
+            enterkeyhint="send"
+            autocapitalize="sentences"
+            autocorrect="on"
+            spellcheck="true"
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             placeholder="Write your message" />
           <button
@@ -226,7 +235,11 @@
               ref="listRef"
               class="messages no-scrollbar flex-1 overflow-y-auto px-4 py-5 space-y-6"
               :style="{ overflowAnchor: 'none', visibility: booting ? 'hidden' : 'visible' }"
-              @scroll.passive="onScroll">
+              @scroll.passive="onScroll"
+              @touchstart="handleMessagesTouchStart"
+              @touchmove="handleMessagesTouchMove"
+              @touchend="handleMessagesTouchEnd"
+              @touchcancel="handleMessagesTouchEnd">
               <template
                 v-for="item in renderItems"
                 :key="item.key">
@@ -293,6 +306,11 @@
                   rows="1"
                   @keydown.enter.prevent="send"
                   @keydown.shift.enter.stop
+                  inputmode="text"
+                  enterkeyhint="send"
+                  autocapitalize="sentences"
+                  autocorrect="on"
+                  spellcheck="true"
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   placeholder="Write your message" />
                 <button
@@ -384,8 +402,14 @@
   const asBlockMode = computed(() => props.asBlock === true);
   const showMobileControls = computed(() => props.mobileControls === true);
   const HEADER_SWIPE_THRESHOLD = 42;
+  const MESSAGES_SWIPE_DOWN_THRESHOLD = 56;
+  const MESSAGES_HORIZONTAL_DRIFT_LIMIT = 48;
   const headerTouchStartY = ref<number | null>(null);
   const headerTouchDeltaY = ref(0);
+  const messagesTouchStartY = ref<number | null>(null);
+  const messagesTouchStartX = ref<number | null>(null);
+  const messagesTouchDeltaY = ref(0);
+  const messagesTouchDeltaX = ref(0);
 
   const handleHeaderTouchStart = (event: TouchEvent) => {
     if (!showMobileControls.value) return;
@@ -418,6 +442,83 @@
 
     headerTouchStartY.value = null;
     headerTouchDeltaY.value = 0;
+  };
+
+  const isMobileChatInteraction = () => {
+    if (typeof window === "undefined") return false;
+    const coarsePointer = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    return coarsePointer || window.innerWidth < 768;
+  };
+
+  const isKeyboardVisible = () => {
+    if (typeof window === "undefined") return false;
+
+    const active = document.activeElement as HTMLElement | null;
+    const activeTag = active?.tagName;
+    const focusedEditable = activeTag === "TEXTAREA" || activeTag === "INPUT" || !!active?.isContentEditable;
+
+    const visualViewport = window.visualViewport;
+    const viewportKeyboardGap =
+      visualViewport && typeof visualViewport.height === "number" ? window.innerHeight - visualViewport.height : 0;
+    const keyboardFromViewport = viewportKeyboardGap > 120;
+
+    return focusedEditable || keyboardFromViewport;
+  };
+
+  const dismissKeyboard = () => {
+    const active = document.activeElement as HTMLElement | null;
+    if (active && typeof active.blur === "function") {
+      active.blur();
+    }
+  };
+
+  const resetMessagesTouch = () => {
+    messagesTouchStartY.value = null;
+    messagesTouchStartX.value = null;
+    messagesTouchDeltaY.value = 0;
+    messagesTouchDeltaX.value = 0;
+  };
+
+  const handleMessagesTouchStart = (event: TouchEvent) => {
+    if (!isMobileChatInteraction()) return;
+    const touch = event.touches?.[0];
+    if (!touch) return;
+
+    messagesTouchStartY.value = touch.clientY;
+    messagesTouchStartX.value = touch.clientX;
+    messagesTouchDeltaY.value = 0;
+    messagesTouchDeltaX.value = 0;
+  };
+
+  const handleMessagesTouchMove = (event: TouchEvent) => {
+    if (!isMobileChatInteraction()) return;
+    if (messagesTouchStartY.value === null || messagesTouchStartX.value === null) return;
+    const touch = event.touches?.[0];
+    if (!touch) return;
+
+    messagesTouchDeltaY.value = touch.clientY - messagesTouchStartY.value;
+    messagesTouchDeltaX.value = touch.clientX - messagesTouchStartX.value;
+  };
+
+  const handleMessagesTouchEnd = () => {
+    if (!isMobileChatInteraction()) {
+      resetMessagesTouch();
+      return;
+    }
+    if (messagesTouchStartY.value === null || messagesTouchStartX.value === null) {
+      resetMessagesTouch();
+      return;
+    }
+
+    const verticalSwipe = Math.abs(messagesTouchDeltaY.value) > Math.abs(messagesTouchDeltaX.value);
+    const smallHorizontalDrift = Math.abs(messagesTouchDeltaX.value) <= MESSAGES_HORIZONTAL_DRIFT_LIMIT;
+    const swipeDown = messagesTouchDeltaY.value >= MESSAGES_SWIPE_DOWN_THRESHOLD;
+
+    if (verticalSwipe && smallHorizontalDrift && swipeDown && isKeyboardVisible()) {
+      dismissKeyboard();
+    }
+
+    resetMessagesTouch();
   };
 
   function clampToViewport() {
