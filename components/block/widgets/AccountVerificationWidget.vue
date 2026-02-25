@@ -386,7 +386,7 @@
   .verification-progress-card {
     border-radius: 12px;
     background: transparent;
-    padding: 8px 0 10px;
+    padding: 8px 0 0;
   }
 
   .verification-progress-card__top {
@@ -448,6 +448,9 @@
     position: relative;
     min-height: 0;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .verification-list-wrap::after {
@@ -465,11 +468,14 @@
   .verification-list {
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
     gap: 8px;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 4px;
-    padding-bottom: 14px;
+    padding-bottom: 0;
   }
 
   .verification-step {

@@ -8,7 +8,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-background-secondary": "#2a5bbd",
     "--ui-background-admin": "rgba(255, 255, 255, 0.95)",
     "--ui-background-card": "#f2f2f2",
-    "--ui-background-panel": "#ffffff",
+    "--ui-background-panel": "#f1f1f17a",
     "--ui-background-sidebar": "#f9f9f9",
     "--ui-background-sidebar-link": "#9CA9B3",
 
