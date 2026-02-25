@@ -388,4 +388,8 @@
   :global(.modal-right-side:has(.payments-create-modal--inline-close) .modal-close-btn) {
     display: none;
   }
+
+  :global(.modal-right-side:has(.payments-create-modal--inline-close) .modal-right-side__content) {
+    padding-top: 0;
+  }
 </style>
