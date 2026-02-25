@@ -134,15 +134,16 @@
         </div>
       </div>
 
-      <div class="border-t border-[var(--color-stroke-ui-light)] p-3">
+      <div class="chat-input-wrap border-t border-[var(--color-stroke-ui-light)] p-3">
         <div
           class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
-          <textarea
+          <component
+            :is="messageInputTag"
             ref="inputRef"
             v-model="draft"
-            rows="1"
+            :rows="mobileTextInputMode ? undefined : 1"
+            :type="mobileTextInputMode ? 'text' : undefined"
             @keydown.enter.prevent="send"
-            @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             placeholder="Write your message" />
           <button
@@ -182,7 +183,7 @@
           :resizable="true"
           :handles="['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml']"
           :drag-handle="dragHandle"
-          drag-cancel=".no-drag, textarea, button"
+          drag-cancel=".no-drag, textarea, input, button"
           :min-width="minW"
           :min-height="minH"
           :z="10000"
@@ -292,15 +293,16 @@
               </div>
             </div>
 
-            <div class="border-t border-[var(--color-stroke-ui-light)] p-3">
+            <div class="chat-input-wrap border-t border-[var(--color-stroke-ui-light)] p-3">
               <div
                 class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
-                <textarea
+                <component
+                  :is="messageInputTag"
                   ref="inputRef"
                   v-model="draft"
-                  rows="1"
+                  :rows="mobileTextInputMode ? undefined : 1"
+                  :type="mobileTextInputMode ? 'text' : undefined"
                   @keydown.enter.prevent="send"
-                  @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   placeholder="Write your message" />
                 <button
@@ -391,6 +393,8 @@
   // режим компонента
   const asBlockMode = computed(() => props.asBlock === true);
   const showMobileControls = computed(() => props.mobileControls === true);
+  const mobileTextInputMode = ref(false);
+  const messageInputTag = computed<"input" | "textarea">(() => (mobileTextInputMode.value ? "input" : "textarea"));
   const HEADER_SWIPE_THRESHOLD = 42;
   const MESSAGES_SWIPE_DOWN_THRESHOLD = 56;
   const MESSAGES_HORIZONTAL_DRIFT_LIMIT = 48;
@@ -400,6 +404,7 @@
   const messagesTouchStartX = ref<number | null>(null);
   const messagesTouchDeltaY = ref(0);
   const messagesTouchDeltaX = ref(0);
+  const messagesSwipeDismissInProgress = ref(false);
 
   const handleHeaderTouchStart = (event: TouchEvent) => {
     if (!showMobileControls.value) return;
@@ -440,6 +445,10 @@
     return coarsePointer || window.innerWidth < 768;
   };
 
+  const syncMobileTextInputMode = () => {
+    mobileTextInputMode.value = isMobileChatInteraction();
+  };
+
   const isKeyboardVisible = () => {
     if (typeof window === "undefined") return false;
 
@@ -467,6 +476,7 @@
     messagesTouchStartX.value = null;
     messagesTouchDeltaY.value = 0;
     messagesTouchDeltaX.value = 0;
+    messagesSwipeDismissInProgress.value = false;
   };
 
   const handleMessagesTouchStart = (event: TouchEvent) => {
@@ -488,6 +498,20 @@
 
     messagesTouchDeltaY.value = touch.clientY - messagesTouchStartY.value;
     messagesTouchDeltaX.value = touch.clientX - messagesTouchStartX.value;
+
+    const verticalSwipe = Math.abs(messagesTouchDeltaY.value) > Math.abs(messagesTouchDeltaX.value);
+    const smallHorizontalDrift = Math.abs(messagesTouchDeltaX.value) <= MESSAGES_HORIZONTAL_DRIFT_LIMIT;
+    const swipeDown = messagesTouchDeltaY.value > 0;
+
+    // While keyboard is open, capture downward swipe and dismiss keyboard
+    // instead of letting chat content shift under the keyboard.
+    if (verticalSwipe && smallHorizontalDrift && swipeDown && isKeyboardVisible()) {
+      event.preventDefault();
+      if (messagesTouchDeltaY.value >= MESSAGES_SWIPE_DOWN_THRESHOLD && !messagesSwipeDismissInProgress.value) {
+        messagesSwipeDismissInProgress.value = true;
+        dismissKeyboard();
+      }
+    }
   };
 
   const handleMessagesTouchEnd = () => {
@@ -496,6 +520,11 @@
       return;
     }
     if (messagesTouchStartY.value === null || messagesTouchStartX.value === null) {
+      resetMessagesTouch();
+      return;
+    }
+
+    if (messagesSwipeDismissInProgress.value) {
       resetMessagesTouch();
       return;
     }
@@ -545,7 +574,7 @@
   }
 
   const listRef = ref<HTMLElement | null>(null);
-  const inputRef = ref<HTMLTextAreaElement | null>(null);
+  const inputRef = ref<HTMLTextAreaElement | HTMLInputElement | null>(null);
   const booting = ref(true);
 
   const PAGE_SIZE = 6;
@@ -821,11 +850,15 @@
 
   let privateChan: any = null;
   let resizeListenerAttached = false;
+  let mobileModeResizeListenerAttached = false;
 
   onMounted(async () => {
     mounted.value = true;
     const prefersTouch = window.matchMedia?.("(pointer: coarse)").matches;
     dragHandle.value = prefersTouch ? ".drag-handle" : ".support-chat";
+    syncMobileTextInputMode();
+    window.addEventListener("resize", syncMobileTextInputMode, { passive: true });
+    mobileModeResizeListenerAttached = true;
 
     // позиціонування тільки для плавающего окна
     if (!asBlockMode.value) {
@@ -857,6 +890,10 @@
     if (resizeListenerAttached) {
       window.removeEventListener("resize", onViewportResize);
       resizeListenerAttached = false;
+    }
+    if (mobileModeResizeListenerAttached) {
+      window.removeEventListener("resize", syncMobileTextInputMode);
+      mobileModeResizeListenerAttached = false;
     }
   });
 
@@ -999,6 +1036,12 @@
   .messages {
     overscroll-behavior: contain;
     scroll-behavior: auto;
+  }
+
+  @media (max-width: 767px) {
+    .chat-input-wrap {
+      padding: calc(0.75rem + 10px);
+    }
   }
 
   .no-scrollbar::-webkit-scrollbar {
