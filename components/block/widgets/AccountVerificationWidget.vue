@@ -57,44 +57,61 @@
                 <span class="text-sm font-semibold text-[var(--ui-text-main)] truncate" :title="item.title">
                   {{ item.title }}
                 </span>
-                <div class="flex items-center gap-2 sm:ml-auto">
-                  <UiBadge :state="badgeState(item.state)" outline class="!py-0.5 !px-2 text-xs">
-                    {{ item.statusLabel }}
-                  </UiBadge>
-                  <button
-                    v-if="isExpandable(item)"
-                    type="button"
-                    class="expand-button"
-                    :aria-label="isExpanded(item.key) ? 'Hide details' : 'Show details'"
-                    @click="toggleExpanded(item.key)"
-                  >
-                    <UiIconArrowDown class="h-3.5 w-3.5 transition-transform" :class="{ 'rotate-180': isExpanded(item.key) }" />
-                  </button>
-                </div>
+                <UiBadge :state="badgeState(item.state)" outline class="!py-0.5 !px-2 text-xs">
+                  {{ item.statusLabel }}
+                </UiBadge>
               </div>
-              <UiTextSmall
-                class="verification-text-line text-[var(--ui-text-secondary)] leading-snug"
-                :class="{ 'is-expanded': isExpanded(item.key) }"
-                :title="!isExpanded(item.key) ? item.statusText : undefined"
-              >
-                {{ item.statusText }}
-              </UiTextSmall>
-              <UiTextSmall
+              <div class="verification-text-row">
+                <span
+                  :ref="(el) => setLineRef(lineKey(item.key, 'status'), el as HTMLElement | null)"
+                  class="verification-text-line text-[var(--ui-text-secondary)] leading-snug"
+                  :class="{ 'is-expanded': isExpanded(lineKey(item.key, 'status')) }"
+                  :title="!isExpanded(lineKey(item.key, 'status')) ? item.statusText : undefined"
+                >
+                  {{ item.statusText }}
+                </span>
+                <UiIconArrowDown
+                  v-if="showArrow(lineKey(item.key, 'status'))"
+                  class="verification-expand-icon ml-4"
+                  @click="expandLine(lineKey(item.key, 'status'))"
+                />
+              </div>
+              <div
                 v-if="item.comment"
-                class="verification-text-line is-accent mt-1 leading-snug"
-                :class="{ 'is-expanded': isExpanded(item.key) }"
-                :title="!isExpanded(item.key) ? item.comment : undefined"
+                class="verification-text-row mt-1"
               >
-                {{ item.comment }}
-              </UiTextSmall>
-              <UiTextSmall
+                <span
+                  :ref="(el) => setLineRef(lineKey(item.key, 'comment'), el as HTMLElement | null)"
+                  class="verification-text-line is-accent leading-snug"
+                  :class="{ 'is-expanded': isExpanded(lineKey(item.key, 'comment')) }"
+                  :title="!isExpanded(lineKey(item.key, 'comment')) ? item.comment : undefined"
+                >
+                  {{ item.comment }}
+                </span>
+                <UiIconArrowDown
+                  v-if="showArrow(lineKey(item.key, 'comment'))"
+                  class="verification-expand-icon ml-4"
+                  @click="expandLine(lineKey(item.key, 'comment'))"
+                />
+              </div>
+              <div
                 v-if="item.hint"
-                class="verification-text-line text-[var(--ui-text-secondary)] mt-1 leading-snug"
-                :class="{ 'is-expanded': isExpanded(item.key) }"
-                :title="!isExpanded(item.key) ? item.hint : undefined"
+                class="verification-text-row mt-1"
               >
-                {{ item.hint }}
-              </UiTextSmall>
+                <span
+                  :ref="(el) => setLineRef(lineKey(item.key, 'hint'), el as HTMLElement | null)"
+                  class="verification-text-line text-[var(--ui-text-secondary)] leading-snug"
+                  :class="{ 'is-expanded': isExpanded(lineKey(item.key, 'hint')) }"
+                  :title="!isExpanded(lineKey(item.key, 'hint')) ? item.hint : undefined"
+                >
+                  {{ item.hint }}
+                </span>
+                <UiIconArrowDown
+                  v-if="showArrow(lineKey(item.key, 'hint'))"
+                  class="verification-expand-icon ml-4"
+                  @click="expandLine(lineKey(item.key, 'hint'))"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -104,7 +121,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useLocalePath } from "~/.nuxt/imports";
 
@@ -153,7 +170,9 @@ const initials = computed(() => {
 const isLoading = ref(false);
 const verificationRequestData = reactive<Record<string, any>>({});
 const handleDashboardRefresh = () => loadVerificationData();
-const expandedMap = reactive<Record<string, boolean>>({});
+const expandedLines = reactive<Record<string, boolean>>({});
+const overflowLines = reactive<Record<string, boolean>>({});
+const lineRefs = ref<Record<string, HTMLElement | null>>({});
 
 const emailStatus = ref<VerificationStatus>("pending");
 const infoStatus = ref<VerificationStatus>("pending");
@@ -273,16 +292,35 @@ const badgeState = (state: "warn" | "error" | "success") => {
   return "warning";
 };
 
-const isExpandable = (item: { statusText: string; comment: string; hint: string }) => {
-  if (item.comment || item.hint) return true;
-  return item.statusText.length > 72;
+const lineKey = (stepKey: string, field: "status" | "comment" | "hint") => `${stepKey}:${field}`;
+
+const setLineRef = (key: string, el: HTMLElement | null) => {
+  lineRefs.value[key] = el;
 };
 
-const toggleExpanded = (key: string) => {
-  expandedMap[key] = !expandedMap[key];
+const isExpanded = (key: string) => Boolean(expandedLines[key]);
+
+const recalculateOverflow = () => {
+  nextTick(() => {
+    Object.entries(lineRefs.value).forEach(([key, el]) => {
+      if (!el) {
+        overflowLines[key] = false;
+        return;
+      }
+
+      overflowLines[key] = el.scrollWidth > el.clientWidth + 1;
+    });
+  });
 };
 
-const isExpanded = (key: string) => Boolean(expandedMap[key]);
+const showArrow = (key: string) => !isExpanded(key) && Boolean(overflowLines[key]);
+
+const expandLine = (key: string) => {
+  expandedLines[key] = true;
+  recalculateOverflow();
+};
+
+const handleWindowResize = () => recalculateOverflow();
 
 const loadVerificationData = async () => {
   if (isLoading.value) return;
@@ -309,12 +347,25 @@ const loadVerificationData = async () => {
 
 onMounted(async () => {
   await loadVerificationData();
+  recalculateOverflow();
+  window.addEventListener("resize", handleWindowResize);
   useEventBus.on("dashboardRefresh", handleDashboardRefresh);
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleWindowResize);
   useEventBus.off("dashboardRefresh", handleDashboardRefresh);
 });
+
+watch(
+  verificationSteps,
+  () => {
+    if (!isLoading.value) {
+      recalculateOverflow();
+    }
+  },
+  { deep: true },
+);
 </script>
 
 <style scoped>
@@ -354,7 +405,8 @@ onBeforeUnmount(() => {
 }
 
 .verification-text-line {
-  display: block;
+  display: inline-block;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -369,21 +421,22 @@ onBeforeUnmount(() => {
   color: var(--ui-primary-accent);
 }
 
-.expand-button {
-  height: 22px;
-  width: 22px;
-  border-radius: 999px;
-  display: inline-flex;
+.verification-text-row {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--color-stroke-ui-dark);
-  border: 1px solid var(--color-stroke-ui-light);
-  color: var(--ui-text-secondary);
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  min-width: 0;
 }
 
-.expand-button:hover {
+.verification-expand-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--ui-text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.verification-expand-icon:hover {
   color: var(--ui-text-main);
-  border-color: var(--ui-text-secondary);
 }
 </style>

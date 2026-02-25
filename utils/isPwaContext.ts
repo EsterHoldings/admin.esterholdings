@@ -3,9 +3,8 @@ export const isPwaContext = (): boolean => {
     return false;
   }
 
-  const displayModes = ["standalone", "fullscreen", "minimal-ui"];
-  const hasStandaloneDisplayMode = displayModes.some((mode) =>
-    window.matchMedia?.(`(display-mode: ${mode})`)?.matches,
+  const hasStandaloneDisplayMode = Boolean(
+    typeof window.matchMedia === "function" && window.matchMedia("(display-mode: standalone)").matches,
   );
   const isIosStandalone = Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
 

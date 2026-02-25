@@ -1,132 +1,124 @@
 <template>
   <UiContainer>
-    <template v-if="isInitialLoading">
-      <div class="flex min-h-[55vh] w-full flex-col items-center justify-center text-[var(--ui-text-main)]">
-        <UiIconLogo class="mb-4 h-[44px] w-[44px]" />
-        <UiIconSpinnerDefault class="h-[44px] w-[44px]" />
-      </div>
-    </template>
-    <template v-else>
-      <div class="text-[var(--ui-text-main)]">
-        <div class="mb-6 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <UiTextH4 class="text-[var(--ui-text-main)]">
-            {{ t("cabinet.dashboard.title") }}
-          </UiTextH4>
-          <div class="flex w-full items-center gap-2 sm:w-auto sm:ml-auto">
-            <div class="auto-refresh-field">
-              <span class="auto-refresh-field__label whitespace-nowrap">
-                {{ t("cabinet.accounts.autoRefresh.label") }}
-              </span>
-              <UiSelect
-                class="w-auto min-w-[120px] max-w-max"
-                :value="autoRefreshInterval"
-                :data="autoRefreshOptions"
-                :withoutNoSelect="true"
-                @change="handleChangeAutoRefresh"
-              >
-                <template #icon-left>
-                  <span
-                    class="auto-refresh-indicator"
-                    :class="{ 'is-off': !isAutoRefreshEnabled }"
-                    :style="{ '--auto-refresh-progress': `${autoRefreshProgress}%` }"
+    <div class="text-[var(--ui-text-main)]">
+      <div class="mb-6 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <UiTextH4 class="text-[var(--ui-text-main)]">
+          {{ t("cabinet.dashboard.title") }}
+        </UiTextH4>
+        <div class="flex w-full items-center gap-2 sm:w-auto sm:ml-auto">
+          <div class="auto-refresh-field">
+            <span class="auto-refresh-field__label whitespace-nowrap">
+              {{ t("cabinet.accounts.autoRefresh.label") }}
+            </span>
+            <UiSelect
+              class="w-auto min-w-[120px] max-w-max"
+              :value="autoRefreshInterval"
+              :data="autoRefreshOptions"
+              :withoutNoSelect="true"
+              @change="handleChangeAutoRefresh"
+            >
+              <template #icon-left>
+                <span
+                  class="auto-refresh-indicator"
+                  :class="{ 'is-off': !isAutoRefreshEnabled }"
+                  :style="{ '--auto-refresh-progress': `${autoRefreshProgress}%` }"
+                  aria-hidden="true"
+                >
+                  <span v-if="isAutoRefreshEnabled" class="auto-refresh-indicator__value">
+                    {{ autoRefreshRemainingLabel }}
+                  </span>
+                  <svg
+                    v-else
+                    class="auto-refresh-indicator__icon"
+                    viewBox="0 0 24 24"
                     aria-hidden="true"
                   >
-                    <span v-if="isAutoRefreshEnabled" class="auto-refresh-indicator__value">
-                      {{ autoRefreshRemainingLabel }}
-                    </span>
-                    <svg
-                      v-else
-                      class="auto-refresh-indicator__icon"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M12 3v7"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d="M7.5 6.5a7 7 0 1 0 9 0"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                      />
-                    </svg>
-                  </span>
-                </template>
-              </UiSelect>
-            </div>
-            <UiButtonDefault state="info--small" class="!w-[36px]" @click="handleManualRefresh">
-              <UiIconUpdate :spinning="isMt4Refreshing" />
-            </UiButtonDefault>
+                    <path
+                      d="M12 3v7"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M7.5 6.5a7 7 0 1 0 9 0"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+              </template>
+            </UiSelect>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-5">
-          <div class="dashboard-summary-grid items-stretch">
-            <NuxtLink :to="localePath('/accounts')" class="dashboard-widget-link">
-              <TotalAmountWidget
-                class="dashboard-widget-card"
-                :amount="dashboardSummary.totalAmount"
-                :currency="dashboardSummary.currency"
-                :is-loading="isSummaryLoading"
-              />
-            </NuxtLink>
-            <NuxtLink :to="localePath('/referrals')" class="dashboard-widget-link">
-              <ReferralTotalAmount
-                class="dashboard-widget-card"
-                :amount="dashboardSummary.referralTotal"
-                :currency="dashboardSummary.currency"
-                :is-loading="isSummaryLoading"
-              />
-            </NuxtLink>
-            <NuxtLink :to="localePath('/payments')" class="dashboard-widget-link">
-              <PendingTransactionsWidget
-                class="dashboard-widget-card"
-                :total="dashboardSummary.pendingTransactions"
-                :is-loading="isSummaryLoading"
-              />
-            </NuxtLink>
-            <button
-              type="button"
-              class="dashboard-widget-link"
-              @click="handleOpenNotifications"
-            >
-              <MissedNotificationsWidget
-                class="dashboard-widget-card"
-                :total="dashboardSummary.missedNotifications"
-                :is-loading="isSummaryLoading"
-              />
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
-            <div class="col-span-1 flex flex-col gap-5 text-[var(--ui-text-main)]">
-              <Mt4AccountsWidget
-                v-if="mt4Accounts.length"
-                :accounts="mt4Accounts"
-                :is-loading="isMt4Refreshing"
-                @toggle-favorite="toggleFavorite"
-              />
-              <div v-else class="rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-4 text-sm text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.dashboard.mt4.empty") }}
-              </div>
-            </div>
-
-            <div class="col-span-1 flex flex-col gap-3 text-[var(--ui-text-main)]">
-              <AccountVerificationWidget />
-            </div>
-          </div>
-
-          <div class="col-span-1">
-            <TransactionsWidget />
-          </div>
+          <UiButtonDefault state="info--small" class="!w-[36px]" @click="handleManualRefresh">
+            <UiIconUpdate :spinning="isMt4Refreshing" />
+          </UiButtonDefault>
         </div>
       </div>
-    </template>
+
+      <div class="grid grid-cols-1 gap-5">
+        <div class="dashboard-summary-grid items-stretch">
+          <NuxtLink :to="localePath('/accounts')" class="dashboard-widget-link">
+            <TotalAmountWidget
+              class="dashboard-widget-card"
+              :amount="dashboardSummary.totalAmount"
+              :currency="dashboardSummary.currency"
+              :is-loading="isSummaryLoading"
+            />
+          </NuxtLink>
+          <NuxtLink :to="localePath('/referrals')" class="dashboard-widget-link">
+            <ReferralTotalAmount
+              class="dashboard-widget-card"
+              :amount="dashboardSummary.referralTotal"
+              :currency="dashboardSummary.currency"
+              :is-loading="isSummaryLoading"
+            />
+          </NuxtLink>
+          <NuxtLink :to="localePath('/payments')" class="dashboard-widget-link">
+            <PendingTransactionsWidget
+              class="dashboard-widget-card"
+              :total="dashboardSummary.pendingTransactions"
+              :is-loading="isSummaryLoading"
+            />
+          </NuxtLink>
+          <button
+            type="button"
+            class="dashboard-widget-link"
+            @click="handleOpenNotifications"
+          >
+            <MissedNotificationsWidget
+              class="dashboard-widget-card"
+              :total="dashboardSummary.missedNotifications"
+              :is-loading="isSummaryLoading"
+            />
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <div class="col-span-1 flex flex-col gap-5 text-[var(--ui-text-main)]">
+            <Mt4AccountsWidget
+              v-if="mt4Accounts.length"
+              :accounts="mt4Accounts"
+              :is-loading="isMt4Refreshing"
+              @toggle-favorite="toggleFavorite"
+            />
+            <div v-else class="rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-4 text-sm text-[var(--ui-text-secondary)]">
+              {{ t("cabinet.dashboard.mt4.empty") }}
+            </div>
+          </div>
+
+          <div class="col-span-1 flex flex-col gap-3 text-[var(--ui-text-main)]">
+            <AccountVerificationWidget />
+          </div>
+        </div>
+
+        <div class="col-span-1">
+          <TransactionsWidget />
+        </div>
+      </div>
+    </div>
   </UiContainer>
 </template>
 
@@ -149,8 +141,6 @@ import MissedNotificationsWidget from "~/components/block/widgets/MissedNotifica
 import ReferralTotalAmount from "~/components/block/widgets/ReferralTotalAmount.vue";
 import AccountVerificationWidget from "~/components/block/widgets/AccountVerificationWidget.vue";
 import Mt4AccountsWidget from "~/components/block/widgets/Mt4AccountsWidget.vue";
-import UiIconLogo from "~/components/ui/UiIconLogo.vue";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 import { useUiStore } from "~/stores/uiStore";
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
@@ -159,7 +149,6 @@ definePageMeta({ layout: "cabinet", middleware: ["auth-client", "client-check-au
 
 const { t } = useI18n({ useScope: "global" });
 const { $echo } = useNuxtApp();
-const isInitialLoading = ref(true);
 const localePath = useLocalePath();
 const uiStore = useUiStore();
 const appCore = useAppCore();
@@ -276,12 +265,8 @@ onMounted(async () => {
     console.log("[TEST] Ping received:", e);
   });
 
-  try {
-    await handleRefreshDashboard();
-  } finally {
-    initAutoRefresh();
-    isInitialLoading.value = false;
-  }
+  await handleRefreshDashboard();
+  initAutoRefresh();
 });
 
 onBeforeUnmount(() => {
