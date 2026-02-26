@@ -15,7 +15,7 @@
         leave-to-class="opacity-0">
         <main
           :key="route.fullPath"
-          class="cabinet-main flex-1 min-h-0 overflow-y-auto no-scrollbar box-border w-full p-1 lg:pl-[250px] text-white pb-[calc(74px+env(safe-area-inset-bottom,0px))] lg:pb-safe-area">
+          class="cabinet-main flex-1 min-h-0 overflow-y-auto no-scrollbar box-border w-full p-1 lg:pl-[250px] text-white">
           <UiContainer v-if="showBreadcrumbs && breadcrumbs.length">
             <div class="cabinet-breadcrumbs text-sm text-[var(--ui-text-secondary)]">
               <UiBreadcrumb :list="breadcrumbs" />

@@ -2,38 +2,20 @@
   <UiContainer>
     <div class="support-ticket-page text-[var(--ui-text-main)]">
       <div
-        v-if="!isMobileViewport"
-        class="support-ticket-header mb-5 flex items-center justify-between">
-        <div class="flex justify-start items-center gap-2">
-          <UiTextH4 class="text-[var(--ui-text-main)]">Support ticket:</UiTextH4>
-
-          <span class="flex justify-start items-center gap-2">
-            <UiIconCopy :text="id" />
-            <span class="block truncate">{{ id }}</span>
-          </span>
-        </div>
-      </div>
-
-      <div
         ref="supportGridRef"
         class="support-ticket-grid grid gap-[20px] grid-cols-1 md:grid-cols-[1fr_2fr] items-stretch"
         :style="supportGridStyle">
         <PanelDefault class="support-side p-2">
           <div class="support-side__scroll flex flex-col gap-4">
-            <div class="support-side__card support-side__profile">
-              <div class="flex items-center gap-3">
-                <div class="support-side__avatar">
-                  <img
-                    v-if="userCard.photoUrl"
-                    :src="userCard.photoUrl"
-                    alt="Admin photo"
-                    class="support-side__avatar-img" />
-                  <span v-else>{{ userCard.initials }}</span>
-                </div>
-                <div class="min-w-0">
-                  <div class="font-semibold truncate">{{ userCard.name }}</div>
-                  <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ userCard.email }}</div>
-                </div>
+            <div class="support-side__card support-side__ticket-card">
+              <div class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">Ticket ID</div>
+              <div class="support-side__ticket-id-row">
+                <UiIconCopy :text="id" />
+                <span
+                  class="text-sm font-semibold truncate"
+                  :title="id">
+                  {{ id }}
+                </span>
               </div>
             </div>
 
@@ -64,10 +46,18 @@
                   class="support-side__participant">
                   <div class="flex items-center gap-2 min-w-0">
                     <div class="support-side__participant-avatar">
-                      {{ person.initials }}
+                      <img
+                        v-if="person.photoUrl"
+                        :src="person.photoUrl"
+                        :alt="person.name"
+                        class="support-side__participant-avatar-img" />
+                      <span v-else>{{ person.initials }}</span>
                     </div>
                     <div class="min-w-0">
-                      <div class="text-sm font-medium truncate">{{ person.name }}</div>
+                      <div class="text-sm font-medium truncate">
+                        {{ person.name }}
+                        <strong v-if="person.isYou">(You)</strong>
+                      </div>
                       <div class="text-xs text-[var(--ui-text-secondary)]">{{ person.role }}</div>
                     </div>
                   </div>
@@ -150,7 +140,6 @@
 <script lang="ts" setup>
   import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiContainer from "~/components/ui/UiContainer.vue";
-  import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import ChatDefault from "~/components/block/chats/ChatDefault.vue";
 
@@ -183,19 +172,21 @@
     photoUrl: null as string | null,
   });
 
-  const userCard = reactive({
-    name: "Support Admin",
-    email: "admin@esterholdings.com",
-    initials: "SA",
-    photoUrl: "",
-  });
-
   type SupportTab = "media" | "videos" | "links";
   const activeTab = ref<SupportTab>("media");
 
-  const participants = reactive([
-    { id: 1, name: "You", role: "Admin", initials: "AD", online: true },
-    { id: 2, name: "Client", role: "Client", initials: "CL", online: false },
+  type ParticipantItem = {
+    id: number;
+    name: string;
+    role: string;
+    initials: string;
+    online: boolean;
+    isYou: boolean;
+    photoUrl: string;
+  };
+  const participants = reactive<ParticipantItem[]>([
+    { id: 1, name: "Admin", role: "Admin", initials: "AD", online: true, isYou: true, photoUrl: "" },
+    { id: 2, name: "Client", role: "Client", initials: "CL", online: false, isYou: false, photoUrl: "" },
   ]);
 
   const tabs: Array<{ id: SupportTab; label: string }> = [
@@ -239,19 +230,28 @@
     };
   });
 
+  const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
   const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
-
-  const buildInitials = (firstName?: string | null, lastName?: string | null, email?: string | null): string => {
-    const first = (firstName || "").trim();
-    const last = (lastName || "").trim();
+  const buildFullName = (firstName?: string | null, lastName?: string | null): string => {
+    return [normalizeText(firstName), normalizeText(lastName)].filter(Boolean).join(" ").trim();
+  };
+  const buildInitials = (
+    firstName?: string | null,
+    lastName?: string | null,
+    email?: string | null,
+    fallback = "US"
+  ): string => {
+    const first = normalizeText(firstName);
+    const last = normalizeText(lastName);
     if (first && last) return `${firstUpper(first)}${firstUpper(last)}`;
+    if (first.length >= 2) return first.slice(0, 2).toUpperCase();
 
-    const local = (email || "").split("@")[0]?.trim() || "";
+    const local = normalizeText(email).split("@")[0] || "";
     const normalized = local.replace(/[^a-zA-Z0-9]/g, "");
     if (normalized.length >= 2) return normalized.slice(0, 2).toUpperCase();
     if (normalized.length === 1) return `${normalized.toUpperCase()}${normalized.toUpperCase()}`;
 
-    return "AD";
+    return fallback;
   };
 
   const measureDesktopGridHeight = () => {
@@ -296,8 +296,21 @@
 
   const loadData = async () => {
     const response = await appCore.adminModules.tickets.getById(route.params.id);
-    status.value = response.data?.status ?? "";
-    subject.value = response.data?.subject ?? "";
+    const ticket = response?.data ?? {};
+    const creator = ticket?.creator ?? null;
+
+    status.value = ticket?.status ?? "";
+    subject.value = ticket?.subject ?? "";
+
+    const creatorFirstName = creator?.first_name ?? null;
+    const creatorLastName = creator?.last_name ?? null;
+    const creatorEmail = creator?.email ?? null;
+    const creatorPhotoUrl = normalizeText(creator?.photo_url);
+    const creatorFullName = buildFullName(creatorFirstName, creatorLastName);
+
+    participants[1].name = creatorFullName || normalizeText(creatorEmail) || "Client";
+    participants[1].initials = buildInitials(creatorFirstName, creatorLastName, creatorEmail, "CL");
+    participants[1].photoUrl = creatorPhotoUrl;
 
     await nextTick();
     scheduleDesktopGridMeasure();
@@ -312,22 +325,20 @@
     const firstName = authResponse.data.first_name ?? null;
     const lastName = authResponse.data.last_name ?? null;
     const email = authResponse.data.email ?? null;
+    const normalizedPhotoUrl = normalizeText(photoUrl);
+    const fullName = buildFullName(firstName, lastName);
+    const displayName = fullName || normalizeText(authResponse.data.nickname) || normalizeText(firstName) || "Admin";
 
     currentUser.id = authResponse.data.id;
-    currentUser.name = authResponse.data.nickname ?? firstName;
+    currentUser.name = displayName;
     currentUser.firstName = firstName;
     currentUser.lastName = lastName;
     currentUser.email = email;
-    currentUser.photoUrl = typeof photoUrl === "string" ? photoUrl : null;
+    currentUser.photoUrl = normalizedPhotoUrl || null;
 
-    const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
-    userCard.name = fullName || authResponse.data.nickname || firstName || userCard.name;
-    userCard.email = email || userCard.email;
-    userCard.photoUrl = typeof photoUrl === "string" ? photoUrl : "";
-    userCard.initials = buildInitials(firstName, lastName, email);
-
-    participants[0].name = userCard.name || "You";
-    participants[0].initials = userCard.initials;
+    participants[0].name = displayName;
+    participants[0].initials = buildInitials(firstName, lastName, email, "AD");
+    participants[0].photoUrl = normalizedPhotoUrl;
 
     await loadData();
     scheduleDesktopGridMeasure();
@@ -418,6 +429,14 @@
     border-color: var(--color-stroke-ui-dark);
   }
 
+  .support-side__ticket-id-row {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
   .support-side__status-pill {
     display: inline-flex;
     align-items: center;
@@ -473,6 +492,13 @@
     justify-content: center;
     font-weight: 600;
     font-size: 12px;
+    overflow: hidden;
+  }
+
+  .support-side__participant-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .support-side__tabs {

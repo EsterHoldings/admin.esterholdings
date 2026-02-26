@@ -2,19 +2,6 @@
   <UiContainer>
     <div class="support-ticket-page text-[var(--ui-text-main)]">
       <div
-        v-if="!isMobileViewport"
-        class="support-ticket-header mb-5 flex items-center justify-between">
-        <div class="flex justify-start items-center gap-2">
-          <UiTextH4 class="text-[var(--ui-text-main)]"> {{ t("cabinet.accounts.account.title") }} : </UiTextH4>
-
-          <span class="flex justify-start items-center gap-2">
-            <UiIconCopy :text="id" />
-            <span class="block truncate">{{ id }}</span>
-          </span>
-        </div>
-      </div>
-
-      <div
         ref="supportGridRef"
         class="support-ticket-grid grid gap-[20px] grid-cols-1 md:grid-cols-[1fr_2fr] items-stretch"
         :class="{
@@ -48,27 +35,22 @@
           </div>
 
           <div class="support-side__scroll flex flex-col gap-4">
-            <div class="support-side__card support-side__profile">
-              <div class="flex items-center gap-3">
-                <div class="support-side__avatar">
-                  <img
-                    v-if="authStore.photoUrl || userCard.photoUrl"
-                    :src="authStore.photoUrl || userCard.photoUrl"
-                    alt="User photo"
-                    class="support-side__avatar-img" />
-                  <span v-else>{{ userCard.initials }}</span>
-                </div>
-                <div class="min-w-0">
-                  <div class="font-semibold truncate">{{ userCard.name }}</div>
-                  <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ userCard.email }}</div>
-                </div>
-              </div>
-            </div>
-
             <div
               class="support-side__expand"
               :class="{ 'is-expanded': isSideExpanded }">
               <div class="support-side__collapsible">
+                <div class="support-side__card support-side__ticket-card">
+                  <div class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">Ticket ID</div>
+                  <div class="support-side__ticket-id-row">
+                    <UiIconCopy :text="id" />
+                    <span
+                      class="text-sm font-semibold truncate"
+                      :title="id">
+                      {{ id }}
+                    </span>
+                  </div>
+                </div>
+
                 <div class="support-side__status-grid">
                   <div class="support-side__card support-side__status-card">
                     <div class="flex items-center justify-between gap-3">
@@ -98,10 +80,18 @@
                       class="support-side__participant">
                       <div class="flex items-center gap-2 min-w-0">
                         <div class="support-side__participant-avatar">
-                          {{ person.initials }}
+                          <img
+                            v-if="person.photoUrl"
+                            :src="person.photoUrl"
+                            :alt="person.name"
+                            class="support-side__participant-avatar-img" />
+                          <span v-else>{{ person.initials }}</span>
                         </div>
                         <div class="min-w-0">
-                          <div class="text-sm font-medium truncate">{{ person.name }}</div>
+                          <div class="text-sm font-medium truncate">
+                            {{ person.name }}
+                            <strong v-if="person.isYou">(You)</strong>
+                          </div>
                           <div class="text-xs text-[var(--ui-text-secondary)]">{{ person.role }}</div>
                         </div>
                       </div>
@@ -202,7 +192,6 @@
 <script lang="ts" setup>
   import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiContainer from "~/components/ui/UiContainer.vue";
-  import UiTextH4 from "~/components/ui/UiTextH4.vue";
 
   import useAppCore from "~/composables/useAppCore";
   import { definePageMeta, useAuthStore, useHead } from "~/.nuxt/imports";
@@ -248,15 +237,18 @@
   const isSideExpanded = ref(false);
   const isMobileViewport = ref(false);
   const isMobileFullscreenChat = ref(true);
-  const userCard = reactive({
-    name: "Ester Holdings Client",
-    email: "client@esterholdings.com",
-    initials: "EH",
-    photoUrl: "",
-  });
-  const participants = reactive([
-    { id: 1, name: "You", role: "Client", initials: "YC", online: true },
-    { id: 2, name: "Support Agent", role: "Support", initials: "SA", online: true },
+  type ParticipantItem = {
+    id: number;
+    name: string;
+    role: string;
+    initials: string;
+    online: boolean;
+    isYou: boolean;
+    photoUrl: string;
+  };
+  const participants = reactive<ParticipantItem[]>([
+    { id: 1, name: "Client", role: "Client", initials: "CL", online: true, isYou: true, photoUrl: "" },
+    { id: 2, name: "Support Agent", role: "Support", initials: "SA", online: true, isYou: false, photoUrl: "" },
   ]);
   const tabs: Array<{ id: SupportTab; label: string }> = [
     { id: "media", label: "Media" },
@@ -280,6 +272,30 @@
     { id: 2, title: "Account Verification", url: "https://esterholdings.com/verify" },
     { id: 3, title: "Support Center", url: "https://esterholdings.com/support" },
   ];
+  const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
+  const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
+  const buildFullName = (firstName?: string | null, lastName?: string | null): string => {
+    return [normalizeText(firstName), normalizeText(lastName)].filter(Boolean).join(" ").trim();
+  };
+  const buildParticipantInitials = (
+    firstName?: string | null,
+    lastName?: string | null,
+    email?: string | null,
+    fallback = "US"
+  ): string => {
+    const first = normalizeText(firstName);
+    const last = normalizeText(lastName);
+
+    if (first && last) return `${firstUpper(first)}${firstUpper(last)}`;
+    if (first.length >= 2) return first.slice(0, 2).toUpperCase();
+
+    const localPart = normalizeText(email).split("@")[0] || "";
+    const normalizedLocal = localPart.replace(/[^a-zA-Z0-9]/g, "");
+    if (normalizedLocal.length >= 2) return normalizedLocal.slice(0, 2).toUpperCase();
+    if (normalizedLocal.length === 1) return `${normalizedLocal.toUpperCase()}${normalizedLocal.toUpperCase()}`;
+
+    return fallback;
+  };
 
   const MOBILE_BREAKPOINT = 768;
   const DESKTOP_GRID_BOTTOM_GAP = 16;
@@ -571,20 +587,23 @@
     window.addEventListener("resize", updateViewportState, { passive: true });
 
     const response = await appCore.auth.getAuthUser();
+    const firstName = response.data.first_name ?? null;
+    const lastName = response.data.last_name ?? null;
+    const email = response.data.email ?? null;
+    const photoUrl = normalizeText(response.data.photo_url);
+    const fullName = buildFullName(firstName, lastName);
+
     currentUser.id = response.data.id;
-    currentUser.name = response.data.first_name;
-    currentUser.firstName = response.data.first_name ?? null;
-    currentUser.lastName = response.data.last_name ?? null;
-    currentUser.email = response.data.email ?? null;
-    currentUser.photoUrl = response.data.photo_url ?? null;
+    currentUser.name = fullName || firstName || email;
+    currentUser.firstName = firstName;
+    currentUser.lastName = lastName;
+    currentUser.email = email;
+    currentUser.photoUrl = photoUrl || null;
     authStore.setUser(response.data);
-    const fullName = [response.data.first_name, response.data.last_name].filter(Boolean).join(" ").trim();
-    userCard.name = fullName || response.data.first_name || userCard.name;
-    if (response.data.email) userCard.email = response.data.email;
-    if (response.data.photo_url) userCard.photoUrl = response.data.photo_url;
-    if (response.data.first_name && response.data.last_name) {
-      userCard.initials = `${response.data.first_name[0]}${response.data.last_name[0]}`.toUpperCase();
-    }
+
+    participants[0].name = fullName || email || "Client";
+    participants[0].initials = buildParticipantInitials(firstName, lastName, email, "CL");
+    participants[0].photoUrl = photoUrl;
 
     await loadData();
     scheduleDesktopGridMeasure();
@@ -679,7 +698,6 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding-bottom: 1rem;
   }
 
   .support-ticket-header {
@@ -992,6 +1010,14 @@
     gap: 12px;
   }
 
+  .support-side__ticket-id-row {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
   .support-side__status-card {
     background: var(--ui-background-card);
     border-color: var(--color-stroke-ui-dark);
@@ -1052,6 +1078,13 @@
     justify-content: center;
     font-weight: 600;
     font-size: 12px;
+    overflow: hidden;
+  }
+
+  .support-side__participant-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .support-side__tabs {
