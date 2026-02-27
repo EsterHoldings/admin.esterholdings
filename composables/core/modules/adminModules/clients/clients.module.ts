@@ -27,6 +27,10 @@ export class ClientsModule {
     return await this.clientsService.patchPaymentDetailStatus(id, paymentDetailId, data);
   }
 
+  async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
+    return await this.clientsService.deletePaymentDetail(id, paymentDetailId);
+  }
+
   async post(data: any): Promise<any> {
     return await this.clientsService.post(data);
   }

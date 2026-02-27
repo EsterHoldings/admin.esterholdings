@@ -123,7 +123,24 @@
                 class="bg-[var(--ui-background-panel)] hover:bg-[var(--color-stroke-ui-dark)] h-[60px] cursor-pointer"
                 @click="handleClickRow(t.id)">
                 <td class="px-4 whitespace-nowrap">
-                  {{ t.id }}
+                  <div class="inline-flex items-center gap-2 min-w-0">
+                    <div
+                      class="h-[28px] w-[28px] rounded-full overflow-hidden border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background)] text-[10px] font-semibold text-[var(--ui-text-main)] flex items-center justify-center shrink-0 uppercase">
+                      <img
+                        v-if="getTicketClientAvatarUrl(t)"
+                        :src="getTicketClientAvatarUrl(t)"
+                        :alt="getTicketClientName(t)"
+                        class="h-full w-full object-cover" />
+                      <span v-else>{{ getTicketClientInitials(t) }}</span>
+                    </div>
+                    <span class="truncate">{{ t.id }}</span>
+                    <span
+                      class="shrink-0 text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-main)]"
+                      title="Скопировать ID"
+                      @click.stop>
+                      <UiIconCopy :text="String(t.id)" />
+                    </span>
+                  </div>
                 </td>
 
                 <td class="px-4">
@@ -214,11 +231,28 @@
             class="ticket-card cursor-pointer rounded-xl border border-[var(--color-stroke-ui-dark)] bg-[var(--ui-background-panel)] p-4 transition hover:bg-[var(--color-stroke-ui-dark)]"
             @click="handleClickRow(ticket.id)">
             <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <div class="flex items-center gap-2 text-xs text-[var(--ui-text-secondary)]">
-                  <span>#{{ ticket.id }}</span>
+              <div class="min-w-0 flex items-start gap-2">
+                <div
+                  class="h-[28px] w-[28px] rounded-full overflow-hidden border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background)] text-[10px] font-semibold text-[var(--ui-text-main)] flex items-center justify-center shrink-0 uppercase">
+                  <img
+                    v-if="getTicketClientAvatarUrl(ticket)"
+                    :src="getTicketClientAvatarUrl(ticket)"
+                    :alt="getTicketClientName(ticket)"
+                    class="h-full w-full object-cover" />
+                  <span v-else>{{ getTicketClientInitials(ticket) }}</span>
                 </div>
-                <div class="truncate font-semibold">{{ ticket.subject }}</div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 text-xs text-[var(--ui-text-secondary)]">
+                    <span>#{{ ticket.id }}</span>
+                    <span
+                      class="shrink-0 text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-main)]"
+                      title="Скопировать ID"
+                      @click.stop>
+                      <UiIconCopy :text="String(ticket.id)" />
+                    </span>
+                  </div>
+                  <div class="truncate font-semibold">{{ ticket.subject }}</div>
+                </div>
               </div>
               <div class="flex items-center gap-2">
                 <span
@@ -368,6 +402,7 @@
   import useAppCore from "~/composables/useAppCore";
   import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import UiIconChat from "~/components/ui/UiIconChat.vue";
+  import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import ViewModeToggle from "~/components/block/controls/ViewModeToggle.vue";
   import { useI18n } from "vue-i18n";
   import TicketsCreateNew from "~/pages/support/components/TicketsCreateNew.vue";
@@ -591,6 +626,54 @@
     }
 
     return "bg-[var(--ui-text-secondary)]";
+  };
+
+  const getTicketClientAvatarUrl = (ticket: any): string => {
+    const rawUrl = ticket?.creator?.photo_url ?? ticket?.creator_photo_url ?? "";
+    return typeof rawUrl === "string" ? rawUrl.trim() : "";
+  };
+
+  const extractTicketClientInitials = (ticket: any): string => {
+    const directInitials = String(ticket?.creator?.initials ?? ticket?.creator_initials ?? "")
+      .trim()
+      .toUpperCase();
+    if (directInitials) {
+      return directInitials.slice(0, 2);
+    }
+
+    const firstName = String(ticket?.creator?.first_name ?? "").trim();
+    const lastName = String(ticket?.creator?.last_name ?? "").trim();
+    const fullNameInitials = `${firstName.charAt(0)}${lastName.charAt(0)}`.trim().toUpperCase();
+    if (fullNameInitials) {
+      return fullNameInitials.slice(0, 2);
+    }
+
+    const email = String(ticket?.creator?.email ?? ticket?.creator_email ?? "")
+      .trim()
+      .toUpperCase();
+    if (email) {
+      return email.slice(0, 2);
+    }
+
+    return "CL";
+  };
+
+  const getTicketClientInitials = (ticket: any): string => extractTicketClientInitials(ticket);
+
+  const getTicketClientName = (ticket: any): string => {
+    const firstName = String(ticket?.creator?.first_name ?? "").trim();
+    const lastName = String(ticket?.creator?.last_name ?? "").trim();
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (fullName) {
+      return fullName;
+    }
+
+    const email = String(ticket?.creator?.email ?? ticket?.creator_email ?? "").trim();
+    if (email) {
+      return email;
+    }
+
+    return `Client #${String(ticket?.creator_id ?? ticket?.id ?? "")}`;
   };
 
   definePageMeta({ layout: "default", middleware: ["admin-middleware"] });

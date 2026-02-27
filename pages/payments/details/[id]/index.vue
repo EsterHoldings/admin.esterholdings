@@ -71,6 +71,15 @@
                 <div class="meta-item__value break-all">{{ paymentDetail.id || "-" }}</div>
               </div>
             </div>
+
+            <div
+              class="payment-detail-card__comment-section"
+              :class="{ 'payment-detail-card__comment-section--has-value': hasAdminComment }">
+              <UiTextSmall class="payment-detail-card__comment-label">Комментарий администратора</UiTextSmall>
+              <div class="payment-detail-card__comment">
+                {{ paymentDetail.admin_comment || "Комментарий отсутствует." }}
+              </div>
+            </div>
           </section>
 
           <section class="payment-detail-card">
@@ -97,17 +106,6 @@
                   <UiIconCopy :text="row.value" />
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
-
-        <div class="payment-detail-layout__right">
-          <section
-            class="payment-detail-card payment-detail-card--comment"
-            :class="{ 'payment-detail-card--comment-has-value': hasAdminComment }">
-            <UiTextSmall class="payment-detail-card__label">Комментарий администратора</UiTextSmall>
-            <div class="payment-detail-card__comment">
-              {{ paymentDetail.admin_comment || "Комментарий отсутствует." }}
             </div>
           </section>
         </div>
@@ -457,13 +455,6 @@
     gap: 12px;
   }
 
-  .payment-detail-layout__right {
-    grid-column: span 12;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
   .payment-detail-card {
     grid-column: span 12;
     border: 0;
@@ -474,15 +465,6 @@
 
   .payment-detail-card--full {
     grid-column: span 12;
-  }
-
-  .payment-detail-card--comment {
-    min-height: 100%;
-  }
-
-  .payment-detail-card--comment-has-value {
-    background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-panel));
-    box-shadow: none;
   }
 
   .payment-detail-card__header {
@@ -535,6 +517,42 @@
     color: var(--ui-text-main);
     white-space: pre-wrap;
     line-height: 1.5;
+  }
+
+  .payment-detail-card__comment-section {
+    margin-top: 12px;
+    padding-top: 14px;
+    position: relative;
+  }
+
+  .payment-detail-card__comment-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background:
+      linear-gradient(-45deg, transparent 6px, color-mix(in srgb, var(--ui-primary-main) 22%, transparent) 0) 0 0/12px
+        8px repeat-x,
+      linear-gradient(45deg, transparent 6px, color-mix(in srgb, var(--ui-primary-main) 22%, transparent) 0) 6px 0/12px
+        8px repeat-x;
+  }
+
+  .payment-detail-card__comment-section--has-value {
+    background: color-mix(in srgb, var(--ui-primary-main) 5%, transparent);
+    border-radius: 10px;
+    padding: 14px 10px 10px;
+    margin: 12px -2px -2px;
+  }
+
+  .payment-detail-card__comment-section--has-value::before {
+    left: 10px;
+    right: 10px;
+  }
+
+  .payment-detail-card__comment-label {
+    color: var(--ui-text-secondary);
   }
 
   .payment-detail-card__documents-header {
@@ -778,16 +796,6 @@
   .updated-at-cell__absolute {
     color: var(--ui-text-main);
     font-size: 12px;
-  }
-
-  @media (min-width: 1024px) {
-    .payment-detail-layout__left {
-      grid-column: span 8;
-    }
-
-    .payment-detail-layout__right {
-      grid-column: span 4;
-    }
   }
 
   @media (max-width: 767px) {

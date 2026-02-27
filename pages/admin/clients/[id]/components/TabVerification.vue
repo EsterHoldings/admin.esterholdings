@@ -76,13 +76,13 @@
             <div class="user-verification__section">
               <div class="user-verification__left__title__wrapper">
                 <UiTextH5 class="user-verification__left__title"># {{ t("support.page.status") }}</UiTextH5>
-                <div>
-                  <span
-                    class="user-documents-uploader__title__options_reload"
-                    @click="handleRefreshActiveTab">
-                    <UiIconUpdate :class="{ spin: isLoading }" />
-                  </span>
-                </div>
+                <UiButtonDefault
+                  state="info--small"
+                  class="user-verification__refresh-btn"
+                  @click="handleRefreshActiveTab">
+                  <UiIconUpdate v-if="!isLoading" />
+                  <UiIconSpinnerDefault v-else />
+                </UiButtonDefault>
               </div>
 
               <div class="user-verification__left__verification-list_wrapper">
@@ -391,17 +391,6 @@
         <div
           v-else
           class="user-verification__payout user-verification__section">
-          <div class="user-verification__left__title__wrapper">
-            <UiTextH5 class="user-verification__left__title"># Верификация реквизитов выплат</UiTextH5>
-            <div>
-              <span
-                class="user-documents-uploader__title__options_reload"
-                @click="handleRefreshActiveTab">
-                <UiIconUpdate :class="{ spin: isPayoutLoading }" />
-              </span>
-            </div>
-          </div>
-
           <div class="user-verification__payout-owner">
             <div class="user-verification__payout-owner-avatar">
               <img
@@ -420,6 +409,17 @@
               <span class="user-verification__payout-owner-name">{{ payoutOwnerFullName }}</span>
               <span class="user-verification__payout-owner-email">{{ payoutOwnerEmail }}</span>
             </div>
+          </div>
+
+          <div class="user-verification__left__title__wrapper">
+            <UiTextH5 class="user-verification__left__title"># Верификация реквизитов выплат</UiTextH5>
+            <UiButtonDefault
+              state="info--small"
+              class="user-verification__refresh-btn"
+              @click="handleRefreshActiveTab">
+              <UiIconUpdate v-if="!isPayoutLoading" />
+              <UiIconSpinnerDefault v-else />
+            </UiButtonDefault>
           </div>
 
           <div class="user-verification__left__verification-list_wrapper">
@@ -496,7 +496,7 @@
                   </div>
                 </div>
                 <div
-                  class="user-verification__left__verification-cell user-verification__left__verification-cell--actions">
+                  class="user-verification__left__verification-cell user-verification__left__verification-cell--actions user-verification__left__verification-cell--actions-payout">
                   <VerificationActions
                     :status="paymentDetail.status"
                     :enable-comment="true"
@@ -504,6 +504,16 @@
                     :comment-open="isPayoutCommentOpen(paymentDetail.id)"
                     @toggle-comment="togglePayoutComment(paymentDetail)"
                     @update-status="handleVerificationPayoutDetail($event, paymentDetail.id)" />
+                  <button
+                    type="button"
+                    class="payout-delete-btn"
+                    :disabled="isPayoutDeleting(paymentDetail.id)"
+                    @click="handleDeletePayoutDetail(paymentDetail.id)">
+                    <UiIconDelete v-if="!isPayoutDeleting(paymentDetail.id)" />
+                    <UiIconSpinnerDefault
+                      v-else
+                      class="!h-[16px] !w-[16px]" />
+                  </button>
                 </div>
                 <transition name="comment-expand">
                   <div
@@ -648,6 +658,7 @@
   import { useRoute } from "vue-router";
 
   import UiIconFailed from "~/components/ui/UiIconFailed.vue";
+  import UiIconDelete from "~/components/ui/UiIconDelete.vue";
   import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
   import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
   import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
@@ -788,6 +799,7 @@
   const payoutHistoryRows = ref<AdminPayoutHistoryRow[]>([]);
   const isPayoutHistoryLoading = ref(false);
   const payoutDocumentLoadingMap = reactive<Record<string, boolean>>({});
+  const payoutDeleteLoadingMap = reactive<Record<string, boolean>>({});
   const payoutCommentOpenMap = reactive<Record<string, boolean>>({});
   const payoutCommentDraftMap = reactive<Record<string, string>>({});
 
@@ -1015,6 +1027,8 @@
   const isPayoutDocumentLoading = (paymentDetailId: string, documentIndex: number): boolean =>
     Boolean(payoutDocumentLoadingMap[getPayoutDocumentLoadingKey(paymentDetailId, documentIndex)]);
 
+  const isPayoutDeleting = (paymentDetailId: string): boolean => Boolean(payoutDeleteLoadingMap[paymentDetailId]);
+
   const normalizeVerificationStatus = (value: unknown): "approved" | "pending" | "rejected" => {
     if (typeof value !== "string") {
       return "pending";
@@ -1239,6 +1253,38 @@
       },
       paymentDetailId
     );
+  };
+
+  const handleDeletePayoutDetail = async (paymentDetailId: string): Promise<void> => {
+    if (isPayoutDeleting(paymentDetailId)) {
+      return;
+    }
+
+    const paymentDetail = payoutDetails.value.find(item => item.id === paymentDetailId);
+    if (!paymentDetail) {
+      return;
+    }
+
+    const isConfirmed = window.confirm(
+      `Удалить реквизит "${paymentDetail.name || paymentDetailId}"? Удаление будет выполнено мягко (soft delete).`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    payoutDeleteLoadingMap[paymentDetailId] = true;
+
+    try {
+      await appCore.adminModules.clients.deletePaymentDetail(props.clientId, paymentDetailId);
+      toast.success("Реквизит удален.");
+      payoutCommentOpenMap[paymentDetailId] = false;
+      await Promise.all([loadPayoutVerificationData(), loadPayoutHistoryData()]);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Не удалось удалить реквизит.");
+    } finally {
+      delete payoutDeleteLoadingMap[paymentDetailId];
+    }
   };
 
   const handleOpenPayoutDocument = async (paymentDetailId: string, documentIndex: number) => {
@@ -1505,10 +1551,10 @@
     gap: 12px;
     padding: 12px;
     border-radius: 12px;
-    border: 0;
-    background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-card));
-    margin-top: -4px;
-    margin-bottom: 10px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 36%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-primary-main) 9%, var(--ui-background-card));
+    margin-top: 0;
+    margin-bottom: 12px;
   }
 
   .user-verification__payout-owner-avatar {
@@ -1516,7 +1562,7 @@
     height: 52px;
     border-radius: 50%;
     overflow: hidden;
-    border: 0;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 24%, var(--color-stroke-ui-light));
     background: color-mix(in srgb, var(--ui-primary-main) 18%, var(--ui-background));
     display: inline-flex;
     align-items: center;
@@ -1567,6 +1613,58 @@
     word-break: break-word;
   }
 
+  .user-verification__refresh-btn {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-verification__refresh-btn :deep(svg) {
+    width: 15px;
+    height: 15px;
+  }
+
+  .user-verification__left__verification-cell--actions-payout {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .payout-delete-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--color-danger) 40%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--color-danger) 10%, var(--ui-background-panel));
+    color: var(--color-danger);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .payout-delete-btn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-danger) 18%, var(--ui-background-panel));
+    border-color: color-mix(in srgb, var(--color-danger) 56%, var(--color-stroke-ui-light));
+  }
+
+  .payout-delete-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .payout-delete-btn :deep(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
   .user {
     &-verification {
       &__left {
@@ -1577,8 +1675,9 @@
 
           &__wrapper {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
+            gap: 8px;
           }
         }
 
@@ -2227,6 +2326,10 @@
     .user-verification__left__verification-cell--actions {
       width: 100%;
       justify-content: flex-start;
+    }
+
+    .user-verification__left__verification-cell--actions-payout {
+      align-items: flex-start;
     }
 
     .user-verification__right__info-list {

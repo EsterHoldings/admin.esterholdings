@@ -26,6 +26,10 @@ export class ClientsService {
     return await this.useApi.patch(`/admin/clients/${id}/payment-details/${paymentDetailId}`, data);
   }
 
+  async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
+    return await this.useApi.delete(`/admin/clients/${id}/payment-details/${paymentDetailId}`);
+  }
+
   async post(data: object = {}): Promise<any> {
     return await this.useApi.post("/admin/clients", data);
   }
