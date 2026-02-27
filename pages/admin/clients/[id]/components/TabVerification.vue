@@ -413,19 +413,35 @@
               <div
                 v-if="paymentDetail.documents.length > 0"
                 class="user-verification__left__verification-documents">
-                <button
-                  v-for="(paymentDetailDocument, documentIndex) in paymentDetail.documents"
-                  :key="paymentDetail.id + ':' + paymentDetailDocument.path + ':' + documentIndex"
-                  type="button"
-                  class="user-verification__left__verification-documents-btn"
-                  :disabled="isPayoutDocumentLoading(paymentDetail.id, documentIndex)"
-                  @click.stop="handleOpenPayoutDocument(paymentDetail.id, documentIndex)">
-                  {{
-                    isPayoutDocumentLoading(paymentDetail.id, documentIndex)
-                      ? "Открываем..."
-                      : `Скриншот #${documentIndex + 1}`
-                  }}
-                </button>
+                <div class="user-verification__left__verification-documents-meta">
+                  <span class="user-verification__left__verification-documents-count">
+                    Скриншотов: {{ paymentDetail.documents.length }}
+                  </span>
+                </div>
+                <div class="user-verification__left__verification-documents-grid">
+                  <button
+                    v-for="(paymentDetailDocument, documentIndex) in paymentDetail.documents"
+                    :key="paymentDetail.id + ':' + paymentDetailDocument.path + ':' + documentIndex"
+                    type="button"
+                    class="user-verification__left__verification-documents-thumb"
+                    :class="{ 'user-verification__left__verification-documents-thumb--loading': isPayoutDocumentLoading(paymentDetail.id, documentIndex) }"
+                    :disabled="isPayoutDocumentLoading(paymentDetail.id, documentIndex)"
+                    @click.stop="handleOpenPayoutDocument(paymentDetail.id, documentIndex)">
+                    <img
+                      v-if="resolvePayoutDocumentPreviewSrc(paymentDetailDocument)"
+                      class="user-verification__left__verification-documents-thumb-img"
+                      :src="resolvePayoutDocumentPreviewSrc(paymentDetailDocument)"
+                      :alt="`Скриншот #${documentIndex + 1}`" />
+                    <span
+                      v-else
+                      class="user-verification__left__verification-documents-thumb-fallback">
+                      Скрин
+                    </span>
+                    <span class="user-verification__left__verification-documents-thumb-index">
+                      #{{ documentIndex + 1 }}
+                    </span>
+                  </button>
+                </div>
               </div>
               <span
                 v-else
@@ -523,6 +539,7 @@
     path: string;
     mimeType: string;
     size: number | null;
+    previewUrl: string;
   }
 
   interface AdminPaymentDetailItem {
@@ -627,9 +644,20 @@
           path,
           mimeType: String(row.mime_type ?? row.mimeType ?? ""),
           size: typeof row.size === "number" ? row.size : null,
+          previewUrl: String(row.preview_url ?? row.previewUrl ?? ""),
         };
       })
       .filter((item): item is AdminPaymentDetailDocument => Boolean(item));
+  };
+
+  const isAbsoluteHttpUrl = (value: string): boolean => /^https?:\/\//i.test(value);
+
+  const resolvePayoutDocumentPreviewSrc = (document: AdminPaymentDetailDocument): string => {
+    if (document.previewUrl) {
+      return document.previewUrl;
+    }
+
+    return isAbsoluteHttpUrl(document.path) ? document.path : "";
   };
 
   const getPayoutDocumentLoadingKey = (paymentDetailId: string, documentIndex: number): string =>
@@ -743,7 +771,7 @@
         status: value.status,
       });
       toast.success("Payment details status updated!");
-      await loadPayoutVerificationData();
+      await Promise.all([loadPayoutVerificationData(), loadVerificationData()]);
     } finally {
       isPayoutLoading.value = false;
     }
@@ -754,6 +782,16 @@
     const document = paymentDetail?.documents[documentIndex];
     if (!document?.path) {
       toast.error("Документ не найден.");
+      return;
+    }
+
+    if (document.previewUrl) {
+      window.open(document.previewUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    if (isAbsoluteHttpUrl(document.path)) {
+      window.open(document.path, "_blank", "noopener,noreferrer");
       return;
     }
 
@@ -1039,31 +1077,83 @@
         }
 
         &__verification-documents {
-          margin-top: 4px;
+          margin-top: 6px;
           display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
+          flex-direction: column;
+          gap: 8px;
         }
 
-        &__verification-documents-btn {
-          height: 24px;
-          padding: 0 10px;
-          border-radius: 999px;
-          border: 1px solid var(--ui-primary-main);
-          background: transparent;
-          color: var(--ui-primary-main);
+        &__verification-documents-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        &__verification-documents-count {
+          color: var(--ui-text-secondary);
           font-size: 11px;
           font-weight: 600;
-          transition: opacity 0.2s ease;
         }
 
-        &__verification-documents-btn:disabled {
-          opacity: 0.6;
+        &__verification-documents-grid {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+          scrollbar-width: thin;
+        }
+
+        &__verification-documents-thumb {
+          position: relative;
+          flex: 0 0 auto;
+          width: 76px;
+          height: 56px;
+          border-radius: 9px;
+          border: 1px solid var(--color-stroke-ui-light);
+          overflow: hidden;
+          background: var(--ui-background);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: border-color 0.2s ease;
+        }
+
+        &__verification-documents-thumb:hover {
+          border-color: var(--ui-primary-main);
+        }
+
+        &__verification-documents-thumb:disabled {
+          opacity: 0.65;
           cursor: not-allowed;
         }
 
-        &__verification-documents-btn:not(:disabled):hover {
-          opacity: 0.8;
+        &__verification-documents-thumb--loading {
+          cursor: wait;
+        }
+
+        &__verification-documents-thumb-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        &__verification-documents-thumb-fallback {
+          color: var(--ui-text-secondary);
+          font-size: 11px;
+          font-weight: 600;
+        }
+
+        &__verification-documents-thumb-index {
+          position: absolute;
+          right: 4px;
+          bottom: 4px;
+          padding: 2px 5px;
+          border-radius: 999px;
+          font-size: 10px;
+          font-weight: 700;
+          color: var(--ui-text-main);
+          background: color-mix(in srgb, var(--ui-background-panel) 82%, transparent);
         }
 
         &__comment-row {
