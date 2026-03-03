@@ -402,7 +402,9 @@
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
   const VIEW_MODE_STORAGE_KEY = "adminClientsViewMode";
-  const ONLINE_REFRESH_INTERVAL_MS = 10_000;
+  const ONLINE_REFRESH_INTERVAL_MS = 3_000;
+  const ONLINE_WINDOW_SECONDS = 5;
+  const ONLINE_REALTIME_SYNC_DEBOUNCE_MS = 200;
 
   const ALL_SEARCH_FIELDS = [
     "id",
@@ -498,6 +500,7 @@
   const { t, locale } = useI18n({ useScope: "global" });
   const localePath = useLocalePath();
   const appCore = useAppCore();
+  const { $echo } = useNuxtApp() as unknown as { $echo?: any };
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -540,6 +543,10 @@
   const filtersPopoverRef = ref<HTMLElement | null>(null);
 
   let pollingTimer: ReturnType<typeof setInterval> | null = null;
+  let supportGlobalChannel: any = null;
+  let realtimeSyncTimer: ReturnType<typeof setTimeout> | null = null;
+  let realtimeSyncInFlight = false;
+  let realtimeSyncQueued = false;
 
   const filterTextFieldOptions = computed(() => [
     { key: "id" as FilterKey, label: "ID" },
@@ -831,6 +838,7 @@
         searchFields: ALL_SEARCH_FIELDS.join(","),
         orderBy: orderBy.value,
         orderDirection: orderDirection.value,
+        online_window_seconds: ONLINE_WINDOW_SECONDS,
         filters: filtersPayload,
         ...flatFilters,
       };
@@ -858,7 +866,9 @@
     }
 
     try {
-      const response = await appCore.adminModules.clients.getStats();
+      const response = await appCore.adminModules.clients.getStats({
+        online_window_seconds: ONLINE_WINDOW_SECONDS,
+      });
       const payload = response?.data?.data ?? {};
 
       statsData.value = {
@@ -1011,6 +1021,73 @@
     pollingTimer = null;
   };
 
+  const syncOnlineState = async () => {
+    if (realtimeSyncInFlight) {
+      realtimeSyncQueued = true;
+      return;
+    }
+
+    realtimeSyncInFlight = true;
+
+    try {
+      do {
+        realtimeSyncQueued = false;
+        await Promise.all([loadData({ silent: true }), loadStats(true)]);
+      } while (realtimeSyncQueued);
+    } finally {
+      realtimeSyncInFlight = false;
+    }
+  };
+
+  const scheduleOnlineSync = () => {
+    if (realtimeSyncTimer) return;
+
+    realtimeSyncTimer = setTimeout(() => {
+      realtimeSyncTimer = null;
+      syncOnlineState().catch(() => {});
+    }, ONLINE_REALTIME_SYNC_DEBOUNCE_MS);
+  };
+
+  const clearScheduledOnlineSync = () => {
+    if (!realtimeSyncTimer) return;
+    clearTimeout(realtimeSyncTimer);
+    realtimeSyncTimer = null;
+  };
+
+  const handleRealtimePresence = () => {
+    scheduleOnlineSync();
+  };
+
+  const connectRealtime = () => {
+    if (!$echo) return;
+    if (supportGlobalChannel) return;
+
+    supportGlobalChannel = $echo
+      .private("support.global")
+      .listen(".ticket.presence.updated", handleRealtimePresence)
+      .listen(".MessageSent", handleRealtimePresence);
+  };
+
+  const disconnectRealtime = () => {
+    if (!supportGlobalChannel || !$echo) return;
+
+    supportGlobalChannel.stopListening(".ticket.presence.updated");
+    supportGlobalChannel.stopListening(".MessageSent");
+    $echo.leave("support.global");
+    supportGlobalChannel = null;
+  };
+
+  const handleWindowFocus = () => {
+    scheduleOnlineSync();
+  };
+
+  const handleVisibilityChange = () => {
+    if (typeof document === "undefined") return;
+    if (document.visibilityState === "visible") {
+      scheduleOnlineSync();
+    }
+  };
+
   const handleExternalReload = async () => {
     await loadAll();
   };
@@ -1056,14 +1133,21 @@
     isInitialLoading.value = false;
 
     useEventBus.on("loadDataForAdmins", handleExternalReload);
+    connectRealtime();
     startPolling();
+    window.addEventListener("focus", handleWindowFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     document.addEventListener("click", handleClickOutsideFilters);
   });
 
   onBeforeUnmount(() => {
     useEventBus.off("loadDataForAdmins", handleExternalReload);
+    disconnectRealtime();
     stopPolling();
+    clearScheduledOnlineSync();
+    window.removeEventListener("focus", handleWindowFocus);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
     document.removeEventListener("click", handleClickOutsideFilters);
   });
 </script>

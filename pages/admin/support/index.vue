@@ -229,9 +229,12 @@
           <div
             v-for="ticket in filtered"
             :key="ticket.id"
-            class="ticket-card cursor-pointer rounded-xl border border-[var(--color-stroke-ui-dark)] bg-[var(--ui-background-panel)] p-4 transition hover:bg-[var(--color-stroke-ui-dark)]"
+            :class="[
+              'ticket-card cursor-pointer rounded-xl border border-[var(--color-stroke-ui-dark)] bg-[var(--ui-background-panel)] p-4 transition hover:bg-[var(--color-stroke-ui-dark)]',
+              viewMode === 'full' ? 'ticket-card--full-row' : '',
+            ]"
             @click="handleClickRow(ticket.id)">
-            <div class="flex items-start justify-between gap-3">
+            <div class="ticket-card__top flex items-start justify-between gap-3">
               <div class="min-w-0 flex items-start gap-2">
                 <div
                   class="h-[28px] w-[28px] rounded-full overflow-hidden border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background)] text-[10px] font-semibold text-[var(--ui-text-main)] flex items-center justify-center shrink-0 uppercase">
@@ -266,7 +269,7 @@
               </div>
             </div>
 
-            <div class="mt-3 flex items-center justify-between text-sm text-[var(--ui-text-secondary)]">
+            <div class="ticket-card__middle mt-3 flex items-center justify-between text-sm text-[var(--ui-text-secondary)]">
               <span class="inline-flex items-center gap-1.5">
                 <span
                   class="h-1.5 w-1.5 rounded-full"
@@ -278,7 +281,7 @@
               <span class="whitespace-nowrap">{{ ticket.last_message_at }}</span>
             </div>
 
-            <div class="mt-3 flex items-center justify-end gap-2">
+            <div class="ticket-card__bottom mt-3 flex items-center justify-end gap-2">
               <button
                 class="relative h-[36px] w-[36px] flex items-center justify-center rounded-full hover:bg-[var(--color-stroke-ui-light)] active:bg-[var(--color-stroke-ui-dark)]"
                 @click.stop="handleChatIconClick(ticket.id)"
@@ -1043,6 +1046,50 @@
   };
   /* ===== /Пересувний чат ===== */
 </script>
+
+<style scoped>
+  .ticket-card {
+    position: relative;
+  }
+
+  .ticket-card--full-row {
+    display: grid;
+    grid-template-columns: minmax(320px, 1.5fr) minmax(240px, 1.1fr) auto;
+    align-items: center;
+    column-gap: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .ticket-card--full-row .ticket-card__top {
+    align-items: center;
+  }
+
+  .ticket-card--full-row .ticket-card__middle,
+  .ticket-card--full-row .ticket-card__bottom {
+    margin-top: 0;
+  }
+
+  .ticket-card--full-row .ticket-card__middle {
+    justify-content: flex-start;
+    gap: 18px;
+  }
+
+  @media (max-width: 1024px) {
+    .ticket-card--full-row {
+      grid-template-columns: 1fr;
+      row-gap: 10px;
+    }
+
+    .ticket-card--full-row .ticket-card__top {
+      align-items: flex-start;
+    }
+
+    .ticket-card--full-row .ticket-card__middle {
+      justify-content: space-between;
+    }
+  }
+</style>
 
 <!--<template>-->
 <!--  <div class="settings">-->

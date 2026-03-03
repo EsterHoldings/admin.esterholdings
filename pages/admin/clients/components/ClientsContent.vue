@@ -167,7 +167,7 @@
   }
 
   .client-card--full {
-    padding: 8px 40px 8px 14px;
+    padding: 6px 40px 6px 14px;
   }
 
   .client-card:hover {
@@ -189,8 +189,8 @@
 
   .client-card__body--row {
     flex-wrap: nowrap;
-    gap: 6px 12px;
-    align-items: flex-start;
+    gap: 4px 10px;
+    align-items: center;
   }
 
   .client-card__user {

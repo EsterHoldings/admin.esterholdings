@@ -199,7 +199,7 @@
   }
 
   .account-card--full {
-    padding: 8px 40px 8px 14px;
+    padding: 6px 40px 6px 14px;
   }
 
   .account-card:hover {
@@ -221,8 +221,8 @@
 
   .account-card__body--row {
     flex-wrap: nowrap;
-    gap: 6px 12px;
-    align-items: flex-start;
+    gap: 4px 10px;
+    align-items: center;
   }
 
   .account-card__owner {
@@ -283,4 +283,3 @@
     padding-right: 14px;
   }
 </style>
-

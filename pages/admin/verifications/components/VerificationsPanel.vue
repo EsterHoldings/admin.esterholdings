@@ -48,11 +48,11 @@
 
     <template v-else>
       <div
-        class="verification-card"
+        :class="['verification-card', viewMode === 'full' ? 'verification-card--full' : '']"
         v-for="verificationRequest in verificationRequests"
         :key="verificationRequest.id"
         @click="handleClickVerificationRequest(verificationRequest['user']['id'])">
-        <div class="flex items-center gap-3">
+        <div class="verification-card__header flex items-center gap-3">
           <UiImageCircle
             :src="verificationRequest['user']['photo_url']"
             :two-chars="verificationRequest['user']['initials']" />
@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-        <div class="mt-3 flex items-center justify-between text-sm text-[var(--ui-text-secondary)]">
+        <div class="verification-card__meta mt-3 flex items-center justify-between text-sm text-[var(--ui-text-secondary)]">
           <span>{{ verificationRequest["updated_at_human"] }}...</span>
           <VerificationActions :status="verificationRequest['state']" />
         </div>
@@ -186,6 +186,32 @@
 
   .verification-card:hover {
     background: var(--color-stroke-ui-dark);
+  }
+
+  .verification-card--full {
+    display: grid;
+    grid-template-columns: minmax(320px, 1.4fr) minmax(220px, 1fr);
+    align-items: center;
+    column-gap: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .verification-card--full .verification-card__meta {
+    margin-top: 0;
+    justify-content: flex-end;
+    gap: 14px;
+  }
+
+  @media (max-width: 1024px) {
+    .verification-card--full {
+      grid-template-columns: 1fr;
+      row-gap: 10px;
+    }
+
+    .verification-card--full .verification-card__meta {
+      justify-content: space-between;
+    }
   }
 
   .add-btn {
