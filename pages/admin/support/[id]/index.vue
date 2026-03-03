@@ -108,6 +108,21 @@
                 </div>
 
                 <div class="support-side__card support-side__library">
+                  <div class="support-side__library-header">
+                    <div class="font-semibold">Shared Files</div>
+                    <button
+                      type="button"
+                      class="support-side__refresh"
+                      :disabled="isLibraryLoading"
+                      @click="refreshLibrary">
+                      <UiIconSpinnerDefault
+                        v-if="isLibraryLoading"
+                        class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
+                      <UiIconUpdate
+                        v-else
+                        class="h-4 w-4" />
+                    </button>
+                  </div>
                   <div class="support-side__tabs">
                     <button
                       v-for="tab in tabs"
@@ -116,32 +131,96 @@
                       class="support-side__tab"
                       :class="activeTab === tab.id ? 'is-active' : ''"
                       @click="activeTab = tab.id">
-                      {{ tab.label }}
+                      <span class="support-side__tab-icon">
+                        <UiIconImage
+                          v-if="tab.id === 'media'"
+                          class="h-4 w-4" />
+                        <UiIconDocuments
+                          v-else-if="tab.id === 'documents'"
+                          class="h-4 w-4" />
+                        <svg
+                          v-else
+                          viewBox="0 0 24 24"
+                          class="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path d="M10 14a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L10 6" />
+                          <path d="M14 10a5 5 0 00-7.07 0L4.1 12.83a5 5 0 007.07 7.07L14 18" />
+                        </svg>
+                      </span>
+                      <span>{{ tab.label }}</span>
+                      <span class="support-side__tab-count">{{ tab.count }}</span>
                     </button>
                   </div>
 
                   <div class="mt-4">
                     <div
-                      v-if="activeTab === 'media'"
-                      class="grid grid-cols-3 gap-2">
-                      <div
+                      v-if="isLibraryLoading && activeTabItemsCount === 0"
+                      class="support-side__library-loading">
+                      <UiIconSpinnerDefault class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
+                      <span>Loading {{ activeTabLabel.toLowerCase() }}...</span>
+                    </div>
+
+                    <div
+                      v-else-if="activeTab === 'media'"
+                      class="support-side__media-grid">
+                      <a
                         v-for="media in mediaItems"
                         :key="media.id"
+                        :href="media.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="support-side__media">
-                        {{ media.label }}
+                        <img
+                          v-if="media.kind === 'image'"
+                          :src="media.url"
+                          :alt="media.title"
+                          class="support-side__media-preview" />
+                        <div
+                          v-else
+                          class="support-side__video-preview">
+                          <video
+                            :src="media.url"
+                            muted
+                            playsinline
+                            preload="metadata"
+                            class="support-side__media-preview"></video>
+                          <span class="support-side__video-badge">Video</span>
+                        </div>
+                        <span class="support-side__media-title">{{ media.title }}</span>
+                      </a>
+                      <div
+                        v-if="!mediaItems.length"
+                        class="support-side__links-empty">
+                        No media in this chat yet
                       </div>
                     </div>
 
                     <div
-                      v-else-if="activeTab === 'videos'"
-                      class="grid grid-cols-2 gap-2">
+                      v-else-if="activeTab === 'documents'"
+                      class="flex flex-col gap-2">
+                      <template v-if="documentItems.length">
+                        <a
+                          v-for="doc in documentItems"
+                          :key="doc.id"
+                          :href="doc.url"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="support-side__doc">
+                          <UiIconDocuments class="h-4 w-4 shrink-0 text-[var(--ui-primary-main)]" />
+                          <div class="min-w-0">
+                            <div class="font-medium truncate">{{ doc.title }}</div>
+                            <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ doc.details }}</div>
+                          </div>
+                        </a>
+                      </template>
                       <div
-                        v-for="video in videoItems"
-                        :key="video.id"
-                        class="support-side__video">
-                        <div class="text-xs text-[var(--ui-text-secondary)]">Video</div>
-                        <div class="mt-1 font-medium text-sm truncate">{{ video.title }}</div>
-                        <div class="mt-2 text-xs text-[var(--ui-text-secondary)]">{{ video.duration }}</div>
+                        v-else
+                        class="support-side__links-empty">
+                        No documents in this chat yet
                       </div>
                     </div>
 
@@ -163,7 +242,7 @@
                       <div
                         v-else
                         class="support-side__links-empty">
-                        {{ isLinksLoading ? "Loading links..." : "No links in this chat yet" }}
+                        No links in this chat yet
                       </div>
                     </div>
                   </div>
@@ -216,6 +295,10 @@
   import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
   import UiIconChevronUp from "~/components/ui/UiIconChevronUp.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+  import UiIconImage from "~/components/ui/UiIconImage.vue";
+  import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
+  import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
+  import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 
   definePageMeta({ layout: "default", middleware: ["admin-middleware"] });
 
@@ -224,6 +307,7 @@
 
   const appCore = useAppCore();
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
+  const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
 
   const isLoading = ref(false);
   const supportGridRef = ref<HTMLElement | null>(null);
@@ -243,16 +327,32 @@
   });
   const status = ref("");
   const subject = ref("");
-  type SupportTab = "media" | "videos" | "links";
+  type SupportTab = "media" | "documents" | "links";
   type SupportLinkItem = {
     id: string;
     title: string;
     url: string;
     createdAt: number;
   };
+  type SupportMediaItem = {
+    id: string;
+    title: string;
+    url: string;
+    kind: "image" | "video";
+    createdAt: number;
+  };
+  type SupportDocumentItem = {
+    id: string;
+    title: string;
+    url: string;
+    details: string;
+    createdAt: number;
+  };
   const activeTab = ref<SupportTab>("media");
-  const isLinksLoading = ref(false);
+  const isLibraryLoading = ref(false);
   const linkItems = ref<SupportLinkItem[]>([]);
+  const mediaItems = ref<SupportMediaItem[]>([]);
+  const documentItems = ref<SupportDocumentItem[]>([]);
   const isSideScrollDragging = ref(false);
   const isSideExpanded = ref(false);
   const isMobileViewport = ref(false);
@@ -270,23 +370,17 @@
     { id: 1, name: "Admin", role: "Admin", initials: "AD", online: true, isYou: true, photoUrl: "" },
     { id: 2, name: "Client", role: "Client", initials: "CL", online: false, isYou: false, photoUrl: "" },
   ]);
-  const tabs: Array<{ id: SupportTab; label: string }> = [
-    { id: "media", label: "Media" },
-    { id: "videos", label: "Video" },
-    { id: "links", label: "Links" },
-  ];
-  const mediaItems = [
-    { id: 1, label: "Photo" },
-    { id: 2, label: "Photo" },
-    { id: 3, label: "Photo" },
-    { id: 4, label: "Photo" },
-    { id: 5, label: "Photo" },
-    { id: 6, label: "Photo" },
-  ];
-  const videoItems = [
-    { id: 1, title: "Screen recording", duration: "02:14" },
-    { id: 2, title: "Issue reproduction", duration: "00:46" },
-  ];
+  const tabs = computed(() => [
+    { id: "media" as SupportTab, label: "Media", count: mediaItems.value.length },
+    { id: "documents" as SupportTab, label: "Documents", count: documentItems.value.length },
+    { id: "links" as SupportTab, label: "Links", count: linkItems.value.length },
+  ]);
+  const activeTabLabel = computed(() => tabs.value.find(tab => tab.id === activeTab.value)?.label ?? "Library");
+  const activeTabItemsCount = computed(() => {
+    if (activeTab.value === "media") return mediaItems.value.length;
+    if (activeTab.value === "documents") return documentItems.value.length;
+    return linkItems.value.length;
+  });
   const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
   const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
   const buildFullName = (firstName?: string | null, lastName?: string | null): string => {
@@ -618,14 +712,60 @@
     return Number.isFinite(parsed) ? parsed : Date.now();
   };
 
+  const formatFileSize = (size: unknown): string => {
+    const value = Number(size ?? 0);
+    if (!Number.isFinite(value) || value <= 0) return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    let scaled = value;
+    let unitIndex = 0;
+    while (scaled >= 1024 && unitIndex < units.length - 1) {
+      scaled /= 1024;
+      unitIndex += 1;
+    }
+    const precision = unitIndex === 0 ? 0 : scaled < 10 ? 1 : 0;
+    return `${scaled.toFixed(precision)} ${units[unitIndex]}`;
+  };
+
+  const resolveAttachmentUrl = (attachment: Record<string, unknown>): string => {
+    return normalizeText(
+      attachment.url ?? attachment.preview_url ?? attachment.previewUrl ?? attachment.path_url ?? attachment.pathUrl
+    );
+  };
+
+  const resolveAttachmentKind = (attachment: Record<string, unknown>): "image" | "video" | "file" => {
+    const kind = normalizeText(attachment.kind).toLowerCase();
+    if (kind === "image" || kind === "video" || kind === "file") return kind;
+    const mimeType = normalizeText(attachment.mime_type ?? attachment.mimeType).toLowerCase();
+    if (mimeType.startsWith("image/")) return "image";
+    if (mimeType.startsWith("video/")) return "video";
+    return "file";
+  };
+
+  const resolveAttachmentDisplay = (attachment: Record<string, unknown>, kind: "image" | "video" | "file") => {
+    if (kind === "file") return "file";
+    const displayAs = normalizeText(attachment.display_as ?? attachment.displayAs).toLowerCase();
+    return displayAs === "file" ? "file" : "media";
+  };
+
+  const resolveAttachmentTitle = (attachment: Record<string, unknown>, fallbackUrl: string): string => {
+    const name = normalizeText(attachment.name ?? attachment.filename);
+    if (name) return name;
+
+    try {
+      const parsed = new URL(fallbackUrl);
+      const fileName = decodeURIComponent(parsed.pathname.split("/").pop() ?? "");
+      return fileName || "Attachment";
+    } catch {
+      return "Attachment";
+    }
+  };
+
   const extractLinksFromText = (text: string): string[] => {
     if (!text) return [];
     const found = text.match(MESSAGE_URL_PATTERN) ?? [];
     return Array.from(
       new Set(
-        found
-          .map(normalizeLinkUrl)
-          .filter((value): value is string => typeof value === "string" && value.length > 0)
+        found.map(normalizeLinkUrl).filter((value): value is string => typeof value === "string" && value.length > 0)
       )
     );
   };
@@ -649,30 +789,112 @@
     linkItems.value = Array.from(merged.values()).sort((a, b) => b.createdAt - a.createdAt);
   };
 
-  const mapTicketMessagesToLinks = (messages: Array<Record<string, unknown>>): SupportLinkItem[] => {
-    const collected: SupportLinkItem[] = [];
+  const mergeMediaItems = (items: SupportMediaItem[]) => {
+    if (!items.length) return;
+
+    const merged = new Map<string, SupportMediaItem>();
+    for (const existing of mediaItems.value) {
+      merged.set(existing.url.toLowerCase(), existing);
+    }
+
+    for (const item of items) {
+      const key = item.url.toLowerCase();
+      const previous = merged.get(key);
+      if (!previous || item.createdAt >= previous.createdAt) {
+        merged.set(key, item);
+      }
+    }
+
+    mediaItems.value = Array.from(merged.values()).sort((a, b) => b.createdAt - a.createdAt);
+  };
+
+  const mergeDocumentItems = (items: SupportDocumentItem[]) => {
+    if (!items.length) return;
+
+    const merged = new Map<string, SupportDocumentItem>();
+    for (const existing of documentItems.value) {
+      merged.set(existing.url.toLowerCase(), existing);
+    }
+
+    for (const item of items) {
+      const key = item.url.toLowerCase();
+      const previous = merged.get(key);
+      if (!previous || item.createdAt >= previous.createdAt) {
+        merged.set(key, item);
+      }
+    }
+
+    documentItems.value = Array.from(merged.values()).sort((a, b) => b.createdAt - a.createdAt);
+  };
+
+  const mapTicketMessagesToLibrary = (messages: Array<Record<string, unknown>>) => {
+    const links: SupportLinkItem[] = [];
+    const media: SupportMediaItem[] = [];
+    const documents: SupportDocumentItem[] = [];
 
     for (const message of messages) {
       const messageId = String(message.id ?? "");
       const createdAt = parseMessageCreatedAt(message.created_at ?? message.createdAt);
       const body = normalizeText(message.body);
-      if (!body) continue;
 
-      const urls = extractLinksFromText(body);
-      for (const url of urls) {
-        collected.push({
-          id: `${messageId}-${url}`,
-          title: buildLinkTitle(url),
+      if (body) {
+        const urls = extractLinksFromText(body);
+        for (const url of urls) {
+          links.push({
+            id: `${messageId}-${url}`,
+            title: buildLinkTitle(url),
+            url,
+            createdAt,
+          });
+        }
+      }
+
+      const meta = message.meta;
+      const rawAttachments =
+        meta && typeof meta === "object" && Array.isArray((meta as Record<string, unknown>).attachments)
+          ? ((meta as Record<string, unknown>).attachments as Array<unknown>)
+          : [];
+
+      for (let index = 0; index < rawAttachments.length; index += 1) {
+        const rawAttachment = rawAttachments[index];
+        if (!rawAttachment || typeof rawAttachment !== "object") continue;
+
+        const attachment = rawAttachment as Record<string, unknown>;
+        const url = resolveAttachmentUrl(attachment);
+        if (!url) continue;
+
+        const kind = resolveAttachmentKind(attachment);
+        const displayAs = resolveAttachmentDisplay(attachment, kind);
+        const title = resolveAttachmentTitle(attachment, url);
+        const sizeLabel = formatFileSize(attachment.size);
+        const mimeType = normalizeText(attachment.mime_type ?? attachment.mimeType);
+        const attachmentId = normalizeText(attachment.id) || `${messageId}-att-${index}`;
+
+        if (displayAs === "media" && (kind === "image" || kind === "video")) {
+          media.push({
+            id: attachmentId,
+            title,
+            url,
+            kind,
+            createdAt,
+          });
+          continue;
+        }
+
+        documents.push({
+          id: attachmentId,
+          title,
           url,
+          details: [sizeLabel, mimeType].filter(Boolean).join(" • "),
           createdAt,
         });
       }
     }
 
-    return collected;
+    return { links, media, documents };
   };
 
-  const fetchTicketMessagesForLinksPage = async (page: number): Promise<Array<Record<string, unknown>>> => {
+  const fetchTicketMessagesForLibraryPage = async (page: number): Promise<Array<Record<string, unknown>>> => {
     const response = await appCore.adminModules.tickets.getTicketMessages(id.value, {
       page,
       pageSize: LINKS_PAGE_SIZE,
@@ -684,28 +906,41 @@
     return [];
   };
 
-  const loadLinksFromChat = async () => {
-    if (isLinksLoading.value) return;
-    isLinksLoading.value = true;
+  const mergeLibraryFromMessages = (messages: Array<Record<string, unknown>>) => {
+    if (!messages.length) return;
+    const mapped = mapTicketMessagesToLibrary(messages);
+    mergeLinkItems(mapped.links);
+    mergeMediaItems(mapped.media);
+    mergeDocumentItems(mapped.documents);
+  };
+
+  const loadLibraryFromChat = async () => {
+    if (isLibraryLoading.value) return;
+    isLibraryLoading.value = true;
 
     try {
       const allMessages: Array<Record<string, unknown>> = [];
 
       for (let page = 1; page <= MAX_LINKS_PAGES; page += 1) {
-        const pageMessages = await fetchTicketMessagesForLinksPage(page);
+        const pageMessages = await fetchTicketMessagesForLibraryPage(page);
         if (!pageMessages.length) break;
         allMessages.push(...pageMessages);
         if (pageMessages.length < LINKS_PAGE_SIZE) break;
       }
 
-      const mappedLinks = mapTicketMessagesToLinks(allMessages);
       linkItems.value = [];
-      mergeLinkItems(mappedLinks);
+      mediaItems.value = [];
+      documentItems.value = [];
+      mergeLibraryFromMessages(allMessages);
     } catch {
       // noop
     } finally {
-      isLinksLoading.value = false;
+      isLibraryLoading.value = false;
     }
+  };
+
+  const refreshLibrary = async () => {
+    await loadLibraryFromChat();
   };
 
   const handleSideScrollMouseMove = (event: MouseEvent) => {
@@ -792,8 +1027,24 @@
     participants[1].online = counterpartyOnline;
   };
 
+  const handleSupportMessageUpdated = (payload?: any) => {
+    if (!payload || typeof payload !== "object") return;
+
+    const payloadTicketId = String((payload as Record<string, unknown>).ticketId ?? payload.ticket_id ?? "");
+    if (!payloadTicketId || payloadTicketId !== id.value) return;
+
+    const rawMessage =
+      payload && typeof payload === "object" && (payload as Record<string, unknown>).message
+        ? ((payload as Record<string, unknown>).message as Record<string, unknown>)
+        : (payload as Record<string, unknown>);
+
+    if (!rawMessage || typeof rawMessage !== "object") return;
+    mergeLibraryFromMessages([rawMessage]);
+  };
+
   onMounted(async () => {
     useEventBus.on(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
+    useEventBus.on(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     updateViewportState();
     window.addEventListener("resize", updateViewportState, { passive: true });
 
@@ -818,17 +1069,18 @@
     participants[0].photoUrl = normalizedPhotoUrl;
 
     await loadData();
-    await loadLinksFromChat();
+    await loadLibraryFromChat();
     scheduleDesktopGridMeasure();
   });
 
-  watch(activeTab, tab => {
-    if (tab !== "links") return;
-    void loadLinksFromChat();
+  watch(activeTab, () => {
+    if (activeTabItemsCount.value > 0 || isLibraryLoading.value) return;
+    void loadLibraryFromChat();
   });
 
   onBeforeUnmount(() => {
     useEventBus.off(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
+    useEventBus.off(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     window.removeEventListener("resize", updateViewportState);
     clearSidePanelCloseTimer();
     if (desktopGridRafId !== null) {
@@ -1259,12 +1511,44 @@
     flex-wrap: wrap;
   }
 
+  .support-side__library-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .support-side__refresh {
+    height: 30px;
+    width: 30px;
+    border-radius: 9px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-card);
+    color: var(--ui-text-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+  }
+
+  .support-side__refresh:hover:not(:disabled) {
+    background: var(--ui-background-panel);
+  }
+
+  .support-side__refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   .support-side__tab {
     border-radius: 10px;
     border: 1px solid var(--color-stroke-ui-light);
-    padding: 6px 12px;
+    padding: 6px 10px;
     color: var(--ui-text-main);
     background: var(--ui-background-card);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     transition:
       background-color 0.2s ease,
       border-color 0.2s ease;
@@ -1280,23 +1564,97 @@
     color: var(--ui-text-main);
   }
 
+  .support-side__tab-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .support-side__tab-count {
+    min-width: 20px;
+    border-radius: 999px;
+    padding: 1px 6px;
+    background: color-mix(in oklab, var(--ui-background-panel) 85%, transparent);
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .support-side__library-loading {
+    border-radius: 10px;
+    border: 1px dashed var(--color-stroke-ui-light);
+    background: color-mix(in oklab, var(--ui-background-card) 94%, transparent);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+  }
+
+  .support-side__media-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
   .support-side__media {
     aspect-ratio: 1 / 1;
     border-radius: 10px;
     border: 1px solid var(--color-stroke-ui-light);
     background: var(--ui-background-card);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: var(--ui-text-secondary);
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  .support-side__video {
+  .support-side__media-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex: 1;
+  }
+
+  .support-side__video-preview {
+    position: relative;
+    display: flex;
+    flex: 1;
+  }
+
+  .support-side__video-badge {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .support-side__media-title {
+    font-size: 11px;
+    padding: 6px;
+    color: var(--ui-text-secondary);
+    border-top: 1px solid var(--color-stroke-ui-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .support-side__doc {
     border-radius: 10px;
     border: 1px solid var(--color-stroke-ui-light);
     background: var(--ui-background-card);
-    padding: 12px;
+    padding: 10px 12px;
+    color: var(--ui-text-main);
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .support-side__doc:hover {
+    background: var(--ui-background-panel);
   }
 
   .support-side__link {

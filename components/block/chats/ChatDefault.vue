@@ -812,6 +812,7 @@
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
+  const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
 
   type ChatAttachmentDisplay = "media" | "file";
   type ChatAttachmentKind = "image" | "video" | "file";
@@ -1770,6 +1771,19 @@
   };
 
   const appCore = useAppCore();
+  const emitSupportMessageUpdated = (message: ChatMessage) => {
+    useEventBus.emit(SUPPORT_MESSAGE_UPDATED_EVENT, {
+      ticketId: String(props.ticketId),
+      message: {
+        id: message.id,
+        user_id: message.userId,
+        type: message.type,
+        body: message.body,
+        meta: message.meta,
+        created_at: new Date(message.createdAt).toISOString(),
+      },
+    });
+  };
   const waitForNextPaint = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
   const emitActiveSupportTicket = (ticketId: string | null) => {
     useEventBus.emit(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, {
@@ -1953,6 +1967,7 @@
       });
       upsertMessage(incomingMessage);
       ensureAscOrder();
+      emitSupportMessageUpdated(incomingMessage);
       await nextTick();
       await new Promise(requestAnimationFrame);
       if (shouldStick) {
@@ -2337,23 +2352,23 @@
 
       const rawMessage = response?.data?.data ?? response?.data ?? null;
       if (rawMessage?.id) {
-        upsertMessage(
-          mapApi({
-            id: rawMessage.id,
-            ticket_id: rawMessage.ticket_id ?? props.ticketId,
-            user_id: rawMessage.user_id ?? props.currentUser.id,
-            type: rawMessage.type ?? (selectedAttachments.length > 0 ? "attachment" : "text"),
-            body: rawMessage.body ?? body,
-            meta: rawMessage.meta ?? null,
-            created_at: rawMessage.created_at ?? new Date().toISOString(),
-            author: rawMessage.author,
-            author_photo_url: rawMessage.author_photo_url,
-            author_first_name: rawMessage.author_first_name,
-            author_last_name: rawMessage.author_last_name,
-            author_email: rawMessage.author_email,
-            author_initials: rawMessage.author_initials,
-          })
-        );
+        const latestMessage = mapApi({
+          id: rawMessage.id,
+          ticket_id: rawMessage.ticket_id ?? props.ticketId,
+          user_id: rawMessage.user_id ?? props.currentUser.id,
+          type: rawMessage.type ?? (selectedAttachments.length > 0 ? "attachment" : "text"),
+          body: rawMessage.body ?? body,
+          meta: rawMessage.meta ?? null,
+          created_at: rawMessage.created_at ?? new Date().toISOString(),
+          author: rawMessage.author,
+          author_photo_url: rawMessage.author_photo_url,
+          author_first_name: rawMessage.author_first_name,
+          author_last_name: rawMessage.author_last_name,
+          author_email: rawMessage.author_email,
+          author_initials: rawMessage.author_initials,
+        });
+        upsertMessage(latestMessage);
+        emitSupportMessageUpdated(latestMessage);
         ensureAscOrder();
       }
 
