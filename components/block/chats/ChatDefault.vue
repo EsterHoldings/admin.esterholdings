@@ -1162,6 +1162,59 @@
       authorInitials: normalizeOptionalText(m.author_initials),
     };
   }
+  function isSameMessage(a: ChatMessage, b: ChatMessage): boolean {
+    return (
+      a.id === b.id &&
+      a.userId === b.userId &&
+      a.body === b.body &&
+      a.createdAt === b.createdAt &&
+      a.author === b.author &&
+      a.authorPhotoUrl === b.authorPhotoUrl &&
+      a.authorFirstName === b.authorFirstName &&
+      a.authorLastName === b.authorLastName &&
+      a.authorEmail === b.authorEmail &&
+      a.authorInitials === b.authorInitials
+    );
+  }
+  function upsertMessage(incoming: ChatMessage): "inserted" | "updated" | "unchanged" {
+    const index = messages.findIndex(message => message.id === incoming.id);
+    if (index === -1) {
+      messages.push(incoming);
+      return "inserted";
+    }
+
+    const current = messages[index];
+    if (isSameMessage(current, incoming)) {
+      return "unchanged";
+    }
+
+    messages[index] = incoming;
+    return "updated";
+  }
+  async function syncLatestMessagesFromServer() {
+    try {
+      const latestAsc = await fetchPageAsAsc(1);
+      if (!latestAsc.length) return;
+
+      let changed = false;
+      for (const message of latestAsc) {
+        const state = upsertMessage(message);
+        if (state !== "unchanged") changed = true;
+      }
+
+      if (!changed) return;
+
+      ensureAscOrder();
+      await nextTick();
+      await waitForNextPaint();
+      if (userIsNearBottom.value) {
+        scrollToBottom();
+      }
+      await markVisibleMessagesAsRead();
+    } catch {
+      // noop
+    }
+  }
   function ensureAscOrder() {
     messages.sort((a, b) => a.createdAt - b.createdAt || (a.id > b.id ? 1 : -1));
   }
@@ -1223,8 +1276,8 @@
 
   const { $echo } = useNuxtApp() as unknown as { $echo: any };
 
-  function subscribePrivate() {
-    const ch = $echo.private(`chat.${props.ticketId}`);
+  function subscribePrivate(ticketId: string) {
+    const ch = $echo.private(`chat.${ticketId}`);
     ch.listen(".MessageSent", async (e: any) => {
       const el = listRef.value;
       const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
@@ -1243,7 +1296,7 @@
         author_email: e.author_email,
         author_initials: e.author_initials,
       });
-      messages.push(incomingMessage);
+      upsertMessage(incomingMessage);
       ensureAscOrder();
       await nextTick();
       await new Promise(requestAnimationFrame);
@@ -1313,16 +1366,14 @@
     }
   }
 
-  function joinPresence() {
-    presenceChan = $echo
-      .private(`support.ticket.${props.ticketId}`)
-      .listen(".ticket.presence.updated", (payload: any) => {
-        applyPresencePayload(payload);
-      });
+  function joinPresence(ticketId: string) {
+    presenceChan = $echo.private(`support.ticket.${ticketId}`).listen(".ticket.presence.updated", (payload: any) => {
+      applyPresencePayload(payload);
+    });
   }
-  function leavePresence() {
+  function leavePresence(ticketId: string) {
     try {
-      $echo.leave(`support.ticket.${props.ticketId}`);
+      $echo.leave(`support.ticket.${ticketId}`);
     } catch {}
     presenceChan = null;
     onlineMap.clear();
@@ -1361,6 +1412,60 @@
   let privateChan: any = null;
   let resizeListenerAttached = false;
   let mobileModeResizeListenerAttached = false;
+  let appResumeListenersAttached = false;
+
+  const reconnectSocketTransport = () => {
+    const pusher = $echo?.connector?.pusher;
+    const state = String(pusher?.connection?.state ?? "");
+    if (!pusher) return;
+
+    if (state === "disconnected" || state === "failed") {
+      try {
+        pusher.connect();
+      } catch {
+        // noop
+      }
+    }
+  };
+
+  const leavePrivate = (ticketId: string) => {
+    try {
+      $echo.leave(`chat.${ticketId}`);
+    } catch {
+      // noop
+    }
+    privateChan = null;
+  };
+
+  const subscribeRealtimeForTicket = async (ticketId: string) => {
+    reconnectSocketTransport();
+    leavePrivate(ticketId);
+    leavePresence(ticketId);
+    joinPresence(ticketId);
+    privateChan = subscribePrivate(ticketId);
+    stopPresenceHeartbeat();
+    await startPresenceHeartbeat(ticketId);
+  };
+
+  const handleRealtimeResume = async () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+
+    await subscribeRealtimeForTicket(props.ticketId);
+    await syncLatestMessagesFromServer();
+  };
+
+  const handleVisibilityChange = () => {
+    if (typeof document === "undefined" || document.visibilityState !== "visible") return;
+    void handleRealtimeResume();
+  };
+
+  const handleBrowserOnline = () => {
+    void handleRealtimeResume();
+  };
+
+  const handlePageShow = () => {
+    void handleRealtimeResume();
+  };
 
   async function markReadUpToMessageId(messageId: string) {
     if (!messageId || !isIncomingMessageId(messageId)) return;
@@ -1472,19 +1577,19 @@
       resizeListenerAttached = true;
     }
 
-    await apiOpen(props.ticketId);
-    joinPresence();
-    privateChan = subscribePrivate();
-    startPresenceHeartbeat(props.ticketId);
+    await subscribeRealtimeForTicket(props.ticketId);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("online", handleBrowserOnline);
+    window.addEventListener("pageshow", handlePageShow);
+    appResumeListenersAttached = true;
   });
 
   onBeforeUnmount(() => {
     void stopTyping(true);
     clearAllRemoteTyping();
-    try {
-      if (privateChan) $echo.leave(`chat.${props.ticketId}`);
-    } catch {}
-    leavePresence();
+    leavePrivate(props.ticketId);
+    leavePresence(props.ticketId);
     stopPresenceHeartbeat();
     apiClose(props.ticketId).catch(() => {});
 
@@ -1506,6 +1611,13 @@
     }
     pendingMarkReadMessageId = null;
     clearLocalTypingStopTimer();
+
+    if (appResumeListenersAttached) {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("online", handleBrowserOnline);
+      window.removeEventListener("pageshow", handlePageShow);
+      appResumeListenersAttached = false;
+    }
   });
 
   watch(
@@ -1514,15 +1626,9 @@
       if (id === oldId) return;
       await stopTyping(true);
       clearAllRemoteTyping();
-      try {
-        if (privateChan) $echo.leave(`chat.${oldId}`);
-      } catch {}
-      leavePresence();
-      await apiOpen(id);
-      joinPresence();
-      privateChan = subscribePrivate();
-      stopPresenceHeartbeat();
-      await startPresenceHeartbeat(id);
+      leavePrivate(oldId);
+      leavePresence(oldId);
+      await subscribeRealtimeForTicket(id);
       booting.value = true;
       messages.splice(0, messages.length);
       lastReadAckMessageId.value = null;
@@ -1542,22 +1648,46 @@
     const el = listRef.value;
     const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
 
-    if (props.adminChat)
-      await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, {
-        user_id: props.currentUser.id,
-        type: "text",
-        body,
-      });
-    else
-      await appCore.tickets.storeTicketMessage(props.ticketId, {
-        user_id: props.currentUser.id,
-        type: "text",
-        body,
-      });
+    const response = props.adminChat
+      ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, {
+          user_id: props.currentUser.id,
+          type: "text",
+          body,
+        })
+      : await appCore.tickets.storeTicketMessage(props.ticketId, {
+          user_id: props.currentUser.id,
+          type: "text",
+          body,
+        });
+
+    const rawMessage = response?.data?.data ?? response?.data ?? null;
+    if (rawMessage?.id) {
+      upsertMessage(
+        mapApi({
+          id: rawMessage.id,
+          ticket_id: rawMessage.ticket_id ?? props.ticketId,
+          user_id: rawMessage.user_id ?? props.currentUser.id,
+          type: rawMessage.type ?? "text",
+          body: rawMessage.body ?? body,
+          meta: rawMessage.meta ?? null,
+          created_at: rawMessage.created_at ?? new Date().toISOString(),
+          author: rawMessage.author,
+          author_photo_url: rawMessage.author_photo_url,
+          author_first_name: rawMessage.author_first_name,
+          author_last_name: rawMessage.author_last_name,
+          author_email: rawMessage.author_email,
+          author_initials: rawMessage.author_initials,
+        })
+      );
+      ensureAscOrder();
+    }
 
     await nextTick();
     if (shouldStick) scrollToBottom();
     if (shouldKeepKeyboardOpen) preserveInputFocusOnMobile();
+
+    // If socket was unstable in PWA, fetch first page to backfill any missed broadcast messages.
+    void syncLatestMessagesFromServer();
   }
 </script>
 
