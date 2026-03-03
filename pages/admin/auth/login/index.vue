@@ -1,5 +1,5 @@
 <template>
-  <div class="page--min-height login">
+  <div class="admin-login page--min-height login">
     <div class="admin-login-form-wrapper__logo">
       <UiIconLogo
         :class="{

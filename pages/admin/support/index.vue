@@ -48,6 +48,7 @@
           </UiSelect>
 
           <ViewModeToggle
+            v-if="!isMobileViewport"
             class="w-full sm:w-auto"
             bordered
             :modelValue="viewMode"
@@ -178,7 +179,7 @@
                 <td class="px-2 text-right">
                   <div class="flex items-center justify-end gap-2 relative">
                     <span
-                      @click.stop="() => (currentTicketIdForChat = t.id)"
+                      @click.stop="handleChatIconClick(t.id)"
                       class="relative h-[42px] w-[42px] flex items-center justify-center active:bg-[var(--color-stroke-ui-dark)] rounded-full hover:bg-[var(--color-stroke-ui-light)]">
                       <div
                         class="absolute top-1 right-1 bg-[--ui-sticker-danger] w-[16px] h-[16px] rounded-full border-none flex items-center justify-center"
@@ -280,7 +281,7 @@
             <div class="mt-3 flex items-center justify-end gap-2">
               <button
                 class="relative h-[36px] w-[36px] flex items-center justify-center rounded-full hover:bg-[var(--color-stroke-ui-light)] active:bg-[var(--color-stroke-ui-dark)]"
-                @click.stop="() => (currentTicketIdForChat = ticket.id)"
+                @click.stop="handleChatIconClick(ticket.id)"
                 aria-label="Open chat">
                 <span
                   v-if="ticket.unread_messages_count > 0"
@@ -461,6 +462,7 @@
   const VIEW_MODE_STORAGE_KEY = "admin_support_view_mode";
   const ADMIN_SUPPORT_LIST_REFRESH_MS = 20000;
   const viewMode = ref<"table" | "cards" | "full">("table");
+  const isMobileViewport = ref(false);
   const viewOptions = [
     {
       value: "table" as const,
@@ -902,6 +904,16 @@
     adminSupportListRefreshTimer = null;
   };
 
+  const syncViewport = () => {
+    if (typeof window === "undefined") return;
+    isMobileViewport.value = window.innerWidth < 768;
+  };
+
+  const handleWindowResize = () => {
+    syncViewport();
+    void placeBottomLeft();
+  };
+
   const initViewMode = () => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
@@ -963,6 +975,15 @@
 
   const handleClickRow = (ticketId: string) => router.push(`/support/${ticketId}`);
 
+  const handleChatIconClick = (ticketId: string) => {
+    if (isMobileViewport.value) {
+      router.push(`/support/${ticketId}`);
+      return;
+    }
+
+    currentTicketIdForChat.value = ticketId;
+  };
+
   const handleSupportListReload = () => {
     loadData().catch(() => {});
   };
@@ -997,11 +1018,12 @@
 
     console.log("response.data", response.data.data);
 
+    syncViewport();
     initViewMode();
 
     await nextTick();
     await placeBottomLeft();
-    window.addEventListener("resize", placeBottomLeft);
+    window.addEventListener("resize", handleWindowResize);
     await loadData();
     startAdminSupportListRefresh();
   });
@@ -1011,7 +1033,7 @@
     useEventBus.off(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     disconnectSupportRealtime();
     stopAdminSupportListRefresh();
-    window.removeEventListener("resize", placeBottomLeft);
+    window.removeEventListener("resize", handleWindowResize);
     document.body.style.userSelect = "";
     document.body.style.cursor = "";
   });

@@ -7,5 +7,6 @@ import { definePageMeta } from "~/.nuxt/imports";
 
 definePageMeta({
   middleware: ["admin-root"],
+  layout: "empty",
 });
 </script>
