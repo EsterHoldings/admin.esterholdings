@@ -112,7 +112,56 @@
               </div>
               <div
                 class="max-w-[80%] rounded-[10px] bg-[var(--ui-background-card)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]">
-                <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
+                <div
+                  v-if="getMessageAttachments(item.msg).length"
+                  class="mb-2 space-y-2">
+                  <div
+                    v-if="getMediaAttachments(item.msg).length"
+                    class="grid gap-2"
+                    :class="mediaGridClass(getMediaAttachments(item.msg).length)">
+                    <button
+                      v-for="attachment in getMediaAttachments(item.msg)"
+                      :key="attachment.id"
+                      type="button"
+                      class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                      @click="openMediaViewer(item.msg, attachment.id)">
+                      <img
+                        v-if="attachment.kind === 'image'"
+                        :src="attachment.url"
+                        :alt="attachment.name"
+                        class="h-32 w-full object-cover" />
+                      <video
+                        v-else
+                        :src="attachment.url"
+                        class="h-32 w-full object-cover"
+                        muted
+                        playsinline
+                        preload="metadata"></video>
+                    </button>
+                  </div>
+                  <div
+                    v-if="getFileAttachments(item.msg).length"
+                    class="space-y-1">
+                    <a
+                      v-for="attachment in getFileAttachments(item.msg)"
+                      :key="attachment.id"
+                      :href="attachment.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
+                      <span class="text-base leading-none">📎</span>
+                      <span class="truncate">{{ attachment.name }}</span>
+                      <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
+                        {{ formatFileSize(attachment.size) }}
+                      </span>
+                    </a>
+                  </div>
+                </div>
+                <p
+                  v-if="item.msg.body"
+                  class="whitespace-pre-wrap break-words">
+                  {{ item.msg.body }}
+                </p>
                 <div class="mt-1 text-[12px] text-[var(--ui-text-secondary)]">
                   {{ formatDateTime(item.msg.createdAt) }}
                 </div>
@@ -125,7 +174,56 @@
               :data-mid="item.msg.id">
               <div
                 class="max-w-[82%] rounded-[10px] bg-[var(--ui-primary-main)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]">
-                <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
+                <div
+                  v-if="getMessageAttachments(item.msg).length"
+                  class="mb-2 space-y-2">
+                  <div
+                    v-if="getMediaAttachments(item.msg).length"
+                    class="grid gap-2"
+                    :class="mediaGridClass(getMediaAttachments(item.msg).length)">
+                    <button
+                      v-for="attachment in getMediaAttachments(item.msg)"
+                      :key="attachment.id"
+                      type="button"
+                      class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                      @click="openMediaViewer(item.msg, attachment.id)">
+                      <img
+                        v-if="attachment.kind === 'image'"
+                        :src="attachment.url"
+                        :alt="attachment.name"
+                        class="h-32 w-full object-cover" />
+                      <video
+                        v-else
+                        :src="attachment.url"
+                        class="h-32 w-full object-cover"
+                        muted
+                        playsinline
+                        preload="metadata"></video>
+                    </button>
+                  </div>
+                  <div
+                    v-if="getFileAttachments(item.msg).length"
+                    class="space-y-1">
+                    <a
+                      v-for="attachment in getFileAttachments(item.msg)"
+                      :key="attachment.id"
+                      :href="attachment.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
+                      <span class="text-base leading-none">📎</span>
+                      <span class="truncate">{{ attachment.name }}</span>
+                      <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
+                        {{ formatFileSize(attachment.size) }}
+                      </span>
+                    </a>
+                  </div>
+                </div>
+                <p
+                  v-if="item.msg.body"
+                  class="whitespace-pre-wrap break-words">
+                  {{ item.msg.body }}
+                </p>
                 <div class="mt-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
                   {{ formatDateTime(item.msg.createdAt) }}
                 </div>
@@ -157,6 +255,44 @@
         @touchend="handleInputAreaTouchEnd"
         @touchcancel="handleInputAreaTouchEnd">
         <div
+          v-if="pendingAttachments.length"
+          class="mb-2 rounded-xl border border-[var(--color-stroke-ui-light)] p-2">
+          <div class="mb-2 flex items-center justify-between text-[12px] text-[var(--ui-text-secondary)]">
+            <span>{{ pendingAttachments.length }} files selected</span>
+            <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="attachment in pendingAttachments"
+              :key="attachment.id"
+              class="relative w-20 overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)]">
+              <img
+                v-if="attachment.kind === 'image' && attachment.displayAs === 'media'"
+                :src="attachment.previewUrl"
+                :alt="attachment.name"
+                class="h-16 w-full object-cover" />
+              <video
+                v-else-if="attachment.kind === 'video' && attachment.displayAs === 'media'"
+                :src="attachment.previewUrl"
+                class="h-16 w-full object-cover"
+                muted
+                playsinline
+                preload="metadata"></video>
+              <div
+                v-else
+                class="flex h-16 w-full items-center justify-center bg-[var(--ui-background-panel)] text-[11px] text-[var(--ui-text-secondary)]">
+                FILE
+              </div>
+              <button
+                type="button"
+                class="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--ui-background-panel)] text-[var(--ui-text-main)]"
+                @click="removePendingAttachment(attachment.id)">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
           class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
           <input
             v-if="mobileTextInputMode"
@@ -175,6 +311,49 @@
             @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             placeholder="Write your message" />
+          <button
+            type="button"
+            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+            title="Add media"
+            @click="openMediaPicker">
+            <svg
+              viewBox="0 0 24 24"
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2" />
+              <circle
+                cx="8.5"
+                cy="8.5"
+                r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+            title="Add file"
+            @click="openFilePicker">
+            <svg
+              viewBox="0 0 24 24"
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <path
+                d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
+            </svg>
+          </button>
           <button
             :disabled="!canSend"
             @pointerdown="handleSendPointerDown"
@@ -300,7 +479,56 @@
                     </div>
                     <div
                       class="max-w-[80%] rounded-[10px] bg-[var(--ui-background-card)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]">
-                      <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
+                      <div
+                        v-if="getMessageAttachments(item.msg).length"
+                        class="mb-2 space-y-2">
+                        <div
+                          v-if="getMediaAttachments(item.msg).length"
+                          class="grid gap-2"
+                          :class="mediaGridClass(getMediaAttachments(item.msg).length)">
+                          <button
+                            v-for="attachment in getMediaAttachments(item.msg)"
+                            :key="attachment.id"
+                            type="button"
+                            class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                            @click="openMediaViewer(item.msg, attachment.id)">
+                            <img
+                              v-if="attachment.kind === 'image'"
+                              :src="attachment.url"
+                              :alt="attachment.name"
+                              class="h-32 w-full object-cover" />
+                            <video
+                              v-else
+                              :src="attachment.url"
+                              class="h-32 w-full object-cover"
+                              muted
+                              playsinline
+                              preload="metadata"></video>
+                          </button>
+                        </div>
+                        <div
+                          v-if="getFileAttachments(item.msg).length"
+                          class="space-y-1">
+                          <a
+                            v-for="attachment in getFileAttachments(item.msg)"
+                            :key="attachment.id"
+                            :href="attachment.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
+                            <span class="text-base leading-none">📎</span>
+                            <span class="truncate">{{ attachment.name }}</span>
+                            <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
+                              {{ formatFileSize(attachment.size) }}
+                            </span>
+                          </a>
+                        </div>
+                      </div>
+                      <p
+                        v-if="item.msg.body"
+                        class="whitespace-pre-wrap break-words">
+                        {{ item.msg.body }}
+                      </p>
                       <div class="mt-1 text-[12px] text-[var(--ui-text-secondary)]">
                         {{ formatDateTime(item.msg.createdAt) }}
                       </div>
@@ -313,7 +541,56 @@
                     :data-mid="item.msg.id">
                     <div
                       class="max-w-[82%] rounded-[10px] bg-[var(--ui-primary-main)] p-2 text-[15px] leading-6 text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)]">
-                      <p class="whitespace-pre-wrap break-words">{{ item.msg.body }}</p>
+                      <div
+                        v-if="getMessageAttachments(item.msg).length"
+                        class="mb-2 space-y-2">
+                        <div
+                          v-if="getMediaAttachments(item.msg).length"
+                          class="grid gap-2"
+                          :class="mediaGridClass(getMediaAttachments(item.msg).length)">
+                          <button
+                            v-for="attachment in getMediaAttachments(item.msg)"
+                            :key="attachment.id"
+                            type="button"
+                            class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                            @click="openMediaViewer(item.msg, attachment.id)">
+                            <img
+                              v-if="attachment.kind === 'image'"
+                              :src="attachment.url"
+                              :alt="attachment.name"
+                              class="h-32 w-full object-cover" />
+                            <video
+                              v-else
+                              :src="attachment.url"
+                              class="h-32 w-full object-cover"
+                              muted
+                              playsinline
+                              preload="metadata"></video>
+                          </button>
+                        </div>
+                        <div
+                          v-if="getFileAttachments(item.msg).length"
+                          class="space-y-1">
+                          <a
+                            v-for="attachment in getFileAttachments(item.msg)"
+                            :key="attachment.id"
+                            :href="attachment.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
+                            <span class="text-base leading-none">📎</span>
+                            <span class="truncate">{{ attachment.name }}</span>
+                            <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
+                              {{ formatFileSize(attachment.size) }}
+                            </span>
+                          </a>
+                        </div>
+                      </div>
+                      <p
+                        v-if="item.msg.body"
+                        class="whitespace-pre-wrap break-words">
+                        {{ item.msg.body }}
+                      </p>
                       <div class="mt-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
                         {{ formatDateTime(item.msg.createdAt) }}
                       </div>
@@ -345,6 +622,44 @@
               @touchend="handleInputAreaTouchEnd"
               @touchcancel="handleInputAreaTouchEnd">
               <div
+                v-if="pendingAttachments.length"
+                class="mb-2 rounded-xl border border-[var(--color-stroke-ui-light)] p-2">
+                <div class="mb-2 flex items-center justify-between text-[12px] text-[var(--ui-text-secondary)]">
+                  <span>{{ pendingAttachments.length }} files selected</span>
+                  <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <div
+                    v-for="attachment in pendingAttachments"
+                    :key="attachment.id"
+                    class="relative w-20 overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)]">
+                    <img
+                      v-if="attachment.kind === 'image' && attachment.displayAs === 'media'"
+                      :src="attachment.previewUrl"
+                      :alt="attachment.name"
+                      class="h-16 w-full object-cover" />
+                    <video
+                      v-else-if="attachment.kind === 'video' && attachment.displayAs === 'media'"
+                      :src="attachment.previewUrl"
+                      class="h-16 w-full object-cover"
+                      muted
+                      playsinline
+                      preload="metadata"></video>
+                    <div
+                      v-else
+                      class="flex h-16 w-full items-center justify-center bg-[var(--ui-background-panel)] text-[11px] text-[var(--ui-text-secondary)]">
+                      FILE
+                    </div>
+                    <button
+                      type="button"
+                      class="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--ui-background-panel)] text-[var(--ui-text-main)]"
+                      @click="removePendingAttachment(attachment.id)">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
                 class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
                 <input
                   v-if="mobileTextInputMode"
@@ -363,6 +678,49 @@
                   @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   placeholder="Write your message" />
+                <button
+                  type="button"
+                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+                  title="Add media"
+                  @click="openMediaPicker">
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect
+                      x="3"
+                      y="3"
+                      width="18"
+                      height="18"
+                      rx="2" />
+                    <circle
+                      cx="8.5"
+                      cy="8.5"
+                      r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+                  title="Add file"
+                  @click="openFilePicker">
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path
+                      d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
+                  </svg>
+                </button>
                 <button
                   :disabled="!canSend"
                   @pointerdown="handleSendPointerDown"
@@ -384,6 +742,58 @@
       </div>
     </div>
   </Teleport>
+
+  <input
+    ref="fileInputRef"
+    type="file"
+    class="hidden"
+    :accept="pickerAccept"
+    multiple
+    @change="handleFileInputChange" />
+
+  <Teleport to="body">
+    <div
+      v-if="mediaViewer.open && activeMediaAttachment"
+      class="fixed inset-0 z-[13000] flex items-center justify-center bg-black/80 p-4">
+      <button
+        type="button"
+        class="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+        @click="closeMediaViewer">
+        ✕
+      </button>
+      <button
+        v-if="mediaViewer.items.length > 1"
+        type="button"
+        class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+        @click="moveMediaViewer(-1)">
+        ‹
+      </button>
+      <div class="max-h-[88vh] max-w-[92vw] overflow-hidden rounded-xl border border-white/20 bg-black/50">
+        <img
+          v-if="activeMediaAttachment.kind === 'image'"
+          :src="activeMediaAttachment.url"
+          :alt="activeMediaAttachment.name"
+          class="max-h-[82vh] max-w-[92vw] object-contain" />
+        <video
+          v-else
+          :src="activeMediaAttachment.url"
+          class="max-h-[82vh] max-w-[92vw] object-contain"
+          controls
+          autoplay
+          playsinline></video>
+        <div class="px-3 py-2 text-sm text-white/90">
+          {{ activeMediaAttachment.name }}
+        </div>
+      </div>
+      <button
+        v-if="mediaViewer.items.length > 1"
+        type="button"
+        class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+        @click="moveMediaViewer(1)">
+        ›
+      </button>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -403,10 +813,40 @@
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
 
+  type ChatAttachmentDisplay = "media" | "file";
+  type ChatAttachmentKind = "image" | "video" | "file";
+  type ChatAttachment = {
+    id: string;
+    kind: ChatAttachmentKind;
+    displayAs: ChatAttachmentDisplay;
+    name: string;
+    url: string;
+    mimeType: string;
+    size: number;
+    path?: string;
+    extension?: string;
+  };
+  type ChatMessageMeta = {
+    attachments: ChatAttachment[];
+    attachmentsCount: number;
+    [key: string]: unknown;
+  };
+  type PendingAttachment = {
+    id: string;
+    file: File;
+    kind: ChatAttachmentKind;
+    displayAs: ChatAttachmentDisplay;
+    name: string;
+    mimeType: string;
+    size: number;
+    previewUrl: string;
+  };
   type ChatMessage = {
     id: string;
     userId: string;
     body: string;
+    type: string;
+    meta: ChatMessageMeta | null;
     createdAt: number;
     author?: string;
     authorPhotoUrl?: string;
@@ -719,13 +1159,27 @@
 
   const listRef = ref<HTMLElement | null>(null);
   const inputRef = ref<HTMLTextAreaElement | HTMLInputElement | null>(null);
+  const fileInputRef = ref<HTMLInputElement | null>(null);
   const booting = ref(true);
+  const isSending = ref(false);
 
   const PAGE_SIZE = 6;
   let nextPage = 2;
   const hasMore = ref(true);
   const draft = ref("");
   const messages = reactive<ChatMessage[]>([]);
+  const pendingAttachments = ref<PendingAttachment[]>([]);
+  const pickerAccept = ref("");
+  const pickerDisplayAs = ref<ChatAttachmentDisplay>("media");
+  const mediaViewer = reactive<{
+    open: boolean;
+    items: ChatAttachment[];
+    index: number;
+  }>({
+    open: false,
+    items: [],
+    index: 0,
+  });
 
   const userIsNearBottom = ref(true);
   let suppressScrollEvents = false;
@@ -744,6 +1198,83 @@
   const normalizeOptionalText = (value: unknown): string | undefined => {
     const text = normalizeText(value);
     return text || undefined;
+  };
+  const toAttachmentKind = (value: unknown, fallbackMimeType = ""): ChatAttachmentKind => {
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase();
+    if (normalized === "image" || normalized === "video" || normalized === "file") {
+      return normalized;
+    }
+    if (fallbackMimeType.startsWith("image/")) return "image";
+    if (fallbackMimeType.startsWith("video/")) return "video";
+    return "file";
+  };
+  const toDisplayMode = (value: unknown): ChatAttachmentDisplay => {
+    return String(value ?? "")
+      .trim()
+      .toLowerCase() === "file"
+      ? "file"
+      : "media";
+  };
+  const toPositiveInt = (value: unknown): number => {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? Math.trunc(number) : 0;
+  };
+  const formatFileSize = (value: number): string => {
+    if (!Number.isFinite(value) || value <= 0) return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    let unitIndex = 0;
+    let size = value;
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024;
+      unitIndex += 1;
+    }
+    const precision = unitIndex === 0 ? 0 : size < 10 ? 1 : 0;
+    return `${size.toFixed(precision)} ${units[unitIndex]}`;
+  };
+  const mediaGridClass = (count: number): string => {
+    if (count <= 1) return "grid-cols-1";
+    if (count === 2) return "grid-cols-2";
+    if (count === 3) return "grid-cols-3";
+    return "grid-cols-2";
+  };
+  const normalizeMessageMeta = (value: unknown): ChatMessageMeta | null => {
+    if (!value || typeof value !== "object") return null;
+    const metaRecord = value as Record<string, unknown>;
+    const rawAttachments = Array.isArray(metaRecord.attachments) ? metaRecord.attachments : [];
+    const attachments: ChatAttachment[] = rawAttachments
+      .map((rawAttachment, index) => {
+        if (!rawAttachment || typeof rawAttachment !== "object") return null;
+
+        const attachmentRecord = rawAttachment as Record<string, unknown>;
+        const mimeType = normalizeText(attachmentRecord.mime_type || attachmentRecord.mimeType);
+        const url = normalizeText(attachmentRecord.url || attachmentRecord.preview_url || attachmentRecord.path_url);
+        const name = normalizeText(attachmentRecord.name || attachmentRecord.filename);
+        const id = normalizeText(attachmentRecord.id) || `att-${index}`;
+        const kind = toAttachmentKind(attachmentRecord.kind, mimeType);
+        const displayAs =
+          kind === "file" ? "file" : toDisplayMode(attachmentRecord.display_as ?? attachmentRecord.displayAs);
+
+        return {
+          id,
+          kind,
+          displayAs,
+          name: name || `Attachment ${index + 1}`,
+          url,
+          mimeType,
+          size: toPositiveInt(attachmentRecord.size),
+          path: normalizeOptionalText(attachmentRecord.path),
+          extension: normalizeOptionalText(attachmentRecord.extension),
+        } as ChatAttachment;
+      })
+      .filter((attachment): attachment is ChatAttachment => Boolean(attachment && attachment.url));
+
+    return {
+      ...metaRecord,
+      attachments,
+      attachmentsCount: attachments.length,
+    };
   };
   const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
   const buildAvatarFallback = ({
@@ -821,7 +1352,22 @@
       fallback: "US",
     });
   };
-  const canSend = computed(() => draft.value.trim().length > 0);
+  const getMessageAttachments = (message: ChatMessage): ChatAttachment[] => {
+    return message.meta?.attachments ?? [];
+  };
+  const getMediaAttachments = (message: ChatMessage): ChatAttachment[] => {
+    return getMessageAttachments(message).filter(
+      attachment => attachment.displayAs === "media" && (attachment.kind === "image" || attachment.kind === "video")
+    );
+  };
+  const getFileAttachments = (message: ChatMessage): ChatAttachment[] => {
+    return getMessageAttachments(message).filter(
+      attachment => attachment.displayAs === "file" || (attachment.kind !== "image" && attachment.kind !== "video")
+    );
+  };
+  const canSend = computed(
+    () => !isSending.value && (draft.value.trim().length > 0 || pendingAttachments.value.length > 0)
+  );
   const remoteTypingUsers = reactive<Set<string>>(new Set());
   const remoteTypingTimers = new Map<string, ReturnType<typeof setTimeout>>();
   let localTypingStopTimer: ReturnType<typeof setTimeout> | null = null;
@@ -853,6 +1399,103 @@
       }
     });
   };
+
+  const revokePendingAttachment = (attachment: PendingAttachment) => {
+    if (attachment.previewUrl && attachment.previewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(attachment.previewUrl);
+    }
+  };
+
+  const clearPendingAttachments = () => {
+    for (const attachment of pendingAttachments.value) {
+      revokePendingAttachment(attachment);
+    }
+    pendingAttachments.value = [];
+  };
+
+  const removePendingAttachment = (attachmentId: string) => {
+    const attachmentIndex = pendingAttachments.value.findIndex(attachment => attachment.id === attachmentId);
+    if (attachmentIndex === -1) return;
+
+    const [attachment] = pendingAttachments.value.splice(attachmentIndex, 1);
+    if (attachment) {
+      revokePendingAttachment(attachment);
+    }
+  };
+
+  const openPicker = (displayAs: ChatAttachmentDisplay) => {
+    const hasDifferentMode = pendingAttachments.value.some(attachment => attachment.displayAs !== displayAs);
+    if (hasDifferentMode) {
+      clearPendingAttachments();
+    }
+    pickerDisplayAs.value = displayAs;
+    pickerAccept.value = displayAs === "media" ? "image/*,video/*" : "";
+    if (!fileInputRef.value) return;
+
+    fileInputRef.value.value = "";
+    fileInputRef.value.click();
+  };
+
+  const openMediaPicker = () => {
+    openPicker("media");
+  };
+
+  const openFilePicker = () => {
+    openPicker("file");
+  };
+
+  const createPendingAttachment = (file: File): PendingAttachment => {
+    const mimeType = normalizeText(file.type) || "application/octet-stream";
+    const kind = toAttachmentKind("", mimeType);
+    return {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      file,
+      kind,
+      displayAs: kind === "file" ? "file" : pickerDisplayAs.value,
+      name: file.name,
+      mimeType,
+      size: file.size,
+      previewUrl: URL.createObjectURL(file),
+    };
+  };
+
+  const handleFileInputChange = (event: Event) => {
+    const input = event.target as HTMLInputElement | null;
+    if (!input?.files?.length) return;
+
+    const pickedAttachments = Array.from(input.files).map(createPendingAttachment);
+    if (!pickedAttachments.length) return;
+
+    pendingAttachments.value = pendingAttachments.value.concat(pickedAttachments).slice(0, 10);
+    input.value = "";
+  };
+
+  const closeMediaViewer = () => {
+    mediaViewer.open = false;
+    mediaViewer.items = [];
+    mediaViewer.index = 0;
+  };
+
+  const openMediaViewer = (message: ChatMessage, attachmentId: string) => {
+    const media = getMediaAttachments(message);
+    if (!media.length) return;
+
+    const index = media.findIndex(attachment => attachment.id === attachmentId);
+    mediaViewer.open = true;
+    mediaViewer.items = media;
+    mediaViewer.index = index >= 0 ? index : 0;
+  };
+
+  const moveMediaViewer = (direction: -1 | 1) => {
+    if (!mediaViewer.items.length) return;
+
+    const length = mediaViewer.items.length;
+    mediaViewer.index = (mediaViewer.index + direction + length) % length;
+  };
+
+  const activeMediaAttachment = computed(() => {
+    return mediaViewer.items[mediaViewer.index] ?? null;
+  });
 
   const clearRemoteTypingTimer = (userId: string) => {
     const timer = remoteTypingTimers.get(userId);
@@ -1158,7 +1801,9 @@
     return {
       id: m.id,
       userId: normalizeUserId(m.user_id),
+      type: normalizeText(m.type) || "text",
       body: m.body ?? "",
+      meta: normalizeMessageMeta(m.meta),
       createdAt: parseLocalMs(m.created_at),
       author: normalizeOptionalText(m.author),
       authorPhotoUrl: normalizeOptionalText(m.author_photo_url),
@@ -1169,10 +1814,14 @@
     };
   }
   function isSameMessage(a: ChatMessage, b: ChatMessage): boolean {
+    const aMeta = JSON.stringify(a.meta ?? null);
+    const bMeta = JSON.stringify(b.meta ?? null);
     return (
       a.id === b.id &&
       a.userId === b.userId &&
+      a.type === b.type &&
       a.body === b.body &&
+      aMeta === bMeta &&
       a.createdAt === b.createdAt &&
       a.author === b.author &&
       a.authorPhotoUrl === b.authorPhotoUrl &&
@@ -1618,6 +2267,8 @@
     }
     pendingMarkReadMessageId = null;
     clearLocalTypingStopTimer();
+    clearPendingAttachments();
+    closeMediaViewer();
 
     if (appResumeListenersAttached) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -1649,55 +2300,82 @@
   );
 
   async function send() {
-    if (!canSend.value) return;
+    if (!canSend.value || isSending.value) return;
     await stopTyping(true);
     const shouldKeepKeyboardOpen =
       isMobileChatInteraction() && (document.activeElement === inputRef.value || isKeyboardVisible());
     const body = draft.value.trim();
+    const selectedAttachments = [...pendingAttachments.value];
+    if (!body && selectedAttachments.length === 0) return;
+
     draft.value = "";
+    pendingAttachments.value = [];
     const el = listRef.value;
     const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
 
-    const response = props.adminChat
-      ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, {
-          user_id: props.currentUser.id,
-          type: "text",
-          body,
-        })
-      : await appCore.tickets.storeTicketMessage(props.ticketId, {
-          user_id: props.currentUser.id,
-          type: "text",
-          body,
-        });
-
-    const rawMessage = response?.data?.data ?? response?.data ?? null;
-    if (rawMessage?.id) {
-      upsertMessage(
-        mapApi({
-          id: rawMessage.id,
-          ticket_id: rawMessage.ticket_id ?? props.ticketId,
-          user_id: rawMessage.user_id ?? props.currentUser.id,
-          type: rawMessage.type ?? "text",
-          body: rawMessage.body ?? body,
-          meta: rawMessage.meta ?? null,
-          created_at: rawMessage.created_at ?? new Date().toISOString(),
-          author: rawMessage.author,
-          author_photo_url: rawMessage.author_photo_url,
-          author_first_name: rawMessage.author_first_name,
-          author_last_name: rawMessage.author_last_name,
-          author_email: rawMessage.author_email,
-          author_initials: rawMessage.author_initials,
-        })
-      );
-      ensureAscOrder();
+    const payload = new FormData();
+    payload.append("user_id", String(props.currentUser.id ?? ""));
+    payload.append("type", selectedAttachments.length > 0 ? "attachment" : "text");
+    if (body) {
+      payload.append("body", body);
+    }
+    if (selectedAttachments.length > 0) {
+      const displayAs = selectedAttachments[0]?.displayAs ?? pickerDisplayAs.value;
+      payload.append("display_as", displayAs);
+      for (const attachment of selectedAttachments) {
+        payload.append("files[]", attachment.file, attachment.name);
+      }
     }
 
-    await nextTick();
-    if (shouldStick) scrollToBottom();
-    if (shouldKeepKeyboardOpen) preserveInputFocusOnMobile();
+    isSending.value = true;
+    let shouldRevokePreview = true;
 
-    // If socket was unstable in PWA, fetch first page to backfill any missed broadcast messages.
-    void syncLatestMessagesFromServer();
+    try {
+      const response = props.adminChat
+        ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, payload)
+        : await appCore.tickets.storeTicketMessage(props.ticketId, payload);
+
+      const rawMessage = response?.data?.data ?? response?.data ?? null;
+      if (rawMessage?.id) {
+        upsertMessage(
+          mapApi({
+            id: rawMessage.id,
+            ticket_id: rawMessage.ticket_id ?? props.ticketId,
+            user_id: rawMessage.user_id ?? props.currentUser.id,
+            type: rawMessage.type ?? (selectedAttachments.length > 0 ? "attachment" : "text"),
+            body: rawMessage.body ?? body,
+            meta: rawMessage.meta ?? null,
+            created_at: rawMessage.created_at ?? new Date().toISOString(),
+            author: rawMessage.author,
+            author_photo_url: rawMessage.author_photo_url,
+            author_first_name: rawMessage.author_first_name,
+            author_last_name: rawMessage.author_last_name,
+            author_email: rawMessage.author_email,
+            author_initials: rawMessage.author_initials,
+          })
+        );
+        ensureAscOrder();
+      }
+
+      await nextTick();
+      if (shouldStick) scrollToBottom();
+      if (shouldKeepKeyboardOpen) preserveInputFocusOnMobile();
+
+      // If socket was unstable in PWA, fetch first page to backfill any missed broadcast messages.
+      void syncLatestMessagesFromServer();
+    } catch (error) {
+      draft.value = body;
+      pendingAttachments.value = selectedAttachments;
+      shouldRevokePreview = false;
+      console.error("[ChatDefault] send failed", error);
+    } finally {
+      isSending.value = false;
+      if (shouldRevokePreview) {
+        for (const attachment of selectedAttachments) {
+          revokePendingAttachment(attachment);
+        }
+      }
+    }
   }
 </script>
 
