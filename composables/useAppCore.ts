@@ -27,6 +27,7 @@ import LocationsModule from "~/composables/core/modules/locations/locations.modu
 import { TicketsModule as AdminTicketsModule } from "~/composables/core/modules/adminModules/tickets/tickets.module";
 import AdminAuth2faModule from "~/composables/core/modules/adminModules/auth2fa/auth2fa.module";
 import AdminAuthModule from "~/composables/core/modules/adminModules/auth/adminAuth.module";
+import AdminAccountsModule from "~/composables/core/modules/adminModules/accounts/accounts.module";
 import AdminClientsModule from "~/composables/core/modules/adminModules/clients/clients.module";
 import AdminDocumentsModule from "~/composables/core/modules/adminModules/documents/documents.module";
 import AdminVerificationRequests from "~/composables/core/modules/adminModules/verificationRequests/verificationRequests.module";
@@ -63,6 +64,7 @@ export interface ICoreModules {
   adminModules: {
     auth: AdminAuthModule;
     auth2fa: AdminAuth2faModule;
+    accounts: AdminAccountsModule;
     clients: AdminClientsModule;
     documents: AdminDocumentsModule;
     verificationRequests: AdminVerificationRequests;
@@ -102,6 +104,7 @@ export const useAppCore = (): ICoreModules => {
     adminModules: {
       auth: new AdminAuthModule(),
       auth2fa: new AdminAuth2faModule(),
+      accounts: new AdminAccountsModule(),
       clients: new AdminClientsModule(),
       documents: new AdminDocumentsModule(),
       verificationRequests: new AdminVerificationRequests(),

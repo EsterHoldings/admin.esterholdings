@@ -53,7 +53,7 @@
     </div>
 
     <div class="admin-dashboard__panels">
-      <PanelDefault class="min-w-0">
+      <PanelDefault class="dashboard-panel-card min-w-0">
         <div class="flex flex-col gap-3 p-4">
           <UiTextH5 class="text-[var(--ui-text-main)]">{{ t("admin.dashboard.recentUsers") }}</UiTextH5>
           <div class="space-y-2">
@@ -75,7 +75,7 @@
         </div>
       </PanelDefault>
 
-      <PanelDefault class="min-w-0">
+      <PanelDefault class="dashboard-panel-card min-w-0">
         <div class="flex flex-col gap-3 p-4">
           <UiTextH5 class="text-[var(--ui-text-main)]">{{ t("admin.dashboard.recentPayments") }}</UiTextH5>
           <div class="space-y-2">
@@ -217,11 +217,16 @@ const handleNavigate = (to?: string) => {
 
 .stat-card {
   padding: 14px;
+  border: none !important;
+  background:
+    linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
+    var(--ui-background-card) !important;
 }
 
 .stat-card--priority {
-  border: 1px solid var(--ui-primary-accent);
-  background: color-mix(in srgb, var(--ui-primary-main) 12%, var(--ui-background-panel));
+  background:
+    linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-accent) 18%, transparent) 0%, transparent 70.44%),
+    var(--ui-background-card) !important;
 }
 
 .stat-card-link {
@@ -233,11 +238,15 @@ const handleNavigate = (to?: string) => {
 }
 
 .stat-card-link :deep(.stat-card) {
-  transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .stat-card-link:hover :deep(.stat-card) {
-  background: var(--color-stroke-ui-dark);
+  opacity: 0.95;
 }
 
 .stat-card-link:focus-visible {
@@ -252,5 +261,12 @@ const handleNavigate = (to?: string) => {
 
 .dashboard-row-link:hover {
   background: var(--color-stroke-ui-light);
+}
+
+.dashboard-panel-card {
+  border: none !important;
+  background:
+    linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
+    var(--ui-background-card) !important;
 }
 </style>

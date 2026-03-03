@@ -6,8 +6,26 @@
         :key="card.id"
         class="clients-stat-card"
         :class="card.kind">
-        <div class="clients-stat-card__label">{{ card.label }}</div>
-        <div class="clients-stat-card__value">{{ card.value }}</div>
+        <template v-if="card.kind === 'is-deposits-summary'">
+          <div class="clients-stat-card__label">{{ card.label }}</div>
+          <div class="clients-stat-card__deposits-grid">
+            <div
+              v-for="segment in card.segments"
+              :key="segment.id"
+              class="clients-stat-card__deposits-item">
+              <div class="clients-stat-card__deposits-label">{{ segment.label }}</div>
+              <div
+                class="clients-stat-card__deposits-value"
+                :class="`size-${segment.size}`">
+                {{ segment.value }}
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div class="clients-stat-card__label">{{ card.label }}</div>
+          <div class="clients-stat-card__value">{{ card.value }}</div>
+        </template>
       </div>
     </div>
 
@@ -481,6 +499,11 @@
   const localePath = useLocalePath();
   const appCore = useAppCore();
 
+  const resolveText = (key: string, fallback: string) => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
+
   const isLoading = ref(false);
   const isInitialLoading = ref(true);
   const isLoadingSearch = ref(false);
@@ -707,51 +730,58 @@
   const metricCards = computed(() => [
     {
       id: "online_now",
-      kind: "is-online",
-      label: t("admin.clients.stats.onlineNow", "Online now"),
+      kind: statsData.value.online_clients_now > 0 ? "is-online-active" : "is-neutral",
+      label: resolveText("admin.clients.stats.onlineNow", "Online now"),
       value: formatCount(statsData.value.online_clients_now),
     },
     {
       id: "new_today",
       kind: "is-neutral",
-      label: t("admin.clients.stats.newToday", "New clients today"),
+      label: resolveText("admin.clients.stats.newToday", "New clients today"),
       value: formatCount(statsData.value.new_clients.today),
     },
     {
       id: "new_week",
       kind: "is-neutral",
-      label: t("admin.clients.stats.newWeek", "New clients week"),
+      label: resolveText("admin.clients.stats.newWeek", "New clients this week"),
       value: formatCount(statsData.value.new_clients.week),
     },
     {
       id: "new_month",
       kind: "is-neutral",
-      label: t("admin.clients.stats.newMonth", "New clients month"),
+      label: resolveText("admin.clients.stats.newMonth", "New clients this month"),
       value: formatCount(statsData.value.new_clients.month),
     },
     {
-      id: "deposits_today",
-      kind: "is-money",
-      label: t("admin.clients.stats.depositsToday", "Deposits today"),
-      value: formatMoney(statsData.value.deposits_sum.today),
-    },
-    {
-      id: "deposits_week",
-      kind: "is-money",
-      label: t("admin.clients.stats.depositsWeek", "Deposits week"),
-      value: formatMoney(statsData.value.deposits_sum.week),
-    },
-    {
-      id: "deposits_month",
-      kind: "is-money",
-      label: t("admin.clients.stats.depositsMonth", "Deposits month"),
-      value: formatMoney(statsData.value.deposits_sum.month),
-    },
-    {
-      id: "deposits_year",
-      kind: "is-money",
-      label: t("admin.clients.stats.depositsYear", "Deposits year"),
-      value: formatMoney(statsData.value.deposits_sum.year),
+      id: "deposits_summary",
+      kind: "is-deposits-summary",
+      label: resolveText("admin.clients.stats.depositsSummary", "Deposits summary"),
+      segments: [
+        {
+          id: "today",
+          label: resolveText("admin.clients.stats.depositsToday", "Today"),
+          value: formatMoney(statsData.value.deposits_sum.today),
+          size: "xl",
+        },
+        {
+          id: "week",
+          label: resolveText("admin.clients.stats.depositsWeek", "Week"),
+          value: formatMoney(statsData.value.deposits_sum.week),
+          size: "lg",
+        },
+        {
+          id: "month",
+          label: resolveText("admin.clients.stats.depositsMonth", "Month"),
+          value: formatMoney(statsData.value.deposits_sum.month),
+          size: "md",
+        },
+        {
+          id: "year",
+          label: resolveText("admin.clients.stats.depositsYear", "Year"),
+          value: formatMoney(statsData.value.deposits_sum.year),
+          size: "sm",
+        },
+      ],
     },
   ]);
 
@@ -789,14 +819,20 @@
     }
 
     try {
+      const filtersPayload = getFiltersPayload(appliedFilters.value);
+      const flatFilters = Object.fromEntries(
+        Object.entries(filtersPayload).map(([key, value]) => [`filters[${key}]`, value])
+      );
+
       const params = {
         page: page.value,
         perPage: perPage.value,
         searchFilter: searchFilter.value,
-        searchFields: ALL_SEARCH_FIELDS,
+        searchFields: ALL_SEARCH_FIELDS.join(","),
         orderBy: orderBy.value,
         orderDirection: orderDirection.value,
-        filters: getFiltersPayload(appliedFilters.value),
+        filters: filtersPayload,
+        ...flatFilters,
       };
 
       const response = await appCore.adminModules.clients.get(params);
@@ -1052,18 +1088,25 @@
   }
 
   .clients-stat-card {
-    border: 1px solid var(--color-stroke-ui-light);
     border-radius: 10px;
-    background: var(--ui-background-panel);
+    border: none;
+    background:
+      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
+      var(--ui-background-card);
     padding: 12px;
   }
 
-  .clients-stat-card.is-online {
-    border-color: color-mix(in srgb, var(--ui-sticker-success) 50%, var(--color-stroke-ui-light));
+  .clients-stat-card.is-online-active {
+    background:
+      linear-gradient(136deg, color-mix(in srgb, var(--ui-sticker-success) 18%, transparent) 0%, transparent 70.44%),
+      var(--ui-background-card);
   }
 
-  .clients-stat-card.is-money {
-    border-color: color-mix(in srgb, var(--ui-primary-accent) 40%, var(--color-stroke-ui-light));
+  .clients-stat-card.is-deposits-summary {
+    grid-column: 1 / -1;
+    background:
+      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-accent) 16%, transparent) 0%, transparent 70.44%),
+      var(--ui-background-card);
   }
 
   .clients-stat-card__label {
@@ -1077,6 +1120,57 @@
     line-height: 28px;
     font-weight: 700;
     color: var(--ui-text-main);
+  }
+
+  .clients-stat-card__deposits-grid {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  @media (min-width: 640px) {
+    .clients-stat-card__deposits-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .clients-stat-card__deposits-item {
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ui-background-panel) 80%, transparent);
+    padding: 8px 10px;
+  }
+
+  .clients-stat-card__deposits-label {
+    font-size: 11px;
+    color: var(--ui-text-secondary);
+  }
+
+  .clients-stat-card__deposits-value {
+    color: var(--ui-text-main);
+    line-height: 1.1;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  .clients-stat-card__deposits-value.size-xl {
+    font-size: clamp(20px, 2.4vw, 28px);
+    font-weight: 800;
+  }
+
+  .clients-stat-card__deposits-value.size-lg {
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 700;
+  }
+
+  .clients-stat-card__deposits-value.size-md {
+    font-size: clamp(16px, 1.8vw, 20px);
+    font-weight: 700;
+  }
+
+  .clients-stat-card__deposits-value.size-sm {
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 600;
   }
 
   .clients-filters-popover {
