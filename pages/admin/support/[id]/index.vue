@@ -34,7 +34,11 @@
             </button>
           </div>
 
-          <div class="support-side__scroll flex flex-col gap-4">
+          <div
+            ref="supportSideScrollRef"
+            class="support-side__scroll flex flex-col gap-4"
+            :class="{ 'is-dragging': isSideScrollDragging }"
+            @mousedown="handleSideScrollMouseDown">
             <div
               class="support-side__expand"
               :class="{ 'is-expanded': isSideExpanded }">
@@ -144,15 +148,23 @@
                     <div
                       v-else
                       class="flex flex-col gap-2">
-                      <a
-                        v-for="link in linkItems"
-                        :key="link.id"
-                        href="#"
-                        class="support-side__link"
-                        @click.prevent>
-                        <div class="font-medium truncate">{{ link.title }}</div>
-                        <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ link.url }}</div>
-                      </a>
+                      <template v-if="linkItems.length">
+                        <a
+                          v-for="link in linkItems"
+                          :key="link.id"
+                          :href="link.url"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="support-side__link">
+                          <div class="font-medium truncate">{{ link.title }}</div>
+                          <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ link.url }}</div>
+                        </a>
+                      </template>
+                      <div
+                        v-else
+                        class="support-side__links-empty">
+                        {{ isLinksLoading ? "Loading links..." : "No links in this chat yet" }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -198,7 +210,7 @@
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import { definePageMeta, useHead } from "~/.nuxt/imports";
-  import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+  import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import ChatDefault from "~/components/block/chats/ChatDefault.vue";
   import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
@@ -216,6 +228,7 @@
   const isLoading = ref(false);
   const supportGridRef = ref<HTMLElement | null>(null);
   const supportSidePanelRef = ref<HTMLElement | { $el?: HTMLElement } | null>(null);
+  const supportSideScrollRef = ref<HTMLElement | null>(null);
   const desktopGridHeight = ref<number | null>(null);
 
   const id = computed(() => String(route.params.id));
@@ -231,7 +244,16 @@
   const status = ref("");
   const subject = ref("");
   type SupportTab = "media" | "videos" | "links";
+  type SupportLinkItem = {
+    id: string;
+    title: string;
+    url: string;
+    createdAt: number;
+  };
   const activeTab = ref<SupportTab>("media");
+  const isLinksLoading = ref(false);
+  const linkItems = ref<SupportLinkItem[]>([]);
+  const isSideScrollDragging = ref(false);
   const isSideExpanded = ref(false);
   const isMobileViewport = ref(false);
   const isMobileFullscreenChat = ref(true);
@@ -264,11 +286,6 @@
   const videoItems = [
     { id: 1, title: "Screen recording", duration: "02:14" },
     { id: 2, title: "Issue reproduction", duration: "00:46" },
-  ];
-  const linkItems = [
-    { id: 1, title: "Trading Platform Docs", url: "https://esterholdings.com/docs" },
-    { id: 2, title: "Account Verification", url: "https://esterholdings.com/verify" },
-    { id: 3, title: "Support Center", url: "https://esterholdings.com/support" },
   ];
   const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
   const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
@@ -305,6 +322,11 @@
   const MOBILE_PANEL_CLOSE_BOTTOM_THRESHOLD = 0.4;
   const MOBILE_PANEL_HORIZONTAL_DRIFT_LIMIT = 52;
   const MOBILE_PANEL_SNAP_MS = 280;
+  const LINKS_PAGE_SIZE = 50;
+  const MAX_LINKS_PAGES = 40;
+  const MESSAGE_URL_PATTERN = /\b((?:https?:\/\/|www\.)[^\s<>"'`]+)/gi;
+  let sideScrollDragStartY = 0;
+  let sideScrollStartTop = 0;
   const panelTouchStartY = ref<number | null>(null);
   const panelTouchStartX = ref<number | null>(null);
   const panelTouchDeltaY = ref(0);
@@ -557,6 +579,170 @@
     collapseSidePanel();
   };
 
+  const normalizeLinkUrl = (raw: string): string | null => {
+    if (!raw) return null;
+
+    let candidate = raw
+      .trim()
+      .replace(/^[("'[{<]+/g, "")
+      .replace(/[)"'\]}>,.!?;:]+$/g, "");
+
+    if (!candidate) return null;
+    if (/^www\./i.test(candidate)) {
+      candidate = `https://${candidate}`;
+    }
+
+    try {
+      const parsed = new URL(candidate);
+      if (!/^https?:$/i.test(parsed.protocol)) return null;
+      return parsed.toString();
+    } catch {
+      return null;
+    }
+  };
+
+  const buildLinkTitle = (url: string): string => {
+    try {
+      const parsed = new URL(url);
+      const path = parsed.pathname && parsed.pathname !== "/" ? decodeURIComponent(parsed.pathname) : "";
+      const summary = `${parsed.hostname}${path}`;
+      return summary.length > 72 ? `${summary.slice(0, 69)}...` : summary;
+    } catch {
+      return url;
+    }
+  };
+
+  const parseMessageCreatedAt = (value: unknown): number => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    const parsed = Date.parse(String(value ?? ""));
+    return Number.isFinite(parsed) ? parsed : Date.now();
+  };
+
+  const extractLinksFromText = (text: string): string[] => {
+    if (!text) return [];
+    const found = text.match(MESSAGE_URL_PATTERN) ?? [];
+    return Array.from(
+      new Set(
+        found
+          .map(normalizeLinkUrl)
+          .filter((value): value is string => typeof value === "string" && value.length > 0)
+      )
+    );
+  };
+
+  const mergeLinkItems = (items: SupportLinkItem[]) => {
+    if (!items.length) return;
+
+    const merged = new Map<string, SupportLinkItem>();
+    for (const existing of linkItems.value) {
+      merged.set(existing.url.toLowerCase(), existing);
+    }
+
+    for (const item of items) {
+      const key = item.url.toLowerCase();
+      const previous = merged.get(key);
+      if (!previous || item.createdAt >= previous.createdAt) {
+        merged.set(key, item);
+      }
+    }
+
+    linkItems.value = Array.from(merged.values()).sort((a, b) => b.createdAt - a.createdAt);
+  };
+
+  const mapTicketMessagesToLinks = (messages: Array<Record<string, unknown>>): SupportLinkItem[] => {
+    const collected: SupportLinkItem[] = [];
+
+    for (const message of messages) {
+      const messageId = String(message.id ?? "");
+      const createdAt = parseMessageCreatedAt(message.created_at ?? message.createdAt);
+      const body = normalizeText(message.body);
+      if (!body) continue;
+
+      const urls = extractLinksFromText(body);
+      for (const url of urls) {
+        collected.push({
+          id: `${messageId}-${url}`,
+          title: buildLinkTitle(url),
+          url,
+          createdAt,
+        });
+      }
+    }
+
+    return collected;
+  };
+
+  const fetchTicketMessagesForLinksPage = async (page: number): Promise<Array<Record<string, unknown>>> => {
+    const response = await appCore.adminModules.tickets.getTicketMessages(id.value, {
+      page,
+      pageSize: LINKS_PAGE_SIZE,
+      sort: "desc",
+    });
+    const payload = response?.data;
+    if (Array.isArray(payload)) return payload as Array<Record<string, unknown>>;
+    if (Array.isArray(payload?.data)) return payload.data as Array<Record<string, unknown>>;
+    return [];
+  };
+
+  const loadLinksFromChat = async () => {
+    if (isLinksLoading.value) return;
+    isLinksLoading.value = true;
+
+    try {
+      const allMessages: Array<Record<string, unknown>> = [];
+
+      for (let page = 1; page <= MAX_LINKS_PAGES; page += 1) {
+        const pageMessages = await fetchTicketMessagesForLinksPage(page);
+        if (!pageMessages.length) break;
+        allMessages.push(...pageMessages);
+        if (pageMessages.length < LINKS_PAGE_SIZE) break;
+      }
+
+      const mappedLinks = mapTicketMessagesToLinks(allMessages);
+      linkItems.value = [];
+      mergeLinkItems(mappedLinks);
+    } catch {
+      // noop
+    } finally {
+      isLinksLoading.value = false;
+    }
+  };
+
+  const handleSideScrollMouseMove = (event: MouseEvent) => {
+    if (!isSideScrollDragging.value) return;
+    const el = supportSideScrollRef.value;
+    if (!el) return;
+
+    const deltaY = event.clientY - sideScrollDragStartY;
+    el.scrollTop = sideScrollStartTop - deltaY;
+    event.preventDefault();
+  };
+
+  const handleSideScrollMouseUp = () => {
+    if (!isSideScrollDragging.value) return;
+    isSideScrollDragging.value = false;
+    window.removeEventListener("mousemove", handleSideScrollMouseMove);
+    window.removeEventListener("mouseup", handleSideScrollMouseUp);
+  };
+
+  const handleSideScrollMouseDown = (event: MouseEvent) => {
+    if (event.button !== 0) return;
+
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("a,button,input,textarea,select,label")) return;
+
+    const el = supportSideScrollRef.value;
+    if (!el) return;
+
+    isSideScrollDragging.value = true;
+    sideScrollDragStartY = event.clientY;
+    sideScrollStartTop = el.scrollTop;
+
+    window.addEventListener("mousemove", handleSideScrollMouseMove, { passive: false });
+    window.addEventListener("mouseup", handleSideScrollMouseUp);
+    event.preventDefault();
+  };
+
   useHead(() => ({
     htmlAttrs: {
       class: {
@@ -632,7 +818,13 @@
     participants[0].photoUrl = normalizedPhotoUrl;
 
     await loadData();
+    await loadLinksFromChat();
     scheduleDesktopGridMeasure();
+  });
+
+  watch(activeTab, tab => {
+    if (tab !== "links") return;
+    void loadLinksFromChat();
   });
 
   onBeforeUnmount(() => {
@@ -643,6 +835,7 @@
       window.cancelAnimationFrame(desktopGridRafId);
       desktopGridRafId = null;
     }
+    handleSideScrollMouseUp();
   });
 </script>
 
@@ -674,10 +867,20 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     scrollbar-width: none;
+    cursor: grab;
     transition:
       max-height 0.25s ease,
       opacity 0.2s ease;
+  }
+
+  .support-side__scroll.is-dragging {
+    cursor: grabbing;
+    user-select: none;
   }
 
   .support-side__scroll::-webkit-scrollbar {
@@ -1107,6 +1310,15 @@
 
   .support-side__link:hover {
     background: var(--ui-background-panel);
+  }
+
+  .support-side__links-empty {
+    border-radius: 10px;
+    border: 1px dashed var(--color-stroke-ui-light);
+    background: color-mix(in oklab, var(--ui-background-card) 94%, transparent);
+    padding: 10px 12px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
   }
 
   .support-side__library {
