@@ -402,8 +402,7 @@
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
   const VIEW_MODE_STORAGE_KEY = "adminClientsViewMode";
-  const ONLINE_REFRESH_INTERVAL_MS = 3_000;
-  const ONLINE_WINDOW_SECONDS = 5;
+  const ONLINE_REFRESH_INTERVAL_MS = 15_000;
   const ONLINE_REALTIME_SYNC_DEBOUNCE_MS = 200;
 
   const ALL_SEARCH_FIELDS = [
@@ -551,9 +550,15 @@
   const filterTextFieldOptions = computed(() => [
     { key: "id" as FilterKey, label: "ID" },
     { key: "email" as FilterKey, label: t("admin.accounts.components.accounts-panel.columns.email") },
-    { key: "first_name" as FilterKey, label: t("admin.clients.components.clients-panel.columns.first_name", "First name") },
+    {
+      key: "first_name" as FilterKey,
+      label: t("admin.clients.components.clients-panel.columns.first_name", "First name"),
+    },
     { key: "mid_name" as FilterKey, label: t("admin.clients.filters.fields.mid_name", "Middle name") },
-    { key: "last_name" as FilterKey, label: t("admin.clients.components.clients-panel.columns.last_name", "Last name") },
+    {
+      key: "last_name" as FilterKey,
+      label: t("admin.clients.components.clients-panel.columns.last_name", "Last name"),
+    },
     { key: "phone" as FilterKey, label: t("admin.accounts.components.accounts-panel.columns.phone") },
     { key: "country" as FilterKey, label: t("admin.clients.columns.country", "Country") },
     { key: "state" as FilterKey, label: t("admin.clients.columns.state", "State / Region") },
@@ -838,7 +843,6 @@
         searchFields: ALL_SEARCH_FIELDS.join(","),
         orderBy: orderBy.value,
         orderDirection: orderDirection.value,
-        online_window_seconds: ONLINE_WINDOW_SECONDS,
         filters: filtersPayload,
         ...flatFilters,
       };
@@ -866,9 +870,7 @@
     }
 
     try {
-      const response = await appCore.adminModules.clients.getStats({
-        online_window_seconds: ONLINE_WINDOW_SECONDS,
-      });
+      const response = await appCore.adminModules.clients.getStats();
       const payload = response?.data?.data ?? {};
 
       statsData.value = {
@@ -1054,8 +1056,35 @@
     realtimeSyncTimer = null;
   };
 
-  const handleRealtimePresence = () => {
-    scheduleOnlineSync();
+  const handleRealtimeClientPresence = (payload: any) => {
+    const data = payload?.data ?? payload ?? {};
+    const userId = String(data.user_id ?? data.userId ?? "").trim();
+    const isOnline = Boolean(data.is_online ?? data.isOnline);
+    const onlineClientsNow = Number(data.online_clients_now ?? data.onlineClientsNow);
+    const onlineFilter = sanitizeFilterValue(appliedFilters.value.online_status);
+
+    if (onlineFilter !== "") {
+      scheduleOnlineSync();
+      return;
+    }
+
+    if (userId !== "") {
+      clientsData.value = clientsData.value.map(client =>
+        String(client.id) === userId
+          ? {
+              ...client,
+              is_online: isOnline,
+            }
+          : client
+      );
+    }
+
+    if (Number.isFinite(onlineClientsNow)) {
+      statsData.value = {
+        ...statsData.value,
+        online_clients_now: Math.max(0, onlineClientsNow),
+      };
+    }
   };
 
   const connectRealtime = () => {
@@ -1064,15 +1093,13 @@
 
     supportGlobalChannel = $echo
       .private("support.global")
-      .listen(".ticket.presence.updated", handleRealtimePresence)
-      .listen(".MessageSent", handleRealtimePresence);
+      .listen(".client.presence.updated", handleRealtimeClientPresence);
   };
 
   const disconnectRealtime = () => {
     if (!supportGlobalChannel || !$echo) return;
 
-    supportGlobalChannel.stopListening(".ticket.presence.updated");
-    supportGlobalChannel.stopListening(".MessageSent");
+    supportGlobalChannel.stopListening(".client.presence.updated");
     $echo.leave("support.global");
     supportGlobalChannel = null;
   };
