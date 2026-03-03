@@ -401,6 +401,7 @@
   const attrs = useAttrs();
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
+  const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
 
   type ChatMessage = {
     id: string;
@@ -1127,6 +1128,11 @@
 
   const appCore = useAppCore();
   const waitForNextPaint = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+  const emitActiveSupportTicket = (ticketId: string | null) => {
+    useEventBus.emit(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, {
+      ticketId: ticketId ? String(ticketId).trim() : "",
+    });
+  };
 
   const hasMessagesOverflow = () => {
     const el = listRef.value;
@@ -1569,6 +1575,7 @@
     }
 
     lastReadAckMessageId.value = null;
+    emitActiveSupportTicket(props.ticketId);
     await loadInitial();
 
     // resize listener тоже только для плавающего окна
@@ -1618,12 +1625,15 @@
       window.removeEventListener("pageshow", handlePageShow);
       appResumeListenersAttached = false;
     }
+
+    emitActiveSupportTicket(null);
   });
 
   watch(
     () => props.ticketId,
     async (id, oldId) => {
       if (id === oldId) return;
+      emitActiveSupportTicket(id);
       await stopTyping(true);
       clearAllRemoteTyping();
       leavePrivate(oldId);

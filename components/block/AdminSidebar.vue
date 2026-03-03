@@ -33,8 +33,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-  import { useNuxtApp } from "nuxt/app";
+  import { computed, h, onBeforeUnmount, onMounted, ref } from "vue";
+  import { navigateTo, useNuxtApp } from "nuxt/app";
+  import { useRoute } from "vue-router";
+  import { useToast } from "vue-toastification";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
   import { useThemeStore } from "~/stores/themeStore.js";
   import { useLocalePath } from "~/.nuxt/imports";
@@ -54,7 +56,11 @@
   const supportUnreadCount = ref(0);
   const SUPPORT_BADGE_REFRESH_MS = 10000;
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
+  const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
+  const route = useRoute();
+  const toast = useToast();
   const { $echo } = useNuxtApp() as { $echo?: any };
+  const activeSupportTicketId = ref("");
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
@@ -99,10 +105,154 @@
     });
   };
 
+  const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
+
+  const getRouteSupportTicketId = (): string => {
+    const match = String(route.path ?? "").match(/\/support\/([^/?#]+)/);
+    return normalizeText(match?.[1] ?? "");
+  };
+
+  const resolveSenderName = (payload: any): string => {
+    const firstName = normalizeText(payload?.author_first_name);
+    const lastName = normalizeText(payload?.author_last_name);
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (fullName) return fullName;
+
+    const author = normalizeText(payload?.author);
+    if (author) return author;
+
+    const email = normalizeText(payload?.author_email);
+    if (email) return email;
+
+    return "Support";
+  };
+
+  const resolveAvatarFallback = (senderName: string, payload: any): string => {
+    const initials = normalizeText(payload?.author_initials)
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 2)
+      .toUpperCase();
+    if (initials.length === 2) return initials;
+
+    const nameParts = senderName.split(/\s+/).filter(Boolean);
+    if (nameParts.length >= 2) {
+      return `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase();
+    }
+    if (nameParts.length === 1) {
+      return nameParts[0].slice(0, 2).toUpperCase();
+    }
+
+    const email = normalizeText(payload?.author_email);
+    if (email) {
+      return email.slice(0, 2).toUpperCase();
+    }
+
+    return "SU";
+  };
+
+  const truncate = (text: string, max = 120): string => {
+    if (text.length <= max) return text;
+    return `${text.slice(0, max)}...`;
+  };
+
+  const handleSupportActiveTicketChanged = (payload?: any) => {
+    activeSupportTicketId.value = normalizeText(payload?.ticketId ?? payload?.ticket_id);
+  };
+
+  const handleSupportMessageToast = (payload?: any) => {
+    const ticketId = normalizeText(payload?.ticket_id ?? payload?.ticketId);
+    if (!ticketId) return;
+
+    const routeTicketId = getRouteSupportTicketId();
+    if (ticketId === activeSupportTicketId.value || ticketId === routeTicketId) return;
+
+    const senderName = resolveSenderName(payload);
+    const preview = truncate(normalizeText(payload?.body) || "New message");
+    const avatarUrl = normalizeText(payload?.author_photo_url);
+    const avatarFallback = resolveAvatarFallback(senderName, payload);
+
+    toast.info(
+      h(
+        "div",
+        { style: { display: "flex", alignItems: "center", gap: "10px", minWidth: "0", cursor: "pointer" } },
+        [
+          h(
+            "div",
+            {
+              style: {
+                width: "34px",
+                height: "34px",
+                borderRadius: "999px",
+                overflow: "hidden",
+                flexShrink: "0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "var(--ui-primary-main)",
+                color: "var(--ui-text-main)",
+                fontSize: "12px",
+                fontWeight: "700",
+                textTransform: "uppercase",
+              },
+            },
+            avatarUrl
+              ? h("img", { src: avatarUrl, alt: senderName, style: { width: "100%", height: "100%", objectFit: "cover" } })
+              : avatarFallback
+          ),
+          h("div", { style: { minWidth: "0", display: "flex", flexDirection: "column", gap: "2px" } }, [
+            h(
+              "div",
+              {
+                style: {
+                  fontSize: "13px",
+                  lineHeight: "1.2",
+                  fontWeight: "700",
+                  color: "var(--ui-text-main)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              },
+              senderName
+            ),
+            h(
+              "div",
+              {
+                style: {
+                  fontSize: "12px",
+                  lineHeight: "1.2",
+                  color: "var(--ui-text-secondary)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              },
+              preview
+            ),
+          ]),
+        ]
+      ),
+      {
+        id: `support-message-${normalizeText(payload?.id) || ticketId}-${normalizeText(payload?.created_at)}`,
+        timeout: 8000,
+        closeOnClick: true,
+        pauseOnHover: true,
+        onClick: () => {
+          navigateTo(localePath(`/support/${ticketId}`));
+        },
+      }
+    );
+  };
+
+  const handleSupportGlobalMessage = (payload?: any) => {
+    handleSupportUnreadUpdated();
+    handleSupportMessageToast(payload);
+  };
+
   const connectSupportRealtime = () => {
     if (!$echo || supportRealtimeChannel) return;
 
-    supportRealtimeChannel = $echo.private("support.global").listen(".MessageSent", handleSupportUnreadUpdated);
+    supportRealtimeChannel = $echo.private("support.global").listen(".MessageSent", handleSupportGlobalMessage);
   };
 
   const disconnectSupportRealtime = () => {
@@ -116,12 +266,14 @@
   onMounted(async () => {
     await loadSupportUnreadCount();
     useEventBus.on(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
+    useEventBus.on(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, handleSupportActiveTicketChanged);
     startSupportBadgeRefresh();
     connectSupportRealtime();
   });
 
   onBeforeUnmount(() => {
     useEventBus.off(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
+    useEventBus.off(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, handleSupportActiveTicketChanged);
     stopSupportBadgeRefresh();
     disconnectSupportRealtime();
     if (supportUnreadRafId !== null) {
