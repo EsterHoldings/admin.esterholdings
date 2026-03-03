@@ -42,7 +42,6 @@ import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import AdminsPanelEdit from "~/pages/admin/access/components/AdminsPanelEdit.vue";
 import PanelSearch from "~/pages/admin/access/components/PanelSearch.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import RolesPanelAddNew from "~/pages/access/components/RolesPanelAddNew.vue";
 import AdminsPanelAddNew from "~/pages/admin/access/components/AdminsPanelAddNew.vue";
 
 const { t } = useI18n({ useScope: "global" });

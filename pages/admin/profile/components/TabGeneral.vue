@@ -208,13 +208,13 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {formData} from "~/pages/profile/composables";
+import {formData} from "~/pages/admin/profile/composables";
 import {onMounted, reactive, ref} from "vue";
 import {
   validateUserDataForm,
   validatorUserDataForm,
   resetValidationUserDataForm,
-} from "~/pages/profile/composables/validation";
+} from "~/pages/admin/profile/composables/validation";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
@@ -223,7 +223,6 @@ import UiInputPhone from "~/components/ui/UiInputPhone.vue";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 
 import {useToast} from "vue-toastification";
-import {useAuthStore} from "~/stores/authStore";
 import useAppCore from "~/composables/useAppCore";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 import UiTextH5 from "~/components/ui/UiTextH5.vue";

@@ -107,7 +107,7 @@ import {useI18n} from "vue-i18n";
 import {computed, onMounted, ref} from "vue";
 import {
   validatorUserDataForm,
-} from "~/pages/profile/composables/validation";
+} from "~/pages/admin/clients/[id]/composables/validation";
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 
 import {useToast} from "vue-toastification";

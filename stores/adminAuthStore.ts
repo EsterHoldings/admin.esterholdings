@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import useAppCore from "~/composables/useAppCore";
 import { navigateTo } from "nuxt/app";
-import { ROUTE_ADMIN_AUTH_LOGIN } from "~/constants/routes";
 import { ADMIN_ACCESS_TOKEN } from "~/constants/auth";
 
 interface Role {
@@ -86,7 +85,7 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
       localStorage.removeItem(ADMIN_ACCESS_TOKEN);
       localStorage.removeItem(LEGACY_ADMIN_ACCESS_TOKEN_KEY);
     }
-    navigateTo("/ru" + ROUTE_ADMIN_AUTH_LOGIN);
+    navigateTo("/auth/login");
   }
 
   const hasPermission = computed(() => (permName: string): boolean => {

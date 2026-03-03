@@ -63,8 +63,8 @@ import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiTextH4 from "~/components/ui/UiTextH4.vue";
 
-import { validatorTicketForm, validateTicketForm } from "~/pages/support/composables/validation";
-import {formData} from "~/pages/support/composables";
+import { validatorTicketForm, validateTicketForm } from "~/pages/admin/support/composables/validation";
+import {formData} from "~/pages/admin/support/composables";
 import {reactive, inject, onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useToast} from "vue-toastification";

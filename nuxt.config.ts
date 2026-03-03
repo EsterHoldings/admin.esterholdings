@@ -10,6 +10,29 @@ export default defineNuxtConfig({
     },
     compatibilityDate: '2024-04-03',
     devtools: {enabled: true},
+    hooks: {
+        "pages:extend"(pages) {
+            const keepAndNormalizeAdminRoutes = (page: any): boolean => {
+                if (page.children?.length) {
+                    page.children = page.children.filter(keepAndNormalizeAdminRoutes);
+                }
+
+                const file = String(page.file ?? "");
+                if (/[\\/](components|composables)[\\/]/.test(file)) return false;
+                if (file && !file.endsWith(".vue")) return false;
+
+                const path = page.path ?? "";
+                if (!path.startsWith("/admin")) return false;
+
+                const normalizedPath = path.replace(/^\/admin(?=\/|$)/, "");
+                page.path = normalizedPath || "/";
+
+                return true;
+            };
+
+            pages.splice(0, pages.length, ...pages.filter(keepAndNormalizeAdminRoutes));
+        },
+    },
 
     // Додаємо явні налаштування дев-сервера
     devServer: {

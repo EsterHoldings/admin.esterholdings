@@ -48,7 +48,7 @@
               v-if="profileMenuIsOpen"
               @click.stop
             >
-              <NuxtLink :to="localePath('/admin/profile')" aria-label="Profile">
+              <NuxtLink :to="localePath('/profile')" aria-label="Profile">
                 <div
                   class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md"
                 >
@@ -76,7 +76,7 @@
 
               <UiSpacer :heightNone="true" />
 
-              <NuxtLink :to="localePath('/admin/support')" aria-label="Help Center">
+              <NuxtLink :to="localePath('/support')" aria-label="Help Center">
                 <div
                   class="flex items-center justify-between gap-4 hover:bg-[var(--ui-primary-main)] py-2 px-5 m-1 rounded-md"
                 >

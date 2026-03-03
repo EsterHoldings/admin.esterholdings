@@ -79,7 +79,7 @@ const loadData = async (isFilterQuery = false) => {
 };
 
 const handleOpenClientPage = (id: string) => {
-  navigateTo(`/admin/clients/${id}`);
+  navigateTo(`/clients/${id}`);
 };
 
 const handleChangePerPage = async (value: number) => {

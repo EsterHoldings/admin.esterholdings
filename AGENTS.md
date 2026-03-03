@@ -11,6 +11,11 @@
 - All client API calls go through `useAppCore` (see `composables/useAppCore`); follow its patterns when adding or updating requests.
 - Backend path from this directory ../server (Backend by Laravel)
 
+## Project Scope
+- This repository is admin frontend only.
+- Keep only admin-facing pages/routes/features in this codebase.
+- Client cabinet/landing functionality should not be added here.
+
 ## Build, Test, and Development Commands
 ```bash
 yarn dev        # start local dev server at :3000

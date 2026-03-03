@@ -2,7 +2,7 @@
   <header class="side-bar-cabinet">
     <div class="side-bar-cabinet__top">
       <div class="side-bar-cabinet__top__logo">
-        <NuxtLink to="/">
+        <NuxtLink :to="localePath('/')">
           <UiIconLogo
             :class="{
               'svg-invert': isThemeLight,
@@ -34,25 +34,20 @@
 
 <script lang="ts" setup>
   import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-  import { navigateTo, useNuxtApp } from "nuxt/app";
-  import { useAuthStore } from "~/stores/authStore";
-  import { useRoute } from "vue-router";
+  import { useNuxtApp } from "nuxt/app";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
   import { useThemeStore } from "~/stores/themeStore.js";
   import { useLocalePath } from "~/.nuxt/imports";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
 
-  import LanguageSwitcher from "~/components/block/LandingHeader/components/LanguageSwitcher.vue";
   import AdminSidebarMenu from "~/components/block/AdminSidebarMenu.vue";
   import UiIconLogo from "~/components/ui/UiIconLogo.vue";
   import UiIconLogout from "~/components/ui/UiIconLogout.vue";
-  import UiIconMoon from "~/components/ui/UiIconMoon.vue";
-  import UiIconSun from "~/components/ui/UiIconSun.vue";
-  import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 
   const emit = defineEmits(["close"]);
 
-  const authStore = useAuthStore();
+  const adminAuthStore = useAdminAuthStore();
   const appCore = useAppCore();
   const localePath = useLocalePath();
   const themeStore = useThemeStore();
@@ -64,28 +59,12 @@
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
 
-  if (!authStore.user) {
-    authStore.initAuth();
-  }
-
-  const handleClickLogout = () => {
-    localStorage.setItem("access_token", "");
-    localStorage.setItem("remember_token", "");
-
-    console.log("AdminSidebar -> handleClickLogout");
-
-    navigateTo(localePath("/admin/auth/login"));
+  const handleClickLogout = async () => {
+    await adminAuthStore.authLogout();
   };
 
   const isThemeLight = computed(() => {
     return themeStore.currentTheme !== "dark";
-  });
-
-  const route = useRoute();
-  const isProfileRoute = computed(() => {
-    const segments = route.path.split("/");
-    const last = segments[segments.length - 1];
-    return last === "profile";
   });
 
   const loadSupportUnreadCount = async () => {

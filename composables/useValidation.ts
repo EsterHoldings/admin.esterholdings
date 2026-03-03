@@ -1,7 +1,5 @@
 import { reactive } from "vue";
 
-import type { IFormDataDto } from "~/pages/auth/login/composables";
-
 import IsRequired from "./services/validation/rules/isRequired";
 import IsEmail from "./services/validation/rules/isEmail";
 import MinLength from "./services/validation/rules/minLength";
@@ -39,7 +37,7 @@ const generateErrorsFormData = (formData: any) => {
   return newErrorsFormData;
 };
 
-export const useValidation = (formData: IFormDataDto | any, validationFormRules: any): any => {
+export const useValidation = (formData: Record<string, any>, validationFormRules: any): any => {
   const errorsFormData = generateErrorsFormData({ ...formData });
 
   const getErrorFieldByKeyName = (fieldName: String | any) => errorsFormData[fieldName as keyof typeof errorsFormData];

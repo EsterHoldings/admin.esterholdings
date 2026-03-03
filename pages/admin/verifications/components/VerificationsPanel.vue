@@ -149,7 +149,7 @@
   );
 
   const handleClickVerificationRequest = (id: string) => {
-    navigateTo(`/admin/clients/${id}?tab=1&verificationTab=client`);
+    navigateTo(`/clients/${id}?tab=1&verificationTab=client`);
   };
 
   onMounted(async () => {

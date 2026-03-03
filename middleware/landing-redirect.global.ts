@@ -1,21 +1,19 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
-import { isPwaContext } from "~/utils/isPwaContext";
 
 export default defineNuxtRouteMiddleware((to) => {
-  if (!process.client) return;
-  if (!isPwaContext()) return;
-
-  const token = localStorage.getItem("user_access_token");
-  if (!token) return;
+  if (process.server) return;
 
   const path = to.path || "";
-  const isLanding =
-    /^\/([a-z]{2}\/)?landing(\/|$)/.test(path) ||
-    /^\/([a-z]{2})?\/?$/.test(path);
+  const normalizedPath = path
+    .replace(/^\/([a-z]{2})\/admin(?=\/|$)/i, "/$1")
+    .replace(/^\/admin(?=\/|$)/i, "");
 
-  if (!isLanding) return;
+  if (normalizedPath === path) return;
 
-  const localeMatch = path.match(/^\/([a-z]{2})(\/|$)/);
-  const localePrefix = localeMatch ? `/${localeMatch[1]}` : "";
-  return navigateTo(`${localePrefix}/dashboard`);
+  const nextPath = normalizedPath || "/";
+  return navigateTo({
+    path: nextPath,
+    query: to.query,
+    hash: to.hash,
+  });
 });

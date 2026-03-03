@@ -78,12 +78,12 @@
 import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useToast} from "vue-toastification";
-import {formData} from "~/pages/profile/composables/TheChangePassword";
-import {resetValidationUserDataForm,} from "~/pages/profile/composables/validation";
+import {formData} from "~/pages/admin/clients/[id]/composables/TheChangePassword";
+import {resetValidationUserDataForm,} from "~/pages/admin/clients/[id]/composables/validation";
 import {
   validateChangePasswordDataForm,
   validatorChangePasswordDataForm,
-} from "~/pages/profile/composables/TheChangePassword/validation";
+} from "~/pages/admin/clients/[id]/composables/TheChangePassword/validation";
 
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";

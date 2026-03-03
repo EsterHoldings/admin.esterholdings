@@ -127,21 +127,21 @@ const priorityCards = computed(() => [
     label: t("admin.dashboard.processingTransactions", "Transactions in processing"),
     value: 14,
     icon: UiIconPayment,
-    to: "/admin/payments",
+    to: "/payments",
   },
   {
     id: "processing_requisites",
     label: t("admin.dashboard.processingRequisites", "Requisites in processing"),
     value: 6,
     icon: UiIconSetting,
-    to: "/admin/payments",
+    to: "/payments",
   },
   {
     id: "processing_verifications",
     label: t("admin.dashboard.processingVerifications", "Verifications in processing"),
     value: 9,
     icon: UiIconWarningFull,
-    to: "/admin/verifications",
+    to: "/verifications",
   },
 ]);
 
@@ -152,7 +152,7 @@ const statCards = computed(() => [
     value: "12,340",
     delta: "+3.2% vs prev week",
     icon: UiIconUsers,
-    to: "/admin/clients",
+    to: "/clients",
   },
   {
     id: "deposits",
@@ -160,7 +160,7 @@ const statCards = computed(() => [
     value: "$182,500",
     delta: "+1.8% vs prev week",
     icon: UiIconPayment,
-    to: "/admin/payments",
+    to: "/payments",
   },
   {
     id: "withdrawals",
@@ -168,20 +168,20 @@ const statCards = computed(() => [
     value: "$96,200",
     delta: "-0.7% vs prev week",
     icon: UiIconWithdraw,
-    to: "/admin/payments",
+    to: "/payments",
   },
 ]);
 
 const recentUsers = [
-  { id: 1, name: "Alice Johnson", email: "alice@example.com", status: "active", to: "/admin/clients/1" },
-  { id: 2, name: "Mark Lee", email: "mark@example.com", status: "pending", to: "/admin/clients/2" },
-  { id: 3, name: "Sara Kim", email: "sara@example.com", status: "active", to: "/admin/clients/3" },
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", status: "active", to: "/clients/1" },
+  { id: 2, name: "Mark Lee", email: "mark@example.com", status: "pending", to: "/clients/2" },
+  { id: 3, name: "Sara Kim", email: "sara@example.com", status: "active", to: "/clients/3" },
 ];
 
 const recentPayments = [
-  { id: 1, amount: "$1,250", currency: "USD", status: "success", account: "MT4-123456", to: "/admin/payments" },
-  { id: 2, amount: "$980", currency: "USD", status: "pending", account: "MT4-234567", to: "/admin/payments" },
-  { id: 3, amount: "$2,400", currency: "USD", status: "success", account: "MT4-345678", to: "/admin/payments" },
+  { id: 1, amount: "$1,250", currency: "USD", status: "success", account: "MT4-123456", to: "/payments" },
+  { id: 2, amount: "$980", currency: "USD", status: "pending", account: "MT4-234567", to: "/payments" },
+  { id: 3, amount: "$2,400", currency: "USD", status: "success", account: "MT4-345678", to: "/payments" },
 ];
 
 const handleNavigate = (to?: string) => {

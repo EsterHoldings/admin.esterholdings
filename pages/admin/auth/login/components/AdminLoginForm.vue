@@ -101,7 +101,7 @@ const doSendForm = async () => {
     // adminAuthStore.setRoles(response.data.roles);
     // adminAuthStore.setPermissions(response.data.permissions);
 
-    navigateTo("/admin/access");
+    navigateTo("/dashboard");
   } catch (e: any) {
     const responseData = e.response?.data;
     const twoFaRequired =

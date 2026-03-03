@@ -84,7 +84,7 @@
     const basePrefix = startIdx ? "/" + segments.slice(0, startIdx).join("/") : "";
     const visibleSegments = segments.slice(startIdx);
 
-    const filteredSegments = visibleSegments.filter(seg => !["admin", "dashboard"].includes(seg.toLowerCase()));
+    const filteredSegments = visibleSegments.filter(seg => seg.toLowerCase() !== "dashboard");
 
     const list = filteredSegments.map((seg, idx) => {
       const key = seg.toLowerCase();
@@ -95,7 +95,7 @@
 
     const dashCrumb = {
       name: labels.dashboard ?? "Главная",
-      to: basePrefix + "/admin/dashboard",
+      to: basePrefix + "/dashboard",
       icon: UiIconHome,
     };
     if (!list.length) return [dashCrumb];
@@ -108,7 +108,7 @@
     const currentLocale = locale.value?.toLowerCase?.();
     const startIdx = currentLocale && segments[0]?.toLowerCase() === currentLocale ? 1 : 0;
     const visibleSegments = segments.slice(startIdx);
-    return visibleSegments.join("/") !== "admin/dashboard";
+    return visibleSegments.join("/") !== "dashboard";
   });
 
   watch(

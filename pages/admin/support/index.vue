@@ -387,7 +387,7 @@
     watch,
     h,
   } from "vue";
-  import { definePageMeta, useAuthStore } from "~/.nuxt/imports";
+  import { definePageMeta } from "~/.nuxt/imports";
   import { useNuxtApp } from "nuxt/app";
   import ChatDefault from "~/components/block/chats/ChatDefault.vue";
   import UiIconPlus from "~/components/ui/UiIconPlus.vue";
@@ -405,7 +405,7 @@
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import ViewModeToggle from "~/components/block/controls/ViewModeToggle.vue";
   import { useI18n } from "vue-i18n";
-  import TicketsCreateNew from "~/pages/support/components/TicketsCreateNew.vue";
+  import TicketsCreateNew from "~/pages/admin/support/components/TicketsCreateNew.vue";
   import { useRouter } from "vue-router";
   import useEventBus from "~/composables/useEventBus";
 
@@ -425,8 +425,6 @@
     email: null,
     photoUrl: null,
   });
-
-  const authStore = useAuthStore();
 
   const sortByFilterData = reactive([
     {
@@ -963,7 +961,7 @@
     await loadData();
   };
 
-  const handleClickRow = (ticketId: string) => router.push(`/admin/support/${ticketId}`);
+  const handleClickRow = (ticketId: string) => router.push(`/support/${ticketId}`);
 
   const handleSupportListReload = () => {
     loadData().catch(() => {});
