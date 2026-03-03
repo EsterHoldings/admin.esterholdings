@@ -10,6 +10,11 @@ export class ClientsService {
   async get(params: {}): Promise<any> {
     return await this.useApi.get("/admin/clients", params);
   }
+
+  async getStats(params: object = {}): Promise<any> {
+    return await this.useApi.get("/admin/clients/stats", params);
+  }
+
   async getById(id: any) {
     return await this.useApi.get(`/admin/clients/${id}`);
   }
