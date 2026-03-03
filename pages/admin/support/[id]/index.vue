@@ -713,10 +713,16 @@
   }
 
   @media (max-width: 767px) {
+    :global(body.support-chat-fullscreen) .page-header {
+      z-index: 1 !important;
+      pointer-events: none;
+    }
+
     .support-ticket-grid.is-mobile.is-mobile-fullscreen {
       position: fixed;
       inset: 0;
-      z-index: 120;
+      z-index: 180;
+      isolation: isolate;
       display: block;
       width: 100vw;
       height: 100dvh;
@@ -732,7 +738,7 @@
       height: 100dvh;
       max-height: 100dvh;
       width: 100%;
-      z-index: 1;
+      z-index: 2;
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.support-chat) {
@@ -744,6 +750,10 @@
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.drag-handle) {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      background: var(--ui-background-panel);
       padding-top: calc(10px + env(safe-area-inset-top, 0px));
     }
   }
