@@ -1308,10 +1308,42 @@
         "offlineNow": "Оффлайн"
       },
       "filters": {
-        "title": "Фильтры поиска",
+        "title": "Фильтры",
         "reset": "Сбросить",
         "apply": "Применить",
-        "clearAll": "Очистить все"
+        "clearAll": "Очистить все",
+        "sections": {
+          "statuses": "Статусы",
+          "text": "Текстовые поля",
+          "dates": "Диапазоны дат"
+        },
+        "fields": {
+          "mid_name": "Отчество",
+          "provider_name": "Провайдер",
+          "provider_id": "ID провайдера",
+          "online_status": "Онлайн-статус",
+          "email_verified": "Верификация email",
+          "has_photo": "Фото профиля",
+          "two_factor_enabled": "2FA",
+          "birthdate_from": "Дата рождения от",
+          "birthdate_to": "Дата рождения до",
+          "created_at_from": "Создан от",
+          "created_at_to": "Создан до",
+          "email_verified_at_from": "Email подтвержден от",
+          "email_verified_at_to": "Email подтвержден до",
+          "updated_at_from": "Обновлен от",
+          "updated_at_to": "Обновлен до"
+        },
+        "values": {
+          "online": "Онлайн",
+          "offline": "Оффлайн",
+          "verified": "Подтвержден",
+          "unverified": "Не подтвержден",
+          "yes": "Да",
+          "no": "Нет",
+          "enabled": "Включено",
+          "disabled": "Выключено"
+        }
       },
       "stats": {
         "onlineNow": "Сейчас онлайн",

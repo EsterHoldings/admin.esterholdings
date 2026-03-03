@@ -1362,10 +1362,42 @@
         "offlineNow": "Offline"
       },
       "filters": {
-        "title": "Search filters",
+        "title": "Filters",
         "reset": "Reset",
         "apply": "Apply",
-        "clearAll": "Clear all"
+        "clearAll": "Clear all",
+        "sections": {
+          "statuses": "Statuses",
+          "text": "Text fields",
+          "dates": "Date ranges"
+        },
+        "fields": {
+          "mid_name": "Middle name",
+          "provider_name": "Provider name",
+          "provider_id": "Provider ID",
+          "online_status": "Online status",
+          "email_verified": "Email verification",
+          "has_photo": "Photo",
+          "two_factor_enabled": "2FA",
+          "birthdate_from": "Birthdate from",
+          "birthdate_to": "Birthdate to",
+          "created_at_from": "Created from",
+          "created_at_to": "Created to",
+          "email_verified_at_from": "Email verified from",
+          "email_verified_at_to": "Email verified to",
+          "updated_at_from": "Updated from",
+          "updated_at_to": "Updated to"
+        },
+        "values": {
+          "online": "Online",
+          "offline": "Offline",
+          "verified": "Verified",
+          "unverified": "Unverified",
+          "yes": "Yes",
+          "no": "No",
+          "enabled": "Enabled",
+          "disabled": "Disabled"
+        }
       },
       "stats": {
         "onlineNow": "Online now",

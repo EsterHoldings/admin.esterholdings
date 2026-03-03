@@ -1365,10 +1365,42 @@
         "offlineNow": "Офлайн"
       },
       "filters": {
-        "title": "Фільтри пошуку",
+        "title": "Фільтри",
         "reset": "Скинути",
         "apply": "Застосувати",
-        "clearAll": "Очистити все"
+        "clearAll": "Очистити все",
+        "sections": {
+          "statuses": "Статуси",
+          "text": "Текстові поля",
+          "dates": "Діапазони дат"
+        },
+        "fields": {
+          "mid_name": "По батькові",
+          "provider_name": "Провайдер",
+          "provider_id": "ID провайдера",
+          "online_status": "Онлайн-статус",
+          "email_verified": "Верифікація email",
+          "has_photo": "Фото профілю",
+          "two_factor_enabled": "2FA",
+          "birthdate_from": "Дата народження від",
+          "birthdate_to": "Дата народження до",
+          "created_at_from": "Створено від",
+          "created_at_to": "Створено до",
+          "email_verified_at_from": "Email підтверджено від",
+          "email_verified_at_to": "Email підтверджено до",
+          "updated_at_from": "Оновлено від",
+          "updated_at_to": "Оновлено до"
+        },
+        "values": {
+          "online": "Онлайн",
+          "offline": "Офлайн",
+          "verified": "Підтверджено",
+          "unverified": "Не підтверджено",
+          "yes": "Так",
+          "no": "Ні",
+          "enabled": "Увімкнено",
+          "disabled": "Вимкнено"
+        }
       },
       "stats": {
         "onlineNow": "Зараз онлайн",

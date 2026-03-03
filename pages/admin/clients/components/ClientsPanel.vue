@@ -74,20 +74,88 @@
                   class="clients-filters-popover"
                   @click.stop>
                   <div class="clients-filters-popover__title">
-                    {{ t("admin.clients.filters.title", "Search filters") }}
+                    {{ t("admin.clients.filters.title", "Filters") }}
                   </div>
 
-                  <div class="clients-filters-popover__list">
-                    <label
-                      v-for="item in searchFieldOptions"
-                      :key="item.value"
-                      class="clients-filters-popover__item">
-                      <input
-                        type="checkbox"
-                        :checked="draftSearchFields.includes(item.value)"
-                        @change="toggleDraftSearchField(item.value)" />
-                      <span>{{ item.label }}</span>
-                    </label>
+                  <div class="clients-filters-popover__body">
+                    <div class="clients-filters-popover__section-title">
+                      {{ t("admin.clients.filters.sections.statuses", "Statuses") }}
+                    </div>
+
+                    <div class="clients-filters-popover__grid clients-filters-popover__grid--status">
+                      <label class="clients-filters-popover__field">
+                        <span>{{ t("admin.clients.filters.fields.online_status", "Online status") }}</span>
+                        <UiSelect
+                          :withoutNoSelect="false"
+                          :value="draftFilters.online_status || null"
+                          :data="onlineStatusOptions"
+                          @change="value => setDraftFilterValue('online_status', value)" />
+                      </label>
+
+                      <label class="clients-filters-popover__field">
+                        <span>{{ t("admin.clients.filters.fields.email_verified", "Email verification") }}</span>
+                        <UiSelect
+                          :withoutNoSelect="false"
+                          :value="draftFilters.email_verified || null"
+                          :data="emailVerifiedOptions"
+                          @change="value => setDraftFilterValue('email_verified', value)" />
+                      </label>
+
+                      <label class="clients-filters-popover__field">
+                        <span>{{ t("admin.clients.filters.fields.has_photo", "Photo") }}</span>
+                        <UiSelect
+                          :withoutNoSelect="false"
+                          :value="draftFilters.has_photo || null"
+                          :data="hasPhotoOptions"
+                          @change="value => setDraftFilterValue('has_photo', value)" />
+                      </label>
+
+                      <label class="clients-filters-popover__field">
+                        <span>{{ t("admin.clients.filters.fields.two_factor_enabled", "2FA") }}</span>
+                        <UiSelect
+                          :withoutNoSelect="false"
+                          :value="draftFilters.two_factor_enabled || null"
+                          :data="twoFactorOptions"
+                          @change="value => setDraftFilterValue('two_factor_enabled', value)" />
+                      </label>
+                    </div>
+
+                    <div class="clients-filters-popover__section-title">
+                      {{ t("admin.clients.filters.sections.text", "Text fields") }}
+                    </div>
+
+                    <div class="clients-filters-popover__grid">
+                      <label
+                        v-for="field in filterTextFieldOptions"
+                        :key="field.key"
+                        class="clients-filters-popover__field">
+                        <span>{{ field.label }}</span>
+                        <input
+                          class="clients-filters-popover__input"
+                          type="text"
+                          :value="draftFilters[field.key]"
+                          :placeholder="field.label"
+                          @input="event => handleDraftTextInput(field.key, event)" />
+                      </label>
+                    </div>
+
+                    <div class="clients-filters-popover__section-title">
+                      {{ t("admin.clients.filters.sections.dates", "Date ranges") }}
+                    </div>
+
+                    <div class="clients-filters-popover__grid">
+                      <label
+                        v-for="field in filterDateFieldOptions"
+                        :key="field.key"
+                        class="clients-filters-popover__field">
+                        <span>{{ field.label }}</span>
+                        <input
+                          class="clients-filters-popover__input"
+                          type="date"
+                          :value="draftFilters[field.key]"
+                          @input="event => handleDraftTextInput(field.key, event)" />
+                      </label>
+                    </div>
                   </div>
 
                   <div class="clients-filters-popover__actions">
@@ -110,15 +178,15 @@
           </div>
 
           <div
-            v-if="selectedSearchFields.length"
+            v-if="activeFilterChips.length"
             class="clients-filter-chips">
             <button
-              v-for="field in selectedSearchFields"
-              :key="field"
+              v-for="chip in activeFilterChips"
+              :key="chip.key"
               type="button"
               class="clients-filter-chip"
-              @click="removeSearchField(field)">
-              <span>{{ getSearchFieldLabel(field) }}</span>
+              @click="removeAppliedFilter(chip.key)">
+              <span>{{ chip.label }}: {{ chip.value }}</span>
               <span class="clients-filter-chip__remove">×</span>
             </button>
 
@@ -322,6 +390,7 @@
     "id",
     "email",
     "first_name",
+    "mid_name",
     "last_name",
     "phone",
     "birthdate",
@@ -330,8 +399,83 @@
     "city",
     "address",
     "postal_code",
+    "provider_name",
+    "provider_id",
+    "email_verified_at",
+    "updated_at",
     "created_at",
   ];
+
+  type FilterKey =
+    | "id"
+    | "email"
+    | "first_name"
+    | "mid_name"
+    | "last_name"
+    | "phone"
+    | "country"
+    | "state"
+    | "city"
+    | "address"
+    | "postal_code"
+    | "provider_name"
+    | "provider_id"
+    | "online_status"
+    | "email_verified"
+    | "has_photo"
+    | "two_factor_enabled"
+    | "birthdate_from"
+    | "birthdate_to"
+    | "created_at_from"
+    | "created_at_to"
+    | "email_verified_at_from"
+    | "email_verified_at_to"
+    | "updated_at_from"
+    | "updated_at_to";
+
+  type ClientFilters = Record<FilterKey, string>;
+
+  const createEmptyFilters = (): ClientFilters => ({
+    id: "",
+    email: "",
+    first_name: "",
+    mid_name: "",
+    last_name: "",
+    phone: "",
+    country: "",
+    state: "",
+    city: "",
+    address: "",
+    postal_code: "",
+    provider_name: "",
+    provider_id: "",
+    online_status: "",
+    email_verified: "",
+    has_photo: "",
+    two_factor_enabled: "",
+    birthdate_from: "",
+    birthdate_to: "",
+    created_at_from: "",
+    created_at_to: "",
+    email_verified_at_from: "",
+    email_verified_at_to: "",
+    updated_at_from: "",
+    updated_at_to: "",
+  });
+
+  const cloneFilters = (source: ClientFilters): ClientFilters => ({ ...source });
+
+  const sanitizeFilterValue = (value: unknown): string => {
+    if (typeof value === "string") {
+      return value.trim();
+    }
+
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value).trim();
+  };
 
   const { t, locale } = useI18n({ useScope: "global" });
   const localePath = useLocalePath();
@@ -367,27 +511,114 @@
     },
   });
 
-  const selectedSearchFields = ref<string[]>([]);
-  const draftSearchFields = ref<string[]>([]);
+  const appliedFilters = ref<ClientFilters>(createEmptyFilters());
+  const draftFilters = ref<ClientFilters>(createEmptyFilters());
   const isFiltersPopoverOpen = ref(false);
   const filtersPopoverRef = ref<HTMLElement | null>(null);
 
   let pollingTimer: ReturnType<typeof setInterval> | null = null;
 
-  const searchFieldOptions = computed(() => [
-    { value: "id", label: "ID" },
-    { value: "email", label: t("admin.accounts.components.accounts-panel.columns.email") },
-    { value: "first_name", label: t("admin.clients.components.clients-panel.columns.first_name", "First name") },
-    { value: "last_name", label: t("admin.clients.components.clients-panel.columns.last_name", "Last name") },
-    { value: "phone", label: t("admin.accounts.components.accounts-panel.columns.phone") },
-    { value: "birthdate", label: t("admin.clients.columns.birthdate", "Birthdate") },
-    { value: "country", label: t("admin.clients.columns.country", "Country") },
-    { value: "state", label: t("admin.clients.columns.state", "State") },
-    { value: "city", label: t("admin.clients.columns.city", "City") },
-    { value: "address", label: t("admin.clients.columns.address", "Address") },
-    { value: "postal_code", label: t("admin.clients.columns.postalCode", "Postal code") },
-    { value: "created_at", label: t("admin.accounts.components.accounts-panel.columns.created_at") },
+  const filterTextFieldOptions = computed(() => [
+    { key: "id" as FilterKey, label: "ID" },
+    { key: "email" as FilterKey, label: t("admin.accounts.components.accounts-panel.columns.email") },
+    { key: "first_name" as FilterKey, label: t("admin.clients.components.clients-panel.columns.first_name", "First name") },
+    { key: "mid_name" as FilterKey, label: t("admin.clients.filters.fields.mid_name", "Middle name") },
+    { key: "last_name" as FilterKey, label: t("admin.clients.components.clients-panel.columns.last_name", "Last name") },
+    { key: "phone" as FilterKey, label: t("admin.accounts.components.accounts-panel.columns.phone") },
+    { key: "country" as FilterKey, label: t("admin.clients.columns.country", "Country") },
+    { key: "state" as FilterKey, label: t("admin.clients.columns.state", "State / Region") },
+    { key: "city" as FilterKey, label: t("admin.clients.columns.city", "City") },
+    { key: "address" as FilterKey, label: t("admin.clients.columns.address", "Address") },
+    { key: "postal_code" as FilterKey, label: t("admin.clients.columns.postalCode", "Postal code") },
+    { key: "provider_name" as FilterKey, label: t("admin.clients.filters.fields.provider_name", "Provider name") },
+    { key: "provider_id" as FilterKey, label: t("admin.clients.filters.fields.provider_id", "Provider ID") },
   ]);
+
+  const filterDateFieldOptions = computed(() => [
+    { key: "birthdate_from" as FilterKey, label: t("admin.clients.filters.fields.birthdate_from", "Birthdate from") },
+    { key: "birthdate_to" as FilterKey, label: t("admin.clients.filters.fields.birthdate_to", "Birthdate to") },
+    { key: "created_at_from" as FilterKey, label: t("admin.clients.filters.fields.created_at_from", "Created from") },
+    { key: "created_at_to" as FilterKey, label: t("admin.clients.filters.fields.created_at_to", "Created to") },
+    {
+      key: "email_verified_at_from" as FilterKey,
+      label: t("admin.clients.filters.fields.email_verified_at_from", "Email verified from"),
+    },
+    {
+      key: "email_verified_at_to" as FilterKey,
+      label: t("admin.clients.filters.fields.email_verified_at_to", "Email verified to"),
+    },
+    { key: "updated_at_from" as FilterKey, label: t("admin.clients.filters.fields.updated_at_from", "Updated from") },
+    { key: "updated_at_to" as FilterKey, label: t("admin.clients.filters.fields.updated_at_to", "Updated to") },
+  ]);
+
+  const onlineStatusOptions = computed(() => [
+    { id: "online", value: "online", text: t("admin.clients.filters.values.online", "Online") },
+    { id: "offline", value: "offline", text: t("admin.clients.filters.values.offline", "Offline") },
+  ]);
+
+  const emailVerifiedOptions = computed(() => [
+    { id: "verified", value: "verified", text: t("admin.clients.filters.values.verified", "Verified") },
+    { id: "unverified", value: "unverified", text: t("admin.clients.filters.values.unverified", "Unverified") },
+  ]);
+
+  const hasPhotoOptions = computed(() => [
+    { id: "yes", value: "yes", text: t("admin.clients.filters.values.yes", "Yes") },
+    { id: "no", value: "no", text: t("admin.clients.filters.values.no", "No") },
+  ]);
+
+  const twoFactorOptions = computed(() => [
+    { id: "enabled", value: "enabled", text: t("admin.clients.filters.values.enabled", "Enabled") },
+    { id: "disabled", value: "disabled", text: t("admin.clients.filters.values.disabled", "Disabled") },
+  ]);
+
+  const filterLabelMap = computed<Record<FilterKey, string>>(() => ({
+    id: "ID",
+    email: t("admin.accounts.components.accounts-panel.columns.email"),
+    first_name: t("admin.clients.components.clients-panel.columns.first_name", "First name"),
+    mid_name: t("admin.clients.filters.fields.mid_name", "Middle name"),
+    last_name: t("admin.clients.components.clients-panel.columns.last_name", "Last name"),
+    phone: t("admin.accounts.components.accounts-panel.columns.phone"),
+    country: t("admin.clients.columns.country", "Country"),
+    state: t("admin.clients.columns.state", "State / Region"),
+    city: t("admin.clients.columns.city", "City"),
+    address: t("admin.clients.columns.address", "Address"),
+    postal_code: t("admin.clients.columns.postalCode", "Postal code"),
+    provider_name: t("admin.clients.filters.fields.provider_name", "Provider name"),
+    provider_id: t("admin.clients.filters.fields.provider_id", "Provider ID"),
+    online_status: t("admin.clients.filters.fields.online_status", "Online status"),
+    email_verified: t("admin.clients.filters.fields.email_verified", "Email verification"),
+    has_photo: t("admin.clients.filters.fields.has_photo", "Photo"),
+    two_factor_enabled: t("admin.clients.filters.fields.two_factor_enabled", "2FA"),
+    birthdate_from: t("admin.clients.filters.fields.birthdate_from", "Birthdate from"),
+    birthdate_to: t("admin.clients.filters.fields.birthdate_to", "Birthdate to"),
+    created_at_from: t("admin.clients.filters.fields.created_at_from", "Created from"),
+    created_at_to: t("admin.clients.filters.fields.created_at_to", "Created to"),
+    email_verified_at_from: t("admin.clients.filters.fields.email_verified_at_from", "Email verified from"),
+    email_verified_at_to: t("admin.clients.filters.fields.email_verified_at_to", "Email verified to"),
+    updated_at_from: t("admin.clients.filters.fields.updated_at_from", "Updated from"),
+    updated_at_to: t("admin.clients.filters.fields.updated_at_to", "Updated to"),
+  }));
+
+  const filterValueLabelMap = computed<Record<string, string>>(() => ({
+    online: t("admin.clients.filters.values.online", "Online"),
+    offline: t("admin.clients.filters.values.offline", "Offline"),
+    verified: t("admin.clients.filters.values.verified", "Verified"),
+    unverified: t("admin.clients.filters.values.unverified", "Unverified"),
+    yes: t("admin.clients.filters.values.yes", "Yes"),
+    no: t("admin.clients.filters.values.no", "No"),
+    enabled: t("admin.clients.filters.values.enabled", "Enabled"),
+    disabled: t("admin.clients.filters.values.disabled", "Disabled"),
+  }));
+
+  const activeFilterChips = computed(() => {
+    return (Object.entries(appliedFilters.value) as Array<[FilterKey, string]>)
+      .filter(([, value]) => sanitizeFilterValue(value) !== "")
+      .map(([key, value]) => ({
+        key,
+        label: filterLabelMap.value[key] ?? key,
+        value: filterValueLabelMap.value[value] ?? value,
+      }));
+  });
 
   const sortByOptions = computed(() => [
     { id: "created_at", value: "created_at", text: t("admin.accounts.components.accounts-panel.columns.created_at") },
@@ -473,10 +704,6 @@
     },
   ]);
 
-  const effectiveSearchFields = computed(() => {
-    return selectedSearchFields.value.length ? selectedSearchFields.value : ALL_SEARCH_FIELDS;
-  });
-
   const metricCards = computed(() => [
     {
       id: "online_now",
@@ -537,6 +764,21 @@
     }
   };
 
+  const getFiltersPayload = (filters: ClientFilters): Partial<ClientFilters> => {
+    const payload: Partial<ClientFilters> = {};
+
+    for (const [key, value] of Object.entries(filters) as Array<[FilterKey, string]>) {
+      const normalizedValue = sanitizeFilterValue(value);
+      if (normalizedValue === "") {
+        continue;
+      }
+
+      payload[key] = normalizedValue;
+    }
+
+    return payload;
+  };
+
   const loadData = async ({ resetPage = false, silent = false }: { resetPage?: boolean; silent?: boolean } = {}) => {
     if (resetPage) {
       page.value = 1;
@@ -551,9 +793,10 @@
         page: page.value,
         perPage: perPage.value,
         searchFilter: searchFilter.value,
-        searchFields: effectiveSearchFields.value,
+        searchFields: ALL_SEARCH_FIELDS,
         orderBy: orderBy.value,
         orderDirection: orderDirection.value,
+        filters: getFiltersPayload(appliedFilters.value),
       };
 
       const response = await appCore.adminModules.clients.get(params);
@@ -655,46 +898,54 @@
     await loadAll();
   };
 
+  const setDraftFilterValue = (key: FilterKey, value: unknown) => {
+    draftFilters.value = {
+      ...draftFilters.value,
+      [key]: sanitizeFilterValue(value),
+    };
+  };
+
+  const handleDraftTextInput = (key: FilterKey, event: Event) => {
+    const target = event.target as HTMLInputElement | null;
+    setDraftFilterValue(key, target?.value ?? "");
+  };
+
   const toggleFiltersPopover = () => {
     if (!isFiltersPopoverOpen.value) {
-      draftSearchFields.value = [...selectedSearchFields.value];
+      draftFilters.value = cloneFilters(appliedFilters.value);
     }
 
     isFiltersPopoverOpen.value = !isFiltersPopoverOpen.value;
   };
 
-  const toggleDraftSearchField = (value: string) => {
-    if (draftSearchFields.value.includes(value)) {
-      draftSearchFields.value = draftSearchFields.value.filter(field => field !== value);
-      return;
-    }
-
-    draftSearchFields.value = [...draftSearchFields.value, value];
-  };
-
   const resetDraftFilters = () => {
-    draftSearchFields.value = [];
+    draftFilters.value = createEmptyFilters();
   };
 
   const applyDraftFilters = async () => {
-    selectedSearchFields.value = Array.from(new Set(draftSearchFields.value));
+    appliedFilters.value = cloneFilters(draftFilters.value);
     isFiltersPopoverOpen.value = false;
     await loadData({ resetPage: true });
   };
 
-  const removeSearchField = async (field: string) => {
-    selectedSearchFields.value = selectedSearchFields.value.filter(item => item !== field);
+  const removeAppliedFilter = async (key: FilterKey) => {
+    appliedFilters.value = {
+      ...appliedFilters.value,
+      [key]: "",
+    };
+
+    draftFilters.value = {
+      ...draftFilters.value,
+      [key]: "",
+    };
+
     await loadData({ resetPage: true });
   };
 
   const clearAllAppliedFilters = async () => {
-    selectedSearchFields.value = [];
+    appliedFilters.value = createEmptyFilters();
+    draftFilters.value = createEmptyFilters();
     await loadData({ resetPage: true });
-  };
-
-  const getSearchFieldLabel = (field: string) => {
-    const target = searchFieldOptions.value.find(item => item.value === field);
-    return target?.label ?? field;
   };
 
   const handleClickOutsideFilters = (event: MouseEvent) => {
@@ -751,6 +1002,7 @@
 
   const formatMoney = (value: number) => {
     const numericValue = Number(value || 0);
+
     return `$ ${numericValue.toLocaleString(locale.value || undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -832,46 +1084,96 @@
     right: 0;
     top: calc(100% + 8px);
     z-index: 40;
-    width: 280px;
+    width: min(92vw, 560px);
+    max-height: min(70vh, 760px);
     border: 1px solid var(--color-stroke-ui-light);
     border-radius: 10px;
     background: var(--ui-background-panel);
     box-shadow: 0 12px 30px color-mix(in srgb, var(--ui-background) 70%, transparent);
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .clients-filters-popover__title {
     font-size: 12px;
     font-weight: 600;
     color: var(--ui-text-secondary);
-    margin-bottom: 8px;
   }
 
-  .clients-filters-popover__list {
-    max-height: 220px;
+  .clients-filters-popover__body {
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 2px;
+  }
+
+  .clients-filters-popover__section-title {
+    font-size: 11px;
+    line-height: 14px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ui-text-secondary);
+  }
+
+  .clients-filters-popover__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  @media (min-width: 640px) {
+    .clients-filters-popover__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .clients-filters-popover__grid--status {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 980px) {
+    .clients-filters-popover__grid--status {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .clients-filters-popover__field {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
 
-  .clients-filters-popover__item {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 28px;
-    font-size: 13px;
-    color: var(--ui-text-main);
+  .clients-filters-popover__field > span {
+    font-size: 12px;
+    color: var(--ui-text-secondary);
   }
 
-  .clients-filters-popover__item input {
-    width: 14px;
-    height: 14px;
-    accent-color: var(--ui-primary-accent);
+  .clients-filters-popover__input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: var(--color-stroke-ui-dark);
+    color: var(--ui-text-main);
+    font-size: 13px;
+    line-height: 1;
+    padding: 0 12px;
+    outline: none;
+  }
+
+  .clients-filters-popover__input:focus {
+    border-color: var(--ui-primary-accent);
+  }
+
+  .clients-filters-popover__input::placeholder {
+    color: var(--ui-text-secondary);
   }
 
   .clients-filters-popover__actions {
-    margin-top: 10px;
+    margin-top: 4px;
     display: flex;
     align-items: center;
     gap: 8px;
