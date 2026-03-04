@@ -1734,11 +1734,6 @@
   }
 
   @media (max-width: 767px) {
-    :global(body.support-chat-fullscreen .page-header) {
-      z-index: 1 !important;
-      pointer-events: none;
-    }
-
     .support-ticket-grid.is-mobile.is-mobile-fullscreen {
       position: fixed;
       inset: 0;

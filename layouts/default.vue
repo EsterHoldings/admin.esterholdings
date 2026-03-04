@@ -185,32 +185,6 @@
     display: none;
   }
 
-  :global(html.support-chat-fullscreen),
-  :global(body.support-chat-fullscreen) {
-    height: 100%;
-    overflow: hidden;
-  }
-
-  :global(body.support-chat-fullscreen) .page-content-wrapper {
-    height: 100dvh !important;
-    overflow: hidden !important;
-  }
-
-  :global(body.support-chat-fullscreen) .page-content {
-    padding-top: 0 !important;
-    overflow: hidden !important;
-  }
-
-  :global(body.support-chat-fullscreen) .page-header {
-    opacity: 0;
-    pointer-events: none;
-    z-index: -1 !important;
-  }
-
-  :global(body.support-chat-fullscreen) .admin-breadcrumbs {
-    display: none !important;
-  }
-
   @media (max-width: 1023px) {
     .page-wrapper {
       grid-template-columns: 1fr;
