@@ -784,7 +784,7 @@
   const DESKTOP_GRID_BOTTOM_GAP = 16;
   const TABLET_BOTTOM_MENU_RESERVED = 78;
   const MIN_DESKTOP_GRID_HEIGHT = 320;
-  const MOBILE_CHAT_BOTTOM_GAP = 20;
+  const MOBILE_CHAT_BOTTOM_GAP = 0;
   const MOBILE_PANEL_CLOSE_MIN_SWIPE = 42;
   const MOBILE_PANEL_CLOSE_BOTTOM_THRESHOLD = 0.4;
   const MOBILE_PANEL_HORIZONTAL_DRIFT_LIMIT = 52;
@@ -1529,6 +1529,21 @@
     scheduleDesktopGridMeasure();
   };
 
+  const refreshParticipantsFromTicket = async () => {
+    try {
+      const response = await appCore.adminModules.tickets.getById(id.value);
+      const ticket = response?.data ?? {};
+      const serverParticipants = Array.isArray(ticket?.participants) ? ticket.participants : [];
+      if (serverParticipants.length > 0) {
+        applyParticipantsPayload(serverParticipants);
+        return;
+      }
+      updateParticipantsOnlineFromPresence({});
+    } catch {
+      // noop
+    }
+  };
+
   const handleSupportPresenceUpdated = (payload?: any) => {
     if (!payload || typeof payload !== "object") return;
 
@@ -1560,6 +1575,18 @@
         : (payload as Record<string, unknown>);
 
     if (!rawMessage || typeof rawMessage !== "object") return;
+
+    const messageType = normalizeText(rawMessage.type).toLowerCase();
+    const messageMeta =
+      rawMessage.meta && typeof rawMessage.meta === "object" ? (rawMessage.meta as Record<string, unknown>) : null;
+    const messageEvent = normalizeText(messageMeta?.event);
+    if (
+      messageType === "system" &&
+      ["participant_joined", "participant_added", "participant_removed", "participant_left"].includes(messageEvent)
+    ) {
+      void refreshParticipantsFromTicket();
+    }
+
     mergeLibraryFromMessages([rawMessage]);
   };
 
@@ -1707,7 +1734,7 @@
   }
 
   @media (max-width: 767px) {
-    :global(body.support-chat-fullscreen) .page-header {
+    :global(body.support-chat-fullscreen .page-header) {
       z-index: 1 !important;
       pointer-events: none;
     }
@@ -1715,7 +1742,7 @@
     .support-ticket-grid.is-mobile.is-mobile-fullscreen {
       position: fixed;
       inset: 0;
-      z-index: 180;
+      z-index: 5000;
       isolation: isolate;
       display: block;
       width: 100vw;
@@ -1724,6 +1751,7 @@
       margin: 0;
       padding: 0;
       background: var(--ui-background);
+      pointer-events: auto;
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper {
