@@ -420,6 +420,7 @@
 
   const currentUser = reactive({
     id: null,
+    linkedUserId: null,
     name: null,
     firstName: null,
     lastName: null,
@@ -1010,6 +1011,7 @@
     const response = await appCore.adminModules.auth.getAuthUser();
     const photoUrl = response.data.photo_url ?? response.data.avatar_url ?? response.data.avatar ?? null;
     currentUser.id = response.data.id;
+    currentUser.linkedUserId = response.data.user_id ?? null;
     currentUser.name = response.data.nickname ?? response.data.first_name ?? null;
     currentUser.firstName = response.data.first_name ?? null;
     currentUser.lastName = response.data.last_name ?? null;

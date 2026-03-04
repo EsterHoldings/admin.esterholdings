@@ -1079,6 +1079,7 @@
   type PresenceUser = { id: string; name: string; role?: string };
   type ChatCurrentUser = {
     id: number | string | null;
+    linkedUserId?: number | string | null;
     name?: string | null;
     firstName?: string | null;
     lastName?: string | null;
@@ -1701,11 +1702,23 @@
   };
 
   const currentUserId = computed(() => normalizeUserId(props.currentUser.id));
+  const currentUserLinkedId = computed(() => normalizeUserId(props.currentUser.linkedUserId));
+  const currentUserIdentityIds = computed(() => {
+    const ids = new Set<string>();
+    if (currentUserId.value) ids.add(currentUserId.value);
+    if (currentUserLinkedId.value) ids.add(currentUserLinkedId.value);
+    return ids;
+  });
+  const isCurrentUserId = (value: unknown): boolean => {
+    const normalized = normalizeUserId(value);
+    return normalized !== "" && currentUserIdentityIds.value.has(normalized);
+  };
+  const currentUserMessageIdentity = computed(() => currentUserLinkedId.value || currentUserId.value);
   const myAvatarUrl = computed(() => normalizeText(props.currentUser.photoUrl));
   const isSystemMessage = (message: ChatMessage): boolean => {
     return normalizeText(message.type).toLowerCase() === "system";
   };
-  const isMe = (m: ChatMessage) => m.userId !== "" && m.userId === currentUserId.value;
+  const isMe = (m: ChatMessage) => isCurrentUserId(m.userId);
   const isMessagePending = (message: ChatMessage): boolean => {
     return message.deliveryStatus === "pending";
   };
@@ -1767,7 +1780,7 @@
     if (remoteTypingUsers.size === 0) return false;
 
     for (const userId of Array.from(remoteTypingUsers.values())) {
-      if (userId !== currentUserId.value) {
+      if (!isCurrentUserId(userId)) {
         return true;
       }
     }
@@ -2180,7 +2193,7 @@
 
   const applyRemoteTypingState = (userId: unknown, isTyping: boolean) => {
     const normalizedUserId = normalizeUserId(userId);
-    if (!normalizedUserId || normalizedUserId === currentUserId.value) return;
+    if (!normalizedUserId || isCurrentUserId(normalizedUserId)) return;
 
     clearRemoteTypingTimer(normalizedUserId);
 
@@ -2387,7 +2400,7 @@
     const message = messageById.value.get(messageId);
     if (!message) return false;
 
-    return message.userId !== currentUserId.value;
+    return !isCurrentUserId(message.userId);
   };
 
   const isMessageIdNewerThan = (candidateId: string, baselineId: string | null): boolean => {
@@ -2426,7 +2439,7 @@
   const getLatestIncomingMessageId = (): string | null => {
     for (let i = messages.length - 1; i >= 0; i -= 1) {
       const message = messages[i];
-      if (message.userId !== currentUserId.value) {
+      if (!isCurrentUserId(message.userId)) {
         return message.id;
       }
     }
@@ -2592,7 +2605,7 @@
 
     return {
       id: createLocalMessageId(),
-      userId: currentUserId.value,
+      userId: currentUserMessageIdentity.value,
       type: fallbackType,
       body,
       meta:
@@ -2639,7 +2652,7 @@
   };
   const findPendingMessageIndexForIncoming = (incoming: ChatMessage): number => {
     if (incoming.deliveryStatus !== "sent") return -1;
-    if (incoming.userId !== currentUserId.value) return -1;
+    if (!isCurrentUserId(incoming.userId)) return -1;
 
     const byServerId = messages.findIndex(
       message => message.deliveryStatus === "pending" && message.pendingServerId === incoming.id
@@ -2653,7 +2666,7 @@
     for (let index = 0; index < messages.length; index += 1) {
       const candidate = messages[index];
       if (candidate.deliveryStatus !== "pending") continue;
-      if (candidate.userId !== incoming.userId) continue;
+      if (!isCurrentUserId(candidate.userId)) continue;
 
       const candidateIdentity = buildMessageIdentity(candidate);
       if (candidateIdentity !== incomingIdentity) continue;
@@ -2718,9 +2731,12 @@
     if (message.type !== "attachment") return false;
 
     const meta = message.meta;
-    if (!meta) return false;
+    if (!meta) return true;
 
-    return (meta.attachmentsCount ?? 0) > (meta.attachments?.length ?? 0);
+    const attachments = Array.isArray(meta.attachments) ? meta.attachments : [];
+    if (attachments.length === 0) return true;
+
+    return (meta.attachmentsCount ?? 0) > attachments.length;
   };
   async function syncLatestMessagesFromServer() {
     try {
@@ -2847,7 +2863,7 @@
         scrollToBottom();
         await waitForNextPaint();
       }
-      if (incomingMessage.userId !== currentUserId.value) {
+      if (!isCurrentUserId(incomingMessage.userId)) {
         await markVisibleMessagesAsRead();
       }
       if (messageNeedsAttachmentHydration(incomingMessage)) {
@@ -2879,7 +2895,7 @@
   const isCounterpartyOnline = computed(() => {
     if (onlineMap.size === 0) return false;
     for (const u of Array.from(onlineMap.values())) {
-      if (u.id !== currentUserId.value) {
+      if (!isCurrentUserId(u.id)) {
         return true;
       }
     }
@@ -3001,9 +3017,12 @@
   }
 
   let privateChan: any = null;
+  let activeRealtimeTicketId: string | null = null;
   let resizeListenerAttached = false;
   let mobileModeResizeListenerAttached = false;
   let appResumeListenersAttached = false;
+  let socketStateHandler: ((states: any) => void) | null = null;
+  let realtimeFallbackTimer: ReturnType<typeof setInterval> | null = null;
 
   const reconnectSocketTransport = () => {
     if (!hasEchoClient()) return;
@@ -3011,13 +3030,70 @@
     const state = String(pusher?.connection?.state ?? "");
     if (!pusher) return;
 
-    if (state === "disconnected" || state === "failed") {
+    if (state === "disconnected" || state === "failed" || state === "unavailable") {
       try {
         pusher.connect();
       } catch {
         // noop
       }
     }
+  };
+
+  const bindSocketStateListener = () => {
+    if (!hasEchoClient() || socketStateHandler) return;
+
+    const connection = $echo?.connector?.pusher?.connection;
+    if (!connection || typeof connection.bind !== "function") return;
+
+    socketStateHandler = (states: any) => {
+      const currentState = String(states?.current ?? connection?.state ?? "");
+      if (currentState === "connected") {
+        void handleRealtimeResume();
+        return;
+      }
+
+      if (currentState === "failed" || currentState === "unavailable" || currentState === "disconnected") {
+        reconnectSocketTransport();
+      }
+    };
+
+    connection.bind("state_change", socketStateHandler);
+  };
+
+  const unbindSocketStateListener = () => {
+    if (!socketStateHandler) return;
+
+    const connection = $echo?.connector?.pusher?.connection;
+    if (connection && typeof connection.unbind === "function") {
+      connection.unbind("state_change", socketStateHandler);
+    }
+    socketStateHandler = null;
+  };
+
+  const startRealtimeFallbackSync = () => {
+    if (realtimeFallbackTimer) return;
+
+    realtimeFallbackTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      bindSocketStateListener();
+
+      const socketState = String($echo?.connector?.pusher?.connection?.state ?? "");
+      if (socketState !== "connected") {
+        reconnectSocketTransport();
+      }
+
+      if (hasEchoClient() && (!privateChan || !presenceChan)) {
+        void subscribeRealtimeForTicket(props.ticketId).catch(() => {});
+      }
+
+      void syncLatestMessagesFromServer();
+    }, 10000);
+  };
+
+  const stopRealtimeFallbackSync = () => {
+    if (!realtimeFallbackTimer) return;
+    clearInterval(realtimeFallbackTimer);
+    realtimeFallbackTimer = null;
   };
 
   const leavePrivate = (ticketId: string) => {
@@ -3032,14 +3108,17 @@
   };
 
   const subscribeRealtimeForTicket = async (ticketId: string) => {
+    const previousTicketId = activeRealtimeTicketId || ticketId;
     reconnectSocketTransport();
-    leavePrivate(ticketId);
-    leavePresence(ticketId);
+    leavePrivate(previousTicketId);
+    leavePresence(previousTicketId);
 
     if (hasEchoClient()) {
       joinPresence(ticketId);
       privateChan = subscribePrivate(ticketId);
     }
+
+    activeRealtimeTicketId = ticketId;
 
     stopPresenceHeartbeat();
     await startPresenceHeartbeat(ticketId);
@@ -3186,13 +3265,17 @@
     window.addEventListener("online", handleBrowserOnline);
     window.addEventListener("pageshow", handlePageShow);
     appResumeListenersAttached = true;
+    bindSocketStateListener();
+    startRealtimeFallbackSync();
   });
 
   onBeforeUnmount(() => {
     void stopTyping(true);
     clearAllRemoteTyping();
-    leavePrivate(props.ticketId);
-    leavePresence(props.ticketId);
+    const activeTicketId = activeRealtimeTicketId || props.ticketId;
+    leavePrivate(activeTicketId);
+    leavePresence(activeTicketId);
+    activeRealtimeTicketId = null;
     stopPresenceHeartbeat();
     apiClose(props.ticketId).catch(() => {});
 
@@ -3220,6 +3303,8 @@
     resetUploadProgress();
     closeAttachMenu();
     closeMediaViewer();
+    stopRealtimeFallbackSync();
+    unbindSocketStateListener();
 
     if (appResumeListenersAttached) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -3283,7 +3368,7 @@
     const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
 
     const payload: Record<string, unknown> = {
-      user_id: String(props.currentUser.id ?? ""),
+      user_id: String(currentUserMessageIdentity.value || props.currentUser.id || ""),
       type: selectedAttachments.length > 0 ? "attachment" : "text",
     };
     if (body) {
@@ -3325,7 +3410,7 @@
         const serverMessage = mapApi({
           id: rawMessage.id,
           ticket_id: rawMessage.ticket_id ?? props.ticketId,
-          user_id: rawMessage.user_id ?? props.currentUser.id,
+          user_id: rawMessage.user_id ?? currentUserMessageIdentity.value ?? props.currentUser.id,
           type: rawMessage.type ?? (selectedAttachments.length > 0 ? "attachment" : "text"),
           body: rawMessage.body ?? body,
           meta: rawMessage.meta ?? null,
