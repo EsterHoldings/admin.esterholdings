@@ -365,7 +365,7 @@
         :ticket-id="currentTicketIdForChat"
         :currentUser="currentUser"
         @close="handleCloseChat"
-        class="fixed inset-0 z-50" />
+        class="fixed inset-0 z-[12000]" />
     </div>
   </UiContainer>
 </template>

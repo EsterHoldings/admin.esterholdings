@@ -1737,8 +1737,7 @@
     .support-ticket-grid.is-mobile.is-mobile-fullscreen {
       position: fixed;
       inset: 0;
-      z-index: 5000;
-      isolation: isolate;
+      z-index: 12000;
       display: block;
       width: 100vw;
       height: 100dvh;
@@ -1746,7 +1745,6 @@
       margin: 0;
       padding: 0;
       background: var(--ui-background);
-      pointer-events: auto;
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper {
@@ -1755,7 +1753,7 @@
       height: 100dvh;
       max-height: 100dvh;
       width: 100%;
-      z-index: 2;
+      z-index: 1;
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.support-chat) {
@@ -1767,10 +1765,6 @@
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.drag-handle) {
-      position: sticky;
-      top: 0;
-      z-index: 8;
-      background: var(--ui-background-panel);
       padding-top: calc(10px + env(safe-area-inset-top, 0px));
     }
   }
