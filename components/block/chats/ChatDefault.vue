@@ -98,7 +98,18 @@
 
           <template v-else>
             <div
-              v-if="!isMe(item.msg)"
+              v-if="isSystemMessage(item.msg)"
+              class="flex items-center gap-3 py-1 text-[12px] text-[var(--ui-text-secondary)]"
+              :data-mid="item.msg.id">
+              <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
+              <span class="rounded-full bg-[var(--ui-background-card)] px-2 py-0.5 text-center leading-[1.3]">
+                {{ item.msg.body || "System event" }}
+              </span>
+              <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
+            </div>
+
+            <div
+              v-else-if="!isMe(item.msg)"
               class="flex items-end gap-3"
               :data-mid="item.msg.id">
               <div
@@ -543,7 +554,18 @@
 
                 <template v-else>
                   <div
-                    v-if="!isMe(item.msg)"
+                    v-if="isSystemMessage(item.msg)"
+                    class="flex items-center gap-3 py-1 text-[12px] text-[var(--ui-text-secondary)]"
+                    :data-mid="item.msg.id">
+                    <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
+                    <span class="rounded-full bg-[var(--ui-background-card)] px-2 py-0.5 text-center leading-[1.3]">
+                      {{ item.msg.body || "System event" }}
+                    </span>
+                    <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
+                  </div>
+
+                  <div
+                    v-else-if="!isMe(item.msg)"
                     class="flex items-end gap-3"
                     :data-mid="item.msg.id">
                     <div
@@ -1680,6 +1702,9 @@
 
   const currentUserId = computed(() => normalizeUserId(props.currentUser.id));
   const myAvatarUrl = computed(() => normalizeText(props.currentUser.photoUrl));
+  const isSystemMessage = (message: ChatMessage): boolean => {
+    return normalizeText(message.type).toLowerCase() === "system";
+  };
   const isMe = (m: ChatMessage) => m.userId !== "" && m.userId === currentUserId.value;
   const isMessagePending = (message: ChatMessage): boolean => {
     return message.deliveryStatus === "pending";

@@ -117,7 +117,71 @@
                   <div
                     v-if="isParticipantsPopoverOpen"
                     class="support-side__participants-popover">
-                    <div class="support-side__participants-popover-title">Participants details</div>
+                    <div class="support-side__participants-popover-head">
+                      <div class="support-side__participants-popover-title">Participants details</div>
+                      <button
+                        type="button"
+                        class="support-side__participants-add-button"
+                        :aria-expanded="isParticipantsAddPanelOpen ? 'true' : 'false'"
+                        @click.stop="toggleParticipantsAddPanel">
+                        + Add admin
+                      </button>
+                    </div>
+
+                    <div
+                      v-if="isParticipantsAddPanelOpen"
+                      class="support-side__participants-add-panel"
+                      @click.stop>
+                      <input
+                        v-model="participantsAdminSearch"
+                        type="text"
+                        class="support-side__participants-add-search"
+                        placeholder="Search admin by nickname or email"
+                        @input="handleParticipantsAdminSearchInput" />
+
+                      <div class="support-side__participants-add-list">
+                        <button
+                          v-for="candidate in participantsAdminCandidates"
+                          :key="candidate.id"
+                          type="button"
+                          class="support-side__participants-add-item"
+                          :disabled="
+                            participantsAdminLoading ||
+                            participantsAdminAddingId === candidate.id ||
+                            candidate.alreadyParticipant
+                          "
+                          @click="addAdminParticipant(candidate.id)">
+                          <div class="support-side__participant-avatar support-side__participant-avatar--sm">
+                            <span>{{ candidate.initials }}</span>
+                          </div>
+                          <div class="min-w-0 text-left">
+                            <div class="text-sm font-medium truncate">{{ candidate.name }}</div>
+                            <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ candidate.email }}</div>
+                          </div>
+                          <span
+                            class="h-2 w-2 rounded-full"
+                            :class="
+                              candidate.online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
+                            " />
+                          <span class="support-side__participants-add-item-action">
+                            {{
+                              candidate.alreadyParticipant
+                                ? "Added"
+                                : participantsAdminAddingId === candidate.id
+                                  ? "Adding..."
+                                  : "Add"
+                            }}
+                          </span>
+                        </button>
+
+                        <div
+                          v-if="!participantsAdminLoading && participantsAdminCandidates.length === 0"
+                          class="support-side__participants-add-empty">
+                          No admins found
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="support-side__participants-list">
                       <div
                         v-for="person in participants"
@@ -391,6 +455,7 @@
   import useEventBus from "~/composables/useEventBus";
   import { definePageMeta, useHead } from "~/.nuxt/imports";
   import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+  import { useToast } from "vue-toastification";
   import { useRoute, useRouter } from "vue-router";
   import ChatDefault from "~/components/block/chats/ChatDefault.vue";
   import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
@@ -407,6 +472,7 @@
   const router = useRouter();
 
   const appCore = useAppCore();
+  const toast = useToast();
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
 
@@ -471,6 +537,14 @@
     isYou: boolean;
     photoUrl: string;
   };
+  type ParticipantAdminCandidate = {
+    id: string;
+    name: string;
+    email: string;
+    initials: string;
+    online: boolean;
+    alreadyParticipant: boolean;
+  };
   const participants = ref<ParticipantItem[]>([]);
   const participantsPreview = computed(() => participants.value.slice(0, 5));
   const participantsHiddenCount = computed(() =>
@@ -478,6 +552,12 @@
   );
   const onlineParticipantsCount = computed(() => participants.value.filter(participant => participant.online).length);
   const totalParticipantsCount = computed(() => participants.value.length);
+  const isParticipantsAddPanelOpen = ref(false);
+  const participantsAdminSearch = ref("");
+  const participantsAdminLoading = ref(false);
+  const participantsAdminAddingId = ref("");
+  const participantsAdminCandidates = ref<ParticipantAdminCandidate[]>([]);
+  let participantsAdminSearchTimer: ReturnType<typeof setTimeout> | null = null;
   const tabs = computed(() => [
     { id: "media" as SupportTab, label: "Media", count: mediaItems.value.length },
     { id: "documents" as SupportTab, label: "Documents", count: documentItems.value.length },
@@ -580,7 +660,9 @@
     const onlineAgentIds = new Set<string>();
     for (const rawOnlineAdmin of onlineAdminsRaw) {
       if (!rawOnlineAdmin || typeof rawOnlineAdmin !== "object") continue;
-      const participantUserId = normalizeText((rawOnlineAdmin as Record<string, unknown>).participant_user_id);
+      const participantUserId =
+        normalizeText((rawOnlineAdmin as Record<string, unknown>).participant_user_id) ||
+        normalizeText((rawOnlineAdmin as Record<string, unknown>).id);
       if (participantUserId) {
         onlineAgentIds.add(participantUserId);
       }
@@ -594,11 +676,97 @@
         participant.roleKey === "agent" ? onlineAgentIds.has(participant.id) : participant.id === onlineCustomerId,
     }));
   };
+  const loadParticipantAdminCandidates = async () => {
+    participantsAdminLoading.value = true;
+
+    try {
+      const response = await appCore.adminModules.tickets.getParticipantAdmins(id.value, {
+        search: participantsAdminSearch.value,
+        limit: 20,
+      });
+
+      const rawItems = Array.isArray(response?.data?.data?.items) ? response.data.data.items : [];
+      participantsAdminCandidates.value = rawItems
+        .map((item: Record<string, unknown>) => {
+          const candidateId = normalizeText(item.id);
+          if (!candidateId) return null;
+
+          const name = normalizeText(item.name) || normalizeText(item.nickname) || normalizeText(item.email) || "Admin";
+          const email = normalizeText(item.email);
+          const initials =
+            normalizeText(item.initials).toUpperCase() || buildParticipantInitials(name, "", email, "AD");
+
+          return {
+            id: candidateId,
+            name,
+            email,
+            initials: initials.slice(0, 2),
+            online: Boolean(item.online),
+            alreadyParticipant: Boolean(item.already_participant),
+          } as ParticipantAdminCandidate;
+        })
+        .filter((candidate: ParticipantAdminCandidate | null): candidate is ParticipantAdminCandidate =>
+          Boolean(candidate)
+        );
+    } catch {
+      participantsAdminCandidates.value = [];
+    } finally {
+      participantsAdminLoading.value = false;
+    }
+  };
+  const toggleParticipantsAddPanel = () => {
+    isParticipantsAddPanelOpen.value = !isParticipantsAddPanelOpen.value;
+    if (isParticipantsAddPanelOpen.value) {
+      void loadParticipantAdminCandidates();
+    }
+  };
+  const handleParticipantsAdminSearchInput = () => {
+    if (participantsAdminSearchTimer) {
+      clearTimeout(participantsAdminSearchTimer);
+    }
+
+    participantsAdminSearchTimer = setTimeout(() => {
+      void loadParticipantAdminCandidates();
+    }, 220);
+  };
+  const addAdminParticipant = async (adminId: string) => {
+    if (!adminId || participantsAdminAddingId.value) return;
+
+    participantsAdminAddingId.value = adminId;
+    try {
+      const response = await appCore.adminModules.tickets.addParticipantAdmins(id.value, {
+        admin_ids: [adminId],
+      });
+
+      const participantsPayload = response?.data?.data?.participants;
+      if (Array.isArray(participantsPayload)) {
+        applyParticipantsPayload(participantsPayload);
+      }
+
+      const addedCount = Number(response?.data?.data?.added ?? 0);
+      if (addedCount > 0) {
+        toast.success("Admin added to chat");
+      } else {
+        toast.info("Admin is already in chat");
+      }
+
+      await loadParticipantAdminCandidates();
+    } catch {
+      toast.error("Failed to add admin to chat");
+    } finally {
+      participantsAdminAddingId.value = "";
+    }
+  };
   const toggleParticipantsPopover = () => {
-    isParticipantsPopoverOpen.value = !isParticipantsPopoverOpen.value;
+    const nextState = !isParticipantsPopoverOpen.value;
+    isParticipantsPopoverOpen.value = nextState;
+    if (!nextState) {
+      isParticipantsAddPanelOpen.value = false;
+    }
   };
   const closeParticipantsPopover = () => {
     isParticipantsPopoverOpen.value = false;
+    isParticipantsAddPanelOpen.value = false;
   };
   const handleParticipantsPointerDown = (event: PointerEvent) => {
     if (!isParticipantsPopoverOpen.value) return;
@@ -1366,6 +1534,10 @@
 
     const payloadTicketId = String(payload.ticketId ?? payload.ticket_id ?? "");
     if (!payloadTicketId || payloadTicketId !== id.value) return;
+    const actorParticipantId = normalizeText(payload.actor_participant_id);
+    if (actorParticipantId && !normalizeText(currentUser.linkedUserId)) {
+      currentUser.linkedUserId = actorParticipantId;
+    }
 
     const participantsPayload = Array.isArray(payload.participants) ? payload.participants : [];
     if (participantsPayload.length > 0) {
@@ -1448,6 +1620,10 @@
     if (desktopGridRafId !== null) {
       window.cancelAnimationFrame(desktopGridRafId);
       desktopGridRafId = null;
+    }
+    if (participantsAdminSearchTimer) {
+      clearTimeout(participantsAdminSearchTimer);
+      participantsAdminSearchTimer = null;
     }
     handleSideScrollMouseUp();
     closeLibraryMediaViewer();
@@ -1928,7 +2104,93 @@
     font-size: 12px;
     line-height: 1.35;
     color: var(--ui-text-secondary);
+    margin-bottom: 0;
+  }
+
+  .support-side__participants-popover-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     margin-bottom: 8px;
+  }
+
+  .support-side__participants-add-button {
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-card);
+    color: var(--ui-text-main);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .support-side__participants-add-panel {
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-card);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .support-side__participants-add-search {
+    width: 100%;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: transparent;
+    color: var(--ui-text-main);
+    border-radius: 8px;
+    padding: 7px 9px;
+    font-size: 13px;
+    line-height: 1.3;
+    outline: none;
+  }
+
+  .support-side__participants-add-list {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: min(220px, 34vh);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .support-side__participants-add-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .support-side__participants-add-item {
+    width: 100%;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: transparent;
+    color: var(--ui-text-main);
+    border-radius: 9px;
+    padding: 7px 8px;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .support-side__participants-add-item:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .support-side__participants-add-item-action {
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--ui-text-secondary);
+    white-space: nowrap;
+  }
+
+  .support-side__participants-add-empty {
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--ui-text-secondary);
+    text-align: center;
+    padding: 8px 4px;
   }
 
   .support-side__participants-list {
@@ -1963,6 +2225,12 @@
     font-weight: 600;
     font-size: 12px;
     overflow: hidden;
+  }
+
+  .support-side__participant-avatar--sm {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
   }
 
   .support-side__participant-avatar-img {

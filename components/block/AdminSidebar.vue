@@ -61,6 +61,7 @@
   const toast = useToast();
   const { $echo } = useNuxtApp() as { $echo?: any };
   const activeSupportTicketId = ref("");
+  const currentAdminId = ref("");
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
@@ -163,6 +164,19 @@
     const ticketId = normalizeText(payload?.ticket_id ?? payload?.ticketId);
     if (!ticketId) return;
 
+    const messageType = normalizeText(payload?.type).toLowerCase();
+    const messageMeta = payload && typeof payload.meta === "object" ? (payload.meta as Record<string, unknown>) : null;
+    const metaEvent = normalizeText(messageMeta?.event ?? "");
+    if (messageType === "system" && metaEvent === "participant_added") {
+      const addedAdminIds = Array.isArray(messageMeta?.added_admin_ids)
+        ? messageMeta?.added_admin_ids.map(value => normalizeText(value)).filter(Boolean)
+        : [];
+
+      if (currentAdminId.value && !addedAdminIds.includes(currentAdminId.value)) {
+        return;
+      }
+    }
+
     const routeTicketId = getRouteSupportTicketId();
     if (ticketId === activeSupportTicketId.value || ticketId === routeTicketId) return;
 
@@ -172,66 +186,66 @@
     const avatarFallback = resolveAvatarFallback(senderName, payload);
 
     toast.info(
-      h(
-        "div",
-        { style: { display: "flex", alignItems: "center", gap: "10px", minWidth: "0", cursor: "pointer" } },
-        [
+      h("div", { style: { display: "flex", alignItems: "center", gap: "10px", minWidth: "0", cursor: "pointer" } }, [
+        h(
+          "div",
+          {
+            style: {
+              width: "34px",
+              height: "34px",
+              borderRadius: "999px",
+              overflow: "hidden",
+              flexShrink: "0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "var(--ui-primary-main)",
+              color: "var(--ui-text-main)",
+              fontSize: "12px",
+              fontWeight: "700",
+              textTransform: "uppercase",
+            },
+          },
+          avatarUrl
+            ? h("img", {
+                src: avatarUrl,
+                alt: senderName,
+                style: { width: "100%", height: "100%", objectFit: "cover" },
+              })
+            : avatarFallback
+        ),
+        h("div", { style: { minWidth: "0", display: "flex", flexDirection: "column", gap: "2px" } }, [
           h(
             "div",
             {
               style: {
-                width: "34px",
-                height: "34px",
-                borderRadius: "999px",
-                overflow: "hidden",
-                flexShrink: "0",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "var(--ui-primary-main)",
-                color: "var(--ui-text-main)",
-                fontSize: "12px",
+                fontSize: "13px",
+                lineHeight: "1.2",
                 fontWeight: "700",
-                textTransform: "uppercase",
+                color: "var(--ui-text-main)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               },
             },
-            avatarUrl
-              ? h("img", { src: avatarUrl, alt: senderName, style: { width: "100%", height: "100%", objectFit: "cover" } })
-              : avatarFallback
+            senderName
           ),
-          h("div", { style: { minWidth: "0", display: "flex", flexDirection: "column", gap: "2px" } }, [
-            h(
-              "div",
-              {
-                style: {
-                  fontSize: "13px",
-                  lineHeight: "1.2",
-                  fontWeight: "700",
-                  color: "var(--ui-text-main)",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                },
+          h(
+            "div",
+            {
+              style: {
+                fontSize: "12px",
+                lineHeight: "1.2",
+                color: "var(--ui-text-secondary)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               },
-              senderName
-            ),
-            h(
-              "div",
-              {
-                style: {
-                  fontSize: "12px",
-                  lineHeight: "1.2",
-                  color: "var(--ui-text-secondary)",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                },
-              },
-              preview
-            ),
-          ]),
-        ]
-      ),
+            },
+            preview
+          ),
+        ]),
+      ]),
       {
         id: `support-message-${normalizeText(payload?.id) || ticketId}-${normalizeText(payload?.created_at)}`,
         timeout: 8000,
@@ -265,6 +279,12 @@
 
   onMounted(async () => {
     await loadSupportUnreadCount();
+    try {
+      const authUserResponse = await appCore.adminModules.auth.getAuthUser();
+      currentAdminId.value = normalizeText(authUserResponse?.data?.id);
+    } catch {
+      currentAdminId.value = "";
+    }
     useEventBus.on(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     useEventBus.on(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, handleSupportActiveTicketChanged);
     startSupportBadgeRefresh();

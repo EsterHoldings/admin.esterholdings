@@ -55,6 +55,14 @@ export class TicketsModule implements BasicModuleInterface {
     return await this.ticketsService.getById(id);
   }
 
+  async getParticipantAdmins(id: string, payload: any = {}): Promise<any> {
+    return await this.ticketsService.getParticipantAdmins(id, payload);
+  }
+
+  async addParticipantAdmins(id: string, payload: any = {}): Promise<any> {
+    return await this.ticketsService.addParticipantAdmins(id, payload);
+  }
+
   async post(data: object = {}): Promise<any> {
     return await this.ticketsService.post(data);
   }

@@ -48,6 +48,14 @@ export class TicketsService {
     return await this.useApi.get(`/admin/tickets/${id}`);
   }
 
+  async getParticipantAdmins(ticketId: string, payload: any = {}): Promise<any> {
+    return await this.useApi.get(`/admin/tickets/${ticketId}/participants/admins`, payload);
+  }
+
+  async addParticipantAdmins(ticketId: string, payload: any = {}): Promise<any> {
+    return await this.useApi.post(`/admin/tickets/${ticketId}/participants/agents`, payload);
+  }
+
   async post(data: object = {}): Promise<any> {
     return await this.useApi.post("/admin/tickets", data);
   }
