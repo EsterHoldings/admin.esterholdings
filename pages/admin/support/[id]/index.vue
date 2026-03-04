@@ -43,32 +43,56 @@
               class="support-side__expand"
               :class="{ 'is-expanded': isSideExpanded }">
               <div class="support-side__collapsible">
-                <div class="support-side__card support-side__ticket-card">
-                  <div class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">Ticket ID</div>
-                  <div class="support-side__ticket-id-row">
-                    <UiIconCopy :text="id" />
-                    <span
-                      class="text-sm font-semibold truncate"
-                      :title="id">
-                      {{ id }}
-                    </span>
-                  </div>
-                </div>
+                <div
+                  ref="ticketMetaCardRef"
+                  class="support-side__card support-side__ticket-meta">
+                  <div class="support-side__meta-row">
+                    <div class="support-side__meta-item support-side__meta-item--id">
+                      <span class="support-side__meta-label">Ticket</span>
+                      <div
+                        class="support-side__meta-value-wrap"
+                        :class="{ 'is-open': activeMetaTooltip === 'id' }">
+                        <UiIconCopy :text="id" />
+                        <button
+                          type="button"
+                          class="support-side__meta-value-trigger"
+                          :title="id"
+                          @click.stop="toggleMetaTooltip('id')">
+                          <span class="support-side__meta-value-text">{{ id }}</span>
+                        </button>
+                        <div class="support-side__meta-tooltip">{{ id }}</div>
+                      </div>
+                    </div>
 
-                <div class="support-side__status-grid">
-                  <div class="support-side__card support-side__status-card">
-                    <div class="flex items-center justify-between gap-3">
-                      <div class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">Status</div>
-                      <div class="support-side__status-pill">
-                        <span class="support-side__status-dot"></span>
-                        <span class="text-sm font-semibold">{{ status }}</span>
+                    <span
+                      class="support-side__meta-divider"
+                      aria-hidden="true"></span>
+
+                    <div class="support-side__meta-item support-side__meta-item--subject">
+                      <span class="support-side__meta-label">Subject</span>
+                      <div
+                        class="support-side__meta-value-wrap support-side__meta-value-wrap--subject"
+                        :class="{ 'is-open': activeMetaTooltip === 'subject' }">
+                        <button
+                          type="button"
+                          class="support-side__meta-value-trigger"
+                          :title="subject || '-'"
+                          @click.stop="toggleMetaTooltip('subject')">
+                          <span class="support-side__meta-value-text">{{ subject || "-" }}</span>
+                        </button>
+                        <div class="support-side__meta-tooltip">{{ subject || "-" }}</div>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div class="support-side__card support-side__subject-card">
-                    <div class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">Subject</div>
-                    <div class="mt-2 text-sm font-semibold">{{ subject }}</div>
+                <div class="support-side__card support-side__status-card">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="text-xs uppercase tracking-wider text-[var(--ui-text-secondary)]">Status</div>
+                    <div class="support-side__status-pill">
+                      <span class="support-side__status-dot"></span>
+                      <span class="text-sm font-semibold">{{ status }}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -480,6 +504,7 @@
   const supportGridRef = ref<HTMLElement | null>(null);
   const supportSidePanelRef = ref<HTMLElement | { $el?: HTMLElement } | null>(null);
   const supportSideScrollRef = ref<HTMLElement | null>(null);
+  const ticketMetaCardRef = ref<HTMLElement | null>(null);
   const desktopGridHeight = ref<number | null>(null);
 
   const id = computed(() => String(route.params.id));
@@ -527,6 +552,8 @@
   const isMobileFullscreenChat = ref(true);
   const participantsCardRef = ref<HTMLElement | null>(null);
   const isParticipantsPopoverOpen = ref(false);
+  type MetaTooltipField = "id" | "subject";
+  const activeMetaTooltip = ref<MetaTooltipField | null>(null);
   type ParticipantItem = {
     id: string;
     name: string;
@@ -768,14 +795,28 @@
     isParticipantsPopoverOpen.value = false;
     isParticipantsAddPanelOpen.value = false;
   };
+  const closeMetaTooltip = () => {
+    activeMetaTooltip.value = null;
+  };
+  const toggleMetaTooltip = (field: MetaTooltipField) => {
+    if (!isMobileViewport.value) return;
+    activeMetaTooltip.value = activeMetaTooltip.value === field ? null : field;
+  };
   const handleParticipantsPointerDown = (event: PointerEvent) => {
-    if (!isParticipantsPopoverOpen.value) return;
+    const target = event.target as Node;
 
-    const participantsCard = participantsCardRef.value;
-    if (!participantsCard) return;
+    if (isParticipantsPopoverOpen.value) {
+      const participantsCard = participantsCardRef.value;
+      if (participantsCard && !participantsCard.contains(target)) {
+        closeParticipantsPopover();
+      }
+    }
 
-    if (!participantsCard.contains(event.target as Node)) {
-      closeParticipantsPopover();
+    if (activeMetaTooltip.value) {
+      const ticketMetaCard = ticketMetaCardRef.value;
+      if (ticketMetaCard && !ticketMetaCard.contains(target)) {
+        closeMetaTooltip();
+      }
     }
   };
 
@@ -784,7 +825,7 @@
   const DESKTOP_GRID_BOTTOM_GAP = 16;
   const TABLET_BOTTOM_MENU_RESERVED = 78;
   const MIN_DESKTOP_GRID_HEIGHT = 320;
-  const MOBILE_CHAT_BOTTOM_GAP = 0;
+  const MOBILE_CHAT_BOTTOM_GAP = 20;
   const MOBILE_PANEL_CLOSE_MIN_SWIPE = 42;
   const MOBILE_PANEL_CLOSE_BOTTOM_THRESHOLD = 0.4;
   const MOBILE_PANEL_HORIZONTAL_DRIFT_LIMIT = 52;
@@ -897,9 +938,11 @@
 
     if (nextMobile) {
       desktopGridHeight.value = null;
+      closeMetaTooltip();
     }
 
     if (!nextMobile) {
+      closeMetaTooltip();
       isMobileFullscreenChat.value = true;
     }
 
@@ -968,6 +1011,7 @@
     isPanelDragging.value = false;
     isSideExpanded.value = false;
     panelDragOffset.value = 0;
+    closeMetaTooltip();
     resetSidePanelTouch();
   };
 
@@ -1755,7 +1799,7 @@
     .support-ticket-grid.is-mobile.is-mobile-fullscreen {
       position: fixed;
       inset: 0;
-      z-index: 2147483000;
+      z-index: 120;
       display: block;
       width: 100vw;
       height: 100dvh;
@@ -1771,7 +1815,7 @@
       height: 100dvh;
       max-height: 100dvh;
       width: 100%;
-      z-index: 2147483001;
+      z-index: 1;
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.support-chat) {
@@ -1783,8 +1827,6 @@
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.drag-handle) {
-      position: relative;
-      z-index: 2;
       padding-top: calc(10px + env(safe-area-inset-top, 0px));
     }
   }
@@ -1997,17 +2039,144 @@
     background: var(--ui-background-card);
   }
 
-  .support-side__status-grid {
-    display: grid;
-    gap: 12px;
+  .support-side__ticket-meta {
+    background: var(--ui-background-card);
+    border-color: var(--color-stroke-ui-dark);
   }
 
-  .support-side__ticket-id-row {
-    margin-top: 6px;
+  .support-side__meta-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .support-side__meta-item {
     min-width: 0;
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .support-side__meta-item--id {
+    flex: 0 1 46%;
+  }
+
+  .support-side__meta-item--subject {
+    flex: 1 1 54%;
+  }
+
+  .support-side__meta-label {
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ui-text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .support-side__meta-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--color-stroke-ui-dark);
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  .support-side__meta-value-wrap {
+    position: relative;
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .support-side__meta-value-wrap--subject {
+    gap: 0;
+  }
+
+  .support-side__meta-value-trigger {
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ui-text-main);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .support-side__meta-value-text {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .support-side__meta-tooltip {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 30;
+    max-width: min(70vw, 360px);
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    background: color-mix(in oklab, var(--ui-background-panel) 96%, transparent);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    color: var(--ui-text-main);
+    font-size: 12px;
+    line-height: 1.35;
+    white-space: normal;
+    word-break: break-word;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-2px);
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .support-side__meta-value-wrap--subject .support-side__meta-tooltip {
+    left: auto;
+    right: 0;
+  }
+
+  @media (hover: hover) {
+    .support-side__meta-value-wrap:hover .support-side__meta-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .support-side__meta-value-wrap.is-open .support-side__meta-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 767px) {
+    .support-side__meta-label {
+      font-size: 10px;
+    }
+
+    .support-side__meta-item--id {
+      flex-basis: 48%;
+    }
+
+    .support-side__meta-item--subject {
+      flex-basis: 52%;
+    }
+
+    .support-side__meta-tooltip {
+      max-width: min(84vw, 320px);
+    }
   }
 
   .support-side__status-card {
