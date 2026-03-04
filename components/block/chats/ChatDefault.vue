@@ -3170,15 +3170,17 @@
 
     lastReadAckMessageId.value = null;
     emitActiveSupportTicket(props.ticketId);
+    await subscribeRealtimeForTicket(props.ticketId).catch(error => {
+      console.error("[ChatDefault] subscribeRealtimeForTicket failed", error);
+    });
     await loadInitial();
+    await syncLatestMessagesFromServer();
 
     // resize listener тоже только для плавающего окна
     if (!asBlockMode.value) {
       window.addEventListener("resize", onViewportResize);
       resizeListenerAttached = true;
     }
-
-    await subscribeRealtimeForTicket(props.ticketId);
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("online", handleBrowserOnline);
@@ -3238,13 +3240,16 @@
       clearAllRemoteTyping();
       leavePrivate(oldId);
       leavePresence(oldId);
-      await subscribeRealtimeForTicket(id);
+      await subscribeRealtimeForTicket(id).catch(error => {
+        console.error("[ChatDefault] subscribeRealtimeForTicket failed", error);
+      });
       booting.value = true;
       messages.splice(0, messages.length);
       lastReadAckMessageId.value = null;
       nextPage = 2;
       hasMore.value = true;
       await loadInitial();
+      await syncLatestMessagesFromServer();
     }
   );
 
