@@ -72,18 +72,28 @@
                   </div>
                 </div>
 
-                <div class="support-side__card support-side__participants">
-                  <div class="flex items-center justify-between">
-                    <div class="font-semibold">Participants</div>
-                    <span class="text-xs text-[var(--ui-text-secondary)]">{{ participants.length }} people</span>
-                  </div>
-                  <div class="mt-3 flex flex-col gap-2">
-                    <div
-                      v-for="person in participants"
-                      :key="person.id"
-                      class="support-side__participant">
-                      <div class="flex items-center gap-2 min-w-0">
-                        <div class="support-side__participant-avatar">
+                <div
+                  ref="participantsCardRef"
+                  class="support-side__card support-side__participants">
+                  <button
+                    type="button"
+                    class="support-side__participants-trigger"
+                    :aria-expanded="isParticipantsPopoverOpen ? 'true' : 'false'"
+                    @click="toggleParticipantsPopover">
+                    <div class="support-side__participants-head">
+                      <div class="font-semibold">Participants</div>
+                      <span class="text-xs text-[var(--ui-text-secondary)]">
+                        {{ onlineParticipantsCount }} online
+                      </span>
+                    </div>
+
+                    <div class="support-side__participants-summary">
+                      <div class="support-side__participants-stack">
+                        <div
+                          v-for="(person, index) in participantsPreview"
+                          :key="person.id"
+                          class="support-side__participant-avatar support-side__participant-avatar--stack"
+                          :style="{ zIndex: String(participantsPreview.length - index) }">
                           <img
                             v-if="person.photoUrl"
                             :src="person.photoUrl"
@@ -91,18 +101,56 @@
                             class="support-side__participant-avatar-img" />
                           <span v-else>{{ person.initials }}</span>
                         </div>
-                        <div class="min-w-0">
-                          <div class="text-sm font-medium truncate">
-                            {{ person.name }}
-                            <strong v-if="person.isYou">(You)</strong>
-                          </div>
-                          <div class="text-xs text-[var(--ui-text-secondary)]">{{ person.role }}</div>
+                        <div
+                          v-if="participantsHiddenCount > 0"
+                          class="support-side__participant-avatar support-side__participant-avatar--stack support-side__participant-avatar--more">
+                          +{{ participantsHiddenCount }}
                         </div>
                       </div>
-                      <span
-                        class="h-2 w-2 rounded-full support-side__presence"
-                        :class="person.online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'"
-                        :title="person.online ? 'Online' : 'Offline'" />
+
+                      <span class="support-side__participants-summary-text">
+                        {{ totalParticipantsCount }} in chat
+                      </span>
+                    </div>
+                  </button>
+
+                  <div
+                    v-if="isParticipantsPopoverOpen"
+                    class="support-side__participants-popover">
+                    <div class="support-side__participants-popover-title">Participants details</div>
+                    <div class="support-side__participants-list">
+                      <div
+                        v-for="person in participants"
+                        :key="person.id"
+                        class="support-side__participant">
+                        <div class="flex items-center gap-2 min-w-0">
+                          <div class="support-side__participant-avatar">
+                            <img
+                              v-if="person.photoUrl"
+                              :src="person.photoUrl"
+                              :alt="person.name"
+                              class="support-side__participant-avatar-img" />
+                            <span v-else>{{ person.initials }}</span>
+                          </div>
+                          <div class="min-w-0">
+                            <div class="text-sm font-medium truncate">
+                              {{ person.name }}
+                              <strong v-if="person.isYou">(You)</strong>
+                            </div>
+                            <div class="text-xs text-[var(--ui-text-secondary)]">{{ person.role }}</div>
+                          </div>
+                        </div>
+                        <div class="support-side__participant-status">
+                          <span
+                            class="h-2 w-2 rounded-full support-side__presence"
+                            :class="
+                              person.online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
+                            " />
+                          <span class="text-xs text-[var(--ui-text-secondary)]">
+                            {{ person.online ? "Online" : "Offline" }}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -372,6 +420,7 @@
 
   const currentUser = reactive({
     id: null,
+    linkedUserId: null,
     name: null,
     firstName: null,
     lastName: null,
@@ -410,19 +459,25 @@
   const isSideExpanded = ref(false);
   const isMobileViewport = ref(false);
   const isMobileFullscreenChat = ref(true);
+  const participantsCardRef = ref<HTMLElement | null>(null);
+  const isParticipantsPopoverOpen = ref(false);
   type ParticipantItem = {
-    id: number;
+    id: string;
     name: string;
     role: string;
+    roleKey: "agent" | "customer";
     initials: string;
     online: boolean;
     isYou: boolean;
     photoUrl: string;
   };
-  const participants = reactive<ParticipantItem[]>([
-    { id: 1, name: "Admin", role: "Admin", initials: "AD", online: true, isYou: true, photoUrl: "" },
-    { id: 2, name: "Client", role: "Client", initials: "CL", online: false, isYou: false, photoUrl: "" },
-  ]);
+  const participants = ref<ParticipantItem[]>([]);
+  const participantsPreview = computed(() => participants.value.slice(0, 5));
+  const participantsHiddenCount = computed(() =>
+    Math.max(0, participants.value.length - participantsPreview.value.length)
+  );
+  const onlineParticipantsCount = computed(() => participants.value.filter(participant => participant.online).length);
+  const totalParticipantsCount = computed(() => participants.value.length);
   const tabs = computed(() => [
     { id: "media" as SupportTab, label: "Media", count: mediaItems.value.length },
     { id: "documents" as SupportTab, label: "Documents", count: documentItems.value.length },
@@ -457,6 +512,103 @@
     if (normalizedLocal.length === 1) return `${normalizedLocal.toUpperCase()}${normalizedLocal.toUpperCase()}`;
 
     return fallback;
+  };
+  const normalizeParticipantRoleKey = (role: unknown): "agent" | "customer" => {
+    const normalized = String(role ?? "")
+      .trim()
+      .toLowerCase();
+    return normalized === "agent" ? "agent" : "customer";
+  };
+  const resolveParticipantRoleLabel = (roleKey: "agent" | "customer"): string => {
+    return roleKey === "agent" ? "Admin" : "Client";
+  };
+  const isParticipantCurrentUser = (participantId: string): boolean => {
+    const currentId = normalizeText(currentUser.id);
+    const linkedUserId = normalizeText(currentUser.linkedUserId);
+    return participantId !== "" && (participantId === currentId || participantId === linkedUserId);
+  };
+  const mapParticipantsFromPayload = (payload: Array<Record<string, unknown>>): ParticipantItem[] => {
+    return payload
+      .map(raw => {
+        const participantId = normalizeText(raw.id);
+        if (!participantId) return null;
+
+        const roleKey = normalizeParticipantRoleKey(raw.role_key ?? raw.role);
+        const firstName = normalizeText(raw.first_name);
+        const lastName = normalizeText(raw.last_name);
+        const email = normalizeText(raw.email);
+        const name =
+          normalizeText(raw.name) ||
+          buildFullName(firstName, lastName) ||
+          email ||
+          (roleKey === "agent" ? "Admin" : "Client");
+        const initials =
+          normalizeText(raw.initials).toUpperCase() ||
+          buildParticipantInitials(firstName, lastName, email, roleKey === "agent" ? "AD" : "CL");
+        const photoUrl = normalizeText(raw.photo_url);
+
+        return {
+          id: participantId,
+          name,
+          role: resolveParticipantRoleLabel(roleKey),
+          roleKey,
+          initials: initials.slice(0, 2),
+          online: Boolean(raw.online),
+          isYou: isParticipantCurrentUser(participantId),
+          photoUrl,
+        } as ParticipantItem;
+      })
+      .filter((participant): participant is ParticipantItem => Boolean(participant))
+      .sort((left, right) => {
+        if (left.isYou && !right.isYou) return -1;
+        if (!left.isYou && right.isYou) return 1;
+        if (left.roleKey !== right.roleKey) return left.roleKey === "customer" ? -1 : 1;
+        return left.name.localeCompare(right.name);
+      });
+  };
+  const applyParticipantsPayload = (payload: unknown) => {
+    const normalizedPayload = Array.isArray(payload) ? payload.filter(item => item && typeof item === "object") : [];
+    participants.value = mapParticipantsFromPayload(normalizedPayload as Array<Record<string, unknown>>);
+  };
+  const updateParticipantsOnlineFromPresence = (payload: Record<string, unknown>) => {
+    if (!participants.value.length) return;
+
+    const onlineAdminsRaw = Array.isArray(payload.online_admins) ? payload.online_admins : [];
+    const onlineClientRaw =
+      payload.online_client && typeof payload.online_client === "object" ? payload.online_client : null;
+
+    const onlineAgentIds = new Set<string>();
+    for (const rawOnlineAdmin of onlineAdminsRaw) {
+      if (!rawOnlineAdmin || typeof rawOnlineAdmin !== "object") continue;
+      const participantUserId = normalizeText((rawOnlineAdmin as Record<string, unknown>).participant_user_id);
+      if (participantUserId) {
+        onlineAgentIds.add(participantUserId);
+      }
+    }
+
+    const onlineCustomerId = normalizeText((onlineClientRaw as Record<string, unknown> | null)?.id);
+    participants.value = participants.value.map(participant => ({
+      ...participant,
+      isYou: isParticipantCurrentUser(participant.id),
+      online:
+        participant.roleKey === "agent" ? onlineAgentIds.has(participant.id) : participant.id === onlineCustomerId,
+    }));
+  };
+  const toggleParticipantsPopover = () => {
+    isParticipantsPopoverOpen.value = !isParticipantsPopoverOpen.value;
+  };
+  const closeParticipantsPopover = () => {
+    isParticipantsPopoverOpen.value = false;
+  };
+  const handleParticipantsPointerDown = (event: PointerEvent) => {
+    if (!isParticipantsPopoverOpen.value) return;
+
+    const participantsCard = participantsCardRef.value;
+    if (!participantsCard) return;
+
+    if (!participantsCard.contains(event.target as Node)) {
+      closeParticipantsPopover();
+    }
   };
 
   const MOBILE_BREAKPOINT = 768;
@@ -1164,10 +1316,45 @@
     const creatorEmail = creator?.email ?? null;
     const creatorPhotoUrl = normalizeText(creator?.photo_url);
     const creatorFullName = buildFullName(creatorFirstName, creatorLastName);
+    const serverParticipants = Array.isArray(ticket?.participants) ? ticket.participants : [];
+    if (serverParticipants.length > 0) {
+      applyParticipantsPayload(serverParticipants);
+    } else {
+      const fallbackParticipants: Array<Record<string, unknown>> = [];
+      const currentParticipantId = normalizeText(currentUser.linkedUserId) || normalizeText(currentUser.id);
+      if (currentParticipantId) {
+        fallbackParticipants.push({
+          id: currentParticipantId,
+          role_key: "agent",
+          role: "Admin",
+          name: normalizeText(currentUser.name) || "Admin",
+          first_name: currentUser.firstName,
+          last_name: currentUser.lastName,
+          email: currentUser.email,
+          initials: buildParticipantInitials(currentUser.firstName, currentUser.lastName, currentUser.email, "AD"),
+          photo_url: currentUser.photoUrl,
+          online: true,
+        });
+      }
 
-    participants[1].name = creatorFullName || normalizeText(creatorEmail) || "Client";
-    participants[1].initials = buildParticipantInitials(creatorFirstName, creatorLastName, creatorEmail, "CL");
-    participants[1].photoUrl = creatorPhotoUrl;
+      const creatorId = normalizeText(ticket?.creator_id);
+      if (creatorId) {
+        fallbackParticipants.push({
+          id: creatorId,
+          role_key: "customer",
+          role: "Client",
+          name: creatorFullName || normalizeText(creatorEmail) || "Client",
+          first_name: creatorFirstName,
+          last_name: creatorLastName,
+          email: creatorEmail,
+          initials: buildParticipantInitials(creatorFirstName, creatorLastName, creatorEmail, "CL"),
+          photo_url: creatorPhotoUrl,
+          online: false,
+        });
+      }
+
+      applyParticipantsPayload(fallbackParticipants);
+    }
 
     isLoading.value = false;
     await nextTick();
@@ -1180,9 +1367,13 @@
     const payloadTicketId = String(payload.ticketId ?? payload.ticket_id ?? "");
     if (!payloadTicketId || payloadTicketId !== id.value) return;
 
-    const counterpartyOnline = Boolean(payload.counterparty_online ?? payload.counterpartyOnline);
-    participants[0].online = true;
-    participants[1].online = counterpartyOnline;
+    const participantsPayload = Array.isArray(payload.participants) ? payload.participants : [];
+    if (participantsPayload.length > 0) {
+      applyParticipantsPayload(participantsPayload);
+      return;
+    }
+
+    updateParticipantsOnlineFromPresence(payload as Record<string, unknown>);
   };
 
   const handleSupportMessageUpdated = (payload?: any) => {
@@ -1217,19 +1408,17 @@
     const displayName = fullName || normalizeText(response.data.nickname) || normalizeText(firstName) || "Admin";
 
     currentUser.id = response.data.id;
+    currentUser.linkedUserId = response.data.user_id ?? null;
     currentUser.name = displayName;
     currentUser.firstName = firstName;
     currentUser.lastName = lastName;
     currentUser.email = email;
     currentUser.photoUrl = normalizedPhotoUrl || null;
 
-    participants[0].name = displayName;
-    participants[0].initials = buildParticipantInitials(firstName, lastName, email, "AD");
-    participants[0].photoUrl = normalizedPhotoUrl;
-
     await loadData();
     await loadLibraryFromChat();
     scheduleDesktopGridMeasure();
+    window.addEventListener("pointerdown", handleParticipantsPointerDown);
   });
 
   watch(activeTab, () => {
@@ -1254,6 +1443,7 @@
     useEventBus.off(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     window.removeEventListener("resize", updateViewportState);
     window.removeEventListener("keydown", handleLibraryMediaViewerKeydown);
+    window.removeEventListener("pointerdown", handleParticipantsPointerDown);
     clearSidePanelCloseTimer();
     if (desktopGridRafId !== null) {
       window.cancelAnimationFrame(desktopGridRafId);
@@ -1654,6 +1844,111 @@
     border: 1px solid var(--color-stroke-ui-dark);
     padding: 8px 10px;
     background: var(--ui-background-card);
+  }
+
+  .support-side__participants {
+    position: relative;
+  }
+
+  .support-side__participants-trigger {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .support-side__participants-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .support-side__participants-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .support-side__participants-summary-text {
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--ui-text-secondary);
+    white-space: nowrap;
+  }
+
+  .support-side__participants-stack {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .support-side__participant-avatar--stack {
+    width: 30px;
+    height: 30px;
+    margin-left: -8px;
+    border: 2px solid var(--ui-background-panel);
+  }
+
+  .support-side__participant-avatar--stack:first-child {
+    margin-left: 0;
+  }
+
+  .support-side__participant-avatar--more {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ui-text-secondary);
+    background: var(--ui-background);
+  }
+
+  .support-side__participants-popover {
+    position: absolute;
+    z-index: 22;
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
+    border-radius: 12px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    background: color-mix(in oklab, var(--ui-background-panel) 96%, transparent);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    padding: 10px;
+  }
+
+  .support-side__participants-popover-title {
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--ui-text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .support-side__participants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: min(340px, 44vh);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .support-side__participants-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .support-side__participant-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   .support-side__participant-avatar {
