@@ -2,139 +2,137 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 import { useAuthStore } from "~/stores/authStore";
 import {
-    ROUTE_ADMIN_AUTH_LOGIN,
-    ROUTE_ADMIN_AUTH_REFRESH,
-    ROUTE_AUTH_LOGIN,
-    ROUTE_AUTH_REFRESH
+  ROUTE_ADMIN_AUTH_LOGIN,
+  ROUTE_ADMIN_AUTH_REFRESH,
+  ROUTE_AUTH_LOGIN,
+  ROUTE_AUTH_REFRESH,
 } from "~/constants/routes";
 import { useCookie, useNuxtApp, useRuntimeConfig } from "nuxt/app";
 import { ADMIN_REFRESH_TOKEN } from "~/constants/auth";
 import useAppCore from "~/composables/useAppCore";
 import { useErrorStack } from "~/stores/errors";
-import {RuntimeConfig} from "nuxt/schema";
+import { RuntimeConfig } from "nuxt/schema";
 
 interface runtimeCfgInterface {
-    baseApi: string
+  baseApi: string;
 }
 
 export class useApi {
-    private readonly api: AxiosInstance;
+  private readonly api: AxiosInstance;
 
-    constructor(forClient = false) {
-        const config = useRuntimeConfig()
-        // @ts-ignore
-        const {baseApi} = config.public as { baseApi: string }
+  constructor(forClient = false) {
+    const config = useRuntimeConfig();
+    // @ts-ignore
+    const { baseApi } = config.public as { baseApi: string };
 
-        this.api = axios.create({
-            baseURL: baseApi,
-            // headers: {"Content-Type": "application/json"},
-            withCredentials: true,
-        });
+    this.api = axios.create({
+      baseURL: baseApi,
+      // headers: {"Content-Type": "application/json"},
+      withCredentials: true,
+    });
 
-        const errorsStack = useErrorStack();
-        errorsStack.flush();
+    const errorsStack = useErrorStack();
+    errorsStack.flush();
 
-        const resolveLocale = () => {
-            const localeCookie = useCookie<string>("locale");
-            const i18nRedirected = useCookie<string>("i18n_redirected");
-            const nuxtApp = useNuxtApp();
-            const i18n = (nuxtApp?.$i18n ?? null) as { locale?: string | { value: string } } | null;
-            const i18nLocale =
-                typeof i18n?.locale === "string" ? i18n.locale : i18n?.locale?.value;
-            const resolved = i18nLocale || localeCookie.value || i18nRedirected.value;
+    const resolveLocale = () => {
+      const localeCookie = useCookie<string>("locale");
+      const i18nRedirected = useCookie<string>("i18n_redirected");
+      const nuxtApp = useNuxtApp();
+      const i18n = (nuxtApp?.$i18n ?? null) as { locale?: string | { value: string } } | null;
+      const i18nLocale = typeof i18n?.locale === "string" ? i18n.locale : i18n?.locale?.value;
+      const resolved = i18nLocale || localeCookie.value || i18nRedirected.value;
 
-            if (resolved && localeCookie.value !== resolved) {
-                localeCookie.value = resolved;
-            }
+      if (resolved && localeCookie.value !== resolved) {
+        localeCookie.value = resolved;
+      }
 
-            return resolved;
-        };
+      return resolved;
+    };
 
-        this.api.interceptors.request.use((config) => {
-            const authStore = forClient ? useAuthStore() : useAdminAuthStore();
-            if (authStore.accessToken)
-                config.headers.Authorization = `Bearer ${authStore.accessToken}`;
+    this.api.interceptors.request.use(config => {
+      const authStore = forClient ? useAuthStore() : useAdminAuthStore();
+      if (authStore.accessToken) config.headers.Authorization = `Bearer ${authStore.accessToken}`;
 
-            const locale = resolveLocale();
-            if (locale) {
-                config.headers["X-Locale"] = locale;
-                config.headers["Accept-Language"] = locale;
-            }
+      const locale = resolveLocale();
+      if (locale) {
+        config.headers["X-Locale"] = locale;
+        config.headers["Accept-Language"] = locale;
+      }
 
-            return config;
-        });
+      return config;
+    });
 
-        this.api.interceptors.response.use(
-            res => res,
-            async err => {
-                const appCore = useAppCore();
-                const authStore = forClient ? useAuthStore() : useAdminAuthStore();
-                const orig = err.config;
+    this.api.interceptors.response.use(
+      res => res,
+      async err => {
+        const appCore = useAppCore();
+        const authStore = forClient ? useAuthStore() : useAdminAuthStore();
+        const orig = err.config;
 
-                if (
-                    err.response?.status === 401 &&
-                    !orig._retry &&
-                    !orig.url?.endsWith(ROUTE_AUTH_REFRESH) &&
-                    !orig.url?.endsWith(ROUTE_AUTH_LOGIN) &&
-                    !orig.url?.endsWith(ROUTE_ADMIN_AUTH_REFRESH) &&
-                    !orig.url?.endsWith(ROUTE_ADMIN_AUTH_LOGIN)
-                ) {
-                    orig._retry = true;
+        if (
+          err.response?.status === 401 &&
+          !orig._retry &&
+          !orig.url?.endsWith(ROUTE_AUTH_REFRESH) &&
+          !orig.url?.endsWith(ROUTE_AUTH_LOGIN) &&
+          !orig.url?.endsWith(ROUTE_ADMIN_AUTH_REFRESH) &&
+          !orig.url?.endsWith(ROUTE_ADMIN_AUTH_LOGIN)
+        ) {
+          orig._retry = true;
 
-                    try {
-                        const { data } = forClient ? await appCore.auth.doRefresh() : await appCore.adminModules.auth.doRefresh();
-                        authStore.setAccessToken(data.access_token)
-                        orig.headers.Authorization = `Bearer ${data.access_token}`
-                        return this.api(orig)
-                    } catch {
-                        await authStore.authLogout()
-                    }
-                }
+          try {
+            const { data } = forClient ? await appCore.auth.doRefresh() : await appCore.adminModules.auth.doRefresh();
+            authStore.setAccessToken(data.access_token);
+            orig.headers.Authorization = `Bearer ${data.access_token}`;
+            return this.api(orig);
+          } catch {
+            await authStore.authLogout();
+          }
+        }
 
-                // single message
-                if (err.response?.status === 401 && err.response.data && err.response.data.message) {
-                    errorsStack.$patch({
-                        errors: {},
-                        message: err.response.data?.message
-                    });
-                }
+        // single message
+        if (err.response?.status === 401 && err.response.data && err.response.data.message) {
+          errorsStack.$patch({
+            errors: {},
+            message: err.response.data?.message,
+          });
+        }
 
-                // validation errors
-                if (err.response?.status === 422 && err.response.data) {
-                    errorsStack.$patch({
-                        errors: err.response.data?.errors || {},
-                        message: err.response.data?.message || null,
-                    });
-                }
+        // validation errors
+        if (err.response?.status === 422 && err.response.data) {
+          errorsStack.$patch({
+            errors: err.response.data?.errors || {},
+            message: err.response.data?.message || null,
+          });
+        }
 
-                return Promise.reject(err)
-            }
-        )
-    }
+        return Promise.reject(err);
+      }
+    );
+  }
 
-    request(config: AxiosRequestConfig): Promise<AxiosResponse> {
-        return this.api.request(config);
-    }
+  request(config: AxiosRequestConfig): Promise<AxiosResponse> {
+    return this.api.request(config);
+  }
 
-    get(url: string, params: object = {}): Promise<AxiosResponse> {
-        return this.api.get(url, { params });
-    }
+  get(url: string, params: object = {}): Promise<AxiosResponse> {
+    return this.api.get(url, { params });
+  }
 
-    post(url: string, data?: object): Promise<AxiosResponse> {
-        return this.api.post(url, data);
-    }
+  post(url: string, data?: object, config: AxiosRequestConfig = {}): Promise<AxiosResponse> {
+    return this.api.post(url, data, config);
+  }
 
-    put(url: string, data?: object): Promise<AxiosResponse> {
-        return this.api.put(url, data);
-    }
+  put(url: string, data?: object): Promise<AxiosResponse> {
+    return this.api.put(url, data);
+  }
 
-    patch(url: string, data?: object): Promise<AxiosResponse> {
-        return this.api.patch(url, data);
-    }
+  patch(url: string, data?: object): Promise<AxiosResponse> {
+    return this.api.patch(url, data);
+  }
 
-    delete(url: string, params: object = {}): Promise<AxiosResponse> {
-        return this.api.delete(url, { params });
-    }
+  delete(url: string, params: object = {}): Promise<AxiosResponse> {
+    return this.api.delete(url, { params });
+  }
 }
 
 export default useApi;

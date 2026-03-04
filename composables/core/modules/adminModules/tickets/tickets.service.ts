@@ -1,4 +1,5 @@
 import useApi from "~/composables/useApi";
+import type { AxiosRequestConfig } from "axios";
 
 export class TicketsService {
   private useApi: any;
@@ -15,8 +16,8 @@ export class TicketsService {
     return await this.useApi.get(`/admin/tickets/${ticketId}/messages`, payload);
   }
 
-  async storeTicketMessage(ticketId: string, payload: any = {}): Promise<any> {
-    return await this.useApi.post(`/admin/tickets/${ticketId}/messages`, payload);
+  async storeTicketMessage(ticketId: string, payload: any = {}, config: AxiosRequestConfig = {}): Promise<any> {
+    return await this.useApi.post(`/admin/tickets/${ticketId}/messages`, payload, config);
   }
 
   async markRead(ticketId: string, payload: any = {}): Promise<any> {

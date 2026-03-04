@@ -1,5 +1,6 @@
 import { BasicModuleInterface } from "../module.interface";
 import TicketsService from "~/composables/core/modules/tickets/tickets.service";
+import type { AxiosRequestConfig } from "axios";
 
 interface ResponseDTO {
   success: Boolean;
@@ -22,8 +23,8 @@ export class TicketsModule implements BasicModuleInterface {
     return await this.ticketsService.getTicketMessages(id, payload);
   }
 
-  async storeTicketMessage(id: string, payload: any = {}): Promise<any> {
-    return await this.ticketsService.storeTicketMessage(id, payload);
+  async storeTicketMessage(id: string, payload: any = {}, config: AxiosRequestConfig = {}): Promise<any> {
+    return await this.ticketsService.storeTicketMessage(id, payload, config);
   }
 
   async markRead(id: string, payload: any = {}): Promise<any> {

@@ -149,8 +149,12 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
-                      <span class="text-base leading-none">📎</span>
-                      <span class="truncate">{{ attachment.name }}</span>
+                      <UiIconDocuments class="h-4 w-4 shrink-0 text-[var(--ui-text-secondary)]" />
+                      <span
+                        class="truncate"
+                        :title="attachment.name">
+                        {{ shortFileName(attachment.name) }}
+                      </span>
                       <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
                         {{ formatFileSize(attachment.size) }}
                       </span>
@@ -211,8 +215,12 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
-                      <span class="text-base leading-none">📎</span>
-                      <span class="truncate">{{ attachment.name }}</span>
+                      <UiIconDocuments class="h-4 w-4 shrink-0 text-[var(--ui-text-secondary)]" />
+                      <span
+                        class="truncate"
+                        :title="attachment.name">
+                        {{ shortFileName(attachment.name) }}
+                      </span>
                       <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
                         {{ formatFileSize(attachment.size) }}
                       </span>
@@ -259,7 +267,21 @@
           class="mb-2 rounded-xl border border-[var(--color-stroke-ui-light)] p-2">
           <div class="mb-2 flex items-center justify-between text-[12px] text-[var(--ui-text-secondary)]">
             <span>{{ pendingAttachments.length }} files selected</span>
+            <span>{{ formatFileSize(pendingAttachmentsTotalSize) }}</span>
             <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+          </div>
+          <div
+            v-if="isSending && uploadProgress.active"
+            class="mb-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-2">
+            <div class="mb-1 flex items-center justify-between text-[11px] text-[var(--ui-text-secondary)]">
+              <span>Uploading...</span>
+              <span>{{ uploadProgressLabel }}</span>
+            </div>
+            <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-stroke-ui-light)]">
+              <div
+                class="h-full rounded-full bg-[var(--ui-primary-main)] transition-all duration-200 ease-linear"
+                :style="{ width: `${uploadProgressPercent}%` }"></div>
+            </div>
           </div>
           <div class="flex flex-wrap gap-2">
             <div
@@ -280,12 +302,23 @@
                 preload="metadata"></video>
               <div
                 v-else
-                class="flex h-16 w-full items-center justify-center bg-[var(--ui-background-panel)] text-[11px] text-[var(--ui-text-secondary)]">
-                FILE
+                class="flex h-16 w-full flex-col items-center justify-center bg-[var(--ui-background-panel)] px-1 text-[11px] text-[var(--ui-text-secondary)]">
+                <UiIconDocuments class="h-5 w-5" />
+                <span
+                  class="mt-1 max-w-full truncate text-[10px]"
+                  :title="attachment.name">
+                  {{ shortFileName(attachment.name, 12) }}
+                </span>
+              </div>
+              <div
+                v-if="isSending"
+                class="absolute inset-0 flex items-center justify-center bg-black/35">
+                <UiIconSpinnerDefault class="!h-4 !w-4 !text-white" />
               </div>
               <button
                 type="button"
                 class="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--ui-background-panel)] text-[var(--ui-text-main)]"
+                :disabled="isSending"
                 @click="removePendingAttachment(attachment.id)">
                 ✕
               </button>
@@ -313,8 +346,9 @@
             placeholder="Write your message" />
           <button
             type="button"
-            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             title="Add media"
+            :disabled="isSending"
             @click="openMediaPicker">
             <svg
               viewBox="0 0 24 24"
@@ -339,8 +373,9 @@
           </button>
           <button
             type="button"
-            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             title="Add file"
+            :disabled="isSending"
             @click="openFilePicker">
             <svg
               viewBox="0 0 24 24"
@@ -360,7 +395,11 @@
             @click="handleSendClick"
             class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-primary-main)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             title="Send">
+            <UiIconSpinnerDefault
+              v-if="isSending"
+              class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
             <svg
+              v-else
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               class="h-5 w-5"
@@ -516,8 +555,12 @@
                             target="_blank"
                             rel="noopener noreferrer"
                             class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
-                            <span class="text-base leading-none">📎</span>
-                            <span class="truncate">{{ attachment.name }}</span>
+                            <UiIconDocuments class="h-4 w-4 shrink-0 text-[var(--ui-text-secondary)]" />
+                            <span
+                              class="truncate"
+                              :title="attachment.name">
+                              {{ shortFileName(attachment.name) }}
+                            </span>
                             <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
                               {{ formatFileSize(attachment.size) }}
                             </span>
@@ -578,8 +621,12 @@
                             target="_blank"
                             rel="noopener noreferrer"
                             class="flex items-center gap-2 rounded-lg border border-[var(--color-stroke-ui-light)] px-2 py-1 text-[13px] hover:bg-[var(--ui-background-panel)]">
-                            <span class="text-base leading-none">📎</span>
-                            <span class="truncate">{{ attachment.name }}</span>
+                            <UiIconDocuments class="h-4 w-4 shrink-0 text-[var(--ui-text-secondary)]" />
+                            <span
+                              class="truncate"
+                              :title="attachment.name">
+                              {{ shortFileName(attachment.name) }}
+                            </span>
                             <span class="ml-auto shrink-0 text-[11px] text-[var(--ui-text-secondary)]">
                               {{ formatFileSize(attachment.size) }}
                             </span>
@@ -626,7 +673,21 @@
                 class="mb-2 rounded-xl border border-[var(--color-stroke-ui-light)] p-2">
                 <div class="mb-2 flex items-center justify-between text-[12px] text-[var(--ui-text-secondary)]">
                   <span>{{ pendingAttachments.length }} files selected</span>
+                  <span>{{ formatFileSize(pendingAttachmentsTotalSize) }}</span>
                   <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+                </div>
+                <div
+                  v-if="isSending && uploadProgress.active"
+                  class="mb-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-2">
+                  <div class="mb-1 flex items-center justify-between text-[11px] text-[var(--ui-text-secondary)]">
+                    <span>Uploading...</span>
+                    <span>{{ uploadProgressLabel }}</span>
+                  </div>
+                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-stroke-ui-light)]">
+                    <div
+                      class="h-full rounded-full bg-[var(--ui-primary-main)] transition-all duration-200 ease-linear"
+                      :style="{ width: `${uploadProgressPercent}%` }"></div>
+                  </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
                   <div
@@ -647,12 +708,23 @@
                       preload="metadata"></video>
                     <div
                       v-else
-                      class="flex h-16 w-full items-center justify-center bg-[var(--ui-background-panel)] text-[11px] text-[var(--ui-text-secondary)]">
-                      FILE
+                      class="flex h-16 w-full flex-col items-center justify-center bg-[var(--ui-background-panel)] px-1 text-[11px] text-[var(--ui-text-secondary)]">
+                      <UiIconDocuments class="h-5 w-5" />
+                      <span
+                        class="mt-1 max-w-full truncate text-[10px]"
+                        :title="attachment.name">
+                        {{ shortFileName(attachment.name, 12) }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="isSending"
+                      class="absolute inset-0 flex items-center justify-center bg-black/35">
+                      <UiIconSpinnerDefault class="!h-4 !w-4 !text-white" />
                     </div>
                     <button
                       type="button"
                       class="absolute right-1 top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--ui-background-panel)] text-[var(--ui-text-main)]"
+                      :disabled="isSending"
                       @click="removePendingAttachment(attachment.id)">
                       ✕
                     </button>
@@ -680,8 +752,9 @@
                   placeholder="Write your message" />
                 <button
                   type="button"
-                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                   title="Add media"
+                  :disabled="isSending"
                   @click="openMediaPicker">
                   <svg
                     viewBox="0 0 24 24"
@@ -706,8 +779,9 @@
                 </button>
                 <button
                   type="button"
-                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110"
+                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                   title="Add file"
+                  :disabled="isSending"
                   @click="openFilePicker">
                   <svg
                     viewBox="0 0 24 24"
@@ -727,7 +801,11 @@
                   @click="handleSendClick"
                   class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-primary-main)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                   title="Send">
+                  <UiIconSpinnerDefault
+                    v-if="isSending"
+                    class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
                   <svg
+                    v-else
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     class="h-5 w-5"
@@ -754,7 +832,12 @@
   <Teleport to="body">
     <div
       v-if="mediaViewer.open && activeMediaAttachment"
-      class="fixed inset-0 z-[13000] flex items-center justify-center bg-black/80 p-4">
+      class="fixed inset-0 z-[13000] flex items-center justify-center bg-black/80 p-4"
+      @click.self="closeMediaViewer"
+      @pointerdown="handleMediaViewerPointerDown"
+      @pointerup="handleMediaViewerPointerUp"
+      @touchstart.passive="handleMediaViewerTouchStart"
+      @touchend="handleMediaViewerTouchEnd">
       <button
         type="button"
         class="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
@@ -768,7 +851,9 @@
         @click="moveMediaViewer(-1)">
         ‹
       </button>
-      <div class="max-h-[88vh] max-w-[92vw] overflow-hidden rounded-xl border border-white/20 bg-black/50">
+      <div
+        class="max-h-[88vh] max-w-[92vw] overflow-hidden rounded-xl border border-white/20 bg-black/50"
+        @click.stop>
         <img
           v-if="activeMediaAttachment.kind === 'image'"
           :src="activeMediaAttachment.url"
@@ -798,9 +883,12 @@
 
 <script setup lang="ts">
   import { ref, computed, withDefaults, onMounted, onBeforeUnmount, nextTick, reactive, watch, useAttrs } from "vue";
+  import type { AxiosProgressEvent, AxiosRequestConfig } from "axios";
   import { useNuxtApp } from "nuxt/app";
+  import { useToast } from "vue-toastification";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
+  import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
   import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
   import VueDraggableResizable from "vue-draggable-resizable";
   import "vue-draggable-resizable/style.css";
@@ -809,10 +897,16 @@
   defineOptions({ inheritAttrs: false });
 
   const attrs = useAttrs();
+  const toast = useToast();
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
   const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
+  const MAX_CHAT_FILE_SIZE_BYTES = 200 * 1024 * 1024;
+  const MAX_PENDING_ATTACHMENTS = 10;
+  const UPLOAD_REQUEST_TIMEOUT_MS = 15 * 60 * 1000;
+  const VIEWER_SWIPE_THRESHOLD = 52;
+  const VIEWER_MAX_VERTICAL_DRIFT = 120;
 
   type ChatAttachmentDisplay = "media" | "file";
   type ChatAttachmentKind = "image" | "video" | "file";
@@ -1181,6 +1275,16 @@
     items: [],
     index: 0,
   });
+  const uploadProgress = reactive({
+    active: false,
+    loaded: 0,
+    total: 0,
+    percent: 0,
+  });
+  const mediaViewerSwipeStart = reactive({
+    x: null as number | null,
+    y: null as number | null,
+  });
 
   const userIsNearBottom = ref(true);
   let suppressScrollEvents = false;
@@ -1233,6 +1337,56 @@
     }
     const precision = unitIndex === 0 ? 0 : size < 10 ? 1 : 0;
     return `${size.toFixed(precision)} ${units[unitIndex]}`;
+  };
+  const shortFileName = (value: string, maxLength = 22): string => {
+    const fileName = normalizeText(value);
+    if (!fileName) return "file";
+    if (fileName.length <= maxLength) return fileName;
+
+    const dotIndex = fileName.lastIndexOf(".");
+    const hasExtension = dotIndex > 0 && dotIndex < fileName.length - 1;
+    const extension = hasExtension ? fileName.slice(dotIndex + 1) : "";
+    const extensionPart = extension ? `.${extension}` : "";
+    const maxBaseLength = Math.max(4, maxLength - extensionPart.length - 1);
+    const base = hasExtension ? fileName.slice(0, dotIndex) : fileName;
+
+    return `${base.slice(0, maxBaseLength)}…${extensionPart}`;
+  };
+  const pendingAttachmentsTotalSize = computed(() => {
+    return pendingAttachments.value.reduce((total, attachment) => total + (attachment.size || 0), 0);
+  });
+  const uploadProgressPercent = computed(() => {
+    if (!uploadProgress.active) return 0;
+    if (uploadProgress.percent > 0) return uploadProgress.percent;
+    if (uploadProgress.total > 0) {
+      return Math.round((uploadProgress.loaded / uploadProgress.total) * 100);
+    }
+
+    return 0;
+  });
+  const uploadProgressLabel = computed(() => {
+    if (!uploadProgress.active) return "";
+    if (uploadProgress.total > 0) {
+      return `${uploadProgressPercent.value}% • ${formatFileSize(uploadProgress.loaded)} / ${formatFileSize(uploadProgress.total)}`;
+    }
+
+    if (uploadProgress.loaded > 0) {
+      return `${formatFileSize(uploadProgress.loaded)} uploaded`;
+    }
+
+    return "Uploading...";
+  });
+  const resetUploadProgress = () => {
+    uploadProgress.active = false;
+    uploadProgress.loaded = 0;
+    uploadProgress.total = 0;
+    uploadProgress.percent = 0;
+  };
+  const updateUploadProgress = (event: AxiosProgressEvent) => {
+    uploadProgress.active = true;
+    uploadProgress.loaded = Number(event.loaded ?? 0);
+    uploadProgress.total = Number(event.total ?? 0);
+    uploadProgress.percent = Number.isFinite(event.progress || 0) ? Math.round((event.progress || 0) * 100) : 0;
   };
   const mediaGridClass = (count: number): string => {
     if (count <= 1) return "grid-cols-1";
@@ -1400,6 +1554,33 @@
       }
     });
   };
+  const extractRequestErrorMessage = (error: unknown): string => {
+    const fallback = "Failed to send message.";
+    if (!error || typeof error !== "object") return fallback;
+
+    const errorRecord = error as Record<string, any>;
+    const responseData = errorRecord?.response?.data;
+    if (responseData && typeof responseData === "object") {
+      if (typeof responseData.message === "string" && responseData.message.trim() !== "") {
+        return responseData.message.trim();
+      }
+
+      if (responseData.errors && typeof responseData.errors === "object") {
+        const firstError = Object.values(responseData.errors)
+          .flat()
+          .find(value => typeof value === "string");
+        if (typeof firstError === "string" && firstError.trim() !== "") {
+          return firstError.trim();
+        }
+      }
+    }
+
+    if (typeof errorRecord.message === "string" && errorRecord.message.trim() !== "") {
+      return errorRecord.message.trim();
+    }
+
+    return fallback;
+  };
 
   const revokePendingAttachment = (attachment: PendingAttachment) => {
     if (attachment.previewUrl && attachment.previewUrl.startsWith("blob:")) {
@@ -1425,6 +1606,8 @@
   };
 
   const openPicker = (displayAs: ChatAttachmentDisplay) => {
+    if (isSending.value) return;
+
     const hasDifferentMode = pendingAttachments.value.some(attachment => attachment.displayAs !== displayAs);
     if (hasDifferentMode) {
       clearPendingAttachments();
@@ -1464,10 +1647,42 @@
     const input = event.target as HTMLInputElement | null;
     if (!input?.files?.length) return;
 
-    const pickedAttachments = Array.from(input.files).map(createPendingAttachment);
-    if (!pickedAttachments.length) return;
+    const oversizedFileNames: string[] = [];
+    const eligibleFiles: File[] = [];
+    for (const file of Array.from(input.files)) {
+      if (file.size > MAX_CHAT_FILE_SIZE_BYTES) {
+        oversizedFileNames.push(file.name);
+        continue;
+      }
 
-    pendingAttachments.value = pendingAttachments.value.concat(pickedAttachments).slice(0, 10);
+      eligibleFiles.push(file);
+    }
+
+    if (oversizedFileNames.length) {
+      const example = oversizedFileNames.slice(0, 2).join(", ");
+      const extraCount = oversizedFileNames.length - 2;
+      const extraLabel = extraCount > 0 ? ` (+${extraCount})` : "";
+      toast.error(`File is larger than 200 MB: ${example}${extraLabel}`);
+    }
+
+    const availableSlots = Math.max(0, MAX_PENDING_ATTACHMENTS - pendingAttachments.value.length);
+    if (availableSlots === 0) {
+      toast.warning(`Only ${MAX_PENDING_ATTACHMENTS} files can be attached per message.`);
+      input.value = "";
+      return;
+    }
+
+    const pickedAttachments = eligibleFiles.slice(0, availableSlots).map(createPendingAttachment);
+    if (!pickedAttachments.length) {
+      input.value = "";
+      return;
+    }
+
+    if (eligibleFiles.length > availableSlots) {
+      toast.warning(`Only ${MAX_PENDING_ATTACHMENTS} files can be attached per message.`);
+    }
+
+    pendingAttachments.value = pendingAttachments.value.concat(pickedAttachments);
     input.value = "";
   };
 
@@ -1475,6 +1690,7 @@
     mediaViewer.open = false;
     mediaViewer.items = [];
     mediaViewer.index = 0;
+    resetMediaViewerSwipe();
   };
 
   const openMediaViewer = (message: ChatMessage, attachmentId: string) => {
@@ -1497,6 +1713,69 @@
   const activeMediaAttachment = computed(() => {
     return mediaViewer.items[mediaViewer.index] ?? null;
   });
+  const resetMediaViewerSwipe = () => {
+    mediaViewerSwipeStart.x = null;
+    mediaViewerSwipeStart.y = null;
+  };
+  const completeMediaViewerSwipe = (currentX: number | null, currentY: number | null) => {
+    if (mediaViewer.items.length <= 1 || mediaViewerSwipeStart.x === null || mediaViewerSwipeStart.y === null) {
+      resetMediaViewerSwipe();
+      return;
+    }
+
+    if (currentX === null || currentY === null) {
+      resetMediaViewerSwipe();
+      return;
+    }
+
+    const deltaX = currentX - mediaViewerSwipeStart.x;
+    const deltaY = currentY - mediaViewerSwipeStart.y;
+    if (Math.abs(deltaX) >= VIEWER_SWIPE_THRESHOLD && Math.abs(deltaY) <= VIEWER_MAX_VERTICAL_DRIFT) {
+      moveMediaViewer(deltaX > 0 ? -1 : 1);
+    }
+
+    resetMediaViewerSwipe();
+  };
+  const handleMediaViewerPointerDown = (event: PointerEvent) => {
+    if (mediaViewer.items.length <= 1) return;
+    mediaViewerSwipeStart.x = event.clientX;
+    mediaViewerSwipeStart.y = event.clientY;
+  };
+  const handleMediaViewerPointerUp = (event: PointerEvent) => {
+    completeMediaViewerSwipe(event.clientX, event.clientY);
+  };
+  const handleMediaViewerTouchStart = (event: TouchEvent) => {
+    if (mediaViewer.items.length <= 1) return;
+    const touch = event.touches?.[0];
+    if (!touch) return;
+
+    mediaViewerSwipeStart.x = touch.clientX;
+    mediaViewerSwipeStart.y = touch.clientY;
+  };
+  const handleMediaViewerTouchEnd = (event: TouchEvent) => {
+    const touch = event.changedTouches?.[0];
+    completeMediaViewerSwipe(touch?.clientX ?? null, touch?.clientY ?? null);
+  };
+  const handleGlobalKeydown = (event: KeyboardEvent) => {
+    if (!mediaViewer.open) return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMediaViewer();
+      return;
+    }
+
+    if (mediaViewer.items.length <= 1) return;
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveMediaViewer(-1);
+      return;
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveMediaViewer(1);
+    }
+  };
 
   const clearRemoteTypingTimer = (userId: string) => {
     const timer = remoteTypingTimers.get(userId);
@@ -2231,6 +2510,7 @@
     dragHandle.value = prefersTouch ? ".drag-handle" : ".support-chat";
     syncMobileTextInputMode();
     window.addEventListener("resize", syncMobileTextInputMode, { passive: true });
+    window.addEventListener("keydown", handleGlobalKeydown);
     mobileModeResizeListenerAttached = true;
 
     // позиціонування тільки для плавающего окна
@@ -2270,6 +2550,7 @@
     }
     if (mobileModeResizeListenerAttached) {
       window.removeEventListener("resize", syncMobileTextInputMode);
+      window.removeEventListener("keydown", handleGlobalKeydown);
       mobileModeResizeListenerAttached = false;
     }
     if (markReadRafId !== null) {
@@ -2283,6 +2564,7 @@
     pendingMarkReadMessageId = null;
     clearLocalTypingStopTimer();
     clearPendingAttachments();
+    resetUploadProgress();
     closeMediaViewer();
 
     if (appResumeListenersAttached) {
@@ -2325,6 +2607,7 @@
 
     draft.value = "";
     pendingAttachments.value = [];
+
     const el = listRef.value;
     const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
 
@@ -2343,12 +2626,26 @@
     }
 
     isSending.value = true;
+    resetUploadProgress();
+    if (selectedAttachments.length > 0) {
+      uploadProgress.active = true;
+      uploadProgress.total = selectedAttachments.reduce((total, attachment) => total + (attachment.size || 0), 0);
+      uploadProgress.loaded = 0;
+      uploadProgress.percent = 0;
+    }
+
     let shouldRevokePreview = true;
 
     try {
+      const requestConfig: AxiosRequestConfig = {};
+      if (selectedAttachments.length > 0) {
+        requestConfig.timeout = UPLOAD_REQUEST_TIMEOUT_MS;
+        requestConfig.onUploadProgress = updateUploadProgress;
+      }
+
       const response = props.adminChat
-        ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, payload)
-        : await appCore.tickets.storeTicketMessage(props.ticketId, payload);
+        ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, payload, requestConfig)
+        : await appCore.tickets.storeTicketMessage(props.ticketId, payload, requestConfig);
 
       const rawMessage = response?.data?.data ?? response?.data ?? null;
       if (rawMessage?.id) {
@@ -2382,9 +2679,11 @@
       draft.value = body;
       pendingAttachments.value = selectedAttachments;
       shouldRevokePreview = false;
+      toast.error(extractRequestErrorMessage(error));
       console.error("[ChatDefault] send failed", error);
     } finally {
       isSending.value = false;
+      resetUploadProgress();
       if (shouldRevokePreview) {
         for (const attachment of selectedAttachments) {
           revokePendingAttachment(attachment);
