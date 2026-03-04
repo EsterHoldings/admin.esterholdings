@@ -16,6 +16,10 @@ export class TicketsService {
     return await this.useApi.get(`/client/tickets/${ticketId}/messages`, payload);
   }
 
+  async presignTicketAttachment(ticketId: string, payload: any = {}): Promise<any> {
+    return await this.useApi.post(`/client/tickets/${ticketId}/messages/presign`, payload);
+  }
+
   async storeTicketMessage(ticketId: string, payload: any = {}, config: AxiosRequestConfig = {}): Promise<any> {
     return await this.useApi.post(`/client/tickets/${ticketId}/messages`, payload, config);
   }

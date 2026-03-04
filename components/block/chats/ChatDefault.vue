@@ -82,7 +82,7 @@
         :style="{ visibility: booting ? 'hidden' : 'visible' }"
         @scroll.passive="onScroll"
         @touchstart="handleMessagesTouchStart"
-        @touchmove="handleMessagesTouchMove"
+        @touchmove.passive="handleMessagesTouchMove"
         @touchend="handleMessagesTouchEnd"
         @touchcancel="handleMessagesTouchEnd">
         <template
@@ -259,7 +259,7 @@
       <div
         class="chat-input-wrap border-t border-[var(--color-stroke-ui-light)] p-3"
         @touchstart="handleInputAreaTouchStart"
-        @touchmove="handleInputAreaTouchMove"
+        @touchmove.passive="handleInputAreaTouchMove"
         @touchend="handleInputAreaTouchEnd"
         @touchcancel="handleInputAreaTouchEnd">
         <div
@@ -269,9 +269,10 @@
             <span>{{ pendingAttachments.length }} files selected</span>
             <span>{{ formatFileSize(pendingAttachmentsTotalSize) }}</span>
             <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+            <span>{{ pendingUploadSummaryLabel }}</span>
           </div>
           <div
-            v-if="isSending && uploadProgress.active"
+            v-if="uploadProgress.active"
             class="mb-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-2">
             <div class="mb-1 flex items-center justify-between text-[11px] text-[var(--ui-text-secondary)]">
               <span>Uploading...</span>
@@ -311,7 +312,7 @@
                 </span>
               </div>
               <div
-                v-if="isSending"
+                v-if="isSending || attachment.uploadStatus === 'uploading'"
                 class="absolute inset-0 flex items-center justify-center bg-black/35">
                 <UiIconSpinnerDefault class="!h-4 !w-4 !text-white" />
               </div>
@@ -486,7 +487,7 @@
               :style="{ overflowAnchor: 'none', visibility: booting ? 'hidden' : 'visible' }"
               @scroll.passive="onScroll"
               @touchstart="handleMessagesTouchStart"
-              @touchmove="handleMessagesTouchMove"
+              @touchmove.passive="handleMessagesTouchMove"
               @touchend="handleMessagesTouchEnd"
               @touchcancel="handleMessagesTouchEnd">
               <template
@@ -665,7 +666,7 @@
             <div
               class="chat-input-wrap border-t border-[var(--color-stroke-ui-light)] p-3"
               @touchstart="handleInputAreaTouchStart"
-              @touchmove="handleInputAreaTouchMove"
+              @touchmove.passive="handleInputAreaTouchMove"
               @touchend="handleInputAreaTouchEnd"
               @touchcancel="handleInputAreaTouchEnd">
               <div
@@ -675,9 +676,10 @@
                   <span>{{ pendingAttachments.length }} files selected</span>
                   <span>{{ formatFileSize(pendingAttachmentsTotalSize) }}</span>
                   <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+                  <span>{{ pendingUploadSummaryLabel }}</span>
                 </div>
                 <div
-                  v-if="isSending && uploadProgress.active"
+                  v-if="uploadProgress.active"
                   class="mb-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-2">
                   <div class="mb-1 flex items-center justify-between text-[11px] text-[var(--ui-text-secondary)]">
                     <span>Uploading...</span>
@@ -717,7 +719,7 @@
                       </span>
                     </div>
                     <div
-                      v-if="isSending"
+                      v-if="isSending || attachment.uploadStatus === 'uploading'"
                       class="absolute inset-0 flex items-center justify-center bg-black/35">
                       <UiIconSpinnerDefault class="!h-4 !w-4 !text-white" />
                     </div>
@@ -883,7 +885,8 @@
 
 <script setup lang="ts">
   import { ref, computed, withDefaults, onMounted, onBeforeUnmount, nextTick, reactive, watch, useAttrs } from "vue";
-  import type { AxiosProgressEvent, AxiosRequestConfig } from "axios";
+  import axios from "axios";
+  import type { AxiosProgressEvent } from "axios";
   import { useNuxtApp } from "nuxt/app";
   import { useToast } from "vue-toastification";
   import useAppCore from "~/composables/useAppCore";
@@ -935,6 +938,10 @@
     mimeType: string;
     size: number;
     previewUrl: string;
+    uploadStatus: "queued" | "uploading" | "uploaded" | "failed";
+    uploadProgress: number;
+    uploadedKey: string | null;
+    uploadError: string | null;
   };
   type ChatMessage = {
     id: string;
@@ -1134,14 +1141,16 @@
     const smallHorizontalDrift = Math.abs(messagesTouchDeltaX.value) <= MESSAGES_HORIZONTAL_DRIFT_LIMIT;
     const swipeDown = messagesTouchDeltaY.value > 0;
 
-    // While keyboard is open, capture downward swipe and dismiss keyboard
-    // instead of letting chat content shift under the keyboard.
-    if (verticalSwipe && smallHorizontalDrift && swipeDown && isKeyboardVisible()) {
-      event.preventDefault();
-      if (messagesTouchDeltaY.value >= MESSAGES_SWIPE_DOWN_THRESHOLD && !messagesSwipeDismissInProgress.value) {
-        messagesSwipeDismissInProgress.value = true;
-        dismissKeyboard();
-      }
+    if (
+      verticalSwipe &&
+      smallHorizontalDrift &&
+      swipeDown &&
+      isKeyboardVisible() &&
+      messagesTouchDeltaY.value >= MESSAGES_SWIPE_DOWN_THRESHOLD &&
+      !messagesSwipeDismissInProgress.value
+    ) {
+      messagesSwipeDismissInProgress.value = true;
+      dismissKeyboard();
     }
   };
 
@@ -1191,11 +1200,7 @@
     inputTouchDeltaY.value = touch.clientY - inputTouchStartY.value;
     inputTouchDeltaX.value = touch.clientX - inputTouchStartX.value;
 
-    const verticalSwipe = Math.abs(inputTouchDeltaY.value) > Math.abs(inputTouchDeltaX.value);
-    const swipeUp = inputTouchDeltaY.value < 0;
-    if (verticalSwipe && swipeUp) {
-      event.preventDefault();
-    }
+    // Preserve native scroll in the input area; swipe logic is handled on touchend.
   };
 
   const handleInputAreaTouchEnd = () => {
@@ -1355,19 +1360,111 @@
   const pendingAttachmentsTotalSize = computed(() => {
     return pendingAttachments.value.reduce((total, attachment) => total + (attachment.size || 0), 0);
   });
+  const pendingUploadsInProgress = computed(() => {
+    return pendingAttachments.value.some(
+      attachment => attachment.uploadStatus === "queued" || attachment.uploadStatus === "uploading"
+    );
+  });
+  const pendingUploadsFailed = computed(() => {
+    return pendingAttachments.value.some(attachment => attachment.uploadStatus === "failed");
+  });
+  const pendingUploadsReady = computed(() => {
+    if (!pendingAttachments.value.length) return false;
+    return pendingAttachments.value.every(
+      attachment => attachment.uploadStatus === "uploaded" && Boolean(attachment.uploadedKey)
+    );
+  });
+  const pendingUploadSummaryLabel = computed(() => {
+    const total = pendingAttachments.value.length;
+    if (total === 0) return "";
+
+    const uploadedCount = pendingAttachments.value.filter(attachment => attachment.uploadStatus === "uploaded").length;
+    const failedCount = pendingAttachments.value.filter(attachment => attachment.uploadStatus === "failed").length;
+    const uploadingCount = pendingAttachments.value.filter(
+      attachment => attachment.uploadStatus === "queued" || attachment.uploadStatus === "uploading"
+    ).length;
+
+    if (uploadingCount > 0) {
+      return `${uploadedCount}/${total} uploaded`;
+    }
+    if (failedCount > 0) {
+      return `${failedCount} failed`;
+    }
+
+    return `${uploadedCount}/${total} uploaded`;
+  });
+
+  const syncUploadProgressFromPending = () => {
+    if (!pendingAttachments.value.length) {
+      resetUploadProgress();
+      return;
+    }
+
+    const total = pendingAttachments.value.reduce((sum, attachment) => sum + Math.max(attachment.size || 0, 1), 0);
+    const loaded = pendingAttachments.value.reduce((sum, attachment) => {
+      const attachmentSize = Math.max(attachment.size || 0, 1);
+      if (attachment.uploadStatus === "uploaded") {
+        return sum + attachmentSize;
+      }
+      if (attachment.uploadStatus === "uploading") {
+        return sum + Math.round((attachmentSize * Math.max(0, Math.min(100, attachment.uploadProgress || 0))) / 100);
+      }
+
+      return sum;
+    }, 0);
+
+    const hasPending = pendingAttachments.value.some(
+      attachment => attachment.uploadStatus === "queued" || attachment.uploadStatus === "uploading"
+    );
+    const allUploaded =
+      pendingAttachments.value.length > 0 &&
+      pendingAttachments.value.every(
+        attachment => attachment.uploadStatus === "uploaded" && Boolean(attachment.uploadedKey)
+      );
+
+    uploadProgress.active = hasPending || !allUploaded;
+    uploadProgress.total = total;
+    uploadProgress.loaded = loaded;
+    uploadProgress.percent = total > 0 ? Math.round((loaded / total) * 100) : 0;
+  };
+
+  const updatePendingAttachment = (
+    attachmentId: string,
+    patch: Partial<
+      Pick<PendingAttachment, "uploadStatus" | "uploadProgress" | "uploadedKey" | "uploadError" | "displayAs">
+    >
+  ): PendingAttachment | null => {
+    const attachment = pendingAttachments.value.find(item => item.id === attachmentId);
+    if (!attachment) return null;
+
+    if (patch.uploadStatus !== undefined) attachment.uploadStatus = patch.uploadStatus;
+    if (patch.uploadProgress !== undefined) attachment.uploadProgress = patch.uploadProgress;
+    if (patch.uploadedKey !== undefined) attachment.uploadedKey = patch.uploadedKey;
+    if (patch.uploadError !== undefined) attachment.uploadError = patch.uploadError;
+    if (patch.displayAs !== undefined) attachment.displayAs = patch.displayAs;
+
+    syncUploadProgressFromPending();
+    return attachment;
+  };
+
   const uploadProgressPercent = computed(() => {
     if (!uploadProgress.active) return 0;
-    if (uploadProgress.percent > 0) return uploadProgress.percent;
     if (uploadProgress.total > 0) {
       return Math.round((uploadProgress.loaded / uploadProgress.total) * 100);
     }
 
-    return 0;
+    return uploadProgress.percent > 0 ? uploadProgress.percent : 0;
   });
   const uploadProgressLabel = computed(() => {
     if (!uploadProgress.active) return "";
-    if (uploadProgress.total > 0) {
+    if (pendingUploadsInProgress.value && uploadProgress.total > 0) {
       return `${uploadProgressPercent.value}% • ${formatFileSize(uploadProgress.loaded)} / ${formatFileSize(uploadProgress.total)}`;
+    }
+    if (pendingUploadsFailed.value) {
+      return "Upload failed. Remove failed files or retry.";
+    }
+    if (pendingUploadsReady.value) {
+      return "All files uploaded";
     }
 
     if (uploadProgress.loaded > 0) {
@@ -1382,12 +1479,7 @@
     uploadProgress.total = 0;
     uploadProgress.percent = 0;
   };
-  const updateUploadProgress = (event: AxiosProgressEvent) => {
-    uploadProgress.active = true;
-    uploadProgress.loaded = Number(event.loaded ?? 0);
-    uploadProgress.total = Number(event.total ?? 0);
-    uploadProgress.percent = Number.isFinite(event.progress || 0) ? Math.round((event.progress || 0) * 100) : 0;
-  };
+
   const mediaGridClass = (count: number): string => {
     if (count <= 1) return "grid-cols-1";
     if (count === 2) return "grid-cols-2";
@@ -1520,9 +1612,17 @@
       attachment => attachment.displayAs === "file" || (attachment.kind !== "image" && attachment.kind !== "video")
     );
   };
-  const canSend = computed(
-    () => !isSending.value && (draft.value.trim().length > 0 || pendingAttachments.value.length > 0)
-  );
+  const canSend = computed(() => {
+    if (isSending.value) return false;
+
+    const hasBody = draft.value.trim().length > 0;
+    const hasAttachments = pendingAttachments.value.length > 0;
+
+    if (!hasBody && !hasAttachments) return false;
+    if (!hasAttachments) return true;
+
+    return pendingUploadsReady.value && !pendingUploadsInProgress.value;
+  });
   const remoteTypingUsers = reactive<Set<string>>(new Set());
   const remoteTypingTimers = new Map<string, ReturnType<typeof setTimeout>>();
   let localTypingStopTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1559,6 +1659,14 @@
     if (!error || typeof error !== "object") return fallback;
 
     const errorRecord = error as Record<string, any>;
+    const responseStatus = Number(errorRecord?.response?.status ?? 0);
+    if (responseStatus === 413) {
+      return "Upload is too large for the server limit (413).";
+    }
+    if (errorRecord?.code === "ECONNABORTED") {
+      return "Upload timed out. Try sending fewer or smaller files.";
+    }
+
     const responseData = errorRecord?.response?.data;
     if (responseData && typeof responseData === "object") {
       if (typeof responseData.message === "string" && responseData.message.trim() !== "") {
@@ -1576,7 +1684,12 @@
     }
 
     if (typeof errorRecord.message === "string" && errorRecord.message.trim() !== "") {
-      return errorRecord.message.trim();
+      const message = errorRecord.message.trim();
+      if (message.toLowerCase() === "network error") {
+        return "Network error while uploading files. Please try again.";
+      }
+
+      return message;
     }
 
     return fallback;
@@ -1593,6 +1706,7 @@
       revokePendingAttachment(attachment);
     }
     pendingAttachments.value = [];
+    resetUploadProgress();
   };
 
   const removePendingAttachment = (attachmentId: string) => {
@@ -1603,6 +1717,7 @@
     if (attachment) {
       revokePendingAttachment(attachment);
     }
+    syncUploadProgressFromPending();
   };
 
   const openPicker = (displayAs: ChatAttachmentDisplay) => {
@@ -1640,10 +1755,97 @@
       mimeType,
       size: file.size,
       previewUrl: URL.createObjectURL(file),
+      uploadStatus: "queued",
+      uploadProgress: 0,
+      uploadedKey: null,
+      uploadError: null,
     };
   };
 
-  const handleFileInputChange = (event: Event) => {
+  const requestAttachmentPresign = async (attachment: PendingAttachment): Promise<{ url: string; key: string }> => {
+    const response = props.adminChat
+      ? await appCore.adminModules.tickets.presignTicketAttachment(props.ticketId, {
+          filename: attachment.name,
+          content_type: attachment.mimeType || "application/octet-stream",
+          size: attachment.size,
+        })
+      : await appCore.tickets.presignTicketAttachment(props.ticketId, {
+          filename: attachment.name,
+          content_type: attachment.mimeType || "application/octet-stream",
+          size: attachment.size,
+        });
+
+    const payload = response?.data?.data ?? response?.data ?? null;
+    const url = normalizeText(payload?.url);
+    const key = normalizeText(payload?.key);
+    if (!url || !key) {
+      throw new Error("Failed to generate upload URL.");
+    }
+
+    return {
+      url,
+      key,
+    };
+  };
+
+  const uploadPendingAttachment = async (attachmentId: string) => {
+    const attachment = pendingAttachments.value.find(item => item.id === attachmentId);
+    if (!attachment) return;
+    if (attachment.uploadStatus === "uploaded" && attachment.uploadedKey) return;
+
+    updatePendingAttachment(attachment.id, {
+      uploadStatus: "uploading",
+      uploadProgress: 0,
+      uploadError: null,
+      uploadedKey: null,
+    });
+
+    try {
+      const presignPayload = await requestAttachmentPresign(attachment);
+
+      await axios.put(presignPayload.url, attachment.file, {
+        headers: {
+          "Content-Type": attachment.mimeType || "application/octet-stream",
+        },
+        timeout: UPLOAD_REQUEST_TIMEOUT_MS,
+        onUploadProgress: (event: AxiosProgressEvent) => {
+          const total = Number(event.total ?? attachment.size ?? 0);
+          const loaded = Number(event.loaded ?? 0);
+          const progress = total > 0 ? Math.round((loaded / total) * 100) : 0;
+          updatePendingAttachment(attachment.id, {
+            uploadStatus: "uploading",
+            uploadProgress: Math.max(0, Math.min(100, progress)),
+          });
+        },
+      });
+
+      updatePendingAttachment(attachment.id, {
+        uploadStatus: "uploaded",
+        uploadProgress: 100,
+        uploadError: null,
+        uploadedKey: presignPayload.key,
+      });
+    } catch (error) {
+      const message = extractRequestErrorMessage(error);
+      updatePendingAttachment(attachment.id, {
+        uploadStatus: "failed",
+        uploadProgress: 0,
+        uploadedKey: null,
+        uploadError: message,
+      });
+      toast.error(`${attachment.name}: ${message}`);
+    }
+  };
+
+  const startUploadForAttachments = async (attachmentIds: string[]) => {
+    if (!attachmentIds.length) return;
+
+    for (const attachmentId of attachmentIds) {
+      await uploadPendingAttachment(attachmentId);
+    }
+  };
+
+  const handleFileInputChange = async (event: Event) => {
     const input = event.target as HTMLInputElement | null;
     if (!input?.files?.length) return;
 
@@ -1683,6 +1885,8 @@
     }
 
     pendingAttachments.value = pendingAttachments.value.concat(pickedAttachments);
+    syncUploadProgressFromPending();
+    await startUploadForAttachments(pickedAttachments.map(attachment => attachment.id));
     input.value = "";
   };
 
@@ -2605,47 +2809,51 @@
     const selectedAttachments = [...pendingAttachments.value];
     if (!body && selectedAttachments.length === 0) return;
 
+    if (
+      selectedAttachments.length > 0 &&
+      selectedAttachments.some(attachment => attachment.uploadStatus !== "uploaded" || !attachment.uploadedKey)
+    ) {
+      toast.warning("Wait for all files to finish uploading before sending.");
+      return;
+    }
+
     draft.value = "";
     pendingAttachments.value = [];
+    syncUploadProgressFromPending();
 
     const el = listRef.value;
     const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
 
-    const payload = new FormData();
-    payload.append("user_id", String(props.currentUser.id ?? ""));
-    payload.append("type", selectedAttachments.length > 0 ? "attachment" : "text");
+    const payload: Record<string, unknown> = {
+      user_id: String(props.currentUser.id ?? ""),
+      type: selectedAttachments.length > 0 ? "attachment" : "text",
+    };
     if (body) {
-      payload.append("body", body);
+      payload.body = body;
     }
     if (selectedAttachments.length > 0) {
       const displayAs = selectedAttachments[0]?.displayAs ?? pickerDisplayAs.value;
-      payload.append("display_as", displayAs);
-      for (const attachment of selectedAttachments) {
-        payload.append("files[]", attachment.file, attachment.name);
-      }
+      payload.display_as = displayAs;
+      payload.uploaded_attachments = selectedAttachments
+        .filter(attachment => Boolean(attachment.uploadedKey))
+        .map(attachment => ({
+          key: String(attachment.uploadedKey),
+          name: attachment.name,
+          mime_type: attachment.mimeType,
+          size: attachment.size,
+          kind: attachment.kind,
+          display_as: attachment.displayAs,
+        }));
     }
 
     isSending.value = true;
-    resetUploadProgress();
-    if (selectedAttachments.length > 0) {
-      uploadProgress.active = true;
-      uploadProgress.total = selectedAttachments.reduce((total, attachment) => total + (attachment.size || 0), 0);
-      uploadProgress.loaded = 0;
-      uploadProgress.percent = 0;
-    }
 
     let shouldRevokePreview = true;
 
     try {
-      const requestConfig: AxiosRequestConfig = {};
-      if (selectedAttachments.length > 0) {
-        requestConfig.timeout = UPLOAD_REQUEST_TIMEOUT_MS;
-        requestConfig.onUploadProgress = updateUploadProgress;
-      }
-
       const response = props.adminChat
-        ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, payload, requestConfig)
-        : await appCore.tickets.storeTicketMessage(props.ticketId, payload, requestConfig);
+        ? await appCore.adminModules.tickets.storeTicketMessage(props.ticketId, payload)
+        : await appCore.tickets.storeTicketMessage(props.ticketId, payload);
 
       const rawMessage = response?.data?.data ?? response?.data ?? null;
       if (rawMessage?.id) {
@@ -2678,17 +2886,18 @@
     } catch (error) {
       draft.value = body;
       pendingAttachments.value = selectedAttachments;
+      syncUploadProgressFromPending();
       shouldRevokePreview = false;
       toast.error(extractRequestErrorMessage(error));
       console.error("[ChatDefault] send failed", error);
     } finally {
       isSending.value = false;
-      resetUploadProgress();
       if (shouldRevokePreview) {
         for (const attachment of selectedAttachments) {
           revokePendingAttachment(attachment);
         }
       }
+      syncUploadProgressFromPending();
     }
   }
 </script>
@@ -2785,6 +2994,8 @@
   .messages {
     overscroll-behavior: contain;
     scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   @media (max-width: 767px) {
