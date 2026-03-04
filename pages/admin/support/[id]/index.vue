@@ -1658,6 +1658,24 @@
 </script>
 
 <style lang="scss" scoped>
+  :global(html.support-chat-fullscreen),
+  :global(body.support-chat-fullscreen) {
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  :global(html.support-chat-fullscreen .page-header),
+  :global(body.support-chat-fullscreen .page-header) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-120%) !important;
+  }
+
+  :global(html.support-chat-fullscreen .page-content),
+  :global(body.support-chat-fullscreen .page-content) {
+    padding-top: 0 !important;
+  }
+
   .support-ticket-page {
     height: 100%;
     min-height: 0;
