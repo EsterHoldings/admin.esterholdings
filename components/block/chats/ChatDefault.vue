@@ -1517,10 +1517,14 @@
       })
       .filter((attachment): attachment is ChatAttachment => Boolean(attachment && attachment.url));
 
+    const serverAttachmentsCount = toPositiveInt(metaRecord.attachments_count ?? metaRecord.attachmentsCount);
+    const effectiveAttachmentsCount =
+      serverAttachmentsCount > 0 ? Math.max(serverAttachmentsCount, attachments.length) : attachments.length;
+
     return {
       ...metaRecord,
       attachments,
-      attachmentsCount: attachments.length,
+      attachmentsCount: effectiveAttachmentsCount,
     };
   };
   const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
@@ -2343,6 +2347,14 @@
     messages[index] = incoming;
     return "updated";
   }
+  const messageNeedsAttachmentHydration = (message: ChatMessage): boolean => {
+    if (message.type !== "attachment") return false;
+
+    const meta = message.meta;
+    if (!meta) return false;
+
+    return (meta.attachmentsCount ?? 0) > (meta.attachments?.length ?? 0);
+  };
   async function syncLatestMessagesFromServer() {
     try {
       const latestAsc = await fetchPageAsAsc(1);
@@ -2459,6 +2471,9 @@
       }
       if (incomingMessage.userId !== currentUserId.value) {
         await markVisibleMessagesAsRead();
+      }
+      if (messageNeedsAttachmentHydration(incomingMessage)) {
+        void syncLatestMessagesFromServer();
       }
     });
     ch.listen(".Typing", (e: { user_id: string; is_typing: boolean }) => {
