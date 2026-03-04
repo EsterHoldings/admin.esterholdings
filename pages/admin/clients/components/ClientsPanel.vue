@@ -1,32 +1,31 @@
 <template>
   <div class="flex w-full flex-col gap-3 text-[var(--ui-text-main)]">
     <div class="clients-stats-grid">
-      <div
+      <template
         v-for="card in metricCards"
-        :key="card.id"
-        class="clients-stat-card"
-        :class="card.kind">
+        :key="card.id">
         <template v-if="card.kind === 'is-deposits-summary'">
-          <div class="clients-stat-card__label">{{ card.label }}</div>
-          <div class="clients-stat-card__deposits-grid">
+          <div
+            v-for="segment in card.segments"
+            :key="`${card.id}-${segment.id}`"
+            class="clients-stat-card is-deposit-segment">
+            <div class="clients-stat-card__deposits-label">{{ segment.label }}</div>
             <div
-              v-for="segment in card.segments"
-              :key="segment.id"
-              class="clients-stat-card__deposits-item">
-              <div class="clients-stat-card__deposits-label">{{ segment.label }}</div>
-              <div
-                class="clients-stat-card__deposits-value"
-                :class="`size-${segment.size}`">
-                {{ segment.value }}
-              </div>
+              class="clients-stat-card__deposits-value"
+              :class="`size-${segment.size}`">
+              {{ segment.value }}
             </div>
           </div>
         </template>
-        <template v-else>
+
+        <div
+          v-else
+          class="clients-stat-card"
+          :class="card.kind">
           <div class="clients-stat-card__label">{{ card.label }}</div>
           <div class="clients-stat-card__value">{{ card.value }}</div>
-        </template>
-      </div>
+        </div>
+      </template>
     </div>
 
     <PageStructureContent :plain="viewMode !== 'table'">
@@ -1432,10 +1431,9 @@
       var(--ui-background-card);
   }
 
-  .clients-stat-card.is-deposits-summary {
-    grid-column: 1 / -1;
+  .clients-stat-card.is-deposit-segment {
     background:
-      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-accent) 16%, transparent) 0%, transparent 70.44%),
+      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
       var(--ui-background-card);
   }
 
@@ -1450,25 +1448,6 @@
     line-height: 28px;
     font-weight: 700;
     color: var(--ui-text-main);
-  }
-
-  .clients-stat-card__deposits-grid {
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  @media (min-width: 640px) {
-    .clients-stat-card__deposits-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  .clients-stat-card__deposits-item {
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--ui-background-panel) 80%, transparent);
-    padding: 8px 10px;
   }
 
   .clients-stat-card__deposits-label {
