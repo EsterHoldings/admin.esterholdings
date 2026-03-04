@@ -98,6 +98,7 @@ export default defineNuxtPlugin(() => {
   const scheme = (cfg.reverbScheme || window.location.protocol.replace(":", "") || "http").toLowerCase();
   const forceTLS = scheme === "https";
   const port = sanitizePort(cfg.reverbPort, forceTLS ? 443 : 80);
+  const transport = forceTLS ? "wss" : "ws";
   let refreshInFlight: Promise<string | null> | null = null;
 
   const refreshAccessToken = async (preferAdminAuth: boolean): Promise<string | null> => {
@@ -183,7 +184,11 @@ export default defineNuxtPlugin(() => {
     wsPort: port,
     wssPort: port,
     forceTLS,
-    enabledTransports: ["ws", "wss"],
+    enabledTransports: [transport],
+    disableStats: true,
+    activityTimeout: 30_000,
+    pongTimeout: 6_000,
+    unavailableTimeout: 5_000,
     authEndpoint,
     withCredentials: true,
     authorizer: (channel: any) => ({
