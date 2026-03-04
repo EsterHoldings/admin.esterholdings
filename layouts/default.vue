@@ -185,18 +185,6 @@
     display: none;
   }
 
-  :global(html.support-chat-fullscreen) .page-header,
-  :global(body.support-chat-fullscreen) .page-header {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-120%);
-  }
-
-  :global(html.support-chat-fullscreen) .page-content,
-  :global(body.support-chat-fullscreen) .page-content {
-    padding-top: 0;
-  }
-
   @media (max-width: 1023px) {
     .page-wrapper {
       grid-template-columns: 1fr;

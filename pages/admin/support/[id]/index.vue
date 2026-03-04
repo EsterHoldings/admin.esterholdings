@@ -1737,7 +1737,7 @@
     .support-ticket-grid.is-mobile.is-mobile-fullscreen {
       position: fixed;
       inset: 0;
-      z-index: 12000;
+      z-index: 2147483000;
       display: block;
       width: 100vw;
       height: 100dvh;
@@ -1753,7 +1753,7 @@
       height: 100dvh;
       max-height: 100dvh;
       width: 100%;
-      z-index: 1;
+      z-index: 2147483001;
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.support-chat) {
@@ -1765,6 +1765,8 @@
     }
 
     .support-ticket-grid.is-mobile.is-mobile-fullscreen .support-chat-wrapper :deep(.drag-handle) {
+      position: relative;
+      z-index: 2;
       padding-top: calc(10px + env(safe-area-inset-top, 0px));
     }
   }
