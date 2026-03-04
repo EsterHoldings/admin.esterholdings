@@ -156,7 +156,7 @@
                     </button>
                   </div>
 
-                  <div class="mt-4">
+                  <div class="support-side__library-content">
                     <div
                       v-if="isLibraryLoading && activeTabItemsCount === 0"
                       class="support-side__library-loading">
@@ -167,13 +167,12 @@
                     <div
                       v-else-if="activeTab === 'media'"
                       class="support-side__media-grid">
-                      <a
+                      <button
                         v-for="media in mediaItems"
                         :key="media.id"
-                        :href="media.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="support-side__media">
+                        type="button"
+                        class="support-side__media"
+                        @click="openLibraryMediaViewer(media.id)">
                         <img
                           v-if="media.kind === 'image'"
                           :src="media.url"
@@ -191,7 +190,7 @@
                           <span class="support-side__video-badge">Video</span>
                         </div>
                         <span class="support-side__media-title">{{ media.title }}</span>
-                      </a>
+                      </button>
                       <div
                         v-if="!mediaItems.length"
                         class="support-side__links-empty">
@@ -279,6 +278,60 @@
         </div>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="libraryMediaViewer.open && activeLibraryMediaItem"
+        class="fixed inset-0 z-[13000] flex items-center justify-center bg-black/80 p-4"
+        @click.self="closeLibraryMediaViewer"
+        @pointerdown="handleLibraryMediaViewerPointerDown"
+        @pointerup="handleLibraryMediaViewerPointerUp"
+        @touchstart.passive="handleLibraryMediaViewerTouchStart"
+        @touchend="handleLibraryMediaViewerTouchEnd">
+        <button
+          type="button"
+          class="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+          aria-label="Close media viewer"
+          @click="closeLibraryMediaViewer">
+          ✕
+        </button>
+        <button
+          v-if="mediaItems.length > 1"
+          type="button"
+          class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+          aria-label="Previous media"
+          @click="moveLibraryMediaViewer(-1)">
+          ‹
+        </button>
+        <div
+          class="max-h-[88vh] max-w-[92vw] overflow-hidden rounded-xl border border-white/20 bg-black/50"
+          @click.stop>
+          <img
+            v-if="activeLibraryMediaItem.kind === 'image'"
+            :src="activeLibraryMediaItem.url"
+            :alt="activeLibraryMediaItem.title"
+            class="max-h-[82vh] max-w-[92vw] object-contain" />
+          <video
+            v-else
+            :src="activeLibraryMediaItem.url"
+            class="max-h-[82vh] max-w-[92vw] object-contain"
+            controls
+            autoplay
+            playsinline></video>
+          <div class="px-3 py-2 text-sm text-white/90">
+            {{ activeLibraryMediaItem.title }}
+          </div>
+        </div>
+        <button
+          v-if="mediaItems.length > 1"
+          type="button"
+          class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+          aria-label="Next media"
+          @click="moveLibraryMediaViewer(1)">
+          ›
+        </button>
+      </div>
+    </Teleport>
   </UiContainer>
 </template>
 
@@ -416,6 +469,8 @@
   const MOBILE_PANEL_CLOSE_BOTTOM_THRESHOLD = 0.4;
   const MOBILE_PANEL_HORIZONTAL_DRIFT_LIMIT = 52;
   const MOBILE_PANEL_SNAP_MS = 280;
+  const LIBRARY_VIEWER_SWIPE_THRESHOLD = 52;
+  const LIBRARY_VIEWER_MAX_VERTICAL_DRIFT = 120;
   const LINKS_PAGE_SIZE = 50;
   const MAX_LINKS_PAGES = 40;
   const MESSAGE_URL_PATTERN = /\b((?:https?:\/\/|www\.)[^\s<>"'`]+)/gi;
@@ -428,6 +483,14 @@
   const panelDragOffset = ref(0);
   const panelDragMaxOffset = ref(0);
   const isPanelDragging = ref(false);
+  const libraryMediaViewer = reactive({
+    open: false,
+    index: 0,
+  });
+  const libraryViewerSwipeStart = reactive({
+    x: null as number | null,
+    y: null as number | null,
+  });
   let panelCloseTimeoutId: ReturnType<typeof setTimeout> | null = null;
   let desktopGridRafId: number | null = null;
 
@@ -461,6 +524,10 @@
       opacity: `${Math.max(0, 1 - panelDragProgress.value * 1.2)}`,
       transition: isPanelDragging.value ? "none" : "opacity 0.28s ease, transform 0.28s ease, border-color 0.2s ease",
     } as const;
+  });
+
+  const activeLibraryMediaItem = computed<SupportMediaItem | null>(() => {
+    return mediaItems.value[libraryMediaViewer.index] ?? null;
   });
 
   const measureDesktopGridHeight = () => {
@@ -943,6 +1010,97 @@
     await loadLibraryFromChat();
   };
 
+  const resetLibraryViewerSwipe = () => {
+    libraryViewerSwipeStart.x = null;
+    libraryViewerSwipeStart.y = null;
+  };
+
+  const closeLibraryMediaViewer = () => {
+    libraryMediaViewer.open = false;
+    libraryMediaViewer.index = 0;
+    resetLibraryViewerSwipe();
+  };
+
+  const openLibraryMediaViewer = (mediaId: string) => {
+    const index = mediaItems.value.findIndex(item => item.id === mediaId);
+    libraryMediaViewer.index = index >= 0 ? index : 0;
+    libraryMediaViewer.open = true;
+  };
+
+  const moveLibraryMediaViewer = (direction: -1 | 1) => {
+    if (!mediaItems.value.length) return;
+    const length = mediaItems.value.length;
+    libraryMediaViewer.index = (libraryMediaViewer.index + direction + length) % length;
+  };
+
+  const completeLibraryViewerSwipe = (currentX: number | null, currentY: number | null) => {
+    if (
+      mediaItems.value.length <= 1 ||
+      libraryViewerSwipeStart.x === null ||
+      libraryViewerSwipeStart.y === null ||
+      currentX === null ||
+      currentY === null
+    ) {
+      resetLibraryViewerSwipe();
+      return;
+    }
+
+    const deltaX = currentX - libraryViewerSwipeStart.x;
+    const deltaY = currentY - libraryViewerSwipeStart.y;
+    if (Math.abs(deltaX) >= LIBRARY_VIEWER_SWIPE_THRESHOLD && Math.abs(deltaY) <= LIBRARY_VIEWER_MAX_VERTICAL_DRIFT) {
+      moveLibraryMediaViewer(deltaX > 0 ? -1 : 1);
+    }
+
+    resetLibraryViewerSwipe();
+  };
+
+  const handleLibraryMediaViewerPointerDown = (event: PointerEvent) => {
+    if (mediaItems.value.length <= 1) return;
+    libraryViewerSwipeStart.x = event.clientX;
+    libraryViewerSwipeStart.y = event.clientY;
+  };
+
+  const handleLibraryMediaViewerPointerUp = (event: PointerEvent) => {
+    completeLibraryViewerSwipe(event.clientX, event.clientY);
+  };
+
+  const handleLibraryMediaViewerTouchStart = (event: TouchEvent) => {
+    if (mediaItems.value.length <= 1) return;
+    const touch = event.touches?.[0];
+    if (!touch) return;
+
+    libraryViewerSwipeStart.x = touch.clientX;
+    libraryViewerSwipeStart.y = touch.clientY;
+  };
+
+  const handleLibraryMediaViewerTouchEnd = (event: TouchEvent) => {
+    const touch = event.changedTouches?.[0];
+    completeLibraryViewerSwipe(touch?.clientX ?? null, touch?.clientY ?? null);
+  };
+
+  const handleLibraryMediaViewerKeydown = (event: KeyboardEvent) => {
+    if (!libraryMediaViewer.open) return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeLibraryMediaViewer();
+      return;
+    }
+
+    if (mediaItems.value.length <= 1) return;
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveLibraryMediaViewer(-1);
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveLibraryMediaViewer(1);
+    }
+  };
+
   const handleSideScrollMouseMove = (event: MouseEvent) => {
     if (!isSideScrollDragging.value) return;
     const el = supportSideScrollRef.value;
@@ -1047,6 +1205,7 @@
     useEventBus.on(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     updateViewportState();
     window.addEventListener("resize", updateViewportState, { passive: true });
+    window.addEventListener("keydown", handleLibraryMediaViewerKeydown);
 
     const response = await appCore.adminModules.auth.getAuthUser();
     const firstName = response.data.first_name ?? null;
@@ -1078,16 +1237,30 @@
     void loadLibraryFromChat();
   });
 
+  watch(mediaItems, () => {
+    if (!libraryMediaViewer.open) return;
+    if (!mediaItems.value.length) {
+      closeLibraryMediaViewer();
+      return;
+    }
+
+    if (libraryMediaViewer.index >= mediaItems.value.length) {
+      libraryMediaViewer.index = mediaItems.value.length - 1;
+    }
+  });
+
   onBeforeUnmount(() => {
     useEventBus.off(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     useEventBus.off(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     window.removeEventListener("resize", updateViewportState);
+    window.removeEventListener("keydown", handleLibraryMediaViewerKeydown);
     clearSidePanelCloseTimer();
     if (desktopGridRafId !== null) {
       window.cancelAnimationFrame(desktopGridRafId);
       desktopGridRafId = null;
     }
     handleSideScrollMouseUp();
+    closeLibraryMediaViewer();
   });
 </script>
 
@@ -1591,6 +1764,20 @@
     font-size: 12px;
   }
 
+  .support-side__library-content {
+    margin-top: 16px;
+    max-height: clamp(220px, 42vh, 460px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .support-side__library-content::-webkit-scrollbar {
+    display: none;
+  }
+
   .support-side__media-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1605,6 +1792,10 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    color: inherit;
   }
 
   .support-side__media-preview {

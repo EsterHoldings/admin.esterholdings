@@ -71,7 +71,7 @@
 
       <div
         v-if="booting"
-        class="absolute z-10 flex items-center justify-center backdrop-blur-sm p-4"
+        class="pointer-events-none absolute z-10 flex items-center justify-center backdrop-blur-sm p-4"
         style="left: 1px; right: 1px; top: 61px; bottom: 81px">
         <UiIconSpinnerDefault class="!text-[var(--ui-text-main)]" />
       </div>
@@ -345,51 +345,82 @@
             @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             placeholder="Write your message" />
-          <button
-            type="button"
-            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-            title="Add media"
-            :disabled="isSending"
-            @click="openMediaPicker">
-            <svg
-              viewBox="0 0 24 24"
-              class="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect
-                x="3"
-                y="3"
-                width="18"
-                height="18"
-                rx="2" />
-              <circle
-                cx="8.5"
-                cy="8.5"
-                r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-            title="Add file"
-            :disabled="isSending"
-            @click="openFilePicker">
-            <svg
-              viewBox="0 0 24 24"
-              class="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round">
-              <path
-                d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
-            </svg>
-          </button>
+          <div
+            ref="attachMenuRef"
+            class="chat-attach-menu-wrap no-drag">
+            <button
+              type="button"
+              class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+              title="Add attachment"
+              aria-haspopup="menu"
+              :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
+              :disabled="isSending"
+              @click="toggleAttachMenu">
+              <svg
+                viewBox="0 0 24 24"
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
+              </svg>
+            </button>
+            <div
+              v-if="isAttachMenuOpen"
+              class="chat-attach-menu"
+              role="menu">
+              <button
+                type="button"
+                class="chat-attach-menu-item"
+                role="menuitem"
+                :disabled="isSending"
+                @click="pickAttachmentMode('media')">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect
+                    x="3"
+                    y="3"
+                    width="18"
+                    height="18"
+                    rx="2" />
+                  <circle
+                    cx="8.5"
+                    cy="8.5"
+                    r="1.5" />
+                  <path d="M21 15l-5-5L5 21" />
+                </svg>
+                <span>Media</span>
+              </button>
+              <button
+                type="button"
+                class="chat-attach-menu-item"
+                role="menuitem"
+                :disabled="isSending"
+                @click="pickAttachmentMode('file')">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
+                </svg>
+                <span>File</span>
+              </button>
+            </div>
+          </div>
           <button
             :disabled="!canSend"
             @pointerdown="handleSendPointerDown"
@@ -476,7 +507,7 @@
 
             <div
               v-if="booting"
-              class="absolute z-10 flex items-center justify-center backdrop-blur-sm p-4"
+              class="pointer-events-none absolute z-10 flex items-center justify-center backdrop-blur-sm p-4"
               style="left: 1px; right: 1px; top: 61px; bottom: 81px">
               <UiIconSpinnerDefault class="!text-[var(--ui-text-main)]" />
             </div>
@@ -752,51 +783,82 @@
                   @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   placeholder="Write your message" />
-                <button
-                  type="button"
-                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                  title="Add media"
-                  :disabled="isSending"
-                  @click="openMediaPicker">
-                  <svg
-                    viewBox="0 0 24 24"
-                    class="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <rect
-                      x="3"
-                      y="3"
-                      width="18"
-                      height="18"
-                      rx="2" />
-                    <circle
-                      cx="8.5"
-                      cy="8.5"
-                      r="1.5" />
-                    <path d="M21 15l-5-5L5 21" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                  title="Add file"
-                  :disabled="isSending"
-                  @click="openFilePicker">
-                  <svg
-                    viewBox="0 0 24 24"
-                    class="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path
-                      d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
-                  </svg>
-                </button>
+                <div
+                  ref="attachMenuRef"
+                  class="chat-attach-menu-wrap no-drag">
+                  <button
+                    type="button"
+                    class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                    title="Add attachment"
+                    aria-haspopup="menu"
+                    :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
+                    :disabled="isSending"
+                    @click="toggleAttachMenu">
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path
+                        d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
+                    </svg>
+                  </button>
+                  <div
+                    v-if="isAttachMenuOpen"
+                    class="chat-attach-menu"
+                    role="menu">
+                    <button
+                      type="button"
+                      class="chat-attach-menu-item"
+                      role="menuitem"
+                      :disabled="isSending"
+                      @click="pickAttachmentMode('media')">
+                      <svg
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2" />
+                        <circle
+                          cx="8.5"
+                          cy="8.5"
+                          r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                      </svg>
+                      <span>Media</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="chat-attach-menu-item"
+                      role="menuitem"
+                      :disabled="isSending"
+                      @click="pickAttachmentMode('file')">
+                      <svg
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                          d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
+                      </svg>
+                      <span>File</span>
+                    </button>
+                  </div>
+                </div>
                 <button
                   :disabled="!canSend"
                   @pointerdown="handleSendPointerDown"
@@ -1260,6 +1322,7 @@
   const listRef = ref<HTMLElement | null>(null);
   const inputRef = ref<HTMLTextAreaElement | HTMLInputElement | null>(null);
   const fileInputRef = ref<HTMLInputElement | null>(null);
+  const attachMenuRef = ref<HTMLElement | HTMLElement[] | null>(null);
   const booting = ref(true);
   const isSending = ref(false);
 
@@ -1271,6 +1334,7 @@
   const pendingAttachments = ref<PendingAttachment[]>([]);
   const pickerAccept = ref("");
   const pickerDisplayAs = ref<ChatAttachmentDisplay>("media");
+  const isAttachMenuOpen = ref(false);
   const mediaViewer = reactive<{
     open: boolean;
     items: ChatAttachment[];
@@ -1725,6 +1789,7 @@
   };
 
   const openPicker = (displayAs: ChatAttachmentDisplay) => {
+    isAttachMenuOpen.value = false;
     if (isSending.value) return;
 
     const hasDifferentMode = pendingAttachments.value.some(attachment => attachment.displayAs !== displayAs);
@@ -1745,6 +1810,20 @@
 
   const openFilePicker = () => {
     openPicker("file");
+  };
+
+  const closeAttachMenu = () => {
+    isAttachMenuOpen.value = false;
+  };
+
+  const toggleAttachMenu = () => {
+    if (isSending.value) return;
+    isAttachMenuOpen.value = !isAttachMenuOpen.value;
+  };
+
+  const pickAttachmentMode = (displayAs: ChatAttachmentDisplay) => {
+    closeAttachMenu();
+    openPicker(displayAs);
   };
 
   const createPendingAttachment = (file: File): PendingAttachment => {
@@ -1965,13 +2044,19 @@
     completeMediaViewerSwipe(touch?.clientX ?? null, touch?.clientY ?? null);
   };
   const handleGlobalKeydown = (event: KeyboardEvent) => {
-    if (!mediaViewer.open) return;
-
     if (event.key === "Escape") {
-      event.preventDefault();
-      closeMediaViewer();
+      if (mediaViewer.open) {
+        event.preventDefault();
+        closeMediaViewer();
+      }
+      if (isAttachMenuOpen.value) {
+        event.preventDefault();
+        closeAttachMenu();
+      }
       return;
     }
+
+    if (!mediaViewer.open) return;
 
     if (mediaViewer.items.length <= 1) return;
     if (event.key === "ArrowLeft") {
@@ -1983,6 +2068,32 @@
       event.preventDefault();
       moveMediaViewer(1);
     }
+  };
+
+  const resolveAttachMenuRoot = (): HTMLElement | null => {
+    const value = attachMenuRef.value;
+    if (value instanceof HTMLElement) return value;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item instanceof HTMLElement) return item;
+      }
+    }
+    return null;
+  };
+
+  const handleGlobalClick = (event: MouseEvent) => {
+    if (!isAttachMenuOpen.value) return;
+
+    const target = event.target;
+    if (!(target instanceof Node)) {
+      closeAttachMenu();
+      return;
+    }
+
+    const menuRoot = resolveAttachMenuRoot();
+    if (menuRoot?.contains(target)) return;
+
+    closeAttachMenu();
   };
 
   const clearRemoteTypingTimer = (userId: string) => {
@@ -2396,19 +2507,26 @@
   }
   async function loadInitial() {
     booting.value = true;
-    const asc = await fetchPageAsAsc(1);
-    messages.splice(0, messages.length, ...asc);
-    ensureAscOrder();
-    await nextTick();
-    await new Promise(requestAnimationFrame);
-    hasMore.value = asc.length === PAGE_SIZE;
-    nextPage = 2;
-    await ensureScrollableHistoryForBlock();
-    scrollToBottom();
-    userIsNearBottom.value = true;
-    await waitForNextPaint();
-    await markVisibleMessagesAsRead();
-    booting.value = false;
+    try {
+      const asc = await fetchPageAsAsc(1);
+      messages.splice(0, messages.length, ...asc);
+      ensureAscOrder();
+      await nextTick();
+      await new Promise(requestAnimationFrame);
+      hasMore.value = asc.length === PAGE_SIZE;
+      nextPage = 2;
+      await ensureScrollableHistoryForBlock();
+      scrollToBottom();
+      userIsNearBottom.value = true;
+      await waitForNextPaint();
+      await markVisibleMessagesAsRead();
+    } catch (error) {
+      console.error("[ChatDefault] loadInitial failed", error);
+      hasMore.value = false;
+      userIsNearBottom.value = true;
+    } finally {
+      booting.value = false;
+    }
   }
   let loadingMore = false;
   async function loadMoreAbove() {
@@ -2730,6 +2848,7 @@
     syncMobileTextInputMode();
     window.addEventListener("resize", syncMobileTextInputMode, { passive: true });
     window.addEventListener("keydown", handleGlobalKeydown);
+    window.addEventListener("click", handleGlobalClick);
     mobileModeResizeListenerAttached = true;
 
     // позиціонування тільки для плавающего окна
@@ -2770,6 +2889,7 @@
     if (mobileModeResizeListenerAttached) {
       window.removeEventListener("resize", syncMobileTextInputMode);
       window.removeEventListener("keydown", handleGlobalKeydown);
+      window.removeEventListener("click", handleGlobalClick);
       mobileModeResizeListenerAttached = false;
     }
     if (markReadRafId !== null) {
@@ -2784,6 +2904,7 @@
     clearLocalTypingStopTimer();
     clearPendingAttachments();
     resetUploadProgress();
+    closeAttachMenu();
     closeMediaViewer();
 
     if (appResumeListenersAttached) {
@@ -3011,6 +3132,51 @@
     scroll-behavior: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+  }
+
+  .chat-attach-menu-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .chat-attach-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    min-width: 146px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-card);
+    box-shadow: 0 10px 26px var(--color-stroke-ui-dark);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .chat-attach-menu-item {
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-text-main);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 7px 8px;
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+  }
+
+  .chat-attach-menu-item:hover:not(:disabled) {
+    background: var(--ui-background-panel);
+  }
+
+  .chat-attach-menu-item:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   @media (max-width: 767px) {
