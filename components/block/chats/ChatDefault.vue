@@ -166,8 +166,11 @@
                   class="whitespace-pre-wrap break-words">
                   {{ item.msg.body }}
                 </p>
-                <div class="mt-1 text-[12px] text-[var(--ui-text-secondary)]">
-                  {{ formatDateTime(item.msg.createdAt) }}
+                <div class="mt-1 flex items-center gap-1 text-[12px] text-[var(--ui-text-secondary)]">
+                  <UiIconSpinnerDefault
+                    v-if="isMessagePending(item.msg)"
+                    class="!h-3 !w-3" />
+                  <span>{{ formatDateTime(item.msg.createdAt) }}</span>
                 </div>
               </div>
             </div>
@@ -232,8 +235,12 @@
                   class="whitespace-pre-wrap break-words">
                   {{ item.msg.body }}
                 </p>
-                <div class="mt-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
-                  {{ formatDateTime(item.msg.createdAt) }}
+                <div
+                  class="mt-1 flex items-center justify-end gap-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
+                  <UiIconSpinnerDefault
+                    v-if="isMessagePending(item.msg)"
+                    class="!h-3 !w-3" />
+                  <span>{{ formatDateTime(item.msg.createdAt) }}</span>
                 </div>
               </div>
               <div
@@ -604,8 +611,11 @@
                         class="whitespace-pre-wrap break-words">
                         {{ item.msg.body }}
                       </p>
-                      <div class="mt-1 text-[12px] text-[var(--ui-text-secondary)]">
-                        {{ formatDateTime(item.msg.createdAt) }}
+                      <div class="mt-1 flex items-center gap-1 text-[12px] text-[var(--ui-text-secondary)]">
+                        <UiIconSpinnerDefault
+                          v-if="isMessagePending(item.msg)"
+                          class="!h-3 !w-3" />
+                        <span>{{ formatDateTime(item.msg.createdAt) }}</span>
                       </div>
                     </div>
                   </div>
@@ -670,8 +680,12 @@
                         class="whitespace-pre-wrap break-words">
                         {{ item.msg.body }}
                       </p>
-                      <div class="mt-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
-                        {{ formatDateTime(item.msg.createdAt) }}
+                      <div
+                        class="mt-1 flex items-center justify-end gap-1 text-right text-[12px] text-[var(--ui-text-secondary)]">
+                        <UiIconSpinnerDefault
+                          v-if="isMessagePending(item.msg)"
+                          class="!h-3 !w-3" />
+                        <span>{{ formatDateTime(item.msg.createdAt) }}</span>
                       </div>
                     </div>
                     <div
@@ -970,6 +984,7 @@
   const MAX_CHAT_FILE_SIZE_BYTES = 200 * 1024 * 1024;
   const MAX_PENDING_ATTACHMENTS = 10;
   const UPLOAD_REQUEST_TIMEOUT_MS = 15 * 60 * 1000;
+  const PENDING_MESSAGE_MATCH_WINDOW_MS = 2 * 60 * 1000;
   const VIEWER_SWIPE_THRESHOLD = 52;
   const VIEWER_MAX_VERTICAL_DRIFT = 120;
 
@@ -1012,6 +1027,8 @@
     type: string;
     meta: ChatMessageMeta | null;
     createdAt: number;
+    deliveryStatus: "pending" | "sent";
+    pendingServerId?: string;
     author?: string;
     authorPhotoUrl?: string;
     authorFirstName?: string;
@@ -1395,6 +1412,27 @@
     const number = Number(value);
     return Number.isFinite(number) && number > 0 ? Math.trunc(number) : 0;
   };
+  const createLocalMessageId = (): string => {
+    return `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  };
+  const buildAttachmentIdentity = (attachment: ChatAttachment): string => {
+    return [
+      attachment.kind,
+      attachment.displayAs,
+      normalizeText(attachment.name).toLowerCase(),
+      String(toPositiveInt(attachment.size)),
+      normalizeText(attachment.path).toLowerCase(),
+    ].join("|");
+  };
+  const buildMessageIdentity = (message: Pick<ChatMessage, "userId" | "type" | "body" | "meta">): string => {
+    const attachments = (message.meta?.attachments ?? []).map(buildAttachmentIdentity).sort().join(";");
+    return [
+      normalizeUserId(message.userId),
+      normalizeText(message.type).toLowerCase(),
+      normalizeText(message.body),
+      attachments,
+    ].join("::");
+  };
   const formatFileSize = (value: number): string => {
     if (!Number.isFinite(value) || value <= 0) return "0 B";
     const units = ["B", "KB", "MB", "GB"];
@@ -1575,7 +1613,7 @@
           url,
           mimeType,
           size: toPositiveInt(attachmentRecord.size),
-          path: normalizeOptionalText(attachmentRecord.path),
+          path: normalizeOptionalText(attachmentRecord.path ?? attachmentRecord.key ?? attachmentRecord.storage_key),
           extension: normalizeOptionalText(attachmentRecord.extension),
         } as ChatAttachment;
       })
@@ -1643,6 +1681,9 @@
   const currentUserId = computed(() => normalizeUserId(props.currentUser.id));
   const myAvatarUrl = computed(() => normalizeText(props.currentUser.photoUrl));
   const isMe = (m: ChatMessage) => m.userId !== "" && m.userId === currentUserId.value;
+  const isMessagePending = (message: ChatMessage): boolean => {
+    return message.deliveryStatus === "pending";
+  };
   const myAvatarFallback = computed(() => {
     return buildAvatarFallback({
       firstName: props.currentUser.firstName,
@@ -2417,6 +2458,8 @@
       body: m.body ?? "",
       meta: normalizeMessageMeta(m.meta),
       createdAt: parseLocalMs(m.created_at),
+      deliveryStatus: "sent",
+      pendingServerId: undefined,
       author: normalizeOptionalText(m.author),
       authorPhotoUrl: normalizeOptionalText(m.author_photo_url),
       authorFirstName: normalizeOptionalText(m.author_first_name),
@@ -2435,6 +2478,8 @@
       a.body === b.body &&
       aMeta === bMeta &&
       a.createdAt === b.createdAt &&
+      a.deliveryStatus === b.deliveryStatus &&
+      a.pendingServerId === b.pendingServerId &&
       a.author === b.author &&
       a.authorPhotoUrl === b.authorPhotoUrl &&
       a.authorFirstName === b.authorFirstName &&
@@ -2443,7 +2488,124 @@
       a.authorInitials === b.authorInitials
     );
   }
+  const buildPendingMessageFromPayload = (
+    body: string,
+    selectedAttachments: PendingAttachment[],
+    fallbackType: string
+  ): ChatMessage => {
+    const attachments: ChatAttachment[] = selectedAttachments.map(attachment => {
+      const extension = attachment.name.includes(".") ? attachment.name.split(".").pop() : "";
+      return {
+        id: `pending-${attachment.id}`,
+        kind: attachment.kind,
+        displayAs: attachment.displayAs,
+        name: attachment.name,
+        url: attachment.previewUrl,
+        mimeType: attachment.mimeType,
+        size: attachment.size,
+        path: attachment.uploadedKey || undefined,
+        extension: normalizeOptionalText(extension),
+      };
+    });
+
+    return {
+      id: createLocalMessageId(),
+      userId: currentUserId.value,
+      type: fallbackType,
+      body,
+      meta:
+        attachments.length > 0
+          ? {
+              attachments,
+              attachmentsCount: attachments.length,
+            }
+          : null,
+      createdAt: Date.now(),
+      deliveryStatus: "pending",
+      pendingServerId: undefined,
+      author: normalizeOptionalText(props.currentUser.name),
+      authorPhotoUrl: myAvatarUrl.value || undefined,
+      authorFirstName: normalizeOptionalText(props.currentUser.firstName),
+      authorLastName: normalizeOptionalText(props.currentUser.lastName),
+      authorEmail: normalizeOptionalText(props.currentUser.email),
+      authorInitials: myAvatarFallback.value || undefined,
+    };
+  };
+  const markPendingMessageServerId = (localMessageId: string, serverMessage: ChatMessage) => {
+    const index = messages.findIndex(message => message.id === localMessageId);
+    if (index === -1) return;
+
+    const pending = messages[index];
+    messages[index] = {
+      ...pending,
+      type: serverMessage.type || pending.type,
+      body: serverMessage.body ?? pending.body,
+      meta: serverMessage.meta ?? pending.meta,
+      createdAt: serverMessage.createdAt || pending.createdAt,
+      pendingServerId: serverMessage.id,
+      author: serverMessage.author ?? pending.author,
+      authorPhotoUrl: serverMessage.authorPhotoUrl ?? pending.authorPhotoUrl,
+      authorFirstName: serverMessage.authorFirstName ?? pending.authorFirstName,
+      authorLastName: serverMessage.authorLastName ?? pending.authorLastName,
+      authorEmail: serverMessage.authorEmail ?? pending.authorEmail,
+      authorInitials: serverMessage.authorInitials ?? pending.authorInitials,
+      deliveryStatus: "pending",
+    };
+  };
+  const findPendingMessageIndexForIncoming = (incoming: ChatMessage): number => {
+    if (incoming.deliveryStatus !== "sent") return -1;
+    if (incoming.userId !== currentUserId.value) return -1;
+
+    const byServerId = messages.findIndex(
+      message => message.deliveryStatus === "pending" && message.pendingServerId === incoming.id
+    );
+    if (byServerId !== -1) return byServerId;
+
+    const incomingIdentity = buildMessageIdentity(incoming);
+    let matchedIndex = -1;
+    let bestDiff = Number.POSITIVE_INFINITY;
+
+    for (let index = 0; index < messages.length; index += 1) {
+      const candidate = messages[index];
+      if (candidate.deliveryStatus !== "pending") continue;
+      if (candidate.userId !== incoming.userId) continue;
+
+      const candidateIdentity = buildMessageIdentity(candidate);
+      if (candidateIdentity !== incomingIdentity) continue;
+
+      const createdAtDiff = Math.abs(candidate.createdAt - incoming.createdAt);
+      if (createdAtDiff > PENDING_MESSAGE_MATCH_WINDOW_MS) continue;
+
+      if (createdAtDiff < bestDiff) {
+        bestDiff = createdAtDiff;
+        matchedIndex = index;
+      }
+    }
+
+    return matchedIndex;
+  };
   function upsertMessage(incoming: ChatMessage): "inserted" | "updated" | "unchanged" {
+    const pendingIndex = findPendingMessageIndexForIncoming(incoming);
+    if (pendingIndex !== -1) {
+      const pendingMessage = messages[pendingIndex];
+      const reconciledMessage: ChatMessage = {
+        ...incoming,
+        id: incoming.id,
+        createdAt: incoming.createdAt || pendingMessage.createdAt,
+        deliveryStatus: "sent",
+        pendingServerId: undefined,
+      };
+
+      if (isSameMessage(pendingMessage, reconciledMessage)) {
+        if (pendingMessage.id === incoming.id && pendingMessage.deliveryStatus === "sent") {
+          return "unchanged";
+        }
+      }
+
+      messages[pendingIndex] = reconciledMessage;
+      return "updated";
+    }
+
     const index = messages.findIndex(message => message.id === incoming.id);
     if (index === -1) {
       messages.push(incoming);
@@ -2455,7 +2617,11 @@
       return "unchanged";
     }
 
-    messages[index] = incoming;
+    messages[index] = {
+      ...incoming,
+      deliveryStatus: "sent",
+      pendingServerId: undefined,
+    };
     return "updated";
   }
   const messageNeedsAttachmentHydration = (message: ChatMessage): boolean => {
@@ -2938,18 +3104,23 @@
 
   async function send() {
     if (!canSend.value || isSending.value) return;
+    isSending.value = true;
     await stopTyping(true);
     const shouldKeepKeyboardOpen =
       isMobileChatInteraction() && (document.activeElement === inputRef.value || isKeyboardVisible());
     const body = draft.value.trim();
     const selectedAttachments = [...pendingAttachments.value];
-    if (!body && selectedAttachments.length === 0) return;
+    if (!body && selectedAttachments.length === 0) {
+      isSending.value = false;
+      return;
+    }
 
     if (
       selectedAttachments.length > 0 &&
       selectedAttachments.some(attachment => attachment.uploadStatus !== "uploaded" || !attachment.uploadedKey)
     ) {
       toast.warning("Wait for all files to finish uploading before sending.");
+      isSending.value = false;
       return;
     }
 
@@ -2982,9 +3153,16 @@
         }));
     }
 
-    isSending.value = true;
-
     let shouldRevokePreview = true;
+    const optimisticType = selectedAttachments.length > 0 ? "attachment" : "text";
+    const optimisticMessage = buildPendingMessageFromPayload(body, selectedAttachments, optimisticType);
+
+    upsertMessage(optimisticMessage);
+    ensureAscOrder();
+    if (shouldStick) {
+      await nextTick();
+      scrollToBottom();
+    }
 
     try {
       const response = props.adminChat
@@ -2993,7 +3171,7 @@
 
       const rawMessage = response?.data?.data ?? response?.data ?? null;
       if (rawMessage?.id) {
-        const latestMessage = mapApi({
+        const serverMessage = mapApi({
           id: rawMessage.id,
           ticket_id: rawMessage.ticket_id ?? props.ticketId,
           user_id: rawMessage.user_id ?? props.currentUser.id,
@@ -3008,8 +3186,7 @@
           author_email: rawMessage.author_email,
           author_initials: rawMessage.author_initials,
         });
-        upsertMessage(latestMessage);
-        emitSupportMessageUpdated(latestMessage);
+        markPendingMessageServerId(optimisticMessage.id, serverMessage);
         ensureAscOrder();
       }
 
@@ -3020,6 +3197,10 @@
       // If socket was unstable in PWA, fetch first page to backfill any missed broadcast messages.
       void syncLatestMessagesFromServer();
     } catch (error) {
+      const pendingIndex = messages.findIndex(message => message.id === optimisticMessage.id);
+      if (pendingIndex !== -1) {
+        messages.splice(pendingIndex, 1);
+      }
       draft.value = body;
       pendingAttachments.value = selectedAttachments;
       syncUploadProgressFromPending();

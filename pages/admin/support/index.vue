@@ -234,10 +234,16 @@
               viewMode === 'full' ? 'ticket-card--full-row' : '',
             ]"
             @click="handleClickRow(ticket.id)">
-            <div class="ticket-card__top flex items-start justify-between gap-3">
-              <div class="min-w-0 flex items-start gap-2">
-                <div
-                  class="h-[28px] w-[28px] rounded-full overflow-hidden border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background)] text-[10px] font-semibold text-[var(--ui-text-main)] flex items-center justify-center shrink-0 uppercase">
+            <div class="ticket-card__header">
+              <div class="min-w-0">
+                <div class="ticket-card__subject truncate">{{ ticket.subject }}</div>
+                <div class="ticket-card__id-row">#{{ ticket.id }}</div>
+              </div>
+            </div>
+
+            <div class="ticket-card__meta-row">
+              <div class="ticket-card__counterparty-col">
+                <div class="ticket-card__avatar">
                   <img
                     v-if="getTicketClientAvatarUrl(ticket)"
                     :src="getTicketClientAvatarUrl(ticket)"
@@ -245,60 +251,51 @@
                     class="h-full w-full object-cover" />
                   <span v-else>{{ getTicketClientInitials(ticket) }}</span>
                 </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-2 text-xs text-[var(--ui-text-secondary)]">
-                    <span>#{{ ticket.id }}</span>
-                    <span
-                      class="shrink-0 text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-main)]"
-                      title="Скопировать ID"
-                      @click.stop>
-                      <UiIconCopy :text="String(ticket.id)" />
-                    </span>
-                  </div>
-                  <div class="truncate font-semibold">{{ ticket.subject }}</div>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <span
-                  class="inline-flex items-center gap-1.5 text-xs text-[var(--ui-text-secondary)] whitespace-nowrap">
+                <span class="ticket-card__presence">
                   <span
-                    class="h-1.5 w-1.5 rounded-full"
+                    class="ticket-card__presence-dot"
+                    :class="
+                      ticket.counterparty_online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
+                    " />
+                  {{ ticket.counterparty_online ? "Online" : "Offline" }}
+                </span>
+                <span class="ticket-card__updated">{{ ticket.last_message_at }}</span>
+              </div>
+
+              <div class="ticket-card__actions-col">
+                <span class="ticket-card__status">
+                  <span
+                    class="ticket-card__status-dot"
                     :class="getTicketStatusDotClass(ticket.status)" />
                   {{ ticket.status }}
                 </span>
+
+                <div class="ticket-card__actions">
+                  <button
+                    class="ticket-card__icon-btn"
+                    @click.stop
+                    aria-label="Copy ID">
+                    <UiIconCopy :text="String(ticket.id)" />
+                  </button>
+                  <button
+                    class="ticket-card__icon-btn ticket-card__chat-btn"
+                    @click.stop="handleChatIconClick(ticket.id)"
+                    aria-label="Open chat">
+                    <span
+                      v-if="ticket.unread_messages_count > 0"
+                      class="ticket-card__chat-badge">
+                      {{ ticket.unread_messages_count }}
+                    </span>
+                    <UiIconChat class="!h-[20px] !w-[20px]" />
+                  </button>
+                  <button
+                    class="ticket-card__icon-btn"
+                    aria-label="More"
+                    @click.stop>
+                    <UiIconDotsVertical />
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div class="ticket-card__middle mt-3 flex items-center justify-between text-sm text-[var(--ui-text-secondary)]">
-              <span class="inline-flex items-center gap-1.5">
-                <span
-                  class="h-1.5 w-1.5 rounded-full"
-                  :class="
-                    ticket.counterparty_online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
-                  " />
-                {{ ticket.counterparty_online ? "Online" : "Offline" }}
-              </span>
-              <span class="whitespace-nowrap">{{ ticket.last_message_at }}</span>
-            </div>
-
-            <div class="ticket-card__bottom mt-3 flex items-center justify-end gap-2">
-              <button
-                class="relative h-[36px] w-[36px] flex items-center justify-center rounded-full hover:bg-[var(--color-stroke-ui-light)] active:bg-[var(--color-stroke-ui-dark)]"
-                @click.stop="handleChatIconClick(ticket.id)"
-                aria-label="Open chat">
-                <span
-                  v-if="ticket.unread_messages_count > 0"
-                  class="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-[var(--ui-sticker-danger)] text-white text-[10px] leading-none flex items-center justify-center">
-                  {{ ticket.unread_messages_count }}
-                </span>
-                <UiIconChat class="!h-[20px] !w-[20px]" />
-              </button>
-              <button
-                class="h-[36px] w-[36px] flex items-center justify-center rounded-md hover:bg-[var(--color-stroke-ui-light)] active:opacity-[.5]"
-                aria-label="More"
-                @click.stop>
-                <UiIconDotsVertical />
-              </button>
             </div>
           </div>
         </div>
@@ -1050,29 +1047,162 @@
 <style scoped>
   .ticket-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ticket-card__header {
+    min-width: 0;
+  }
+
+  .ticket-card__subject {
+    color: var(--ui-text-main);
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+
+  .ticket-card__id-row {
+    margin-top: 2px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .ticket-card__meta-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ticket-card__counterparty-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .ticket-card__avatar {
+    height: 34px;
+    width: 34px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background);
+    color: var(--ui-text-main);
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+  }
+
+  .ticket-card__presence {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ui-text-main);
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .ticket-card__presence-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+
+  .ticket-card__updated {
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .ticket-card__actions-col {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ticket-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ui-text-main);
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .ticket-card__status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+
+  .ticket-card__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ticket-card__icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    color: var(--ui-text-secondary);
+    background: transparent;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .ticket-card__icon-btn:hover {
+    color: var(--ui-text-main);
+    border-color: var(--color-stroke-ui-light);
+    background: color-mix(in srgb, var(--color-stroke-ui-light) 40%, transparent);
+  }
+
+  .ticket-card__chat-badge {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--ui-sticker-danger);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .ticket-card--full-row {
     display: grid;
-    grid-template-columns: minmax(320px, 1.5fr) minmax(240px, 1.1fr) auto;
+    grid-template-columns: minmax(260px, 1.2fr) minmax(0, 1fr);
     align-items: center;
     column-gap: 16px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
-  .ticket-card--full-row .ticket-card__top {
-    align-items: center;
-  }
-
-  .ticket-card--full-row .ticket-card__middle,
-  .ticket-card--full-row .ticket-card__bottom {
-    margin-top: 0;
-  }
-
-  .ticket-card--full-row .ticket-card__middle {
-    justify-content: flex-start;
-    gap: 18px;
+    row-gap: 8px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   @media (max-width: 1024px) {
@@ -1080,12 +1210,16 @@
       grid-template-columns: 1fr;
       row-gap: 10px;
     }
+  }
 
-    .ticket-card--full-row .ticket-card__top {
+  @media (max-width: 640px) {
+    .ticket-card__meta-row {
+      grid-template-columns: 1fr;
       align-items: flex-start;
     }
 
-    .ticket-card--full-row .ticket-card__middle {
+    .ticket-card__actions-col {
+      width: 100%;
       justify-content: space-between;
     }
   }
