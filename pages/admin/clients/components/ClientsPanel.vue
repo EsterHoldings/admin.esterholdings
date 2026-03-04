@@ -347,6 +347,7 @@
 
 <script lang="ts" setup>
   import { computed, h, onBeforeUnmount, onMounted, ref, watch } from "vue";
+  import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from "vue-router";
   import { useI18n } from "vue-i18n";
   import { debounce } from "~/utils/helper/debounce";
   import { navigateTo } from "nuxt/app";
@@ -404,6 +405,18 @@
   const VIEW_MODE_STORAGE_KEY = "adminClientsViewMode";
   const ONLINE_REFRESH_INTERVAL_MS = 5_000;
   const ONLINE_REALTIME_SYNC_DEBOUNCE_MS = 200;
+  const DEFAULT_PER_PAGE = 6;
+  const DEFAULT_PAGE = 1;
+  const DEFAULT_ORDER_BY = "created_at";
+  const DEFAULT_VIEW_MODE: ViewMode = "table";
+  const ORDER_BY_OPTIONS = ["created_at", "first_name", "email"] as const;
+  const QUERY_KEY_PAGE = "page";
+  const QUERY_KEY_PER_PAGE = "perPage";
+  const QUERY_KEY_SEARCH = "search";
+  const QUERY_KEY_ORDER_BY = "orderBy";
+  const QUERY_KEY_ORDER_DIRECTION = "orderDirection";
+  const QUERY_KEY_VIEW_MODE = "view";
+  const FILTER_QUERY_PREFIX = "filter_";
 
   const ALL_SEARCH_FIELDS = [
     "id",
@@ -483,6 +496,7 @@
   });
 
   const cloneFilters = (source: ClientFilters): ClientFilters => ({ ...source });
+  const FILTER_KEYS = Object.keys(createEmptyFilters()) as FilterKey[];
 
   const sanitizeFilterValue = (value: unknown): string => {
     if (typeof value === "string") {
@@ -496,7 +510,87 @@
     return String(value).trim();
   };
 
+  const getQueryValue = (value: unknown): string => {
+    if (Array.isArray(value)) {
+      return sanitizeFilterValue(value[0]);
+    }
+
+    return sanitizeFilterValue(value);
+  };
+
+  const getFirstNonEmptyQueryValue = (...values: unknown[]): string => {
+    for (const value of values) {
+      const normalized = getQueryValue(value);
+      if (normalized !== "") {
+        return normalized;
+      }
+    }
+
+    return "";
+  };
+
+  const parsePositiveInt = (value: unknown, fallback: number, min = 1): number => {
+    const parsed = Number.parseInt(getQueryValue(value), 10);
+    if (!Number.isFinite(parsed) || parsed < min) {
+      return fallback;
+    }
+
+    return parsed;
+  };
+
+  const isOrderByValue = (value: string): boolean => {
+    return ORDER_BY_OPTIONS.includes(value as (typeof ORDER_BY_OPTIONS)[number]);
+  };
+
+  const isOrderDirectionValue = (value: string): value is typeof ORDER_DIRECTION_ASC | typeof ORDER_DIRECTION_DESC => {
+    return value === ORDER_DIRECTION_ASC || value === ORDER_DIRECTION_DESC;
+  };
+
+  const isViewModeValue = (value: string): value is ViewMode => {
+    return value === "table" || value === "cards" || value === "full";
+  };
+
+  const isFilterBracketQueryKey = (queryKey: string): boolean => {
+    const matched = queryKey.match(/^filters\[(.+)\]$/);
+    if (!matched) return false;
+
+    return FILTER_KEYS.includes(matched[1] as FilterKey);
+  };
+
+  const managedQueryKeys = new Set<string>([
+    QUERY_KEY_PAGE,
+    QUERY_KEY_PER_PAGE,
+    QUERY_KEY_SEARCH,
+    QUERY_KEY_ORDER_BY,
+    QUERY_KEY_ORDER_DIRECTION,
+    QUERY_KEY_VIEW_MODE,
+    ...FILTER_KEYS.map(key => `${FILTER_QUERY_PREFIX}${key}`),
+  ]);
+
+  const normalizeQuery = (query: LocationQuery | LocationQueryRaw): Record<string, string> => {
+    return Object.fromEntries(Object.entries(query).map(([key, value]) => [key, getQueryValue(value)]));
+  };
+
+  const areQueryObjectsEqual = (left: Record<string, string>, right: Record<string, string>): boolean => {
+    const leftEntries = Object.entries(left).filter(([, value]) => value !== "");
+    const rightEntries = Object.entries(right).filter(([, value]) => value !== "");
+
+    if (leftEntries.length !== rightEntries.length) {
+      return false;
+    }
+
+    for (const [key, value] of leftEntries) {
+      if (right[key] !== value) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const { t, locale } = useI18n({ useScope: "global" });
+  const route = useRoute();
+  const router = useRouter();
   const localePath = useLocalePath();
   const appCore = useAppCore();
   const { $echo } = useNuxtApp() as unknown as { $echo?: any };
@@ -511,14 +605,14 @@
   const isLoadingSearch = ref(false);
   const isStatsLoading = ref(false);
 
-  const perPage = ref(6);
-  const page = ref(1);
+  const perPage = ref(DEFAULT_PER_PAGE);
+  const page = ref(DEFAULT_PAGE);
   const totalRows = ref(0);
   const searchFilter = ref("");
 
-  const orderBy = ref<string>("created_at");
+  const orderBy = ref<string>(DEFAULT_ORDER_BY);
   const orderDirection = ref<string>(ORDER_DIRECTION_DESC);
-  const viewMode = ref<ViewMode>("table");
+  const viewMode = ref<ViewMode>(DEFAULT_VIEW_MODE);
 
   const clientsData = ref<AdminClient[]>([]);
   const statsData = ref<ClientsStats>({
@@ -806,6 +900,119 @@
     }
   };
 
+  const getQueryFilters = (query: LocationQuery): ClientFilters => {
+    const filters = createEmptyFilters();
+
+    for (const filterKey of FILTER_KEYS) {
+      filters[filterKey] = getQueryValue(query[`${FILTER_QUERY_PREFIX}${filterKey}`]);
+    }
+
+    for (const [queryKey, rawValue] of Object.entries(query)) {
+      const matched = queryKey.match(/^filters\[(.+)\]$/);
+      if (!matched) continue;
+
+      const filterKey = matched[1] as FilterKey;
+      if (!FILTER_KEYS.includes(filterKey)) continue;
+
+      filters[filterKey] = getQueryValue(rawValue);
+    }
+
+    return filters;
+  };
+
+  const initStateFromQuery = () => {
+    const query = route.query;
+
+    perPage.value = parsePositiveInt(query[QUERY_KEY_PER_PAGE], DEFAULT_PER_PAGE);
+    page.value = parsePositiveInt(query[QUERY_KEY_PAGE], DEFAULT_PAGE);
+    searchFilter.value = getFirstNonEmptyQueryValue(query[QUERY_KEY_SEARCH], query.searchFilter);
+
+    const queryOrderBy = getQueryValue(query[QUERY_KEY_ORDER_BY]);
+    if (isOrderByValue(queryOrderBy)) {
+      orderBy.value = queryOrderBy;
+    }
+
+    const queryOrderDirection = getQueryValue(query[QUERY_KEY_ORDER_DIRECTION]);
+    if (isOrderDirectionValue(queryOrderDirection)) {
+      orderDirection.value = queryOrderDirection;
+    }
+
+    const queryViewMode = getQueryValue(query[QUERY_KEY_VIEW_MODE]);
+    if (isViewModeValue(queryViewMode)) {
+      viewMode.value = queryViewMode;
+    }
+
+    const parsedFilters = getQueryFilters(query);
+    appliedFilters.value = parsedFilters;
+    draftFilters.value = cloneFilters(parsedFilters);
+  };
+
+  const buildStateQuery = (): Record<string, string> => {
+    const query: Record<string, string> = {};
+
+    if (page.value > DEFAULT_PAGE) {
+      query[QUERY_KEY_PAGE] = String(page.value);
+    }
+
+    if (perPage.value !== DEFAULT_PER_PAGE) {
+      query[QUERY_KEY_PER_PAGE] = String(perPage.value);
+    }
+
+    const normalizedSearch = sanitizeFilterValue(searchFilter.value);
+    if (normalizedSearch !== "") {
+      query[QUERY_KEY_SEARCH] = normalizedSearch;
+    }
+
+    if (orderBy.value !== DEFAULT_ORDER_BY) {
+      query[QUERY_KEY_ORDER_BY] = orderBy.value;
+    }
+
+    if (orderDirection.value !== ORDER_DIRECTION_DESC) {
+      query[QUERY_KEY_ORDER_DIRECTION] = orderDirection.value;
+    }
+
+    if (viewMode.value !== DEFAULT_VIEW_MODE) {
+      query[QUERY_KEY_VIEW_MODE] = viewMode.value;
+    }
+
+    for (const filterKey of FILTER_KEYS) {
+      const filterValue = sanitizeFilterValue(appliedFilters.value[filterKey]);
+      if (filterValue === "") continue;
+
+      query[`${FILTER_QUERY_PREFIX}${filterKey}`] = filterValue;
+    }
+
+    return query;
+  };
+
+  const buildNextQuery = (): Record<string, string> => {
+    const preserved = Object.fromEntries(
+      Object.entries(normalizeQuery(route.query)).filter(
+        ([key]) => !managedQueryKeys.has(key) && !isFilterBracketQueryKey(key)
+      )
+    );
+
+    return {
+      ...preserved,
+      ...buildStateQuery(),
+    };
+  };
+
+  const syncStateToUrl = async () => {
+    const currentQuery = normalizeQuery(route.query);
+    const nextQuery = buildNextQuery();
+
+    if (areQueryObjectsEqual(currentQuery, nextQuery)) {
+      return;
+    }
+
+    try {
+      await router.replace({ query: nextQuery });
+    } catch {
+      // ignore navigation race in the same route
+    }
+  };
+
   const getFiltersPayload = (filters: ClientFilters): Partial<ClientFilters> => {
     const payload: Partial<ClientFilters> = {};
 
@@ -909,11 +1116,13 @@
   const handleChangePerPage = async (value: number) => {
     perPage.value = value;
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const handleChangePage = async (value: number) => {
     page.value = value;
     await loadData();
+    await syncStateToUrl();
   };
 
   const handleInputSearch = debounce(async (value: string) => {
@@ -921,6 +1130,7 @@
       isLoadingSearch.value = true;
       searchFilter.value = value;
       await loadData({ resetPage: true });
+      await syncStateToUrl();
     } finally {
       isLoadingSearch.value = false;
     }
@@ -929,21 +1139,25 @@
   const handleOrderBy = async (value: string) => {
     orderBy.value = value;
     await loadData();
+    await syncStateToUrl();
   };
 
   const toggleOrderDirection = async () => {
     orderDirection.value = orderDirection.value === ORDER_DIRECTION_ASC ? ORDER_DIRECTION_DESC : ORDER_DIRECTION_ASC;
     await loadData();
+    await syncStateToUrl();
   };
 
-  const handleChangeViewMode = (value: string) => {
+  const handleChangeViewMode = async (value: string) => {
     if (value === "table" || value === "cards" || value === "full") {
       viewMode.value = value;
+      await syncStateToUrl();
     }
   };
 
   const handleClickRefresh = async () => {
     await loadAll();
+    await syncStateToUrl();
   };
 
   const setDraftFilterValue = (key: FilterKey, value: unknown) => {
@@ -974,6 +1188,7 @@
     appliedFilters.value = cloneFilters(draftFilters.value);
     isFiltersPopoverOpen.value = false;
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const removeAppliedFilter = async (key: FilterKey) => {
@@ -988,12 +1203,14 @@
     };
 
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const clearAllAppliedFilters = async () => {
     appliedFilters.value = createEmptyFilters();
     draftFilters.value = createEmptyFilters();
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const handleClickOutsideFilters = (event: MouseEvent) => {
@@ -1156,6 +1373,8 @@
 
   onMounted(async () => {
     initViewMode();
+    initStateFromQuery();
+    await syncStateToUrl();
     await loadAll();
     isInitialLoading.value = false;
 
