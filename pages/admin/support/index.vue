@@ -826,9 +826,8 @@
   const disconnectSupportRealtime = () => {
     if (!$echo || !supportGlobalChannel) return;
 
-    supportGlobalChannel.stopListening(".MessageSent");
-    supportGlobalChannel.stopListening(".ticket.presence.updated");
-    $echo.leave("support.global");
+    supportGlobalChannel.stopListening(".MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening(".ticket.presence.updated", handleSupportPresenceRealtime);
     supportGlobalChannel = null;
   };
 

@@ -68,26 +68,39 @@ const loadData = async (isFilterQuery = false) => {
     searchFields: searchFields.value,
   };
 
-  const response = await appCore.permissions.get(params);
+  if (!isFilterQuery) {
+    isLoading.value = true;
+  }
 
-  totalRows.value = response.data.data.total;
+  try {
+    const response = await appCore.permissions.get(params);
+    const payload = response?.data?.data ?? {};
 
-  let responsePermissionsData = response.data.data.data;
-  responsePermissionsData.forEach((permission: any) => {
-    permission.options = [
-      {
-        is: UiSwitchToggle,
-        props: {
-          modelValue: permission.is_active,
+    totalRows.value = Number(payload?.total ?? 0);
+
+    const responsePermissionsData = Array.isArray(payload?.data)
+      ? payload.data
+      : [];
+
+    responsePermissionsData.forEach((permission: any) => {
+      permission.options = [
+        {
+          is: UiSwitchToggle,
+          props: {
+            modelValue: permission.is_active,
+          },
+          events: { click: () => handleSwitchPermission(permission) },
         },
-        events: { click: () => handleSwitchPermission(permission) },
-      },
-    ];
-  });
+      ];
+    });
 
-  isLoading.value = false;
-
-  permissionsData.splice(0, permissionsData.length, ...responsePermissionsData);
+    permissionsData.splice(0, permissionsData.length, ...responsePermissionsData);
+  } catch {
+    totalRows.value = 0;
+    permissionsData.splice(0, permissionsData.length);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const handleSwitchPermission = async (permission: any) => {

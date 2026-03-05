@@ -17,7 +17,7 @@
             v-if="showMobileControls"
             type="button"
             class="chat-mobile-back"
-            aria-label="Back to tickets"
+            :aria-label="chatText.mobileBackAria"
             @click="emit('mobile-back')">
             <svg
               viewBox="0 0 24 24"
@@ -31,16 +31,16 @@
             </svg>
           </button>
 
-          <h3 class="text-lg font-semibold text-[var(--ui-text-main)]">Support Chat</h3>
+          <h3 class="text-lg font-semibold text-[var(--ui-text-main)]">{{ chatText.title }}</h3>
           <div class="flex items-center gap-2 text-sm text-[var(--ui-text-secondary)]">
             <span
               class="inline-flex h-2.5 w-2.5 rounded-full"
               :class="isCounterpartyOnline ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'" />
-            <span>{{ isCounterpartyOnline ? "Online" : "Offline" }}</span>
+            <span>{{ isCounterpartyOnline ? chatText.online : chatText.offline }}</span>
             <span
               v-if="isCounterpartyTyping"
               class="text-[var(--ui-primary-accent)]">
-              typing...
+              {{ chatText.typing }}
             </span>
           </div>
         </div>
@@ -50,7 +50,7 @@
           type="button"
           class="chat-mobile-toggle"
           :class="{ 'is-expanded': props.mobilePanelExpanded }"
-          aria-label="Toggle details"
+          :aria-label="chatText.toggleDetailsAria"
           @click="emit('mobile-toggle-panel')">
           <svg
             viewBox="0 0 24 24"
@@ -103,7 +103,7 @@
               :data-mid="item.msg.id">
               <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
               <span class="rounded-full bg-[var(--ui-background-card)] px-2 py-0.5 text-center leading-[1.3]">
-                {{ item.msg.body || "System event" }}
+                {{ item.msg.body || chatText.systemEvent }}
               </span>
               <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
             </div>
@@ -134,8 +134,8 @@
                       v-for="attachment in getMediaAttachments(item.msg)"
                       :key="attachment.id"
                       type="button"
-                      class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
-                      @click="openMediaViewer(item.msg, attachment.id)">
+                      class="relative overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                      @click="openMediaViewer(item.msg, attachment)">
                       <img
                         v-if="attachment.kind === 'image'"
                         :src="attachment.url"
@@ -148,6 +148,47 @@
                         muted
                         playsinline
                         preload="metadata"></video>
+                      <span class="chat-media-type">
+                        <svg
+                          v-if="attachment.kind === 'image'"
+                          viewBox="0 0 24 24"
+                          class="h-3.5 w-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <rect
+                            x="3"
+                            y="3"
+                            width="18"
+                            height="18"
+                            rx="2" />
+                          <circle
+                            cx="8.5"
+                            cy="8.5"
+                            r="1.5" />
+                          <path d="M21 15l-5-5L5 21" />
+                        </svg>
+                        <svg
+                          v-else
+                          viewBox="0 0 24 24"
+                          class="h-3.5 w-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <rect
+                            x="2.75"
+                            y="4"
+                            width="14.5"
+                            height="16"
+                            rx="2" />
+                          <path d="m17 9 4-2.5v11L17 15z" />
+                        </svg>
+                        <span>{{ mediaTypeLabel(attachment.kind) }}</span>
+                      </span>
                     </button>
                   </div>
                   <div
@@ -203,8 +244,8 @@
                       v-for="attachment in getMediaAttachments(item.msg)"
                       :key="attachment.id"
                       type="button"
-                      class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
-                      @click="openMediaViewer(item.msg, attachment.id)">
+                      class="relative overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                      @click="openMediaViewer(item.msg, attachment)">
                       <img
                         v-if="attachment.kind === 'image'"
                         :src="attachment.url"
@@ -217,6 +258,47 @@
                         muted
                         playsinline
                         preload="metadata"></video>
+                      <span class="chat-media-type">
+                        <svg
+                          v-if="attachment.kind === 'image'"
+                          viewBox="0 0 24 24"
+                          class="h-3.5 w-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <rect
+                            x="3"
+                            y="3"
+                            width="18"
+                            height="18"
+                            rx="2" />
+                          <circle
+                            cx="8.5"
+                            cy="8.5"
+                            r="1.5" />
+                          <path d="M21 15l-5-5L5 21" />
+                        </svg>
+                        <svg
+                          v-else
+                          viewBox="0 0 24 24"
+                          class="h-3.5 w-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <rect
+                            x="2.75"
+                            y="4"
+                            width="14.5"
+                            height="16"
+                            rx="2" />
+                          <path d="m17 9 4-2.5v11L17 15z" />
+                        </svg>
+                        <span>{{ mediaTypeLabel(attachment.kind) }}</span>
+                      </span>
                     </button>
                   </div>
                   <div
@@ -270,7 +352,7 @@
         <div
           v-if="!messages.length && !booting"
           class="text-center text-[var(--ui-text-secondary)]">
-          No messages yet
+          {{ chatText.noMessages }}
         </div>
       </div>
 
@@ -284,16 +366,16 @@
           v-if="pendingAttachments.length"
           class="mb-2 rounded-xl border border-[var(--color-stroke-ui-light)] p-2">
           <div class="mb-2 flex items-center justify-between text-[12px] text-[var(--ui-text-secondary)]">
-            <span>{{ pendingAttachments.length }} files selected</span>
+            <span>{{ pendingAttachments.length }} {{ chatText.filesSelected }}</span>
             <span>{{ formatFileSize(pendingAttachmentsTotalSize) }}</span>
-            <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+            <span>{{ chatText.sendAs }} {{ pickerDisplayAs === "media" ? chatText.media : chatText.file }}</span>
             <span>{{ pendingUploadSummaryLabel }}</span>
           </div>
           <div
             v-if="uploadProgress.active"
             class="mb-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-2">
             <div class="mb-1 flex items-center justify-between text-[11px] text-[var(--ui-text-secondary)]">
-              <span>Uploading...</span>
+              <span>{{ chatText.uploading }}</span>
               <span>{{ uploadProgressLabel }}</span>
             </div>
             <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-stroke-ui-light)]">
@@ -353,7 +435,7 @@
             type="text"
             @keydown.enter.prevent="send"
             class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
-            placeholder="Write your message" />
+            :placeholder="chatText.writeMessage" />
           <textarea
             v-else
             ref="inputRef"
@@ -362,14 +444,14 @@
             @keydown.enter.prevent="send"
             @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
-            placeholder="Write your message" />
+            :placeholder="chatText.writeMessage" />
           <div
             ref="attachMenuRef"
             class="chat-attach-menu-wrap no-drag">
             <button
               type="button"
               class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-              title="Add attachment"
+              :title="chatText.addAttachment"
               aria-haspopup="menu"
               :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
               :disabled="isSending"
@@ -416,7 +498,7 @@
                     r="1.5" />
                   <path d="M21 15l-5-5L5 21" />
                 </svg>
-                <span>Media</span>
+                <span>{{ chatText.media }}</span>
               </button>
               <button
                 type="button"
@@ -435,7 +517,7 @@
                   <path
                     d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
                 </svg>
-                <span>File</span>
+                <span>{{ chatText.file }}</span>
               </button>
             </div>
           </div>
@@ -444,7 +526,7 @@
             @pointerdown="handleSendPointerDown"
             @click="handleSendClick"
             class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-primary-main)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-            title="Send">
+            :title="chatText.send">
             <UiIconSpinnerDefault
               v-if="isSending"
               class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
@@ -493,18 +575,18 @@
             <div
               class="drag-handle relative flex select-none items-center justify-between border-b border-[var(--color-stroke-ui-light)] px-4 py-3">
               <div class="flex items-center gap-3">
-                <h3 class="text-lg font-semibold text-[var(--ui-text-main)]">Support Chat</h3>
+                <h3 class="text-lg font-semibold text-[var(--ui-text-main)]">{{ chatText.title }}</h3>
                 <div class="flex items-center gap-2 text-sm text-[var(--ui-text-secondary)]">
                   <span
                     class="inline-flex h-2.5 w-2.5 rounded-full"
                     :class="
                       isCounterpartyOnline ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
                     " />
-                  <span>{{ isCounterpartyOnline ? "Online" : "Offline" }}</span>
+                  <span>{{ isCounterpartyOnline ? chatText.online : chatText.offline }}</span>
                   <span
                     v-if="isCounterpartyTyping"
                     class="text-[var(--ui-primary-accent)]">
-                    typing...
+                    {{ chatText.typing }}
                   </span>
                 </div>
               </div>
@@ -559,7 +641,7 @@
                     :data-mid="item.msg.id">
                     <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
                     <span class="rounded-full bg-[var(--ui-background-card)] px-2 py-0.5 text-center leading-[1.3]">
-                      {{ item.msg.body || "System event" }}
+                      {{ item.msg.body || chatText.systemEvent }}
                     </span>
                     <span class="h-px flex-1 bg-[var(--color-stroke-ui-light)]"></span>
                   </div>
@@ -590,8 +672,8 @@
                             v-for="attachment in getMediaAttachments(item.msg)"
                             :key="attachment.id"
                             type="button"
-                            class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
-                            @click="openMediaViewer(item.msg, attachment.id)">
+                            class="relative overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                            @click="openMediaViewer(item.msg, attachment)">
                             <img
                               v-if="attachment.kind === 'image'"
                               :src="attachment.url"
@@ -604,6 +686,47 @@
                               muted
                               playsinline
                               preload="metadata"></video>
+                            <span class="chat-media-type">
+                              <svg
+                                v-if="attachment.kind === 'image'"
+                                viewBox="0 0 24 24"
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect
+                                  x="3"
+                                  y="3"
+                                  width="18"
+                                  height="18"
+                                  rx="2" />
+                                <circle
+                                  cx="8.5"
+                                  cy="8.5"
+                                  r="1.5" />
+                                <path d="M21 15l-5-5L5 21" />
+                              </svg>
+                              <svg
+                                v-else
+                                viewBox="0 0 24 24"
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect
+                                  x="2.75"
+                                  y="4"
+                                  width="14.5"
+                                  height="16"
+                                  rx="2" />
+                                <path d="m17 9 4-2.5v11L17 15z" />
+                              </svg>
+                              <span>{{ mediaTypeLabel(attachment.kind) }}</span>
+                            </span>
                           </button>
                         </div>
                         <div
@@ -659,8 +782,8 @@
                             v-for="attachment in getMediaAttachments(item.msg)"
                             :key="attachment.id"
                             type="button"
-                            class="overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
-                            @click="openMediaViewer(item.msg, attachment.id)">
+                            class="relative overflow-hidden rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)]"
+                            @click="openMediaViewer(item.msg, attachment)">
                             <img
                               v-if="attachment.kind === 'image'"
                               :src="attachment.url"
@@ -673,6 +796,47 @@
                               muted
                               playsinline
                               preload="metadata"></video>
+                            <span class="chat-media-type">
+                              <svg
+                                v-if="attachment.kind === 'image'"
+                                viewBox="0 0 24 24"
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect
+                                  x="3"
+                                  y="3"
+                                  width="18"
+                                  height="18"
+                                  rx="2" />
+                                <circle
+                                  cx="8.5"
+                                  cy="8.5"
+                                  r="1.5" />
+                                <path d="M21 15l-5-5L5 21" />
+                              </svg>
+                              <svg
+                                v-else
+                                viewBox="0 0 24 24"
+                                class="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect
+                                  x="2.75"
+                                  y="4"
+                                  width="14.5"
+                                  height="16"
+                                  rx="2" />
+                                <path d="m17 9 4-2.5v11L17 15z" />
+                              </svg>
+                              <span>{{ mediaTypeLabel(attachment.kind) }}</span>
+                            </span>
                           </button>
                         </div>
                         <div
@@ -726,7 +890,7 @@
               <div
                 v-if="!messages.length && !booting"
                 class="text-center text-[var(--ui-text-secondary)]">
-                No messages yet
+                {{ chatText.noMessages }}
               </div>
             </div>
 
@@ -740,16 +904,16 @@
                 v-if="pendingAttachments.length"
                 class="mb-2 rounded-xl border border-[var(--color-stroke-ui-light)] p-2">
                 <div class="mb-2 flex items-center justify-between text-[12px] text-[var(--ui-text-secondary)]">
-                  <span>{{ pendingAttachments.length }} files selected</span>
+                  <span>{{ pendingAttachments.length }} {{ chatText.filesSelected }}</span>
                   <span>{{ formatFileSize(pendingAttachmentsTotalSize) }}</span>
-                  <span>Send as {{ pickerDisplayAs === "media" ? "media" : "file" }}</span>
+                  <span>{{ chatText.sendAs }} {{ pickerDisplayAs === "media" ? chatText.media : chatText.file }}</span>
                   <span>{{ pendingUploadSummaryLabel }}</span>
                 </div>
                 <div
                   v-if="uploadProgress.active"
                   class="mb-2 rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-2">
                   <div class="mb-1 flex items-center justify-between text-[11px] text-[var(--ui-text-secondary)]">
-                    <span>Uploading...</span>
+                    <span>{{ chatText.uploading }}</span>
                     <span>{{ uploadProgressLabel }}</span>
                   </div>
                   <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-stroke-ui-light)]">
@@ -809,7 +973,7 @@
                   type="text"
                   @keydown.enter.prevent="send"
                   class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
-                  placeholder="Write your message" />
+                  :placeholder="chatText.writeMessage" />
                 <textarea
                   v-else
                   ref="inputRef"
@@ -818,14 +982,14 @@
                   @keydown.enter.prevent="send"
                   @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
-                  placeholder="Write your message" />
+                  :placeholder="chatText.writeMessage" />
                 <div
                   ref="attachMenuRef"
                   class="chat-attach-menu-wrap no-drag">
                   <button
                     type="button"
                     class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-background-card)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                    title="Add attachment"
+                    :title="chatText.addAttachment"
                     aria-haspopup="menu"
                     :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
                     :disabled="isSending"
@@ -872,7 +1036,7 @@
                           r="1.5" />
                         <path d="M21 15l-5-5L5 21" />
                       </svg>
-                      <span>Media</span>
+                      <span>{{ chatText.media }}</span>
                     </button>
                     <button
                       type="button"
@@ -891,7 +1055,7 @@
                         <path
                           d="M21.44 11.05l-8.49 8.49a5 5 0 01-7.07-7.07l8.49-8.49a3.5 3.5 0 014.95 4.95L10.83 17.4a2 2 0 11-2.83-2.83l7.78-7.78" />
                       </svg>
-                      <span>File</span>
+                      <span>{{ chatText.file }}</span>
                     </button>
                   </div>
                 </div>
@@ -900,7 +1064,7 @@
                   @pointerdown="handleSendPointerDown"
                   @click="handleSendClick"
                   class="no-drag inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ui-primary-main)] text-[var(--ui-text-main)] ring-1 ring-[var(--color-stroke-ui-light)] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                  title="Send">
+                  :title="chatText.send">
                   <UiIconSpinnerDefault
                     v-if="isSending"
                     class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
@@ -952,21 +1116,41 @@
         ‹
       </button>
       <div
-        class="max-h-[88vh] max-w-[92vw] overflow-hidden rounded-xl border border-white/20 bg-black/50"
+        class="relative flex h-[82vh] w-[92vw] max-h-[88vh] max-w-[920px] items-center justify-center overflow-hidden rounded-xl border border-white/20 bg-black/50"
         @click.stop>
         <img
-          v-if="activeMediaAttachment.kind === 'image'"
+          v-if="activeMediaAttachment.kind === 'image' && !mediaViewerLoadState.failed"
+          :key="`viewer-image-${activeMediaAttachment.id}-${activeMediaAttachment.url}`"
           :src="activeMediaAttachment.url"
           :alt="activeMediaAttachment.name"
-          class="max-h-[82vh] max-w-[92vw] object-contain" />
+          class="h-full w-full object-contain"
+          @load="handleMediaViewerMediaLoaded"
+          @error="handleMediaViewerMediaError" />
         <video
-          v-else
+          v-else-if="activeMediaAttachment.kind === 'video' && !mediaViewerLoadState.failed"
+          :key="`viewer-video-${activeMediaAttachment.id}-${activeMediaAttachment.url}`"
           :src="activeMediaAttachment.url"
-          class="max-h-[82vh] max-w-[92vw] object-contain"
+          class="h-full w-full object-contain"
           controls
           autoplay
-          playsinline></video>
-        <div class="px-3 py-2 text-sm text-white/90">
+          playsinline
+          @loadeddata="handleMediaViewerMediaLoaded"
+          @error="handleMediaViewerMediaError"></video>
+        <div
+          v-else
+          class="flex h-full w-full items-center justify-center p-6 text-center">
+          <div class="space-y-3">
+            <p class="text-sm text-white/80">{{ chatText.mediaUnavailable }}</p>
+            <a
+              :href="activeMediaAttachment.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center rounded-lg border border-white/30 px-3 py-1.5 text-sm text-white transition hover:bg-white/10">
+              {{ chatText.openOriginal }}
+            </a>
+          </div>
+        </div>
+        <div class="absolute inset-x-0 bottom-0 bg-black/45 px-3 py-2 text-center text-sm text-white/90">
           {{ activeMediaAttachment.name }}
         </div>
       </div>
@@ -987,6 +1171,7 @@
   import type { AxiosProgressEvent } from "axios";
   import { useNuxtApp } from "nuxt/app";
   import { useToast } from "vue-toastification";
+  import { useI18n } from "vue-i18n";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
@@ -999,6 +1184,7 @@
 
   const attrs = useAttrs();
   const toast = useToast();
+  const { t } = useI18n({ useScope: "global" });
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
@@ -1009,6 +1195,51 @@
   const PENDING_MESSAGE_MATCH_WINDOW_MS = 2 * 60 * 1000;
   const VIEWER_SWIPE_THRESHOLD = 52;
   const VIEWER_MAX_VERTICAL_DRIFT = 120;
+  const resolveText = (key: string, fallback: string): string => {
+    const translated = t(key);
+    return translated === key ? fallback : translated;
+  };
+  const chatText = computed(() => ({
+    title: resolveText("support.chat.title", "Support Chat"),
+    online: resolveText("support.chat.online", "Online"),
+    offline: resolveText("support.chat.offline", "Offline"),
+    typing: resolveText("support.chat.typing", "typing..."),
+    systemEvent: resolveText("support.chat.systemEvent", "System event"),
+    noMessages: resolveText("support.chat.noMessages", "No messages yet"),
+    filesSelected: resolveText("support.chat.filesSelected", "files selected"),
+    sendAs: resolveText("support.chat.sendAs", "Send as"),
+    media: resolveText("support.chat.media", "Media"),
+    file: resolveText("support.chat.file", "File"),
+    uploading: resolveText("support.chat.uploading", "Uploading..."),
+    writeMessage: resolveText("support.chat.writeMessage", "Write your message"),
+    addAttachment: resolveText("support.chat.addAttachment", "Add attachment"),
+    send: resolveText("support.chat.send", "Send"),
+    mobileBackAria: resolveText("support.chat.mobileBackAria", "Back to tickets"),
+    toggleDetailsAria: resolveText("support.chat.toggleDetailsAria", "Toggle details"),
+    attachment: resolveText("support.chat.attachment", "Attachment"),
+    photo: resolveText("support.chat.photo", "Photo"),
+    video: resolveText("support.chat.video", "Video"),
+    mediaUnavailable: resolveText("support.chat.mediaUnavailable", "Media preview is unavailable."),
+    openOriginal: resolveText("support.chat.openOriginal", "Open original"),
+    uploadFailedHint: resolveText("support.chat.uploadFailedHint", "Upload failed. Remove failed files or retry."),
+    allFilesUploaded: resolveText("support.chat.allFilesUploaded", "All files uploaded"),
+    uploadedSuffix: resolveText("support.chat.uploadedSuffix", "uploaded"),
+    failedSuffix: resolveText("support.chat.failedSuffix", "failed"),
+    sendFailed: resolveText("support.chat.sendFailed", "Failed to send message."),
+    uploadTooLarge413: resolveText("support.chat.uploadTooLarge413", "Upload is too large for the server limit (413)."),
+    uploadTimedOut: resolveText("support.chat.uploadTimedOut", "Upload timed out. Try sending fewer or smaller files."),
+    uploadNetworkError: resolveText(
+      "support.chat.uploadNetworkError",
+      "Network error while uploading files. Please try again."
+    ),
+    waitUploads: resolveText(
+      "support.chat.waitUploads",
+      "Wait for all files to finish uploading before sending."
+    ),
+    presignFailed: resolveText("support.chat.presignFailed", "Failed to generate upload URL."),
+    fileTooLarge: resolveText("support.chat.fileTooLarge", "File is larger than 200 MB:"),
+    filesLimitReached: resolveText("support.chat.filesLimitReached", "Only {max} files can be attached per message."),
+  }));
 
   type ChatAttachmentDisplay = "media" | "file";
   type ChatAttachmentKind = "image" | "video" | "file";
@@ -1394,6 +1625,14 @@
     x: null as number | null,
     y: null as number | null,
   });
+  const mediaViewerLoadState = reactive({
+    failed: false,
+    retried: false,
+  });
+  const mediaViewerSource = reactive({
+    messageId: "",
+    attachmentIdentity: "",
+  });
 
   const userIsNearBottom = ref(true);
   let suppressScrollEvents = false;
@@ -1510,13 +1749,13 @@
     ).length;
 
     if (uploadingCount > 0) {
-      return `${uploadedCount}/${total} uploaded`;
+      return `${uploadedCount}/${total} ${chatText.value.uploadedSuffix}`;
     }
     if (failedCount > 0) {
-      return `${failedCount} failed`;
+      return `${failedCount} ${chatText.value.failedSuffix}`;
     }
 
-    return `${uploadedCount}/${total} uploaded`;
+    return `${uploadedCount}/${total} ${chatText.value.uploadedSuffix}`;
   });
 
   const syncUploadProgressFromPending = () => {
@@ -1586,17 +1825,17 @@
       return `${uploadProgressPercent.value}% • ${formatFileSize(uploadProgress.loaded)} / ${formatFileSize(uploadProgress.total)}`;
     }
     if (pendingUploadsFailed.value) {
-      return "Upload failed. Remove failed files or retry.";
+      return chatText.value.uploadFailedHint;
     }
     if (pendingUploadsReady.value) {
-      return "All files uploaded";
+      return chatText.value.allFilesUploaded;
     }
 
     if (uploadProgress.loaded > 0) {
-      return `${formatFileSize(uploadProgress.loaded)} uploaded`;
+      return `${formatFileSize(uploadProgress.loaded)} ${chatText.value.uploadedSuffix}`;
     }
 
-    return "Uploading...";
+    return chatText.value.uploading;
   });
   const resetUploadProgress = () => {
     uploadProgress.active = false;
@@ -1610,6 +1849,9 @@
     if (count === 2) return "grid-cols-2";
     if (count === 3) return "grid-cols-3";
     return "grid-cols-2";
+  };
+  const mediaTypeLabel = (kind: ChatAttachmentKind): string => {
+    return kind === "video" ? chatText.value.video : chatText.value.photo;
   };
   const normalizeMessageMeta = (value: unknown): ChatMessageMeta | null => {
     if (!value || typeof value !== "object") return null;
@@ -1632,7 +1874,7 @@
           id,
           kind,
           displayAs,
-          name: name || `Attachment ${index + 1}`,
+          name: name || `${chatText.value.attachment} ${index + 1}`,
           url,
           mimeType,
           size: toPositiveInt(attachmentRecord.size),
@@ -1802,16 +2044,16 @@
     });
   };
   const extractRequestErrorMessage = (error: unknown): string => {
-    const fallback = "Failed to send message.";
+    const fallback = chatText.value.sendFailed;
     if (!error || typeof error !== "object") return fallback;
 
     const errorRecord = error as Record<string, any>;
     const responseStatus = Number(errorRecord?.response?.status ?? 0);
     if (responseStatus === 413) {
-      return "Upload is too large for the server limit (413).";
+      return chatText.value.uploadTooLarge413;
     }
     if (errorRecord?.code === "ECONNABORTED") {
-      return "Upload timed out. Try sending fewer or smaller files.";
+      return chatText.value.uploadTimedOut;
     }
 
     const responseData = errorRecord?.response?.data;
@@ -1833,7 +2075,7 @@
     if (typeof errorRecord.message === "string" && errorRecord.message.trim() !== "") {
       const message = errorRecord.message.trim();
       if (message.toLowerCase() === "network error") {
-        return "Network error while uploading files. Please try again.";
+        return chatText.value.uploadNetworkError;
       }
 
       return message;
@@ -1941,7 +2183,7 @@
     const url = normalizeText(payload?.url);
     const key = normalizeText(payload?.key);
     if (!url || !key) {
-      throw new Error("Failed to generate upload URL.");
+      throw new Error(chatText.value.presignFailed);
     }
 
     return {
@@ -2026,12 +2268,12 @@
       const example = oversizedFileNames.slice(0, 2).join(", ");
       const extraCount = oversizedFileNames.length - 2;
       const extraLabel = extraCount > 0 ? ` (+${extraCount})` : "";
-      toast.error(`File is larger than 200 MB: ${example}${extraLabel}`);
+      toast.error(`${chatText.value.fileTooLarge} ${example}${extraLabel}`);
     }
 
     const availableSlots = Math.max(0, MAX_PENDING_ATTACHMENTS - pendingAttachments.value.length);
     if (availableSlots === 0) {
-      toast.warning(`Only ${MAX_PENDING_ATTACHMENTS} files can be attached per message.`);
+      toast.warning(chatText.value.filesLimitReached.replace("{max}", String(MAX_PENDING_ATTACHMENTS)));
       input.value = "";
       return;
     }
@@ -2043,7 +2285,7 @@
     }
 
     if (eligibleFiles.length > availableSlots) {
-      toast.warning(`Only ${MAX_PENDING_ATTACHMENTS} files can be attached per message.`);
+      toast.warning(chatText.value.filesLimitReached.replace("{max}", String(MAX_PENDING_ATTACHMENTS)));
     }
 
     pendingAttachments.value = pendingAttachments.value.concat(pickedAttachments);
@@ -2056,17 +2298,42 @@
     mediaViewer.open = false;
     mediaViewer.items = [];
     mediaViewer.index = 0;
+    mediaViewerLoadState.failed = false;
+    mediaViewerLoadState.retried = false;
+    mediaViewerSource.messageId = "";
+    mediaViewerSource.attachmentIdentity = "";
     resetMediaViewerSwipe();
   };
 
-  const openMediaViewer = (message: ChatMessage, attachmentId: string) => {
+  const openMediaViewer = (message: ChatMessage, attachmentOrId: ChatAttachment | string) => {
     const media = getMediaAttachments(message);
-    if (!media.length) return;
+    const selectedAttachment =
+      typeof attachmentOrId === "string" ? media.find(attachment => attachment.id === attachmentOrId) : attachmentOrId;
+    const items = media.length > 0 ? media : selectedAttachment ? [selectedAttachment] : [];
+    if (!items.length) return;
 
-    const index = media.findIndex(attachment => attachment.id === attachmentId);
+    const index =
+      selectedAttachment !== undefined
+        ? items.findIndex(
+            attachment =>
+              attachment.id === selectedAttachment.id ||
+              buildAttachmentIdentity(attachment) === buildAttachmentIdentity(selectedAttachment)
+          )
+        : typeof attachmentOrId === "string"
+          ? items.findIndex(attachment => attachment.id === attachmentOrId)
+          : -1;
     mediaViewer.open = true;
-    mediaViewer.items = media;
+    mediaViewer.items = items;
     mediaViewer.index = index >= 0 ? index : 0;
+    mediaViewerLoadState.failed = false;
+    mediaViewerLoadState.retried = false;
+    mediaViewerSource.messageId = message.id;
+    mediaViewerSource.attachmentIdentity = selectedAttachment ? buildAttachmentIdentity(selectedAttachment) : "";
+
+    const active = mediaViewer.items[mediaViewer.index] ?? null;
+    if (!active || !normalizeText(active.url) || active.url.startsWith("blob:")) {
+      void syncLatestMessagesFromServer();
+    }
   };
 
   const moveMediaViewer = (direction: -1 | 1) => {
@@ -2074,6 +2341,8 @@
 
     const length = mediaViewer.items.length;
     mediaViewer.index = (mediaViewer.index + direction + length) % length;
+    mediaViewerLoadState.failed = false;
+    mediaViewerLoadState.retried = false;
   };
 
   const activeMediaAttachment = computed(() => {
@@ -2121,6 +2390,49 @@
   const handleMediaViewerTouchEnd = (event: TouchEvent) => {
     const touch = event.changedTouches?.[0];
     completeMediaViewerSwipe(touch?.clientX ?? null, touch?.clientY ?? null);
+  };
+  const handleMediaViewerMediaLoaded = () => {
+    mediaViewerLoadState.failed = false;
+    mediaViewerLoadState.retried = false;
+  };
+  const handleMediaViewerMediaError = async () => {
+    if (!mediaViewer.open) return;
+
+    if (!mediaViewerLoadState.retried) {
+      mediaViewerLoadState.retried = true;
+      await syncLatestMessagesFromServer();
+
+      if (mediaViewerSource.messageId) {
+        const sourceMessage = messages.find(message => message.id === mediaViewerSource.messageId);
+        if (sourceMessage) {
+          const hydratedItems = getMediaAttachments(sourceMessage);
+          if (hydratedItems.length) {
+            const hydratedIndex =
+              mediaViewerSource.attachmentIdentity !== ""
+                ? hydratedItems.findIndex(
+                    attachment =>
+                      buildAttachmentIdentity(attachment) === mediaViewerSource.attachmentIdentity
+                  )
+                : -1;
+
+            mediaViewer.items = hydratedItems;
+            mediaViewer.index =
+              hydratedIndex >= 0
+                ? hydratedIndex
+                : Math.min(mediaViewer.index, Math.max(hydratedItems.length - 1, 0));
+          }
+        }
+      }
+
+      const active = mediaViewer.items[mediaViewer.index] ?? null;
+      const activeUrl = normalizeText(active?.url);
+      if (active && activeUrl && !activeUrl.startsWith("blob:")) {
+        mediaViewerLoadState.failed = false;
+        return;
+      }
+    }
+
+    mediaViewerLoadState.failed = true;
   };
   const handleGlobalKeydown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -2740,6 +3052,12 @@
 
     const attachments = Array.isArray(meta.attachments) ? meta.attachments : [];
     if (attachments.length === 0) return true;
+
+    const hasUnresolvedAttachmentUrls = attachments.some(attachment => {
+      const url = normalizeText(attachment.url);
+      return !url || url.startsWith("blob:");
+    });
+    if (hasUnresolvedAttachmentUrls) return true;
 
     return (meta.attachmentsCount ?? 0) > attachments.length;
   };
@@ -3368,7 +3686,7 @@
       selectedAttachments.length > 0 &&
       selectedAttachments.some(attachment => attachment.uploadStatus !== "uploaded" || !attachment.uploadedKey)
     ) {
-      toast.warning("Wait for all files to finish uploading before sending.");
+      toast.warning(chatText.value.waitUploads);
       isSending.value = false;
       return;
     }
@@ -3482,6 +3800,22 @@
   .messages {
     min-height: 0;
     flex: 1 1 auto;
+  }
+
+  .chat-media-type {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    padding: 2px 6px;
+    font-size: 10px;
+    line-height: 1;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.62);
+    pointer-events: none;
   }
 
   .chat-mobile-toggle {

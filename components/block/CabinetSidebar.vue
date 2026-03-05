@@ -132,8 +132,7 @@
   const disconnectSupportRealtime = () => {
     if (!$echo || !supportRealtimeChannel) return;
 
-    supportRealtimeChannel.stopListening(".MessageSent");
-    $echo.leave("support.global");
+    supportRealtimeChannel.stopListening(".MessageSent", handleSupportUnreadUpdated);
     supportRealtimeChannel = null;
   };
 

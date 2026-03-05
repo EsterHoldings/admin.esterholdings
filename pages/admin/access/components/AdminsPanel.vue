@@ -93,35 +93,50 @@ const loadData = async (isFilterQuery = false) => {
     searchFields: searchFields.value,
   };
 
-  const response = await appCore.admins.get(params);
+  if (!isFilterQuery) {
+    isLoading.value = true;
+  }
 
-  totalRows.value = response.data.data.total;
+  try {
+    const response = await appCore.admins.get(params);
+    const payload = response?.data?.data ?? {};
 
-  let responseAdminsData = response.data.data.data;
-  responseAdminsData.forEach((user: any) => {
-    user.id = [
-      {
-        is: UiTextParagraph,
-        props: {},
-        events: { click: () => console.log(user.id) },
-        slot: user.id,
-      },
-    ];
+    totalRows.value = Number(payload?.total ?? 0);
 
-    user.roles = user.roles.map((role) => role.name);
+    const responseAdminsData = Array.isArray(payload?.data) ? payload.data : [];
+    responseAdminsData.forEach((user: any) => {
+      const userId = String(user?.id ?? "");
 
-    user.options = [
-      {
-        isIcon: true,
-        is: UiIconEdit,
-        props: {},
-        events: { click: () => handleOpenClientPage(user.id[0].slot) },
-      },
-    ];
-  });
+      user.id = [
+        {
+          is: UiTextParagraph,
+          props: {},
+          events: { click: () => console.log(userId) },
+          slot: userId,
+        },
+      ];
 
-  isLoading.value = false;
-  adminsData.splice(0, adminsData.length, ...responseAdminsData);
+      user.roles = Array.isArray(user?.roles)
+        ? user.roles.map((role: any) => role?.name).filter(Boolean)
+        : [];
+
+      user.options = [
+        {
+          isIcon: true,
+          is: UiIconEdit,
+          props: {},
+          events: { click: () => handleOpenClientPage(userId) },
+        },
+      ];
+    });
+
+    adminsData.splice(0, adminsData.length, ...responseAdminsData);
+  } catch {
+    totalRows.value = 0;
+    adminsData.splice(0, adminsData.length);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const handleOpenClientPage = (id: string) => {

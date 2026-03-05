@@ -1315,8 +1315,7 @@
   const disconnectRealtime = () => {
     if (!supportGlobalChannel || !$echo) return;
 
-    supportGlobalChannel.stopListening(".client.presence.updated");
-    $echo.leave("support.global");
+    supportGlobalChannel.stopListening(".client.presence.updated", handleRealtimeClientPresence);
     supportGlobalChannel = null;
   };
 

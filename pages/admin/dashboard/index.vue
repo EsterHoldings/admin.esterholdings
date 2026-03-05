@@ -1,10 +1,10 @@
 <template>
   <div class="admin-dashboard">
     <div class="admin-dashboard__header">
-      <div>
-        <UiTextH4 class="text-[var(--ui-text-main)]">{{ t("admin.dashboard.title") }}</UiTextH4>
-        <UiTextParagraph class="text-[var(--ui-text-secondary)]">{{ t("admin.dashboard.subtitle") }}</UiTextParagraph>
+      <div class="admin-dashboard__header-row">
+        <UiTextH4 class="admin-dashboard__title text-[var(--ui-text-main)]">{{ t("admin.dashboard.title") }}</UiTextH4>
       </div>
+      <UiTextParagraph class="text-[var(--ui-text-secondary)]">{{ t("admin.dashboard.subtitle") }}</UiTextParagraph>
     </div>
 
     <div class="admin-dashboard__grid admin-dashboard__grid--priority">
@@ -197,6 +197,21 @@ const handleNavigate = (to?: string) => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.admin-dashboard__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 8px;
+}
+
+.admin-dashboard__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-dashboard__grid {

@@ -98,32 +98,43 @@ const loadData = async (isFilterQuery = false) => {
     searchFields: searchFields.value,
   };
 
-  const response = await appCore.roles.get(params);
+  if (!isFilterQuery) {
+    isLoading.value = true;
+  }
 
-  totalRows.value = response.data.data.total;
-  rolesData.value = response.data.data.data;
+  try {
+    const response = await appCore.roles.get(params);
+    const payload = response?.data?.data ?? {};
 
-  rolesData.value.forEach((role) => {
-    role.permissions = [
-      ...role.permissions.map((permission: IPermissionItem) => permission.name),
-    ];
-    role.options = [
-      {
-        isIcon: true,
-        is: UiIconEdit,
-        props: {},
-        events: {click: () => handleClickEditIcon(role.id)},
-      },
-      {
-        isIcon: true,
-        is: UiIconDelete,
-        props: {},
-        events: {click: () => handleClickDeleteIcon(role.id)},
-      },
-    ];
-  });
+    totalRows.value = Number(payload?.total ?? 0);
 
-  isLoading.value = false;
+    const responseRolesData = Array.isArray(payload?.data) ? payload.data : [];
+    rolesData.value = responseRolesData.map((role: any) => ({
+      ...role,
+      permissions: Array.isArray(role?.permissions)
+        ? role.permissions.map((permission: IPermissionItem) => permission?.name).filter(Boolean)
+        : [],
+      options: [
+        {
+          isIcon: true,
+          is: UiIconEdit,
+          props: {},
+          events: {click: () => handleClickEditIcon(role.id)},
+        },
+        {
+          isIcon: true,
+          is: UiIconDelete,
+          props: {},
+          events: {click: () => handleClickDeleteIcon(role.id)},
+        },
+      ],
+    }));
+  } catch {
+    totalRows.value = 0;
+    rolesData.value = [];
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const handleClickAddRole = () =>
