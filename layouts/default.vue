@@ -15,6 +15,8 @@
       <div class="page-content-wrapper">
         <AdminHeader
           class="page-header"
+          :breadcrumbs="breadcrumbs"
+          :show-breadcrumbs="showBreadcrumbs"
           @toggle-sidebar="isSidebarOpen = true" />
         <Transition
           name="fade"
@@ -24,11 +26,6 @@
               class="page"
               :key="route.fullPath">
               <UiContainer>
-                <div
-                  v-if="showBreadcrumbs && breadcrumbs.length"
-                  class="admin-breadcrumbs text-sm text-[var(--ui-text-secondary)]">
-                  <UiBreadcrumb :list="breadcrumbs" />
-                </div>
                 <slot />
               </UiContainer>
             </div>
@@ -50,7 +47,6 @@
   import { useI18n } from "vue-i18n";
   import UiContainer from "~/components/ui/UiContainer.vue";
   import AdminHeader from "~/components/block/AdminHeader.vue";
-  import UiBreadcrumb from "~/components/ui/UiBreadcrumb.vue";
   import UiIconHome from "~/components/ui/UiIconHome.vue";
 
   const route = useRoute();
@@ -172,13 +168,6 @@
     z-index: 40;
     background: var(--ui-background-admin);
     width: calc(100% - 264px);
-  }
-
-  .admin-breadcrumbs {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    padding: 10px 0;
   }
 
   .sidebar-overlay {
