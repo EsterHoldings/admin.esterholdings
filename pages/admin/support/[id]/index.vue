@@ -17,7 +17,11 @@
             'is-collapsed': !isSideExpanded,
             'is-mobile': isMobileViewport,
           }"
-          :style="supportSideStyle">
+          :style="supportSideStyle"
+          @touchstart.passive="handleSidePanelTouchStart"
+          @touchmove="handleSidePanelTouchMove"
+          @touchend="handleSidePanelTouchEnd"
+          @touchcancel="handleSidePanelTouchEnd">
           <div
             v-if="isMobileViewport && isMobileFullscreenChat"
             class="support-side__mobile-header">

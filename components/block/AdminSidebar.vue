@@ -55,6 +55,7 @@
   const themeStore = useThemeStore();
   const supportUnreadCount = ref(0);
   const SUPPORT_BADGE_REFRESH_MS = 10000;
+  const SUPPORT_REALTIME_RETRY_MS = 5000;
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
   const route = useRoute();
@@ -65,6 +66,7 @@
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
+  let supportRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
 
   const handleClickLogout = async () => {
     await adminAuthStore.authLogout();
@@ -107,6 +109,17 @@
   };
 
   const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
+
+  const unwrapSupportMessagePayload = (payload?: any) => {
+    if (!payload || typeof payload !== "object") return payload;
+    if (!payload?.message || typeof payload.message !== "object") return payload;
+
+    return {
+      ...payload.message,
+      ticket_id: payload.message?.ticket_id ?? payload.ticket_id ?? payload.ticketId,
+      ticketId: payload.message?.ticketId ?? payload.message?.ticket_id ?? payload.ticketId ?? payload.ticket_id,
+    };
+  };
 
   const getRouteSupportTicketId = (): string => {
     const match = String(route.path ?? "").match(/\/support\/([^/?#]+)/);
@@ -161,11 +174,15 @@
   };
 
   const handleSupportMessageToast = (payload?: any) => {
-    const ticketId = normalizeText(payload?.ticket_id ?? payload?.ticketId);
+    const messagePayload = unwrapSupportMessagePayload(payload);
+    const ticketId = normalizeText(messagePayload?.ticket_id ?? messagePayload?.ticketId);
     if (!ticketId) return;
 
-    const messageType = normalizeText(payload?.type).toLowerCase();
-    const messageMeta = payload && typeof payload.meta === "object" ? (payload.meta as Record<string, unknown>) : null;
+    const messageType = normalizeText(messagePayload?.type).toLowerCase();
+    const messageMeta =
+      messagePayload && typeof messagePayload.meta === "object"
+        ? (messagePayload.meta as Record<string, unknown>)
+        : null;
     const metaEvent = normalizeText(messageMeta?.event ?? "");
     if (messageType === "system" && metaEvent === "participant_added") {
       const addedAdminIds = Array.isArray(messageMeta?.added_admin_ids)
@@ -180,10 +197,10 @@
     const routeTicketId = getRouteSupportTicketId();
     if (ticketId === activeSupportTicketId.value || ticketId === routeTicketId) return;
 
-    const senderName = resolveSenderName(payload);
-    const preview = truncate(normalizeText(payload?.body) || "New message");
-    const avatarUrl = normalizeText(payload?.author_photo_url);
-    const avatarFallback = resolveAvatarFallback(senderName, payload);
+    const senderName = resolveSenderName(messagePayload);
+    const preview = truncate(normalizeText(messagePayload?.body) || "New message");
+    const avatarUrl = normalizeText(messagePayload?.author_photo_url);
+    const avatarFallback = resolveAvatarFallback(senderName, messagePayload);
 
     toast.info(
       h("div", { style: { display: "flex", alignItems: "center", gap: "10px", minWidth: "0", cursor: "pointer" } }, [
@@ -247,7 +264,7 @@
         ]),
       ]),
       {
-        id: `support-message-${normalizeText(payload?.id) || ticketId}-${normalizeText(payload?.created_at)}`,
+        id: `support-message-${normalizeText(messagePayload?.id) || ticketId}-${normalizeText(messagePayload?.created_at)}`,
         timeout: 8000,
         closeOnClick: true,
         pauseOnHover: true,
@@ -263,17 +280,49 @@
     handleSupportMessageToast(payload);
   };
 
-  const connectSupportRealtime = () => {
-    if (!$echo || supportRealtimeChannel) return;
+  const resolveEchoClient = () => {
+    if ($echo && typeof $echo.private === "function") return $echo;
+    if (typeof window !== "undefined") {
+      const fallbackEcho = (window as any).Echo;
+      if (fallbackEcho && typeof fallbackEcho.private === "function") {
+        return fallbackEcho;
+      }
+    }
+    return null;
+  };
 
-    supportRealtimeChannel = $echo.private("support.global").listen(".MessageSent", handleSupportGlobalMessage);
+  const connectSupportRealtime = () => {
+    const echoClient = resolveEchoClient();
+    if (!echoClient) return;
+
+    const channel = echoClient.private("support.global");
+    channel.stopListening(".MessageSent", handleSupportGlobalMessage);
+    channel.stopListening("MessageSent", handleSupportGlobalMessage);
+    channel.listen(".MessageSent", handleSupportGlobalMessage);
+    channel.listen("MessageSent", handleSupportGlobalMessage);
+    supportRealtimeChannel = channel;
   };
 
   const disconnectSupportRealtime = () => {
-    if (!$echo || !supportRealtimeChannel) return;
-
+    if (!supportRealtimeChannel) return;
     supportRealtimeChannel.stopListening(".MessageSent", handleSupportGlobalMessage);
+    supportRealtimeChannel.stopListening("MessageSent", handleSupportGlobalMessage);
     supportRealtimeChannel = null;
+  };
+
+  const startSupportRealtimeRetry = () => {
+    if (supportRealtimeRetryTimer) return;
+
+    supportRealtimeRetryTimer = setInterval(() => {
+      connectSupportRealtime();
+    }, SUPPORT_REALTIME_RETRY_MS);
+  };
+
+  const stopSupportRealtimeRetry = () => {
+    if (!supportRealtimeRetryTimer) return;
+
+    clearInterval(supportRealtimeRetryTimer);
+    supportRealtimeRetryTimer = null;
   };
 
   onMounted(async () => {
@@ -288,12 +337,14 @@
     useEventBus.on(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, handleSupportActiveTicketChanged);
     startSupportBadgeRefresh();
     connectSupportRealtime();
+    startSupportRealtimeRetry();
   });
 
   onBeforeUnmount(() => {
     useEventBus.off(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     useEventBus.off(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, handleSupportActiveTicketChanged);
     stopSupportBadgeRefresh();
+    stopSupportRealtimeRetry();
     disconnectSupportRealtime();
     if (supportUnreadRafId !== null) {
       window.cancelAnimationFrame(supportUnreadRafId);
