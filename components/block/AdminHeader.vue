@@ -12,10 +12,10 @@
             <span></span>
             <span></span>
           </button>
-          <div
-            v-if="props.showBreadcrumbs && props.breadcrumbs.length"
-            class="header__breadcrumbs">
-            <UiBreadcrumb :list="props.breadcrumbs" />
+          <div class="header__breadcrumbs">
+            <UiBreadcrumb
+              v-if="props.showBreadcrumbs && props.breadcrumbs.length"
+              :list="props.breadcrumbs" />
           </div>
         </div>
         <div class="header__menu-right">
@@ -231,7 +231,7 @@
     &__menu {
       width: 100%;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
 
       &-left {
         display: flex;
@@ -251,6 +251,8 @@
       &-right {
         display: flex;
         align-items: center;
+        margin-left: auto;
+        flex: 0 0 auto;
 
         &_item {
           display: flex;
@@ -269,6 +271,8 @@
       margin-left: 12px;
       min-width: 0;
       max-width: 100%;
+      display: flex;
+      align-items: center;
       overflow: hidden;
     }
 
