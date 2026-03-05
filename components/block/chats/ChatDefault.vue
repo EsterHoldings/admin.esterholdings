@@ -1232,10 +1232,7 @@
       "support.chat.uploadNetworkError",
       "Network error while uploading files. Please try again."
     ),
-    waitUploads: resolveText(
-      "support.chat.waitUploads",
-      "Wait for all files to finish uploading before sending."
-    ),
+    waitUploads: resolveText("support.chat.waitUploads", "Wait for all files to finish uploading before sending."),
     presignFailed: resolveText("support.chat.presignFailed", "Failed to generate upload URL."),
     fileTooLarge: resolveText("support.chat.fileTooLarge", "File is larger than 200 MB:"),
     filesLimitReached: resolveText("support.chat.filesLimitReached", "Only {max} files can be attached per message."),
@@ -2410,16 +2407,13 @@
             const hydratedIndex =
               mediaViewerSource.attachmentIdentity !== ""
                 ? hydratedItems.findIndex(
-                    attachment =>
-                      buildAttachmentIdentity(attachment) === mediaViewerSource.attachmentIdentity
+                    attachment => buildAttachmentIdentity(attachment) === mediaViewerSource.attachmentIdentity
                   )
                 : -1;
 
             mediaViewer.items = hydratedItems;
             mediaViewer.index =
-              hydratedIndex >= 0
-                ? hydratedIndex
-                : Math.min(mediaViewer.index, Math.max(hydratedItems.length - 1, 0));
+              hydratedIndex >= 0 ? hydratedIndex : Math.min(mediaViewer.index, Math.max(hydratedItems.length - 1, 0));
           }
         }
       }
@@ -2775,8 +2769,10 @@
   };
   const waitForNextPaint = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
   const emitActiveSupportTicket = (ticketId: string | null) => {
+    const normalizedTicketId = ticketId ? String(ticketId).trim() : "";
     useEventBus.emit(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, {
-      ticketId: ticketId ? String(ticketId).trim() : "",
+      ticketId: normalizedTicketId,
+      isOpen: Boolean(normalizedTicketId),
     });
   };
 

@@ -30,8 +30,6 @@ const resolveOrigin = (candidate: string | undefined): string => {
   }
 };
 
-const isAdminRoute = (): boolean => /\/admin(\/|$)/.test(window.location.pathname);
-
 const resolveAuthToken = (preferAdminAuth: boolean): string => {
   if (preferAdminAuth) {
     return localStorage.getItem(ADMIN_ACCESS_TOKEN) || localStorage.getItem("access_token") || "";
@@ -144,9 +142,8 @@ export default defineNuxtPlugin(() => {
     }
   };
 
-  const authorizeChannel = async (socketId: string, channelName: string, preferAdminAuth: boolean) => {
+  const authorizeChannel = async (socketId: string, channelName: string) => {
     const xsrf = resolveXsrfToken();
-    let token = resolveAuthToken(preferAdminAuth);
 
     const requestAuth = async (currentToken: string) =>
       fetch(authEndpoint, {
@@ -164,12 +161,24 @@ export default defineNuxtPlugin(() => {
         }),
       });
 
-    let response = await requestAuth(token);
+    const authorizeWithContext = async (preferAdminAuth: boolean) => {
+      let token = resolveAuthToken(preferAdminAuth);
+      let response = await requestAuth(token);
 
-    if (response.status === 401) {
-      const refreshedToken = await refreshAccessToken(preferAdminAuth);
-      token = refreshedToken ?? resolveAuthToken(preferAdminAuth);
-      response = await requestAuth(token);
+      if (response.status === 401) {
+        const refreshedToken = await refreshAccessToken(preferAdminAuth);
+        token = refreshedToken ?? resolveAuthToken(preferAdminAuth);
+        response = await requestAuth(token);
+      }
+
+      return response;
+    };
+
+    // In this app `/admin` prefix is stripped from URLs, so path-based admin detection is unreliable.
+    // Prefer admin auth first and fallback to client auth only when needed.
+    let response = await authorizeWithContext(true);
+    if (response.status === 401 || response.status === 403) {
+      response = await authorizeWithContext(false);
     }
 
     return response;
@@ -194,7 +203,7 @@ export default defineNuxtPlugin(() => {
     authorizer: (channel: any) => ({
       authorize: async (socketId: string, callback: (error: boolean, data: any) => void) => {
         try {
-          const response = await authorizeChannel(socketId, channel.name, isAdminRoute());
+          const response = await authorizeChannel(socketId, channel.name);
 
           if (!response.ok) {
             const errorBody = await response.text();

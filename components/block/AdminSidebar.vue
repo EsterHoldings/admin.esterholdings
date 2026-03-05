@@ -62,11 +62,14 @@
   const toast = useToast();
   const { $echo } = useNuxtApp() as { $echo?: any };
   const activeSupportTicketId = ref("");
+  const isSupportChatOpen = ref(false);
   const currentAdminId = ref("");
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
   let supportRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
+  let supportSocketStateHandler: ((states: any) => void) | null = null;
+  let supportResumeListenersAttached = false;
 
   const handleClickLogout = async () => {
     await adminAuthStore.authLogout();
@@ -110,14 +113,64 @@
 
   const normalizeText = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
 
+  const parseJsonObject = (value: unknown): Record<string, any> | null => {
+    if (typeof value !== "string") return null;
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" ? (parsed as Record<string, any>) : null;
+    } catch {
+      return null;
+    }
+  };
+
   const unwrapSupportMessagePayload = (payload?: any) => {
-    if (!payload || typeof payload !== "object") return payload;
-    if (!payload?.message || typeof payload.message !== "object") return payload;
+    if (!payload) return payload;
+
+    const parsedPayload =
+      typeof payload === "string" ? parseJsonObject(payload) : payload && typeof payload === "object" ? payload : null;
+    if (!parsedPayload) return payload;
+
+    const parsedDataLayer =
+      parsedPayload?.data && typeof parsedPayload.data === "object"
+        ? parsedPayload.data
+        : (parseJsonObject(parsedPayload?.data) ?? parsedPayload);
+    const parsedMessageLayer =
+      parsedDataLayer?.message && typeof parsedDataLayer.message === "object"
+        ? parsedDataLayer.message
+        : parseJsonObject(parsedDataLayer?.message);
+
+    if (!parsedMessageLayer) {
+      return {
+        ...parsedDataLayer,
+        ticket_id:
+          parsedDataLayer?.ticket_id ??
+          parsedDataLayer?.ticketId ??
+          parsedDataLayer?.meta?.ticket_id ??
+          parsedDataLayer?.meta?.ticketId,
+        ticketId:
+          parsedDataLayer?.ticketId ??
+          parsedDataLayer?.ticket_id ??
+          parsedDataLayer?.meta?.ticketId ??
+          parsedDataLayer?.meta?.ticket_id,
+      };
+    }
 
     return {
-      ...payload.message,
-      ticket_id: payload.message?.ticket_id ?? payload.ticket_id ?? payload.ticketId,
-      ticketId: payload.message?.ticketId ?? payload.message?.ticket_id ?? payload.ticketId ?? payload.ticket_id,
+      ...parsedMessageLayer,
+      ticket_id:
+        parsedMessageLayer?.ticket_id ??
+        parsedMessageLayer?.ticketId ??
+        parsedDataLayer?.ticket_id ??
+        parsedDataLayer?.ticketId ??
+        parsedMessageLayer?.meta?.ticket_id ??
+        parsedMessageLayer?.meta?.ticketId,
+      ticketId:
+        parsedMessageLayer?.ticketId ??
+        parsedMessageLayer?.ticket_id ??
+        parsedDataLayer?.ticketId ??
+        parsedDataLayer?.ticket_id ??
+        parsedMessageLayer?.meta?.ticketId ??
+        parsedMessageLayer?.meta?.ticket_id,
     };
   };
 
@@ -170,7 +223,11 @@
   };
 
   const handleSupportActiveTicketChanged = (payload?: any) => {
-    activeSupportTicketId.value = normalizeText(payload?.ticketId ?? payload?.ticket_id);
+    const data = payload?.data && typeof payload.data === "object" ? payload.data : payload;
+    const ticketId = normalizeText(data?.ticketId ?? data?.ticket_id);
+    activeSupportTicketId.value = ticketId;
+    const isOpenState = typeof data?.isOpen === "boolean" ? data.isOpen : Boolean(ticketId);
+    isSupportChatOpen.value = isOpenState && Boolean(ticketId);
   };
 
   const handleSupportMessageToast = (payload?: any) => {
@@ -195,7 +252,9 @@
     }
 
     const routeTicketId = getRouteSupportTicketId();
-    if (ticketId === activeSupportTicketId.value || ticketId === routeTicketId) return;
+    const isRouteTicketOpened = routeTicketId === ticketId;
+    const isActiveTicketOpened = isSupportChatOpen.value && ticketId === activeSupportTicketId.value;
+    if (isRouteTicketOpened || isActiveTicketOpened) return;
 
     const senderName = resolveSenderName(messagePayload);
     const preview = truncate(normalizeText(messagePayload?.body) || "New message");
@@ -291,22 +350,76 @@
     return null;
   };
 
+  const reconnectSupportSocketTransport = () => {
+    const echoClient = resolveEchoClient();
+    const pusher = echoClient?.connector?.pusher;
+    const state = String(pusher?.connection?.state ?? "");
+    if (!pusher) return;
+
+    if (state === "disconnected" || state === "failed" || state === "unavailable") {
+      try {
+        pusher.connect();
+      } catch {
+        // noop
+      }
+    }
+  };
+
   const connectSupportRealtime = () => {
     const echoClient = resolveEchoClient();
     if (!echoClient) return;
 
+    reconnectSupportSocketTransport();
     const channel = echoClient.private("support.global");
     channel.stopListening(".MessageSent", handleSupportGlobalMessage);
     channel.stopListening("MessageSent", handleSupportGlobalMessage);
+    channel.stopListening(".App\\Events\\MessageSent", handleSupportGlobalMessage);
+    channel.stopListening("App\\Events\\MessageSent", handleSupportGlobalMessage);
     channel.listen(".MessageSent", handleSupportGlobalMessage);
     channel.listen("MessageSent", handleSupportGlobalMessage);
+    channel.listen(".App\\Events\\MessageSent", handleSupportGlobalMessage);
+    channel.listen("App\\Events\\MessageSent", handleSupportGlobalMessage);
     supportRealtimeChannel = channel;
+  };
+
+  const bindSupportSocketStateListener = () => {
+    if (supportSocketStateHandler) return;
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (!connection || typeof connection.bind !== "function") return;
+
+    supportSocketStateHandler = (states: any) => {
+      const currentState = String(states?.current ?? connection?.state ?? "");
+      if (currentState === "connected") {
+        connectSupportRealtime();
+        return;
+      }
+
+      if (currentState === "failed" || currentState === "unavailable" || currentState === "disconnected") {
+        reconnectSupportSocketTransport();
+      }
+    };
+
+    connection.bind("state_change", supportSocketStateHandler);
+  };
+
+  const unbindSupportSocketStateListener = () => {
+    if (!supportSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (connection && typeof connection.unbind === "function") {
+      connection.unbind("state_change", supportSocketStateHandler);
+    }
+    supportSocketStateHandler = null;
   };
 
   const disconnectSupportRealtime = () => {
     if (!supportRealtimeChannel) return;
     supportRealtimeChannel.stopListening(".MessageSent", handleSupportGlobalMessage);
     supportRealtimeChannel.stopListening("MessageSent", handleSupportGlobalMessage);
+    supportRealtimeChannel.stopListening(".App\\Events\\MessageSent", handleSupportGlobalMessage);
+    supportRealtimeChannel.stopListening("App\\Events\\MessageSent", handleSupportGlobalMessage);
     supportRealtimeChannel = null;
   };
 
@@ -314,6 +427,8 @@
     if (supportRealtimeRetryTimer) return;
 
     supportRealtimeRetryTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      reconnectSupportSocketTransport();
       connectSupportRealtime();
     }, SUPPORT_REALTIME_RETRY_MS);
   };
@@ -325,8 +440,45 @@
     supportRealtimeRetryTimer = null;
   };
 
+  const handleSupportRealtimeResume = () => {
+    reconnectSupportSocketTransport();
+    connectSupportRealtime();
+  };
+
+  const handleSupportVisibilityChange = () => {
+    if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+    handleSupportRealtimeResume();
+  };
+
+  const handleSupportOnline = () => {
+    handleSupportRealtimeResume();
+  };
+
+  const handleSupportPageShow = () => {
+    handleSupportRealtimeResume();
+  };
+
+  const attachSupportResumeListeners = () => {
+    if (supportResumeListenersAttached) return;
+    document.addEventListener("visibilitychange", handleSupportVisibilityChange);
+    window.addEventListener("online", handleSupportOnline);
+    window.addEventListener("pageshow", handleSupportPageShow);
+    supportResumeListenersAttached = true;
+  };
+
+  const detachSupportResumeListeners = () => {
+    if (!supportResumeListenersAttached) return;
+    document.removeEventListener("visibilitychange", handleSupportVisibilityChange);
+    window.removeEventListener("online", handleSupportOnline);
+    window.removeEventListener("pageshow", handleSupportPageShow);
+    supportResumeListenersAttached = false;
+  };
+
   onMounted(async () => {
     await loadSupportUnreadCount();
+    const routeTicketId = getRouteSupportTicketId();
+    activeSupportTicketId.value = routeTicketId;
+    isSupportChatOpen.value = Boolean(routeTicketId);
     try {
       const authUserResponse = await appCore.adminModules.auth.getAuthUser();
       currentAdminId.value = normalizeText(authUserResponse?.data?.id);
@@ -337,6 +489,8 @@
     useEventBus.on(SUPPORT_ACTIVE_TICKET_CHANGED_EVENT, handleSupportActiveTicketChanged);
     startSupportBadgeRefresh();
     connectSupportRealtime();
+    bindSupportSocketStateListener();
+    attachSupportResumeListeners();
     startSupportRealtimeRetry();
   });
 
@@ -346,6 +500,8 @@
     stopSupportBadgeRefresh();
     stopSupportRealtimeRetry();
     disconnectSupportRealtime();
+    unbindSupportSocketStateListener();
+    detachSupportResumeListeners();
     if (supportUnreadRafId !== null) {
       window.cancelAnimationFrame(supportUnreadRafId);
       supportUnreadRafId = null;
