@@ -2716,15 +2716,20 @@
 
     const targetIndex = removeDuplicateMessagesById(incoming.id, index);
     const current = messages[targetIndex];
-    if (isSameMessage(current, incoming)) {
-      return "unchanged";
-    }
-
-    messages[targetIndex] = {
+    const mergedMeta = pickPreferredMeta(incoming.meta, current.meta);
+    const mergedBody = pickPreferredBody(incoming.body, current.body);
+    const mergedMessage: ChatMessage = {
       ...incoming,
+      body: mergedBody,
+      meta: mergedMeta,
       deliveryStatus: "sent",
       pendingServerId: undefined,
     };
+    if (isSameMessage(current, mergedMessage)) {
+      return "unchanged";
+    }
+
+    messages[targetIndex] = mergedMessage;
     return "updated";
   }
   const messageNeedsAttachmentHydration = (message: ChatMessage): boolean => {
