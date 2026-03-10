@@ -461,6 +461,7 @@
           class="support-chat-wrapper"
           :style="supportChatWrapperStyle">
           <ChatDefault
+            v-if="!isEmailTicket"
             :as-block="true"
             :admin-chat="true"
             :ticket-id="id"
@@ -471,6 +472,98 @@
             @mobile-toggle-panel="toggleSideExpanded"
             @mobile-header-swipe="handleMobileHeaderSwipe"
             @mobile-input-swipe-up="handleMobileInputSwipeUp" />
+
+          <div
+            v-else
+            class="support-email">
+            <div class="support-email__head">
+              <div class="support-email__title-wrap">
+                <div class="support-email__title">{{ supportText.emailRequestTitle }}</div>
+                <div class="support-email__reply-to">
+                  {{ supportText.replyToLabel }}:
+                  <strong>{{ ticketReplyEmail || supportText.notProvided }}</strong>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="support-email__refresh"
+                :disabled="isEmailThreadLoading"
+                @click="reloadEmailThread">
+                <UiIconSpinnerDefault
+                  v-if="isEmailThreadLoading"
+                  class="!h-4 !w-4" />
+                <UiIconUpdate
+                  v-else
+                  class="h-4 w-4" />
+              </button>
+            </div>
+
+            <div class="support-email__thread">
+              <div
+                v-if="isEmailThreadLoading && emailThreadItems.length === 0"
+                class="support-email__state">
+                <UiIconSpinnerDefault class="!h-4 !w-4 !text-[var(--ui-text-main)]" />
+                <span>{{ supportText.emailThreadLoading }}</span>
+              </div>
+
+              <div
+                v-else-if="emailThreadItems.length === 0"
+                class="support-email__state">
+                {{ supportText.emailThreadEmpty }}
+              </div>
+
+              <template v-else>
+                <article
+                  v-for="entry in emailThreadItems"
+                  :key="entry.id"
+                  class="support-email__entry">
+                  <div class="support-email__entry-head">
+                    <strong class="truncate">{{ entry.authorName }}</strong>
+                    <span class="support-email__entry-date">{{ entry.createdAtLabel }}</span>
+                  </div>
+
+                  <p
+                    v-if="entry.bodyText"
+                    class="support-email__entry-body">
+                    {{ entry.bodyText }}
+                  </p>
+
+                  <div
+                    v-if="entry.attachments.length"
+                    class="support-email__attachments">
+                    <a
+                      v-for="attachment in entry.attachments"
+                      :key="attachment.id"
+                      :href="attachment.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="support-email__attachment">
+                      <UiIconDocuments class="h-4 w-4 shrink-0 text-[var(--ui-text-secondary)]" />
+                      <span class="truncate">{{ attachment.title }}</span>
+                      <span class="support-email__attachment-details">{{ attachment.details }}</span>
+                    </a>
+                  </div>
+                </article>
+              </template>
+            </div>
+
+            <form
+              class="support-email__reply"
+              @submit.prevent="sendEmailReply">
+              <textarea
+                v-model="emailReplyDraft"
+                class="support-email__reply-input"
+                rows="4"
+                :placeholder="supportText.replyPlaceholder"></textarea>
+              <button
+                type="submit"
+                class="support-email__reply-submit"
+                :disabled="isEmailReplySending || !emailReplyDraft.trim()">
+                <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
+                <span v-else>{{ supportText.sendReply }}</span>
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -596,6 +689,16 @@
     addAdminSuccess: "",
     addAdminAlready: "",
     addAdminFailed: "",
+    emailRequestTitle: "",
+    replyToLabel: "",
+    notProvided: "",
+    emailThreadLoading: "",
+    emailThreadEmpty: "",
+    replyPlaceholder: "",
+    sendReply: "",
+    sendingReply: "",
+    emailReplySent: "",
+    emailReplyFailed: "",
   });
   const syncSupportText = () => {
     supportText.ticket = resolveText("support.chat.ticket", "Ticket");
@@ -639,6 +742,19 @@
     supportText.addAdminSuccess = resolveText("support.chat.addAdminSuccess", "Admin added to chat");
     supportText.addAdminAlready = resolveText("support.chat.addAdminAlready", "Admin is already in chat");
     supportText.addAdminFailed = resolveText("support.chat.addAdminFailed", "Failed to add admin to chat");
+    supportText.emailRequestTitle = resolveText("support.chat.emailRequestTitle", "Email support request");
+    supportText.replyToLabel = resolveText("support.chat.replyToLabel", "Reply to");
+    supportText.notProvided = resolveText("support.chat.notProvided", "not provided");
+    supportText.emailThreadLoading = resolveText("support.chat.emailThreadLoading", "Loading request history...");
+    supportText.emailThreadEmpty = resolveText("support.chat.emailThreadEmpty", "No messages in this request yet");
+    supportText.replyPlaceholder = resolveText(
+      "support.chat.replyPlaceholder",
+      "Write a reply that will be sent to the client by email..."
+    );
+    supportText.sendReply = resolveText("support.chat.sendReply", "Send reply");
+    supportText.sendingReply = resolveText("support.chat.sendingReply", "Sending...");
+    supportText.emailReplySent = resolveText("support.chat.emailReplySent", "Reply sent.");
+    supportText.emailReplyFailed = resolveText("support.chat.emailReplyFailed", "Failed to send reply.");
   };
   syncSupportText();
 
@@ -647,6 +763,7 @@
 
   const appCore = useAppCore();
   const toast = useToast();
+  const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
 
@@ -670,6 +787,26 @@
   });
   const status = ref("");
   const subject = ref("");
+  const ticketChannel = ref<"chat" | "email">("chat");
+  const ticketReplyEmail = ref("");
+  const isEmailThreadLoading = ref(false);
+  const isEmailReplySending = ref(false);
+  const emailReplyDraft = ref("");
+  type EmailThreadAttachment = {
+    id: string;
+    title: string;
+    url: string;
+    details: string;
+  };
+  type EmailThreadItem = {
+    id: string;
+    authorName: string;
+    createdAtLabel: string;
+    bodyText: string;
+    attachments: EmailThreadAttachment[];
+  };
+  const emailThreadItems = ref<EmailThreadItem[]>([]);
+  const isEmailTicket = computed(() => ticketChannel.value === "email");
   type SupportTab = "media" | "documents" | "links";
   type SupportLinkItem = {
     id: string;
@@ -1339,6 +1476,32 @@
     return `${scaled.toFixed(precision)} ${units[unitIndex]}`;
   };
 
+  const formatEmailThreadDate = (value: unknown): string => {
+    const timestamp = parseMessageCreatedAt(value);
+    return new Date(timestamp).toLocaleString(locale.value || undefined, {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const convertMessageBodyToPlainText = (value: unknown): string => {
+    const source = String(value ?? "");
+    if (!source.trim()) return "";
+
+    return source
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/\r\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/[ \t]{2,}/g, " ")
+      .trim();
+  };
+
   const resolveAttachmentUrl = (attachment: Record<string, unknown>): string => {
     return normalizeText(
       attachment.url ?? attachment.preview_url ?? attachment.previewUrl ?? attachment.path_url ?? attachment.pathUrl
@@ -1553,7 +1716,124 @@
   };
 
   const refreshLibrary = async () => {
+    if (isEmailTicket.value) return;
     await loadLibraryFromChat();
+  };
+
+  const mapEmailThreadMessages = (messages: Array<Record<string, unknown>>): EmailThreadItem[] => {
+    return messages
+      .map((message, messageIndex) => {
+        const messageId = normalizeText(message.id) || `${id.value}-email-${messageIndex}`;
+        const authorName =
+          normalizeText(message.author) ||
+          buildFullName(normalizeText(message.author_first_name), normalizeText(message.author_last_name)) ||
+          normalizeText(message.author_email) ||
+          supportText.roleClient;
+        const bodyText = convertMessageBodyToPlainText(message.body);
+        const createdAtLabel = formatEmailThreadDate(message.created_at ?? message.createdAt);
+        const createdAt = parseMessageCreatedAt(message.created_at ?? message.createdAt);
+
+        const rawMeta = message.meta;
+        const rawAttachments =
+          rawMeta && typeof rawMeta === "object" && Array.isArray((rawMeta as Record<string, unknown>).attachments)
+            ? ((rawMeta as Record<string, unknown>).attachments as Array<unknown>)
+            : [];
+
+        const attachments: EmailThreadAttachment[] = rawAttachments
+          .map((rawAttachment, attachmentIndex) => {
+            if (!rawAttachment || typeof rawAttachment !== "object") return null;
+            const attachment = rawAttachment as Record<string, unknown>;
+            const url = resolveAttachmentUrl(attachment);
+            if (!url) return null;
+
+            const attachmentId = normalizeText(attachment.id) || `${messageId}-attachment-${attachmentIndex}`;
+            const title = resolveAttachmentTitle(attachment, url);
+            const sizeLabel = formatFileSize(attachment.size);
+            const mimeType = normalizeText(attachment.mime_type ?? attachment.mimeType);
+
+            return {
+              id: attachmentId,
+              title,
+              url,
+              details: [sizeLabel, mimeType].filter(Boolean).join(" • "),
+            } as EmailThreadAttachment;
+          })
+          .filter((attachment): attachment is EmailThreadAttachment => Boolean(attachment));
+
+        return {
+          id: messageId,
+          authorName,
+          createdAtLabel,
+          bodyText,
+          attachments,
+          createdAt,
+        };
+      })
+      .sort((left, right) => left.createdAt - right.createdAt)
+      .map(({ createdAt, ...item }) => item);
+  };
+
+  const loadEmailThread = async () => {
+    if (!isEmailTicket.value) {
+      emailThreadItems.value = [];
+      return;
+    }
+    if (isEmailThreadLoading.value) return;
+
+    isEmailThreadLoading.value = true;
+    try {
+      const response = await appCore.adminModules.tickets.getTicketMessages(id.value, {
+        page: 1,
+        pageSize: 100,
+        sort: "desc",
+      });
+      const payload = response?.data;
+      const messages = Array.isArray(payload?.data)
+        ? (payload.data as Array<Record<string, unknown>>)
+        : Array.isArray(payload)
+          ? (payload as Array<Record<string, unknown>>)
+          : [];
+      emailThreadItems.value = mapEmailThreadMessages(messages);
+
+      const latestMessage = messages[messages.length - 1];
+      const latestMessageId = normalizeText(latestMessage?.id);
+      if (latestMessageId) {
+        await appCore.adminModules.tickets.markRead(id.value, { last_message_id: latestMessageId });
+        useEventBus.emit(SUPPORT_UNREAD_UPDATED_EVENT, {
+          ticketId: id.value,
+          unread: 0,
+        });
+      }
+    } catch {
+      // noop
+    } finally {
+      isEmailThreadLoading.value = false;
+    }
+  };
+
+  const reloadEmailThread = async () => {
+    await loadEmailThread();
+  };
+
+  const sendEmailReply = async () => {
+    if (!isEmailTicket.value) return;
+    const body = emailReplyDraft.value.trim();
+    if (!body || isEmailReplySending.value) return;
+
+    isEmailReplySending.value = true;
+    try {
+      await appCore.adminModules.tickets.storeTicketMessage(id.value, {
+        type: "text",
+        body,
+      });
+      emailReplyDraft.value = "";
+      toast.success(supportText.emailReplySent);
+      await loadEmailThread();
+    } catch {
+      toast.error(supportText.emailReplyFailed);
+    } finally {
+      isEmailReplySending.value = false;
+    }
   };
 
   const resetLibraryViewerSwipe = () => {
@@ -1853,13 +2133,21 @@
     const response = await appCore.adminModules.tickets.getById(route.params.id);
     const ticket = response?.data ?? {};
     const creator = ticket?.creator ?? null;
+    const channel = normalizeText(ticket?.channel).toLowerCase();
 
     status.value = ticket?.status ?? "open";
     subject.value = ticket?.subject ?? "-";
+    ticketChannel.value = channel === "email" ? "email" : "chat";
+    if (ticketChannel.value === "email") {
+      linkItems.value = [];
+      mediaItems.value = [];
+      documentItems.value = [];
+    }
 
     const creatorFirstName = creator?.first_name ?? null;
     const creatorLastName = creator?.last_name ?? null;
     const creatorEmail = creator?.email ?? null;
+    ticketReplyEmail.value = normalizeText(ticket?.reply_email ?? creatorEmail);
     const creatorPhotoUrl = normalizeText(creator?.photo_url);
     const creatorFullName = buildFullName(creatorFirstName, creatorLastName);
     const serverParticipants = Array.isArray(ticket?.participants) ? ticket.participants : [];
@@ -1965,6 +2253,11 @@
       void refreshParticipantsFromTicket();
     }
 
+    if (isEmailTicket.value) {
+      void loadEmailThread();
+      return;
+    }
+
     mergeLibraryFromMessages([rawMessage]);
   };
 
@@ -1994,12 +2287,17 @@
     currentUser.photoUrl = normalizedPhotoUrl || null;
 
     await loadData();
-    await loadLibraryFromChat();
+    if (isEmailTicket.value) {
+      await loadEmailThread();
+    } else {
+      await loadLibraryFromChat();
+    }
     scheduleDesktopGridMeasure();
     window.addEventListener("pointerdown", handleParticipantsPointerDown);
   });
 
   watch(activeTab, () => {
+    if (isEmailTicket.value) return;
     if (activeTabItemsCount.value > 0 || isLibraryLoading.value) return;
     void loadLibraryFromChat();
   });
@@ -2010,6 +2308,9 @@
       ...participant,
       role: resolveParticipantRoleLabel(participant.roleKey),
     }));
+    if (isEmailTicket.value) {
+      void loadEmailThread();
+    }
   });
 
   watch(mediaItems, () => {
@@ -2137,6 +2438,181 @@
     min-height: 0;
     flex: 1 1 auto;
     overflow-y: auto;
+  }
+
+  .support-email {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-panel);
+  }
+
+  .support-email__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--color-stroke-ui-light);
+    padding: 14px 16px;
+  }
+
+  .support-email__title-wrap {
+    min-width: 0;
+  }
+
+  .support-email__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ui-text-main);
+  }
+
+  .support-email__reply-to {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ui-text-secondary);
+    word-break: break-word;
+  }
+
+  .support-email__refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-card);
+    color: var(--ui-text-main);
+  }
+
+  .support-email__refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .support-email__thread {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding: 12px 16px;
+  }
+
+  .support-email__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ui-text-secondary);
+    font-size: 13px;
+  }
+
+  .support-email__entry {
+    border-radius: 12px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    background: var(--ui-background-card);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .support-email__entry-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ui-text-main);
+  }
+
+  .support-email__entry-date {
+    color: var(--ui-text-secondary);
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .support-email__entry-body {
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--ui-text-main);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .support-email__attachments {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .support-email__attachment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    background: var(--ui-background-panel);
+    padding: 8px 10px;
+    color: var(--ui-text-main);
+    text-decoration: none;
+  }
+
+  .support-email__attachment-details {
+    margin-left: auto;
+    flex-shrink: 0;
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .support-email__reply {
+    border-top: 1px solid var(--color-stroke-ui-light);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--ui-background-card);
+  }
+
+  .support-email__reply-input {
+    width: 100%;
+    min-height: 92px;
+    resize: vertical;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-panel);
+    color: var(--ui-text-main);
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .support-email__reply-submit {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: var(--ui-primary-main);
+    color: var(--ui-text-main);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .support-email__reply-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   @media (max-width: 767px) {
