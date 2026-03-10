@@ -31,6 +31,10 @@ export class ClientsModule {
     return await this.clientsService.patchPaymentDetailStatus(id, paymentDetailId, data);
   }
 
+  async patchSupportMode(id: any, data: object = {}): Promise<any> {
+    return await this.clientsService.patchSupportMode(id, data);
+  }
+
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
     return await this.clientsService.deletePaymentDetail(id, paymentDetailId);
   }

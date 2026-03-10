@@ -4,6 +4,20 @@
       <div class="mb-5">
         <UiTextH4 class="text-[var(--ui-text-main)]"> {{ userData.first_name }} {{ userData.last_name }} </UiTextH4>
         <UiTextParagraph class="text-[var(--ui-text-secondary)]">{{ userData.email }}</UiTextParagraph>
+        <div class="mt-3 flex items-center gap-3 text-[var(--ui-text-main)]">
+          <UiTextParagraph class="!text-[var(--ui-text-secondary)]">
+            {{ t("clients.supportMode.label") }}
+          </UiTextParagraph>
+          <UiSwitchToggle
+            :modelValue="fullSupportEnabled"
+            @change="handleSupportModeToggle" />
+          <UiTextParagraph>
+            {{ fullSupportEnabled ? t("clients.supportMode.full") : t("clients.supportMode.simple") }}
+          </UiTextParagraph>
+          <UiIconSpinnerDefault
+            v-if="supportModeUpdating"
+            class="h-4 w-4 text-[var(--ui-text-main)]" />
+        </div>
       </div>
 
       <PanelDefault>
@@ -48,9 +62,10 @@
 
 <script setup lang="ts">
   import useAppCore from "~/composables/useAppCore";
-  import { onMounted, reactive, ref, watch } from "vue";
+  import { computed, onMounted, reactive, ref, watch } from "vue";
   import { definePageMeta } from "~/.nuxt/imports";
   import { useI18n } from "vue-i18n";
+  import { useToast } from "vue-toastification";
   import { useRoute } from "vue-router";
 
   import TabChangePassword from "~/pages/admin/clients/[id]/components/TabChangePassword.vue";
@@ -60,6 +75,8 @@
   import TabsAsList from "~/components/block/tabs/TabsAsList.vue";
   import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiContainer from "~/components/ui/UiContainer.vue";
+  import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
+  import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 
@@ -68,10 +85,12 @@
   });
 
   const { t } = useI18n({ useScope: "global" });
+  const toast = useToast();
   const route = useRoute();
   const appCore = useAppCore();
 
   const clientId = ref(route.params.id as string);
+  const supportModeUpdating = ref(false);
 
   let userData = reactive({
     address: null,
@@ -90,12 +109,40 @@
     photo_url: null,
     postal_code: null,
     state: null,
+    support_mode: "simple",
     updated_at: null,
   });
+
+  const fullSupportEnabled = computed(() => String(userData.support_mode ?? "simple") === "full");
 
   const loadData = async () => {
     const resp = await appCore.adminModules.clients.getById(clientId.value);
     Object.assign(userData, resp.data.data);
+  };
+
+  const handleSupportModeToggle = async (enabled: boolean) => {
+    if (supportModeUpdating.value) return;
+
+    const nextMode = enabled ? "full" : "simple";
+    const currentMode = String(userData.support_mode ?? "simple");
+    if (nextMode === currentMode) return;
+
+    supportModeUpdating.value = true;
+    const previousMode = currentMode;
+    userData.support_mode = nextMode;
+
+    try {
+      await appCore.adminModules.clients.patchSupportMode(clientId.value, {
+        support_mode: nextMode,
+      });
+      toast.success(t("clients.supportMode.updated"));
+    } catch (error) {
+      userData.support_mode = previousMode;
+      toast.error(t("clients.supportMode.updateFailed"));
+      console.error("Failed to update support mode", error);
+    } finally {
+      supportModeUpdating.value = false;
+    }
   };
 
   const STORAGE_KEY = "profileActiveTab";

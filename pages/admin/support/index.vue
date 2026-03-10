@@ -145,8 +145,15 @@
                 </td>
 
                 <td class="px-4">
-                  <div class="truncate">
-                    {{ t.subject }}
+                  <div class="min-w-0">
+                    <div class="truncate">
+                      {{ t.subject }}
+                    </div>
+                    <span
+                      class="ticket-channel-badge mt-1"
+                      :class="getTicketChannelBadgeClass(t.channel)">
+                      {{ getTicketChannelLabel(t.channel) }}
+                    </span>
                   </div>
                 </td>
 
@@ -236,7 +243,14 @@
             @click="handleClickRow(ticket.id)">
             <div class="ticket-card__header">
               <div class="min-w-0">
-                <div class="ticket-card__subject truncate">{{ ticket.subject }}</div>
+                <div class="ticket-card__subject-row">
+                  <div class="ticket-card__subject truncate">{{ ticket.subject }}</div>
+                  <span
+                    class="ticket-channel-badge"
+                    :class="getTicketChannelBadgeClass(ticket.channel)">
+                    {{ getTicketChannelLabel(ticket.channel) }}
+                  </span>
+                </div>
                 <div class="ticket-card__id-row">#{{ ticket.id }}</div>
               </div>
             </div>
@@ -406,6 +420,7 @@
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import ViewModeToggle from "~/components/block/controls/ViewModeToggle.vue";
   import { useI18n } from "vue-i18n";
+  import { useToast } from "vue-toastification";
   import TicketsCreateNew from "~/pages/admin/support/components/TicketsCreateNew.vue";
   import { useRouter } from "vue-router";
   import useEventBus from "~/composables/useEventBus";
@@ -447,6 +462,7 @@
   ]);
 
   const { t } = useI18n({ useScope: "global" });
+  const toast = useToast();
   const { openModal } = inject("modalControl") as { openModal: Function };
 
   const appCore = useAppCore();
@@ -609,9 +625,25 @@
 
   const filtered = computed(() =>
     tickets.filter(t =>
-      `${t.id} ${t.subject} ${t.last_message_at} ${t.status}`.toLowerCase().includes(search.value.toLowerCase())
+      `${t.id} ${t.subject} ${t.last_message_at} ${t.status} ${t.channel ?? ""} ${t.reply_email ?? ""}`
+        .toLowerCase()
+        .includes(search.value.toLowerCase())
     )
   );
+
+  const getTicketChannelKey = (channel: unknown): "chat" | "email" => {
+    const normalizedChannel = String(channel ?? "")
+      .trim()
+      .toLowerCase();
+
+    return normalizedChannel === "email" ? "email" : "chat";
+  };
+
+  const getTicketChannelLabel = (channel: unknown): string =>
+    getTicketChannelKey(channel) === "email" ? "Email" : "Chat";
+
+  const getTicketChannelBadgeClass = (channel: unknown): string =>
+    getTicketChannelKey(channel) === "email" ? "ticket-channel-badge--email" : "ticket-channel-badge--chat";
 
   const getTicketStatusDotClass = (status: unknown) => {
     const normalizedStatus = String(status ?? "")
@@ -784,6 +816,7 @@
   let adminSupportListRefreshTimer: ReturnType<typeof setInterval> | null = null;
   let supportGlobalChannel: any = null;
   let reloadQueued = false;
+  const supportLoadErrorNotified = ref(false);
 
   const loadData = async () => {
     if (isLoading.value) {
@@ -797,6 +830,7 @@
       try {
         const response = await appCore.adminModules.tickets.get({
           search: search.value,
+          channel: "all",
           perPage: perPage.value,
           page: currentPage.value,
           orderBy: orderBy.value,
@@ -808,6 +842,13 @@
         total.value = response.data.meta.total;
 
         tickets.splice(0, tickets.length, ...response.data.data);
+        supportLoadErrorNotified.value = false;
+      } catch (error) {
+        console.error("admin support loadData failed", error);
+        if (!supportLoadErrorNotified.value) {
+          toast.error("Failed to load support tickets.");
+          supportLoadErrorNotified.value = true;
+        }
       } finally {
         isLoading.value = false;
       }
@@ -1062,6 +1103,38 @@
     font-size: 16px;
     line-height: 1.25;
     font-weight: 700;
+  }
+
+  .ticket-card__subject-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .ticket-channel-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  .ticket-channel-badge--chat {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 50%, transparent);
+  }
+
+  .ticket-channel-badge--email {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-sticker-warning) 22%, transparent);
+    border-color: color-mix(in srgb, var(--ui-sticker-warning) 55%, transparent);
   }
 
   .ticket-card__id-row {

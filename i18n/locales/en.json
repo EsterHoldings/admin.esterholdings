@@ -1361,6 +1361,13 @@
         "onlineNow": "Online",
         "offlineNow": "Offline"
       },
+      "supportMode": {
+        "label": "Support mode",
+        "simple": "Simple form",
+        "full": "Full chat support",
+        "updated": "Support mode updated.",
+        "updateFailed": "Failed to update support mode."
+      },
       "filters": {
         "title": "Filters",
         "reset": "Reset",
