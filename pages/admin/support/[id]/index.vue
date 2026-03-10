@@ -3,14 +3,17 @@
     <div class="support-ticket-page text-[var(--ui-text-main)]">
       <div
         ref="supportGridRef"
-        class="support-ticket-grid grid gap-[20px] grid-cols-1 md:grid-cols-[1fr_2fr] items-stretch"
+        class="support-ticket-grid grid gap-[20px] grid-cols-1 items-stretch"
         :class="{
+          'md:grid-cols-[1fr_2fr]': !isEmailTicket,
+          'md:grid-cols-1': isEmailTicket,
           'is-collapsed': !isSideExpanded,
           'is-mobile': isMobileViewport,
           'is-mobile-fullscreen': isMobileFullscreenChat,
         }"
         :style="supportGridStyle">
         <PanelDefault
+          v-if="!isEmailTicket"
           ref="supportSidePanelRef"
           class="support-side p-2"
           :class="{
@@ -498,6 +501,23 @@
               </button>
             </div>
 
+            <form
+              class="support-email__reply"
+              @submit.prevent="sendEmailReply">
+              <textarea
+                v-model="emailReplyDraft"
+                class="support-email__reply-input"
+                rows="4"
+                :placeholder="supportText.replyPlaceholder"></textarea>
+              <button
+                type="submit"
+                class="support-email__reply-submit"
+                :disabled="isEmailReplySending || !emailReplyDraft.trim()">
+                <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
+                <span v-else>{{ supportText.sendReply }}</span>
+              </button>
+            </form>
+
             <div class="support-email__thread">
               <div
                 v-if="isEmailThreadLoading && emailThreadItems.length === 0"
@@ -546,23 +566,6 @@
                 </article>
               </template>
             </div>
-
-            <form
-              class="support-email__reply"
-              @submit.prevent="sendEmailReply">
-              <textarea
-                v-model="emailReplyDraft"
-                class="support-email__reply-input"
-                rows="4"
-                :placeholder="supportText.replyPlaceholder"></textarea>
-              <button
-                type="submit"
-                class="support-email__reply-submit"
-                :disabled="isEmailReplySending || !emailReplyDraft.trim()">
-                <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
-                <span v-else>{{ supportText.sendReply }}</span>
-              </button>
-            </form>
           </div>
         </div>
       </div>
@@ -1168,7 +1171,7 @@
   let desktopGridRafId: number | null = null;
 
   const supportGridStyle = computed(() => {
-    if (isMobileViewport.value || desktopGridHeight.value === null) return undefined;
+    if (isEmailTicket.value || isMobileViewport.value || desktopGridHeight.value === null) return undefined;
 
     const height = `${desktopGridHeight.value}px`;
     return {
@@ -1178,6 +1181,7 @@
   });
 
   const supportChatWrapperStyle = computed(() => {
+    if (isEmailTicket.value) return undefined;
     if (!isMobileViewport.value || !isMobileFullscreenChat.value) return undefined;
 
     const bottom = `calc(${MOBILE_CHAT_BOTTOM_GAP}px + env(safe-area-inset-bottom, 0px))`;
@@ -2134,10 +2138,12 @@
     const ticket = response?.data ?? {};
     const creator = ticket?.creator ?? null;
     const channel = normalizeText(ticket?.channel).toLowerCase();
+    const hasReplyEmail = normalizeText(ticket?.reply_email) !== "";
+    const isEmailByPayload = channel === "email" || (channel === "" && hasReplyEmail);
 
     status.value = ticket?.status ?? "open";
     subject.value = ticket?.subject ?? "-";
-    ticketChannel.value = channel === "email" ? "email" : "chat";
+    ticketChannel.value = isEmailByPayload ? "email" : "chat";
     if (ticketChannel.value === "email") {
       linkItems.value = [];
       mediaItems.value = [];

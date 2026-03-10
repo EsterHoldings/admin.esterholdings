@@ -151,8 +151,8 @@
                     </div>
                     <span
                       class="ticket-channel-badge mt-1"
-                      :class="getTicketChannelBadgeClass(t.channel)">
-                      {{ getTicketChannelLabel(t.channel) }}
+                      :class="getTicketChannelBadgeClass(t.channel, t.reply_email)">
+                      {{ getTicketChannelLabel(t.channel, t.reply_email) }}
                     </span>
                   </div>
                 </td>
@@ -186,7 +186,7 @@
                 <td class="px-2 text-right">
                   <div class="flex items-center justify-end gap-2 relative">
                     <span
-                      @click.stop="handleChatIconClick(t.id)"
+                      @click.stop="handleChatIconClick(t)"
                       class="relative h-[42px] w-[42px] flex items-center justify-center active:bg-[var(--color-stroke-ui-dark)] rounded-full hover:bg-[var(--color-stroke-ui-light)]">
                       <div
                         class="absolute top-1 right-1 bg-[--ui-sticker-danger] w-[16px] h-[16px] rounded-full border-none flex items-center justify-center"
@@ -247,8 +247,8 @@
                   <div class="ticket-card__subject truncate">{{ ticket.subject }}</div>
                   <span
                     class="ticket-channel-badge"
-                    :class="getTicketChannelBadgeClass(ticket.channel)">
-                    {{ getTicketChannelLabel(ticket.channel) }}
+                    :class="getTicketChannelBadgeClass(ticket.channel, ticket.reply_email)">
+                    {{ getTicketChannelLabel(ticket.channel, ticket.reply_email) }}
                   </span>
                 </div>
                 <div class="ticket-card__id-row">#{{ ticket.id }}</div>
@@ -293,7 +293,7 @@
                   </button>
                   <button
                     class="ticket-card__icon-btn ticket-card__chat-btn"
-                    @click.stop="handleChatIconClick(ticket.id)"
+                    @click.stop="handleChatIconClick(ticket)"
                     aria-label="Open chat">
                     <span
                       v-if="ticket.unread_messages_count > 0"
@@ -631,19 +631,24 @@
     )
   );
 
-  const getTicketChannelKey = (channel: unknown): "chat" | "email" => {
+  const getTicketChannelKey = (channel: unknown, replyEmail?: unknown): "chat" | "email" => {
     const normalizedChannel = String(channel ?? "")
       .trim()
       .toLowerCase();
 
+    const normalizedReplyEmail = String(replyEmail ?? "").trim();
+    if (!normalizedChannel && normalizedReplyEmail) {
+      return "email";
+    }
+
     return normalizedChannel === "email" ? "email" : "chat";
   };
 
-  const getTicketChannelLabel = (channel: unknown): string =>
-    getTicketChannelKey(channel) === "email" ? "Email" : "Chat";
+  const getTicketChannelLabel = (channel: unknown, replyEmail?: unknown): string =>
+    getTicketChannelKey(channel, replyEmail) === "email" ? "Email" : "Chat";
 
-  const getTicketChannelBadgeClass = (channel: unknown): string =>
-    getTicketChannelKey(channel) === "email" ? "ticket-channel-badge--email" : "ticket-channel-badge--chat";
+  const getTicketChannelBadgeClass = (channel: unknown, replyEmail?: unknown): string =>
+    getTicketChannelKey(channel, replyEmail) === "email" ? "ticket-channel-badge--email" : "ticket-channel-badge--chat";
 
   const getTicketStatusDotClass = (status: unknown) => {
     const normalizedStatus = String(status ?? "")
@@ -1016,7 +1021,16 @@
 
   const handleClickRow = (ticketId: string) => router.push(`/support/${ticketId}`);
 
-  const handleChatIconClick = (ticketId: string) => {
+  const handleChatIconClick = (ticket: any) => {
+    const ticketId = String(ticket?.id ?? "");
+    if (!ticketId) return;
+
+    const channel = getTicketChannelKey(ticket?.channel, ticket?.reply_email);
+    if (channel === "email") {
+      router.push(`/support/${ticketId}`);
+      return;
+    }
+
     if (isMobileViewport.value) {
       router.push(`/support/${ticketId}`);
       return;
