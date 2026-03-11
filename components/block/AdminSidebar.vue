@@ -66,6 +66,9 @@
   const currentAdminId = ref("");
   const lastUnreadPreviewMessageId = ref("");
   const unreadSnapshotInitialized = ref(false);
+  const canReadSupportUnread = computed(
+    () => adminAuthStore.hasPermission("view-support-unread") || adminAuthStore.hasPermission("view-support")
+  );
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
@@ -82,6 +85,11 @@
   });
 
   const loadSupportUnreadCount = async () => {
+    if (!canReadSupportUnread.value) {
+      supportUnreadCount.value = 0;
+      return;
+    }
+
     try {
       const response = await appCore.adminModules.tickets.getUnreadSummary();
       const responseData = response?.data?.data ?? response?.data ?? {};
@@ -105,6 +113,7 @@
   };
 
   const startSupportBadgeRefresh = () => {
+    if (!canReadSupportUnread.value) return;
     if (supportBadgeTimer) return;
 
     supportBadgeTimer = setInterval(() => {
@@ -392,6 +401,7 @@
   };
 
   const connectSupportRealtime = () => {
+    if (!canReadSupportUnread.value) return;
     const echoClient = resolveEchoClient();
     if (!echoClient) return;
 
@@ -417,6 +427,7 @@
   };
 
   const bindSupportSocketStateListener = () => {
+    if (!canReadSupportUnread.value) return;
     if (supportSocketStateHandler) return;
     const echoClient = resolveEchoClient();
     const connection = echoClient?.connector?.pusher?.connection;
@@ -462,6 +473,7 @@
   };
 
   const startSupportRealtimeRetry = () => {
+    if (!canReadSupportUnread.value) return;
     if (supportRealtimeRetryTimer) return;
 
     supportRealtimeRetryTimer = setInterval(() => {
@@ -481,6 +493,7 @@
   };
 
   const handleSupportRealtimeResume = () => {
+    if (!canReadSupportUnread.value) return;
     reconnectSupportSocketTransport();
     bindSupportSocketStateListener();
     connectSupportRealtime();
@@ -501,6 +514,7 @@
   };
 
   const attachSupportResumeListeners = () => {
+    if (!canReadSupportUnread.value) return;
     if (supportResumeListenersAttached) return;
     document.addEventListener("visibilitychange", handleSupportVisibilityChange);
     window.addEventListener("online", handleSupportOnline);

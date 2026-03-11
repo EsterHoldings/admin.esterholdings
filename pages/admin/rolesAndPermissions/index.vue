@@ -1,11 +1,9 @@
-<template>
-  <div>Roles and Permissions</div>
-</template>
-
 <script lang="ts" setup>
+import { definePageMeta, navigateTo } from "nuxt/app";
 
+definePageMeta({
+  middleware: ["admin-middleware"],
+});
+
+await navigateTo("/access", { replace: true });
 </script>
-
-<style lang="scss" scoped>
-
-</style>

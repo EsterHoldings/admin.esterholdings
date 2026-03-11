@@ -2,7 +2,7 @@
   <nav class="nav">
     <ul class="nav-menu">
       <TheHeaderSideBarMenuItem
-        v-for="menuItem in menuItems"
+        v-for="menuItem in menuList"
         :title="menuItem.title"
         :to="menuItem.to"
         :icon="menuItem.icon"
@@ -27,6 +27,9 @@ import UiIconReferral from "~/components/ui/UiIconReferral.vue";
 import UiIconProfile from "~/components/ui/UiIconProfile.vue";
 import UiIconSetting from "~/components/ui/UiIconSetting.vue";
 import UiIconKeys from "~/components/ui/UiIconKeys.vue";
+import UiIconSupport from "~/components/ui/UiIconSupport.vue";
+import UiIconCheck from "~/components/ui/UiIconCheck.vue";
+import UiIconNews from "~/components/ui/UiIconNews.vue";
 
 import { useRouter } from "vue-router";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -37,7 +40,12 @@ const { t } = useI18n();
 const localePath = useLocalePath();
 const store = useAdminAuthStore();
 
-const hasPermission = (permName: string) => store.hasPermission(permName);
+const hasPermission = (required?: string | string[]) => {
+  if (!required) return true;
+  const list = Array.isArray(required) ? required : [required];
+
+  return list.some(permissionName => store.hasPermission(permissionName));
+};
 
 const router = useRouter();
 
@@ -54,6 +62,12 @@ const menuItems = [
     to: localePath("/dashboard"),
     icon: UiIconHome,
     displayIfHasPermission: "view-dashboard",
+  },
+  {
+    title: t("admin.menu.verificationRequests"),
+    to: localePath("/verifications"),
+    icon: UiIconCheck,
+    displayIfHasPermission: "view-verifications",
   },
   {
     title: t("admin.menu.clients"),
@@ -89,21 +103,24 @@ const menuItems = [
     title: t("admin.menu.access"),
     to: localePath("/access"),
     icon: UiIconKeys,
-    displayIfHasPermission: "view-admins",
+    displayIfHasPermission: ["view-admins", "view-roles", "view-permissions"],
+  },
+  {
+    title: t("admin.menu.support"),
+    to: localePath("/support"),
+    icon: UiIconSupport,
+    displayIfHasPermission: "view-support",
+  },
+  {
+    title: t("admin.menu.news"),
+    to: localePath("/news"),
+    icon: UiIconNews,
+    displayIfHasPermission: "view-news",
   },
 ];
 
 const menuList = computed(() => {
-  const filteredMenuItems = menuItems.filter((x) =>
-    hasPermission(x.displayIfHasPermission)
-  );
-  console.log("filteredMenuItems");
-  console.log(filteredMenuItems);
-  console.log("filteredMenuItems");
-  console.log("menuItems");
-  console.log(menuItems);
-  console.log("menuItems");
-  return filteredMenuItems;
+  return menuItems.filter((x) => hasPermission(x.displayIfHasPermission));
 });
 
 // const handleClickMenuItem = (to: string) => {

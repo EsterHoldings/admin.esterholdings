@@ -24,6 +24,7 @@
 
   import { ref, computed } from "vue";
   import { useRouter } from "vue-router";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
   import UiIconSupport from "~/components/ui/UiIconSupport.vue";
   import UiIconPayment from "~/components/ui/UiIconPayment.vue";
 
@@ -49,9 +50,17 @@
 
   const router = useRouter();
   const sideBarIsOpen = ref(true);
+  const adminAuthStore = useAdminAuthStore();
+
+  const hasPermission = (required?: string | string[]) => {
+    if (!required) return true;
+
+    const list = Array.isArray(required) ? required : [required];
+    return list.some(permissionName => adminAuthStore.hasPermission(permissionName));
+  };
 
   const menuItems = computed(() => {
-    return [
+    const items = [
       {
         title: t("admin.menu.dashboard"),
         to: localePath("/dashboard"),
@@ -111,9 +120,11 @@
         title: t("admin.menu.access"),
         to: localePath("/access"),
         icon: UiIconKeys,
-        displayIfHasPermission: "view-admins",
+        displayIfHasPermission: ["view-admins", "view-roles", "view-permissions"],
       },
     ];
+
+    return items.filter(item => hasPermission(item.displayIfHasPermission));
   });
 
   const handleClickMenuItem = (to: string) => {
