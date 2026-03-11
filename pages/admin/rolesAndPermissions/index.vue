@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { definePageMeta, navigateTo } from "nuxt/app";
-
 definePageMeta({
   middleware: ["admin-middleware"],
 });
