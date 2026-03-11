@@ -451,7 +451,9 @@
     supportRealtimeRetryTimer = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       reconnectSupportSocketTransport();
+      bindSupportSocketStateListener();
       connectSupportRealtime();
+      loadSupportUnreadCount().catch(() => {});
     }, SUPPORT_REALTIME_RETRY_MS);
   };
 
@@ -464,7 +466,9 @@
 
   const handleSupportRealtimeResume = () => {
     reconnectSupportSocketTransport();
+    bindSupportSocketStateListener();
     connectSupportRealtime();
+    loadSupportUnreadCount().catch(() => {});
   };
 
   const handleSupportVisibilityChange = () => {
@@ -514,6 +518,7 @@
     bindSupportSocketStateListener();
     attachSupportResumeListeners();
     startSupportRealtimeRetry();
+    handleSupportRealtimeResume();
   });
 
   onBeforeUnmount(() => {

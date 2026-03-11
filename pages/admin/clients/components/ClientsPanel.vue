@@ -1276,10 +1276,51 @@
     realtimeSyncTimer = null;
   };
 
+  const parseJsonObject = (value: unknown): Record<string, any> | null => {
+    if (typeof value !== "string") return null;
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" ? (parsed as Record<string, any>) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const coerceBoolean = (value: unknown): boolean => {
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return value > 0;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (normalized === "true" || normalized === "1" || normalized === "yes") return true;
+      if (normalized === "false" || normalized === "0" || normalized === "no" || normalized === "") return false;
+    }
+    return Boolean(value);
+  };
+
+  const normalizePresencePayload = (payload?: any): Record<string, any> | null => {
+    if (!payload) return null;
+
+    const parsedPayload =
+      typeof payload === "string" ? parseJsonObject(payload) : payload && typeof payload === "object" ? payload : null;
+    if (!parsedPayload) return null;
+
+    const dataLayer =
+      parsedPayload?.data && typeof parsedPayload.data === "object"
+        ? parsedPayload.data
+        : (parseJsonObject(parsedPayload?.data) ?? parsedPayload);
+
+    return dataLayer && typeof dataLayer === "object" ? (dataLayer as Record<string, any>) : null;
+  };
+
   const handleRealtimeClientPresence = (payload: any) => {
-    const data = payload?.data ?? payload ?? {};
+    const data = normalizePresencePayload(payload);
+    if (!data) {
+      scheduleOnlineSync();
+      return;
+    }
+
     const userId = String(data.user_id ?? data.userId ?? "").trim();
-    const isOnline = Boolean(data.is_online ?? data.isOnline);
+    const isOnline = coerceBoolean(data.is_online ?? data.isOnline);
     const onlineClientsNow = Number(data.online_clients_now ?? data.onlineClientsNow);
     const onlineFilter = sanitizeFilterValue(appliedFilters.value.online_status);
 
@@ -1304,7 +1345,12 @@
         ...statsData.value,
         online_clients_now: Math.max(0, onlineClientsNow),
       };
+    } else {
+      scheduleOnlineSync();
     }
+
+    // Keep UI optimistic, then re-sync snapshot shortly for consistency.
+    scheduleOnlineSync();
   };
 
   const resolveEchoClient = () => {
@@ -1337,18 +1383,19 @@
 
   const connectRealtime = () => {
     const echoClient = resolveEchoClient();
-    if (!echoClient || supportGlobalChannel) return;
+    if (!echoClient) return;
 
     reconnectRealtimeSocketTransport();
-    supportGlobalChannel = echoClient.private("support.global");
-    supportGlobalChannel.stopListening(".client.presence.updated", handleRealtimeClientPresence);
-    supportGlobalChannel.stopListening("client.presence.updated", handleRealtimeClientPresence);
-    supportGlobalChannel.stopListening(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
-    supportGlobalChannel.stopListening("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
-    supportGlobalChannel.listen(".client.presence.updated", handleRealtimeClientPresence);
-    supportGlobalChannel.listen("client.presence.updated", handleRealtimeClientPresence);
-    supportGlobalChannel.listen(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
-    supportGlobalChannel.listen("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    const channel = supportGlobalChannel ?? echoClient.private("support.global");
+    supportGlobalChannel = channel;
+    channel.stopListening(".client.presence.updated", handleRealtimeClientPresence);
+    channel.stopListening("client.presence.updated", handleRealtimeClientPresence);
+    channel.stopListening(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    channel.stopListening("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    channel.listen(".client.presence.updated", handleRealtimeClientPresence);
+    channel.listen("client.presence.updated", handleRealtimeClientPresence);
+    channel.listen(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    channel.listen("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
   };
 
   const disconnectRealtime = () => {
@@ -1401,7 +1448,9 @@
     realtimeRetryTimer = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       reconnectRealtimeSocketTransport();
+      bindRealtimeSocketStateListener();
       connectRealtime();
+      scheduleOnlineSync();
     }, ONLINE_REALTIME_RETRY_INTERVAL_MS);
   };
 
@@ -1497,6 +1546,7 @@
     startPolling();
     window.addEventListener("focus", handleWindowFocus);
     attachRealtimeResumeListeners();
+    handleRealtimeResume();
 
     document.addEventListener("click", handleClickOutsideFilters);
   });
