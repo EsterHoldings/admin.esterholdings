@@ -404,6 +404,7 @@
   const VIEW_MODE_STORAGE_KEY = "adminClientsViewMode";
   const ONLINE_REFRESH_INTERVAL_MS = 5_000;
   const ONLINE_REALTIME_SYNC_DEBOUNCE_MS = 200;
+  const ONLINE_REALTIME_RETRY_INTERVAL_MS = 5_000;
   const DEFAULT_PER_PAGE = 6;
   const DEFAULT_PAGE = 1;
   const DEFAULT_ORDER_BY = "created_at";
@@ -639,6 +640,9 @@
   let realtimeSyncTimer: ReturnType<typeof setTimeout> | null = null;
   let realtimeSyncInFlight = false;
   let realtimeSyncQueued = false;
+  let realtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
+  let realtimeSocketStateHandler: ((states: any) => void) | null = null;
+  let realtimeResumeListenersAttached = false;
 
   const filterTextFieldOptions = computed(() => [
     { key: "id" as FilterKey, label: "ID" },
@@ -1303,30 +1307,140 @@
     }
   };
 
-  const connectRealtime = () => {
-    if (!$echo) return;
-    if (supportGlobalChannel) return;
+  const resolveEchoClient = () => {
+    if ($echo && typeof $echo.private === "function") {
+      return $echo;
+    }
+    if (typeof window !== "undefined") {
+      const fallbackEcho = (window as any).Echo;
+      if (fallbackEcho && typeof fallbackEcho.private === "function") {
+        return fallbackEcho;
+      }
+    }
+    return null;
+  };
 
-    supportGlobalChannel = $echo
-      .private("support.global")
-      .listen(".client.presence.updated", handleRealtimeClientPresence);
+  const reconnectRealtimeSocketTransport = () => {
+    const echoClient = resolveEchoClient();
+    const pusher = echoClient?.connector?.pusher;
+    const state = String(pusher?.connection?.state ?? "");
+    if (!pusher) return;
+
+    if (state === "disconnected" || state === "failed" || state === "unavailable") {
+      try {
+        pusher.connect();
+      } catch {
+        // noop
+      }
+    }
+  };
+
+  const connectRealtime = () => {
+    const echoClient = resolveEchoClient();
+    if (!echoClient || supportGlobalChannel) return;
+
+    reconnectRealtimeSocketTransport();
+    supportGlobalChannel = echoClient.private("support.global");
+    supportGlobalChannel.stopListening(".client.presence.updated", handleRealtimeClientPresence);
+    supportGlobalChannel.stopListening("client.presence.updated", handleRealtimeClientPresence);
+    supportGlobalChannel.stopListening(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    supportGlobalChannel.stopListening("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    supportGlobalChannel.listen(".client.presence.updated", handleRealtimeClientPresence);
+    supportGlobalChannel.listen("client.presence.updated", handleRealtimeClientPresence);
+    supportGlobalChannel.listen(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    supportGlobalChannel.listen("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
   };
 
   const disconnectRealtime = () => {
-    if (!supportGlobalChannel || !$echo) return;
+    if (!supportGlobalChannel) return;
 
     supportGlobalChannel.stopListening(".client.presence.updated", handleRealtimeClientPresence);
+    supportGlobalChannel.stopListening("client.presence.updated", handleRealtimeClientPresence);
+    supportGlobalChannel.stopListening(".App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
+    supportGlobalChannel.stopListening("App\\Events\\ClientPresenceUpdated", handleRealtimeClientPresence);
     supportGlobalChannel = null;
   };
 
-  const handleWindowFocus = () => {
+  const bindRealtimeSocketStateListener = () => {
+    if (realtimeSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (!connection || typeof connection.bind !== "function") return;
+
+    realtimeSocketStateHandler = (states: any) => {
+      const currentState = String(states?.current ?? connection?.state ?? "");
+      if (currentState === "connected") {
+        connectRealtime();
+        scheduleOnlineSync();
+        return;
+      }
+
+      if (currentState === "failed" || currentState === "unavailable" || currentState === "disconnected") {
+        reconnectRealtimeSocketTransport();
+      }
+    };
+
+    connection.bind("state_change", realtimeSocketStateHandler);
+  };
+
+  const unbindRealtimeSocketStateListener = () => {
+    if (!realtimeSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (connection && typeof connection.unbind === "function") {
+      connection.unbind("state_change", realtimeSocketStateHandler);
+    }
+    realtimeSocketStateHandler = null;
+  };
+
+  const startRealtimeRetry = () => {
+    if (realtimeRetryTimer) return;
+
+    realtimeRetryTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      reconnectRealtimeSocketTransport();
+      connectRealtime();
+    }, ONLINE_REALTIME_RETRY_INTERVAL_MS);
+  };
+
+  const stopRealtimeRetry = () => {
+    if (!realtimeRetryTimer) return;
+    clearInterval(realtimeRetryTimer);
+    realtimeRetryTimer = null;
+  };
+
+  const handleRealtimeResume = () => {
+    reconnectRealtimeSocketTransport();
+    connectRealtime();
     scheduleOnlineSync();
+  };
+
+  const attachRealtimeResumeListeners = () => {
+    if (realtimeResumeListenersAttached) return;
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("online", handleRealtimeResume);
+    window.addEventListener("pageshow", handleRealtimeResume);
+    realtimeResumeListenersAttached = true;
+  };
+
+  const detachRealtimeResumeListeners = () => {
+    if (!realtimeResumeListenersAttached) return;
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    window.removeEventListener("online", handleRealtimeResume);
+    window.removeEventListener("pageshow", handleRealtimeResume);
+    realtimeResumeListenersAttached = false;
+  };
+
+  const handleWindowFocus = () => {
+    handleRealtimeResume();
   };
 
   const handleVisibilityChange = () => {
     if (typeof document === "undefined") return;
     if (document.visibilityState === "visible") {
-      scheduleOnlineSync();
+      handleRealtimeResume();
     }
   };
 
@@ -1378,9 +1492,11 @@
 
     useEventBus.on("loadDataForAdmins", handleExternalReload);
     connectRealtime();
+    bindRealtimeSocketStateListener();
+    startRealtimeRetry();
     startPolling();
     window.addEventListener("focus", handleWindowFocus);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    attachRealtimeResumeListeners();
 
     document.addEventListener("click", handleClickOutsideFilters);
   });
@@ -1388,10 +1504,12 @@
   onBeforeUnmount(() => {
     useEventBus.off("loadDataForAdmins", handleExternalReload);
     disconnectRealtime();
+    unbindRealtimeSocketStateListener();
+    stopRealtimeRetry();
     stopPolling();
     clearScheduledOnlineSync();
     window.removeEventListener("focus", handleWindowFocus);
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    detachRealtimeResumeListeners();
     document.removeEventListener("click", handleClickOutsideFilters);
   });
 </script>

@@ -3147,14 +3147,27 @@
     scheduleMarkVisibleMessagesAsRead();
   }
 
-  const { $echo } = useNuxtApp() as unknown as { $echo: any };
-  const hasEchoClient = () => Boolean($echo && typeof $echo.private === "function");
+  const { $echo } = useNuxtApp() as unknown as { $echo?: any };
+  const resolveEchoClient = () => {
+    if ($echo && typeof $echo.private === "function") {
+      return $echo;
+    }
+    if (typeof window !== "undefined") {
+      const fallbackEcho = (window as any).Echo;
+      if (fallbackEcho && typeof fallbackEcho.private === "function") {
+        return fallbackEcho;
+      }
+    }
+    return null;
+  };
+  const hasEchoClient = () => Boolean(resolveEchoClient());
 
   function subscribePrivate(ticketId: string) {
-    if (!hasEchoClient()) {
+    const echoClient = resolveEchoClient();
+    if (!echoClient) {
       return null;
     }
-    const ch = $echo.private(`chat.${ticketId}`);
+    const ch = echoClient.private(`chat.${ticketId}`);
     ch.listen(".MessageSent", async (e: any) => {
       const el = listRef.value;
       const shouldStick = !!el && userIsNearBottom.value && performance.now() - lastUserScrollAt > SCROLL_IDLE_MS;
@@ -3274,17 +3287,19 @@
   }
 
   function joinPresence(ticketId: string) {
-    if (!hasEchoClient()) {
+    const echoClient = resolveEchoClient();
+    if (!echoClient) {
       return;
     }
-    presenceChan = $echo.private(`support.ticket.${ticketId}`).listen(".ticket.presence.updated", (payload: any) => {
+    presenceChan = echoClient.private(`support.ticket.${ticketId}`).listen(".ticket.presence.updated", (payload: any) => {
       applyPresencePayload(payload);
     });
   }
   function leavePresence(ticketId: string) {
+    const echoClient = resolveEchoClient();
     try {
-      if ($echo && typeof $echo.leave === "function") {
-        $echo.leave(`support.ticket.${ticketId}`);
+      if (echoClient && typeof echoClient.leave === "function") {
+        echoClient.leave(`support.ticket.${ticketId}`);
       }
     } catch {}
     presenceChan = null;
@@ -3345,8 +3360,9 @@
   let lastRealtimeSyncAt = 0;
 
   const reconnectSocketTransport = () => {
-    if (!hasEchoClient()) return;
-    const pusher = $echo?.connector?.pusher;
+    const echoClient = resolveEchoClient();
+    if (!echoClient) return;
+    const pusher = echoClient?.connector?.pusher;
     const state = String(pusher?.connection?.state ?? "");
     if (!pusher) return;
 
@@ -3362,7 +3378,8 @@
   const bindSocketStateListener = () => {
     if (!hasEchoClient() || socketStateHandler) return;
 
-    const connection = $echo?.connector?.pusher?.connection;
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
     if (!connection || typeof connection.bind !== "function") return;
 
     socketStateHandler = (states: any) => {
@@ -3383,7 +3400,8 @@
   const unbindSocketStateListener = () => {
     if (!socketStateHandler) return;
 
-    const connection = $echo?.connector?.pusher?.connection;
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
     if (connection && typeof connection.unbind === "function") {
       connection.unbind("state_change", socketStateHandler);
     }
@@ -3397,7 +3415,8 @@
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       bindSocketStateListener();
 
-      const socketState = String($echo?.connector?.pusher?.connection?.state ?? "");
+      const echoClient = resolveEchoClient();
+      const socketState = String(echoClient?.connector?.pusher?.connection?.state ?? "");
       if (socketState !== "connected") {
         reconnectSocketTransport();
       }
@@ -3423,9 +3442,10 @@
   };
 
   const leavePrivate = (ticketId: string) => {
+    const echoClient = resolveEchoClient();
     try {
-      if ($echo && typeof $echo.leave === "function") {
-        $echo.leave(`chat.${ticketId}`);
+      if (echoClient && typeof echoClient.leave === "function") {
+        echoClient.leave(`chat.${ticketId}`);
       }
     } catch {
       // noop

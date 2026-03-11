@@ -478,6 +478,7 @@
   const currentRowActiveOptions = ref<number | null>(null);
   const VIEW_MODE_STORAGE_KEY = "admin_support_view_mode";
   const ADMIN_SUPPORT_LIST_REFRESH_MS = 20000;
+  const SUPPORT_REALTIME_RETRY_MS = 5000;
   const viewMode = ref<"table" | "cards" | "full">("table");
   const isMobileViewport = ref(false);
   const viewOptions = [
@@ -820,6 +821,9 @@
   const passiveFalse = { passive: false } as AddEventListenerOptions;
   let adminSupportListRefreshTimer: ReturnType<typeof setInterval> | null = null;
   let supportGlobalChannel: any = null;
+  let supportRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
+  let supportSocketStateHandler: ((states: any) => void) | null = null;
+  let supportResumeListenersAttached = false;
   let reloadQueued = false;
   const supportLoadErrorNotified = ref(false);
 
@@ -860,21 +864,154 @@
     } while (reloadQueued);
   };
 
-  const connectSupportRealtime = () => {
-    if (!$echo || supportGlobalChannel) return;
+  const resolveEchoClient = () => {
+    if ($echo && typeof $echo.private === "function") {
+      return $echo;
+    }
+    if (typeof window !== "undefined") {
+      const fallbackEcho = (window as any).Echo;
+      if (fallbackEcho && typeof fallbackEcho.private === "function") {
+        return fallbackEcho;
+      }
+    }
+    return null;
+  };
 
-    supportGlobalChannel = $echo
-      .private("support.global")
-      .listen(".MessageSent", handleSupportListReload)
-      .listen(".ticket.presence.updated", handleSupportPresenceRealtime);
+  const reconnectSupportSocketTransport = () => {
+    const echoClient = resolveEchoClient();
+    const pusher = echoClient?.connector?.pusher;
+    const state = String(pusher?.connection?.state ?? "");
+    if (!pusher) return;
+
+    if (state === "disconnected" || state === "failed" || state === "unavailable") {
+      try {
+        pusher.connect();
+      } catch {
+        // noop
+      }
+    }
+  };
+
+  const connectSupportRealtime = () => {
+    const echoClient = resolveEchoClient();
+    if (!echoClient || supportGlobalChannel) return;
+
+    reconnectSupportSocketTransport();
+    supportGlobalChannel = echoClient.private("support.global");
+    supportGlobalChannel.stopListening(".MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening("MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening(".App\\Events\\MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening("App\\Events\\MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening(".ticket.presence.updated", handleSupportPresenceRealtime);
+    supportGlobalChannel.stopListening("ticket.presence.updated", handleSupportPresenceRealtime);
+    supportGlobalChannel.stopListening(".App\\Events\\TicketPresenceUpdated", handleSupportPresenceRealtime);
+    supportGlobalChannel.stopListening("App\\Events\\TicketPresenceUpdated", handleSupportPresenceRealtime);
+    supportGlobalChannel.listen(".MessageSent", handleSupportListReload);
+    supportGlobalChannel.listen("MessageSent", handleSupportListReload);
+    supportGlobalChannel.listen(".App\\Events\\MessageSent", handleSupportListReload);
+    supportGlobalChannel.listen("App\\Events\\MessageSent", handleSupportListReload);
+    supportGlobalChannel.listen(".ticket.presence.updated", handleSupportPresenceRealtime);
+    supportGlobalChannel.listen("ticket.presence.updated", handleSupportPresenceRealtime);
+    supportGlobalChannel.listen(".App\\Events\\TicketPresenceUpdated", handleSupportPresenceRealtime);
+    supportGlobalChannel.listen("App\\Events\\TicketPresenceUpdated", handleSupportPresenceRealtime);
   };
 
   const disconnectSupportRealtime = () => {
-    if (!$echo || !supportGlobalChannel) return;
+    if (!supportGlobalChannel) return;
 
     supportGlobalChannel.stopListening(".MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening("MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening(".App\\Events\\MessageSent", handleSupportListReload);
+    supportGlobalChannel.stopListening("App\\Events\\MessageSent", handleSupportListReload);
     supportGlobalChannel.stopListening(".ticket.presence.updated", handleSupportPresenceRealtime);
+    supportGlobalChannel.stopListening("ticket.presence.updated", handleSupportPresenceRealtime);
+    supportGlobalChannel.stopListening(".App\\Events\\TicketPresenceUpdated", handleSupportPresenceRealtime);
+    supportGlobalChannel.stopListening("App\\Events\\TicketPresenceUpdated", handleSupportPresenceRealtime);
     supportGlobalChannel = null;
+  };
+
+  const bindSupportSocketStateListener = () => {
+    if (supportSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (!connection || typeof connection.bind !== "function") return;
+
+    supportSocketStateHandler = (states: any) => {
+      const currentState = String(states?.current ?? connection?.state ?? "");
+      if (currentState === "connected") {
+        connectSupportRealtime();
+        return;
+      }
+
+      if (currentState === "failed" || currentState === "unavailable" || currentState === "disconnected") {
+        reconnectSupportSocketTransport();
+      }
+    };
+
+    connection.bind("state_change", supportSocketStateHandler);
+  };
+
+  const unbindSupportSocketStateListener = () => {
+    if (!supportSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (connection && typeof connection.unbind === "function") {
+      connection.unbind("state_change", supportSocketStateHandler);
+    }
+    supportSocketStateHandler = null;
+  };
+
+  const startSupportRealtimeRetry = () => {
+    if (supportRealtimeRetryTimer) return;
+
+    supportRealtimeRetryTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      reconnectSupportSocketTransport();
+      connectSupportRealtime();
+    }, SUPPORT_REALTIME_RETRY_MS);
+  };
+
+  const stopSupportRealtimeRetry = () => {
+    if (!supportRealtimeRetryTimer) return;
+
+    clearInterval(supportRealtimeRetryTimer);
+    supportRealtimeRetryTimer = null;
+  };
+
+  const handleSupportRealtimeResume = () => {
+    reconnectSupportSocketTransport();
+    connectSupportRealtime();
+  };
+
+  const handleSupportVisibilityChange = () => {
+    if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+    handleSupportRealtimeResume();
+  };
+
+  const handleSupportOnline = () => {
+    handleSupportRealtimeResume();
+  };
+
+  const handleSupportPageShow = () => {
+    handleSupportRealtimeResume();
+  };
+
+  const attachSupportResumeListeners = () => {
+    if (supportResumeListenersAttached) return;
+    document.addEventListener("visibilitychange", handleSupportVisibilityChange);
+    window.addEventListener("online", handleSupportOnline);
+    window.addEventListener("pageshow", handleSupportPageShow);
+    supportResumeListenersAttached = true;
+  };
+
+  const detachSupportResumeListeners = () => {
+    if (!supportResumeListenersAttached) return;
+    document.removeEventListener("visibilitychange", handleSupportVisibilityChange);
+    window.removeEventListener("online", handleSupportOnline);
+    window.removeEventListener("pageshow", handleSupportPageShow);
+    supportResumeListenersAttached = false;
   };
 
   const syncCurrentTicketUnreadCount = (ticketId: string, unreadCount: number) => {
@@ -1061,6 +1198,9 @@
     useEventBus.on(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     useEventBus.on(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     connectSupportRealtime();
+    bindSupportSocketStateListener();
+    attachSupportResumeListeners();
+    startSupportRealtimeRetry();
 
     const response = await appCore.adminModules.auth.getAuthUser();
     const photoUrl = response.data.photo_url ?? response.data.avatar_url ?? response.data.avatar ?? null;
@@ -1088,6 +1228,9 @@
     useEventBus.off(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     useEventBus.off(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     disconnectSupportRealtime();
+    unbindSupportSocketStateListener();
+    detachSupportResumeListeners();
+    stopSupportRealtimeRetry();
     stopAdminSupportListRefresh();
     window.removeEventListener("resize", handleWindowResize);
     document.body.style.userSelect = "";
