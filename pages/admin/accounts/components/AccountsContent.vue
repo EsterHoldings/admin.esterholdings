@@ -98,7 +98,19 @@
           <UiTextSmall class="text-[var(--ui-text-secondary)]">
             {{ t("admin.accounts.columns.balance", "Balance") }}
           </UiTextSmall>
-          <div class="truncate">{{ formatMoney(item.balance, item.currency) }}</div>
+          <div class="account-card__value-row">
+            <div class="truncate">{{ formatMoney(item.balance, item.currency) }}</div>
+            <button
+              v-if="canRefresh"
+              type="button"
+              class="account-card__refresh"
+              :disabled="refreshingAccountId === item.id"
+              :title="t('admin.accounts.actions.refreshBalance', 'Refresh balance')"
+              @click.stop="emitRefresh(item)"
+            >
+              <UiIconUpdate :spinning="refreshingAccountId === item.id" />
+            </button>
+          </div>
         </div>
 
         <div>
@@ -132,6 +144,7 @@
   import UiImageCircle from "~/components/ui/UiImageCircle.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
+  import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 
   interface AdminAccountCardItem {
@@ -164,6 +177,7 @@
       canEdit?: boolean;
       canRefresh?: boolean;
       canDelete?: boolean;
+      refreshingAccountId?: string | null;
     }>(),
     {
       data: () => [],
@@ -171,6 +185,7 @@
       canEdit: false,
       canRefresh: false,
       canDelete: false,
+      refreshingAccountId: null,
     }
   );
 
@@ -356,6 +371,34 @@
   .account-card__body > div {
     flex: 1 1 140px;
     min-width: 140px;
+  }
+
+  .account-card__value-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .account-card__refresh {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--color-stroke-ui-dark);
+    color: var(--ui-text-main);
+    transition:
+      opacity 0.2s ease,
+      background-color 0.2s ease;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
   }
 
   .account-card__body--row {

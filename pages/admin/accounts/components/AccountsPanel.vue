@@ -269,6 +269,7 @@
               :canEdit="canUpdateAccounts"
               :canRefresh="canUpdateAccounts"
               :canDelete="canDeleteAccounts"
+              :refreshingAccountId="refreshingAccountId"
               @click="handleOpenAccountPage"
               @edit="handleOpenEditModal"
               @refresh="handleRefreshBalance"
@@ -324,7 +325,21 @@
                     <td class="px-4 py-3 truncate max-w-[180px]">
                       {{ account.type_name || account.type_id || "-" }}
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap">{{ formatMoney(account.balance, account.currency) }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <span>{{ formatMoney(account.balance, account.currency) }}</span>
+                        <button
+                          v-if="canUpdateAccounts"
+                          type="button"
+                          class="accounts-inline-refresh-btn"
+                          :disabled="refreshingAccountId === account.id"
+                          :title="resolveText('admin.accounts.actions.refreshBalance', 'Refresh balance')"
+                          @click.stop="handleRefreshBalance(account)"
+                        >
+                          <UiIconUpdate :spinning="refreshingAccountId === account.id" />
+                        </button>
+                      </div>
+                    </td>
                     <td class="px-4 py-3 whitespace-nowrap">{{ account.leverage_display || account.leverage_id || "-" }}</td>
                     <td class="px-4 py-3 text-xs whitespace-nowrap">{{ formatDate(account.created_at) }}</td>
                     <td
@@ -1604,6 +1619,26 @@
     border: 1px solid var(--color-stroke-ui-light);
     background: var(--color-stroke-ui-dark);
     color: var(--ui-text-main);
+  }
+
+  .accounts-inline-refresh-btn {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--color-stroke-ui-dark);
+    color: var(--ui-text-main);
+    transition:
+      opacity 0.2s ease,
+      background-color 0.2s ease;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
   }
 
   .accounts-row-menu {
