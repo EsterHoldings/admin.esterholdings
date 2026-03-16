@@ -82,16 +82,22 @@ const menuItems = [
     displayIfHasPermission: "view-accounts",
   },
   {
-    title: t("admin.menu.referral"),
-    to: localePath("/referral"),
-    icon: UiIconReferral,
-    displayIfHasPermission: "view-referrals",
-  },
-  {
     title: t("admin.menu.payments"),
     to: localePath("/payments"),
     icon: UiIconProfile,
     displayIfHasPermission: "view-payments",
+  },
+  {
+    title: t("admin.menu.support"),
+    to: localePath("/support"),
+    icon: UiIconSupport,
+    displayIfHasPermission: "view-support",
+  },
+  {
+    title: t("admin.menu.referral"),
+    to: localePath("/referral"),
+    icon: UiIconReferral,
+    displayIfHasPermission: "view-referrals",
   },
   {
     title: t("admin.menu.settings"),
@@ -104,12 +110,6 @@ const menuItems = [
     to: localePath("/access"),
     icon: UiIconKeys,
     displayIfHasPermission: ["view-admins", "view-roles", "view-permissions"],
-  },
-  {
-    title: t("admin.menu.support"),
-    to: localePath("/support"),
-    icon: UiIconSupport,
-    displayIfHasPermission: "view-support",
   },
   {
     title: t("admin.menu.news"),

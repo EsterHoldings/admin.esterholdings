@@ -92,6 +92,13 @@
         displayIfHasPermission: "view-payments",
       },
       {
+        title: t("admin.menu.support"),
+        to: localePath("/support"),
+        icon: UiIconSupport,
+        displayIfHasPermission: "view-support",
+        notificationsCount: props.supportUnreadCount,
+      },
+      {
         title: t("admin.menu.referral"),
         to: localePath("/referral"),
         icon: UiIconReferral,
@@ -102,13 +109,6 @@
         to: localePath("/settings"),
         icon: UiIconSetting,
         displayIfHasPermission: "view-settings",
-      },
-      {
-        title: t("admin.menu.support"),
-        to: localePath("/support"),
-        icon: UiIconSupport,
-        displayIfHasPermission: "view-support",
-        notificationsCount: props.supportUnreadCount,
       },
       {
         title: t("admin.menu.news"),
