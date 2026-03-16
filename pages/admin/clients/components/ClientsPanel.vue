@@ -102,38 +102,74 @@
                     <div class="clients-filters-popover__grid clients-filters-popover__grid--status">
                       <label class="clients-filters-popover__field">
                         <span>{{ t("admin.clients.filters.fields.online_status", "Online status") }}</span>
-                        <UiSelect
-                          :withoutNoSelect="false"
-                          :value="draftFilters.online_status || null"
-                          :data="onlineStatusOptions"
-                          @change="value => setDraftFilterValue('online_status', value)" />
+                        <div class="clients-filters-popover__control">
+                          <UiSelect
+                            :withoutNoSelect="false"
+                            :value="draftFilters.online_status || null"
+                            :data="onlineStatusOptions"
+                            @change="value => setDraftFilterValue('online_status', value)" />
+                          <button
+                            v-if="hasDraftFilterValue('online_status')"
+                            type="button"
+                            class="clients-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue('online_status')">
+                            ×
+                          </button>
+                        </div>
                       </label>
 
                       <label class="clients-filters-popover__field">
                         <span>{{ t("admin.clients.filters.fields.email_verified", "Email verification") }}</span>
-                        <UiSelect
-                          :withoutNoSelect="false"
-                          :value="draftFilters.email_verified || null"
-                          :data="emailVerifiedOptions"
-                          @change="value => setDraftFilterValue('email_verified', value)" />
+                        <div class="clients-filters-popover__control">
+                          <UiSelect
+                            :withoutNoSelect="false"
+                            :value="draftFilters.email_verified || null"
+                            :data="emailVerifiedOptions"
+                            @change="value => setDraftFilterValue('email_verified', value)" />
+                          <button
+                            v-if="hasDraftFilterValue('email_verified')"
+                            type="button"
+                            class="clients-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue('email_verified')">
+                            ×
+                          </button>
+                        </div>
                       </label>
 
                       <label class="clients-filters-popover__field">
                         <span>{{ t("admin.clients.filters.fields.has_photo", "Photo") }}</span>
-                        <UiSelect
-                          :withoutNoSelect="false"
-                          :value="draftFilters.has_photo || null"
-                          :data="hasPhotoOptions"
-                          @change="value => setDraftFilterValue('has_photo', value)" />
+                        <div class="clients-filters-popover__control">
+                          <UiSelect
+                            :withoutNoSelect="false"
+                            :value="draftFilters.has_photo || null"
+                            :data="hasPhotoOptions"
+                            @change="value => setDraftFilterValue('has_photo', value)" />
+                          <button
+                            v-if="hasDraftFilterValue('has_photo')"
+                            type="button"
+                            class="clients-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue('has_photo')">
+                            ×
+                          </button>
+                        </div>
                       </label>
 
                       <label class="clients-filters-popover__field">
                         <span>{{ t("admin.clients.filters.fields.two_factor_enabled", "2FA") }}</span>
-                        <UiSelect
-                          :withoutNoSelect="false"
-                          :value="draftFilters.two_factor_enabled || null"
-                          :data="twoFactorOptions"
-                          @change="value => setDraftFilterValue('two_factor_enabled', value)" />
+                        <div class="clients-filters-popover__control">
+                          <UiSelect
+                            :withoutNoSelect="false"
+                            :value="draftFilters.two_factor_enabled || null"
+                            :data="twoFactorOptions"
+                            @change="value => setDraftFilterValue('two_factor_enabled', value)" />
+                          <button
+                            v-if="hasDraftFilterValue('two_factor_enabled')"
+                            type="button"
+                            class="clients-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue('two_factor_enabled')">
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
 
@@ -147,12 +183,21 @@
                         :key="field.key"
                         class="clients-filters-popover__field">
                         <span>{{ field.label }}</span>
-                        <input
-                          class="clients-filters-popover__input"
-                          type="text"
-                          :value="draftFilters[field.key]"
-                          :placeholder="field.label"
-                          @input="event => handleDraftTextInput(field.key, event)" />
+                        <div class="clients-filters-popover__control">
+                          <input
+                            class="clients-filters-popover__input"
+                            type="text"
+                            :value="draftFilters[field.key]"
+                            :placeholder="field.label"
+                            @input="event => handleDraftTextInput(field.key, event)" />
+                          <button
+                            v-if="hasDraftFilterValue(field.key)"
+                            type="button"
+                            class="clients-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue(field.key)">
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
 
@@ -166,11 +211,20 @@
                         :key="field.key"
                         class="clients-filters-popover__field">
                         <span>{{ field.label }}</span>
-                        <input
-                          class="clients-filters-popover__input"
-                          type="date"
-                          :value="draftFilters[field.key]"
-                          @input="event => handleDraftTextInput(field.key, event)" />
+                        <div class="clients-filters-popover__control">
+                          <input
+                            class="clients-filters-popover__input"
+                            type="date"
+                            :value="draftFilters[field.key]"
+                            @input="event => handleDraftTextInput(field.key, event)" />
+                          <button
+                            v-if="hasDraftFilterValue(field.key)"
+                            type="button"
+                            class="clients-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue(field.key)">
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
                   </div>
@@ -1175,6 +1229,14 @@
     setDraftFilterValue(key, target?.value ?? "");
   };
 
+  const clearDraftFilterValue = (key: FilterKey) => {
+    setDraftFilterValue(key, "");
+  };
+
+  const hasDraftFilterValue = (key: FilterKey) => {
+    return sanitizeFilterValue(draftFilters.value[key]) !== "";
+  };
+
   const toggleFiltersPopover = () => {
     if (!isFiltersPopoverOpen.value) {
       draftFilters.value = cloneFilters(appliedFilters.value);
@@ -1721,6 +1783,10 @@
     color: var(--ui-text-secondary);
   }
 
+  .clients-filters-popover__control {
+    position: relative;
+  }
+
   .clients-filters-popover__input {
     width: 100%;
     height: 40px;
@@ -1730,7 +1796,7 @@
     color: var(--ui-text-main);
     font-size: 13px;
     line-height: 1;
-    padding: 0 12px;
+    padding: 0 36px 0 12px;
     outline: none;
   }
 
@@ -1740,6 +1806,25 @@
 
   .clients-filters-popover__input::placeholder {
     color: var(--ui-text-secondary);
+  }
+
+  .clients-filters-popover__clear {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    background: var(--ui-background-panel);
+    color: var(--ui-text-secondary);
+    font-size: 14px;
+    line-height: 1;
+    z-index: 2;
   }
 
   .clients-filters-popover__actions {
