@@ -109,18 +109,32 @@
 
                   <div class="accounts-filters-popover__body">
                     <div class="accounts-filters-popover__section-title">
-                      {{ resolveText("admin.accounts.filters.sections.statuses", "Statuses") }}
+                      {{ resolveText("admin.accounts.filters.sections.selects", "Select filters") }}
                     </div>
 
                     <div class="accounts-filters-popover__grid accounts-filters-popover__grid--status">
-                      <label class="accounts-filters-popover__field">
-                        <span>{{ resolveText("admin.accounts.filters.fields.is_favorite", "Favorite") }}</span>
-                        <UiSelect
-                          :withoutNoSelect="false"
-                          :value="draftFilters.is_favorite || null"
-                          :data="favoriteOptions"
-                          @change="value => setDraftFilterValue('is_favorite', value)"
-                        />
+                      <label
+                        v-for="field in filterSelectFieldOptions"
+                        :key="field.key"
+                        class="accounts-filters-popover__field"
+                      >
+                        <span>{{ field.label }}</span>
+                        <div class="accounts-filters-popover__control">
+                          <UiSelect
+                            :withoutNoSelect="false"
+                            :value="draftFilters[field.key] || null"
+                            :data="field.options"
+                            @change="value => setDraftFilterValue(field.key, value)"
+                          />
+                          <button
+                            v-if="hasDraftFilterValue(field.key)"
+                            type="button"
+                            class="accounts-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue(field.key)"
+                          >
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
 
@@ -135,13 +149,23 @@
                         class="accounts-filters-popover__field"
                       >
                         <span>{{ field.label }}</span>
-                        <input
-                          class="accounts-filters-popover__input"
-                          type="text"
-                          :value="draftFilters[field.key]"
-                          :placeholder="field.label"
-                          @input="event => handleDraftTextInput(field.key, event)"
-                        />
+                        <div class="accounts-filters-popover__control">
+                          <input
+                            class="accounts-filters-popover__input"
+                            type="text"
+                            :value="draftFilters[field.key]"
+                            :placeholder="field.label"
+                            @input="event => handleDraftTextInput(field.key, event)"
+                          />
+                          <button
+                            v-if="hasDraftFilterValue(field.key)"
+                            type="button"
+                            class="accounts-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue(field.key)"
+                          >
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
 
@@ -152,24 +176,44 @@
                     <div class="accounts-filters-popover__grid">
                       <label class="accounts-filters-popover__field">
                         <span>{{ resolveText("admin.accounts.filters.fields.balance_from", "Balance from") }}</span>
-                        <input
-                          class="accounts-filters-popover__input"
-                          type="number"
-                          step="0.01"
-                          :value="draftFilters.balance_from"
-                          @input="event => handleDraftTextInput('balance_from', event)"
-                        />
+                        <div class="accounts-filters-popover__control">
+                          <input
+                            class="accounts-filters-popover__input"
+                            type="number"
+                            step="0.01"
+                            :value="draftFilters.balance_from"
+                            @input="event => handleDraftTextInput('balance_from', event)"
+                          />
+                          <button
+                            v-if="hasDraftFilterValue('balance_from')"
+                            type="button"
+                            class="accounts-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue('balance_from')"
+                          >
+                            ×
+                          </button>
+                        </div>
                       </label>
 
                       <label class="accounts-filters-popover__field">
                         <span>{{ resolveText("admin.accounts.filters.fields.balance_to", "Balance to") }}</span>
-                        <input
-                          class="accounts-filters-popover__input"
-                          type="number"
-                          step="0.01"
-                          :value="draftFilters.balance_to"
-                          @input="event => handleDraftTextInput('balance_to', event)"
-                        />
+                        <div class="accounts-filters-popover__control">
+                          <input
+                            class="accounts-filters-popover__input"
+                            type="number"
+                            step="0.01"
+                            :value="draftFilters.balance_to"
+                            @input="event => handleDraftTextInput('balance_to', event)"
+                          />
+                          <button
+                            v-if="hasDraftFilterValue('balance_to')"
+                            type="button"
+                            class="accounts-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue('balance_to')"
+                          >
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
 
@@ -184,12 +228,22 @@
                         class="accounts-filters-popover__field"
                       >
                         <span>{{ field.label }}</span>
-                        <input
-                          class="accounts-filters-popover__input"
-                          type="date"
-                          :value="draftFilters[field.key]"
-                          @input="event => handleDraftTextInput(field.key, event)"
-                        />
+                        <div class="accounts-filters-popover__control">
+                          <input
+                            class="accounts-filters-popover__input"
+                            type="date"
+                            :value="draftFilters[field.key]"
+                            @input="event => handleDraftTextInput(field.key, event)"
+                          />
+                          <button
+                            v-if="hasDraftFilterValue(field.key)"
+                            type="button"
+                            class="accounts-filters-popover__clear"
+                            @click.prevent.stop="clearDraftFilterValue(field.key)"
+                          >
+                            ×
+                          </button>
+                        </div>
                       </label>
                     </div>
                   </div>
@@ -517,6 +571,12 @@
     };
   }
 
+  interface SelectOption {
+    id: string;
+    value: string;
+    text: string;
+  }
+
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
   const VIEW_MODE_STORAGE_KEY = "adminAccountsViewMode";
@@ -710,6 +770,14 @@
   const draftFilters = ref<AccountFilters>(createEmptyFilters());
   const isFiltersPopoverOpen = ref(false);
   const filtersPopoverRef = ref<HTMLElement | null>(null);
+  const accountTypeFilterOptions = ref<SelectOption[]>([]);
+  const leverageFilterOptions = ref<SelectOption[]>([]);
+  const currencyFilterOptions = ref<SelectOption[]>([]);
+  const paymentTypeFilterOptions = ref<SelectOption[]>([]);
+  const accountFilterFeatures = ref({
+    currency: true,
+    payment_type: true,
+  });
 
   const filterTextFieldOptions = computed(() => [
     { key: "id" as FilterKey, label: "ID" },
@@ -718,12 +786,46 @@
     { key: "owner_email" as FilterKey, label: resolveText("admin.accounts.filters.fields.owner_email", "Owner email") },
     { key: "owner_phone" as FilterKey, label: resolveText("admin.accounts.filters.fields.owner_phone", "Owner phone") },
     { key: "number" as FilterKey, label: resolveText("admin.accounts.columns.number", "Account number") },
-    { key: "currency" as FilterKey, label: resolveText("admin.accounts.filters.fields.currency", "Currency") },
-    { key: "payment_type" as FilterKey, label: resolveText("admin.accounts.filters.fields.payment_type", "Payment type") },
-    { key: "type_id" as FilterKey, label: resolveText("admin.accounts.filters.fields.type_id", "Type ID") },
     { key: "type_name" as FilterKey, label: resolveText("admin.accounts.columns.type", "Type") },
-    { key: "leverage_id" as FilterKey, label: resolveText("admin.accounts.filters.fields.leverage_id", "Leverage ID") },
   ]);
+
+  const filterSelectFieldOptions = computed(() => {
+    const fields: Array<{ key: FilterKey; label: string; options: SelectOption[] }> = [
+      {
+        key: "is_favorite",
+        label: resolveText("admin.accounts.filters.fields.is_favorite", "Favorite"),
+        options: favoriteOptions.value,
+      },
+      {
+        key: "type_id",
+        label: resolveText("admin.accounts.columns.type", "Type"),
+        options: accountTypeFilterOptions.value,
+      },
+      {
+        key: "leverage_id",
+        label: resolveText("admin.accounts.columns.leverage", "Leverage"),
+        options: leverageFilterOptions.value,
+      },
+    ];
+
+    if (accountFilterFeatures.value.currency) {
+      fields.push({
+        key: "currency",
+        label: resolveText("admin.accounts.filters.fields.currency", "Currency"),
+        options: currencyFilterOptions.value,
+      });
+    }
+
+    if (accountFilterFeatures.value.payment_type) {
+      fields.push({
+        key: "payment_type",
+        label: resolveText("admin.accounts.filters.fields.payment_type", "Payment type"),
+        options: paymentTypeFilterOptions.value,
+      });
+    }
+
+    return fields;
+  });
 
   const filterDateFieldOptions = computed(() => [
     { key: "created_at_from" as FilterKey, label: resolveText("admin.accounts.filters.fields.created_at_from", "Created from") },
@@ -758,10 +860,30 @@
     updated_at_to: resolveText("admin.accounts.filters.fields.updated_at_to", "Updated to"),
   }));
 
-  const filterValueLabelMap = computed<Record<string, string>>(() => ({
-    yes: resolveText("admin.accounts.filters.values.yes", "Yes"),
-    no: resolveText("admin.accounts.filters.values.no", "No"),
-  }));
+  const getFilterOptionText = (options: SelectOption[], value: string): string => {
+    return options.find(option => option.value === value)?.text ?? value;
+  };
+
+  const getFilterDisplayValue = (key: FilterKey, value: string): string => {
+    switch (key) {
+      case "is_favorite":
+        return value === "yes"
+          ? resolveText("admin.accounts.filters.values.yes", "Yes")
+          : value === "no"
+            ? resolveText("admin.accounts.filters.values.no", "No")
+            : value;
+      case "type_id":
+        return getFilterOptionText(accountTypeFilterOptions.value, value);
+      case "leverage_id":
+        return getFilterOptionText(leverageFilterOptions.value, value);
+      case "currency":
+        return getFilterOptionText(currencyFilterOptions.value, value);
+      case "payment_type":
+        return getFilterOptionText(paymentTypeFilterOptions.value, value);
+      default:
+        return value;
+    }
+  };
 
   const activeFilterChips = computed(() =>
     (Object.entries(appliedFilters.value) as Array<[FilterKey, string]>)
@@ -769,7 +891,7 @@
       .map(([key, value]) => ({
         key,
         label: filterLabelMap.value[key] ?? key,
-        value: filterValueLabelMap.value[value] ?? value,
+        value: getFilterDisplayValue(key, value),
       }))
   );
 
@@ -1121,6 +1243,59 @@
     }
   };
 
+  const loadFilterMeta = async () => {
+    try {
+      const response = await appCore.adminModules.accounts.getMeta();
+      const payload = response?.data?.data ?? {};
+
+      accountTypeFilterOptions.value = Array.isArray(payload?.account_types)
+        ? payload.account_types.map((item: any) => ({
+            id: String(item?.id ?? item?.value ?? ""),
+            value: String(item?.value ?? item?.id ?? ""),
+            text: String(item?.text ?? item?.name ?? item?.id ?? "-"),
+          }))
+        : [];
+
+      leverageFilterOptions.value = Array.isArray(payload?.leverages)
+        ? payload.leverages.map((item: any) => ({
+            id: String(item?.id ?? item?.value ?? ""),
+            value: String(item?.value ?? item?.id ?? ""),
+            text: String(item?.text ?? item?.label ?? item?.value ?? "-"),
+          }))
+        : [];
+
+      currencyFilterOptions.value = Array.isArray(payload?.currencies)
+        ? payload.currencies.map((item: any) => ({
+            id: String(item?.id ?? item?.value ?? ""),
+            value: String(item?.value ?? item?.id ?? ""),
+            text: String(item?.text ?? item?.value ?? item?.id ?? "-"),
+          }))
+        : [];
+
+      paymentTypeFilterOptions.value = Array.isArray(payload?.payment_types)
+        ? payload.payment_types.map((item: any) => ({
+            id: String(item?.id ?? item?.value ?? ""),
+            value: String(item?.value ?? item?.id ?? ""),
+            text: String(item?.text ?? item?.value ?? item?.id ?? "-"),
+          }))
+        : [];
+
+      accountFilterFeatures.value = {
+        currency: Boolean(payload?.features?.currency ?? true),
+        payment_type: Boolean(payload?.features?.payment_type ?? true),
+      };
+    } catch {
+      accountTypeFilterOptions.value = [];
+      leverageFilterOptions.value = [];
+      currencyFilterOptions.value = [];
+      paymentTypeFilterOptions.value = [];
+      accountFilterFeatures.value = {
+        currency: false,
+        payment_type: false,
+      };
+    }
+  };
+
   const loadAll = async () => {
     await Promise.all([loadData(), loadStats()]);
   };
@@ -1273,6 +1448,14 @@
     };
   };
 
+  const clearDraftFilterValue = (key: FilterKey) => {
+    setDraftFilterValue(key, "");
+  };
+
+  const hasDraftFilterValue = (key: FilterKey): boolean => {
+    return sanitizeFilterValue(draftFilters.value[key]) !== "";
+  };
+
   const handleDraftTextInput = (key: FilterKey, event: Event) => {
     const target = event.target as HTMLInputElement | null;
     setDraftFilterValue(key, target?.value ?? "");
@@ -1359,6 +1542,7 @@
   onMounted(async () => {
     initViewMode();
     initStateFromQuery();
+    await loadFilterMeta();
     await syncStateToUrl();
     await loadAll();
     isInitialLoading.value = false;
@@ -1548,6 +1732,10 @@
     color: var(--ui-text-secondary);
   }
 
+  .accounts-filters-popover__control {
+    position: relative;
+  }
+
   .accounts-filters-popover__input {
     width: 100%;
     height: 40px;
@@ -1557,7 +1745,7 @@
     color: var(--ui-text-main);
     font-size: 13px;
     line-height: 1;
-    padding: 0 12px;
+    padding: 0 36px 0 12px;
     outline: none;
   }
 
@@ -1567,6 +1755,25 @@
 
   .accounts-filters-popover__input::placeholder {
     color: var(--ui-text-secondary);
+  }
+
+  .accounts-filters-popover__clear {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    background: var(--ui-background-panel);
+    color: var(--ui-text-secondary);
+    font-size: 14px;
+    line-height: 1;
+    z-index: 2;
   }
 
   .accounts-filters-popover__actions {
