@@ -63,7 +63,7 @@ export default defineNuxtRouteMiddleware(async to => {
     return navigateTo(`${localePrefix}/auth/login`);
   }
 
-  if (adminAuthStore.permissions.length === 0) {
+  if (!adminAuthStore.isAuthInitialized) {
     await adminAuthStore.initAuth();
   }
 
@@ -77,6 +77,10 @@ export default defineNuxtRouteMiddleware(async to => {
   const fallbackRoute = resolveFirstAllowedRoute(adminAuthStore, localePrefix);
   if (fallbackRoute) {
     return navigateTo(fallbackRoute);
+  }
+
+  if (adminAuthStore.isAuthInitializing) {
+    return;
   }
 
   await adminAuthStore.authLogout();

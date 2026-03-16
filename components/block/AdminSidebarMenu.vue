@@ -1,6 +1,14 @@
 <template>
   <ul class="side-bar-cabinet__menu">
+    <template v-if="showMenuSkeleton">
+      <li
+        v-for="index in 6"
+        :key="`menu-skeleton-${index}`"
+        class="side-bar-cabinet__menu__placeholder" />
+    </template>
+
     <AdminSidebarMenuItem
+      v-else
       v-for="menuItem in menuItems"
       :title="menuItem.title"
       :to="menuItem.to"
@@ -127,6 +135,10 @@
     return items.filter(item => hasPermission(item.displayIfHasPermission));
   });
 
+  const showMenuSkeleton = computed(() => {
+    return menuItems.value.length === 0 && !adminAuthStore.isAuthInitialized;
+  });
+
   const handleClickMenuItem = (to: string) => {
     router.push(to);
   };
@@ -136,6 +148,29 @@
   .side-bar-cabinet {
     &__menu {
       width: 100%;
+    }
+
+    &__menu__placeholder {
+      height: 40px;
+      margin-bottom: 5px;
+      border-radius: 8px;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.06) 100%
+      );
+      background-size: 200% 100%;
+      animation: sidebar-menu-skeleton 1.4s ease-in-out infinite;
+    }
+  }
+
+  @keyframes sidebar-menu-skeleton {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
     }
   }
 </style>

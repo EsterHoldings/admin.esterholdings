@@ -1,16 +1,24 @@
 <template>
   <nav class="nav">
     <ul class="nav-menu">
-      <TheHeaderSideBarMenuItem
-        v-for="menuItem in menuList"
-        :title="menuItem.title"
-        :to="menuItem.to"
-        :icon="menuItem.icon"
-        :sideBarIsOpen="sideBarIsOpen"
-        :key="menuItem.title"
-        @click="handleClickMenuItem"
-        >{{ menuItem.icon }}
-      </TheHeaderSideBarMenuItem>
+      <template v-if="showMenuSkeleton">
+        <li
+          v-for="index in 6"
+          :key="`header-menu-skeleton-${index}`"
+          class="nav-menu__placeholder" />
+      </template>
+      <template v-else>
+        <TheHeaderSideBarMenuItem
+          v-for="menuItem in menuList"
+          :title="menuItem.title"
+          :to="menuItem.to"
+          :icon="menuItem.icon"
+          :sideBarIsOpen="sideBarIsOpen"
+          :key="menuItem.title"
+          @click="handleClickMenuItem"
+          >{{ menuItem.icon }}
+        </TheHeaderSideBarMenuItem>
+      </template>
     </ul>
   </nav>
 </template>
@@ -123,6 +131,10 @@ const menuList = computed(() => {
   return menuItems.filter((x) => hasPermission(x.displayIfHasPermission));
 });
 
+const showMenuSkeleton = computed(() => {
+  return menuList.value.length === 0 && !store.isAuthInitialized;
+});
+
 // const handleClickMenuItem = (to: string) => {
 //   router.push(to);
 // };
@@ -139,5 +151,28 @@ const handleClickMenuItem = (to: string) => {
 <style scoped lang="scss">
 .nav {
   min-height: calc(100vh - 141px);
+}
+
+.nav-menu__placeholder {
+  height: 40px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: header-sidebar-menu-skeleton 1.4s ease-in-out infinite;
+}
+
+@keyframes header-sidebar-menu-skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

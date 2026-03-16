@@ -16,12 +16,32 @@ interface Permission {
 
 export const useAdminAuthStore = defineStore("adminAuth", () => {
   const LEGACY_ADMIN_ACCESS_TOKEN_KEY = "access_token";
+  const ADMIN_ROLES_CACHE_KEY = "admin_roles_cache";
+  const ADMIN_PERMISSIONS_CACHE_KEY = "admin_permissions_cache";
   const accessToken = ref("");
   const roles = ref<Role[]>([]);
   const permissions = ref<Permission[]>([]);
+  const isAuthInitializing = ref(false);
+  const isAuthInitialized = ref(false);
+  const authInitError = ref("");
 
   const user = ref<any>(null);
   const photoUrl = ref<string>("");
+  let initAuthPromise: Promise<void> | null = null;
+
+  const readCachedCollection = <T>(key: string): T[] => {
+    if (!process.client) return [];
+
+    try {
+      const rawValue = localStorage.getItem(key);
+      if (!rawValue) return [];
+
+      const parsedValue = JSON.parse(rawValue);
+      return Array.isArray(parsedValue) ? (parsedValue as T[]) : [];
+    } catch {
+      return [];
+    }
+  };
 
   if (process.client) {
     const storedAccessToken = localStorage.getItem(ADMIN_ACCESS_TOKEN);
@@ -33,6 +53,10 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
       accessToken.value = legacyStoredAccessToken;
       localStorage.setItem(ADMIN_ACCESS_TOKEN, legacyStoredAccessToken);
     }
+
+    roles.value = readCachedCollection<Role>(ADMIN_ROLES_CACHE_KEY);
+    permissions.value = readCachedCollection<Permission>(ADMIN_PERMISSIONS_CACHE_KEY);
+    isAuthInitialized.value = roles.value.length > 0 || permissions.value.length > 0;
   }
 
   const isAuthenticated = computed(() => !!accessToken.value);
@@ -50,6 +74,34 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     }
   });
 
+  watch(
+    roles,
+    newValue => {
+      if (!process.client) return;
+
+      if (newValue.length > 0) {
+        localStorage.setItem(ADMIN_ROLES_CACHE_KEY, JSON.stringify(newValue));
+      } else {
+        localStorage.removeItem(ADMIN_ROLES_CACHE_KEY);
+      }
+    },
+    { deep: true }
+  );
+
+  watch(
+    permissions,
+    newValue => {
+      if (!process.client) return;
+
+      if (newValue.length > 0) {
+        localStorage.setItem(ADMIN_PERMISSIONS_CACHE_KEY, JSON.stringify(newValue));
+      } else {
+        localStorage.removeItem(ADMIN_PERMISSIONS_CACHE_KEY);
+      }
+    },
+    { deep: true }
+  );
+
   function setAccessToken(value: string) {
     accessToken.value = value;
   }
@@ -62,28 +114,66 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     permissions.value = p;
   }
 
-  async function initAuth() {
+  async function initAuth(options: { force?: boolean } = {}) {
     if (!process.client) return;
-    if (!accessToken.value) return;
+    if (!accessToken.value) {
+      roles.value = [];
+      permissions.value = [];
+      isAuthInitializing.value = false;
+      isAuthInitialized.value = false;
+      authInitError.value = "";
+      return;
+    }
+
+    if (isAuthInitializing.value && initAuthPromise) {
+      return initAuthPromise;
+    }
+
+    if (isAuthInitialized.value && !options.force) {
+      return;
+    }
 
     const appCore = useAppCore();
 
-    try {
-      const response = await appCore.adminModules.auth.getAvailablePermissions();
-      setRoles(response.data.data.roles || []);
-      setPermissions(response.data.data.permissions || []);
-    } catch (error) {
-      console.error("Failed to initAuth:", error);
-    }
+    isAuthInitializing.value = true;
+    authInitError.value = "";
+
+    initAuthPromise = (async () => {
+      try {
+        const response = await appCore.adminModules.auth.getAvailablePermissions();
+        setRoles(response?.data?.data?.roles || []);
+        setPermissions(response?.data?.data?.permissions || []);
+        isAuthInitialized.value = true;
+      } catch (error) {
+        authInitError.value = error instanceof Error ? error.message : "Failed to initialize admin auth";
+        console.error("Failed to initAuth:", error);
+
+        if (roles.value.length > 0 || permissions.value.length > 0) {
+          isAuthInitialized.value = true;
+        }
+      } finally {
+        isAuthInitializing.value = false;
+        initAuthPromise = null;
+      }
+    })();
+
+    return initAuthPromise;
   }
 
   async function authLogout(): Promise<void> {
     setAccessToken("");
+    setRoles([]);
+    setPermissions([]);
+    isAuthInitializing.value = false;
+    isAuthInitialized.value = false;
+    authInitError.value = "";
     user.value = null;
     photoUrl.value = "";
     if (process.client) {
       localStorage.removeItem(ADMIN_ACCESS_TOKEN);
       localStorage.removeItem(LEGACY_ADMIN_ACCESS_TOKEN_KEY);
+      localStorage.removeItem(ADMIN_ROLES_CACHE_KEY);
+      localStorage.removeItem(ADMIN_PERMISSIONS_CACHE_KEY);
     }
     navigateTo("/auth/login");
   }
@@ -111,7 +201,10 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     hasPermissionById,
     hasRole,
     hasRoleById,
+    authInitError,
     initAuth,
+    isAuthInitialized,
+    isAuthInitializing,
     isAuthenticated,
     permissions,
     roles,
