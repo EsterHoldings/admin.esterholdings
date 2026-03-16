@@ -53,6 +53,7 @@
         </UiFormControl>
 
         <UiFormControl
+          v-if="features.currency"
           :label="resolveText('admin.accounts.form.labels.currency', 'Currency')"
           :errors="fieldErrors.currency"
         >
@@ -65,6 +66,7 @@
         </UiFormControl>
 
         <UiFormControl
+          v-if="features.payment_type"
           :label="resolveText('admin.accounts.form.labels.paymentType', 'Payment type')"
           :errors="fieldErrors.payment_type"
         >
@@ -205,6 +207,10 @@
     payment_type: "0",
     leverage_id: "100",
   });
+  const features = reactive({
+    currency: true,
+    payment_type: true,
+  });
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -304,6 +310,8 @@
       defaults.currency = String(payload?.defaults?.currency ?? defaults.currency);
       defaults.payment_type = String(payload?.defaults?.payment_type ?? defaults.payment_type);
       defaults.leverage_id = String(payload?.defaults?.leverage_id ?? defaults.leverage_id);
+      features.currency = Boolean(payload?.features?.currency ?? true);
+      features.payment_type = Boolean(payload?.features?.payment_type ?? true);
 
       if (!paymentTypeOptions.value.length && defaults.payment_type) {
         paymentTypeOptions.value = [
