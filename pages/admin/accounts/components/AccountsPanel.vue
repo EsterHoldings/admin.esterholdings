@@ -212,6 +212,15 @@
                   </div>
                 </div>
               </div>
+
+              <UiButtonDefault
+                v-if="canCreateAccounts"
+                state="secondary"
+                class="min-w-[150px] whitespace-nowrap"
+                @click="handleOpenCreateModal"
+              >
+                {{ resolveText("admin.accounts.actions.create", "New account") }}
+              </UiButtonDefault>
             </div>
           </div>
 
@@ -257,7 +266,13 @@
             <AccountsContent
               :data="accountsData"
               :viewMode="viewMode"
+              :canEdit="canUpdateAccounts"
+              :canRefresh="canUpdateAccounts"
+              :canDelete="canDeleteAccounts"
               @click="handleOpenAccountPage"
+              @edit="handleOpenEditModal"
+              @refresh="handleRefreshBalance"
+              @delete="handleDeleteAccount"
             />
           </div>
 
@@ -285,6 +300,12 @@
                       {{ t("admin.accounts.components.accounts-panel.columns.created_at") }}
                     </th>
                     <th class="px-4 py-3 text-center font-normal w-[60px]">ID</th>
+                    <th
+                      v-if="showActionColumn"
+                      class="px-4 py-3 text-center font-normal w-[80px]"
+                    >
+                      {{ resolveText("admin.accounts.columns.actions", "Actions") }}
+                    </th>
                   </tr>
                 </template>
 
@@ -318,6 +339,51 @@
                         <span v-else>-</span>
                       </div>
                     </td>
+                    <td
+                      v-if="showActionColumn"
+                      class="px-2 py-3"
+                      @click.stop
+                    >
+                      <div class="relative flex items-center justify-center">
+                        <button
+                          type="button"
+                          class="accounts-row-action-btn"
+                          @click.stop="toggleActionMenu(account.id)"
+                        >
+                          <UiIconDotsVertical />
+                        </button>
+
+                        <div
+                          v-if="actionMenuId === account.id"
+                          class="accounts-row-menu"
+                        >
+                          <button
+                            v-if="canUpdateAccounts"
+                            type="button"
+                            class="accounts-row-menu__item"
+                            @click="handleOpenEditModal(account)"
+                          >
+                            {{ resolveText("admin.accounts.actions.edit", "Edit") }}
+                          </button>
+                          <button
+                            v-if="canUpdateAccounts"
+                            type="button"
+                            class="accounts-row-menu__item"
+                            @click="handleRefreshBalance(account)"
+                          >
+                            {{ resolveText("admin.accounts.actions.refreshBalance", "Refresh balance") }}
+                          </button>
+                          <button
+                            v-if="canDeleteAccounts"
+                            type="button"
+                            class="accounts-row-menu__item danger"
+                            @click="handleDeleteAccount(account)"
+                          >
+                            {{ resolveText("admin.accounts.actions.archive", "Archive") }}
+                          </button>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                 </template>
               </TableMain>
@@ -346,14 +412,17 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, h, onBeforeUnmount, onMounted, ref, watch } from "vue";
+  import { computed, h, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+  import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from "vue-router";
   import { useI18n } from "vue-i18n";
+  import { useToast } from "vue-toastification";
   import { debounce } from "~/utils/helper/debounce";
   import { navigateTo } from "nuxt/app";
   import { useLocalePath } from "~/.nuxt/imports";
 
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   import TableMain from "~/components/block/tables/TableMain.vue";
   import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
@@ -369,6 +438,9 @@
   import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import UiIconFilters from "~/components/ui/UiIconFilters.vue";
+  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
+  import AccountsPanelAddNew from "~/pages/admin/accounts/components/AccountsPanelAddNew.vue";
+  import AccountsPanelEdit from "~/pages/admin/accounts/components/AccountsPanelEdit.vue";
 
   type ViewMode = "cards" | "table" | "full";
   type FilterKey =
@@ -433,6 +505,18 @@
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
   const VIEW_MODE_STORAGE_KEY = "adminAccountsViewMode";
+  const DEFAULT_PER_PAGE = 10;
+  const DEFAULT_PAGE = 1;
+  const DEFAULT_ORDER_BY = "created_at";
+  const DEFAULT_VIEW_MODE: ViewMode = "table";
+  const ORDER_BY_OPTIONS = ["created_at", "number", "balance", "user_id"] as const;
+  const QUERY_KEY_PAGE = "page";
+  const QUERY_KEY_PER_PAGE = "perPage";
+  const QUERY_KEY_SEARCH = "search";
+  const QUERY_KEY_ORDER_BY = "orderBy";
+  const QUERY_KEY_ORDER_DIRECTION = "orderDirection";
+  const QUERY_KEY_VIEW_MODE = "view";
+  const FILTER_QUERY_PREFIX = "filter_";
 
   const ALL_SEARCH_FIELDS = [
     "id",
@@ -473,6 +557,7 @@
   });
 
   const cloneFilters = (source: AccountFilters): AccountFilters => ({ ...source });
+  const FILTER_KEYS = Object.keys(createEmptyFilters()) as FilterKey[];
 
   const sanitizeFilterValue = (value: unknown): string => {
     if (typeof value === "string") return value.trim();
@@ -480,9 +565,92 @@
     return String(value).trim();
   };
 
+  const getQueryValue = (value: unknown): string => {
+    if (Array.isArray(value)) {
+      return sanitizeFilterValue(value[0]);
+    }
+
+    return sanitizeFilterValue(value);
+  };
+
+  const getFirstNonEmptyQueryValue = (...values: unknown[]): string => {
+    for (const value of values) {
+      const normalized = getQueryValue(value);
+      if (normalized !== "") {
+        return normalized;
+      }
+    }
+
+    return "";
+  };
+
+  const parsePositiveInt = (value: unknown, fallback: number, min = 1): number => {
+    const parsed = Number.parseInt(getQueryValue(value), 10);
+    if (!Number.isFinite(parsed) || parsed < min) {
+      return fallback;
+    }
+
+    return parsed;
+  };
+
+  const isOrderByValue = (value: string): boolean => {
+    return ORDER_BY_OPTIONS.includes(value as (typeof ORDER_BY_OPTIONS)[number]);
+  };
+
+  const isOrderDirectionValue = (value: string): value is typeof ORDER_DIRECTION_ASC | typeof ORDER_DIRECTION_DESC => {
+    return value === ORDER_DIRECTION_ASC || value === ORDER_DIRECTION_DESC;
+  };
+
+  const isViewModeValue = (value: string): value is ViewMode => {
+    return value === "table" || value === "cards" || value === "full";
+  };
+
+  const isFilterBracketQueryKey = (queryKey: string): boolean => {
+    const matched = queryKey.match(/^filters\[(.+)\]$/);
+    if (!matched) return false;
+
+    return FILTER_KEYS.includes(matched[1] as FilterKey);
+  };
+
+  const managedQueryKeys = new Set<string>([
+    QUERY_KEY_PAGE,
+    QUERY_KEY_PER_PAGE,
+    QUERY_KEY_SEARCH,
+    QUERY_KEY_ORDER_BY,
+    QUERY_KEY_ORDER_DIRECTION,
+    QUERY_KEY_VIEW_MODE,
+    ...FILTER_KEYS.map(key => `${FILTER_QUERY_PREFIX}${key}`),
+  ]);
+
+  const normalizeQuery = (query: LocationQuery | LocationQueryRaw): Record<string, string> => {
+    return Object.fromEntries(Object.entries(query).map(([key, value]) => [key, getQueryValue(value)]));
+  };
+
+  const areQueryObjectsEqual = (left: Record<string, string>, right: Record<string, string>): boolean => {
+    const leftEntries = Object.entries(left).filter(([, value]) => value !== "");
+    const rightEntries = Object.entries(right).filter(([, value]) => value !== "");
+
+    if (leftEntries.length !== rightEntries.length) {
+      return false;
+    }
+
+    for (const [key, value] of leftEntries) {
+      if (right[key] !== value) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const { t, locale } = useI18n({ useScope: "global" });
+  const route = useRoute();
+  const router = useRouter();
   const localePath = useLocalePath();
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
+  const toast = useToast();
+  const { openModal } = inject("modalControl") as { openModal: (component: unknown, props?: Record<string, unknown>) => void };
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -494,15 +662,18 @@
   const isLoadingSearch = ref(false);
   const isStatsLoading = ref(false);
 
-  const perPage = ref(10);
-  const page = ref(1);
+  const perPage = ref(DEFAULT_PER_PAGE);
+  const page = ref(DEFAULT_PAGE);
   const totalRows = ref(0);
   const searchFilter = ref("");
-  const orderBy = ref<string>("created_at");
+  const orderBy = ref<string>(DEFAULT_ORDER_BY);
   const orderDirection = ref<string>(ORDER_DIRECTION_DESC);
-  const viewMode = ref<ViewMode>("table");
+  const viewMode = ref<ViewMode>(DEFAULT_VIEW_MODE);
 
   const accountsData = ref<AdminAccount[]>([]);
+  const actionMenuId = ref<string | null>(null);
+  const refreshingAccountId = ref<string | null>(null);
+  const deletingAccountId = ref<string | null>(null);
   const statsData = ref<AccountsStats>({
     total_accounts: 0,
     favorite_accounts: 0,
@@ -736,11 +907,129 @@
     },
   ]);
 
+  const canCreateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-accounts"));
+  const canUpdateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts"));
+  const canDeleteAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-accounts"));
+  const showActionColumn = computed(() => canUpdateAccounts.value || canDeleteAccounts.value);
+
   const initViewMode = () => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
     if (saved && ["table", "cards", "full"].includes(saved)) {
       viewMode.value = saved as ViewMode;
+    }
+  };
+
+  const getQueryFilters = (query: LocationQuery): AccountFilters => {
+    const filters = createEmptyFilters();
+
+    for (const filterKey of FILTER_KEYS) {
+      filters[filterKey] = getQueryValue(query[`${FILTER_QUERY_PREFIX}${filterKey}`]);
+    }
+
+    for (const [queryKey, rawValue] of Object.entries(query)) {
+      const matched = queryKey.match(/^filters\[(.+)\]$/);
+      if (!matched) continue;
+
+      const filterKey = matched[1] as FilterKey;
+      if (!FILTER_KEYS.includes(filterKey)) continue;
+
+      filters[filterKey] = getQueryValue(rawValue);
+    }
+
+    return filters;
+  };
+
+  const initStateFromQuery = () => {
+    const query = route.query;
+
+    perPage.value = parsePositiveInt(query[QUERY_KEY_PER_PAGE], DEFAULT_PER_PAGE);
+    page.value = parsePositiveInt(query[QUERY_KEY_PAGE], DEFAULT_PAGE);
+    searchFilter.value = getFirstNonEmptyQueryValue(query[QUERY_KEY_SEARCH], query.searchFilter);
+
+    const queryOrderBy = getQueryValue(query[QUERY_KEY_ORDER_BY]);
+    if (isOrderByValue(queryOrderBy)) {
+      orderBy.value = queryOrderBy;
+    }
+
+    const queryOrderDirection = getQueryValue(query[QUERY_KEY_ORDER_DIRECTION]);
+    if (isOrderDirectionValue(queryOrderDirection)) {
+      orderDirection.value = queryOrderDirection;
+    }
+
+    const queryViewMode = getQueryValue(query[QUERY_KEY_VIEW_MODE]);
+    if (isViewModeValue(queryViewMode)) {
+      viewMode.value = queryViewMode;
+    }
+
+    const parsedFilters = getQueryFilters(query);
+    appliedFilters.value = parsedFilters;
+    draftFilters.value = cloneFilters(parsedFilters);
+  };
+
+  const buildStateQuery = (): Record<string, string> => {
+    const query: Record<string, string> = {};
+
+    if (page.value > DEFAULT_PAGE) {
+      query[QUERY_KEY_PAGE] = String(page.value);
+    }
+
+    if (perPage.value !== DEFAULT_PER_PAGE) {
+      query[QUERY_KEY_PER_PAGE] = String(perPage.value);
+    }
+
+    const normalizedSearch = sanitizeFilterValue(searchFilter.value);
+    if (normalizedSearch !== "") {
+      query[QUERY_KEY_SEARCH] = normalizedSearch;
+    }
+
+    if (orderBy.value !== DEFAULT_ORDER_BY) {
+      query[QUERY_KEY_ORDER_BY] = orderBy.value;
+    }
+
+    if (orderDirection.value !== ORDER_DIRECTION_DESC) {
+      query[QUERY_KEY_ORDER_DIRECTION] = orderDirection.value;
+    }
+
+    if (viewMode.value !== DEFAULT_VIEW_MODE) {
+      query[QUERY_KEY_VIEW_MODE] = viewMode.value;
+    }
+
+    for (const filterKey of FILTER_KEYS) {
+      const filterValue = sanitizeFilterValue(appliedFilters.value[filterKey]);
+      if (filterValue === "") continue;
+
+      query[`${FILTER_QUERY_PREFIX}${filterKey}`] = filterValue;
+    }
+
+    return query;
+  };
+
+  const buildNextQuery = (): Record<string, string> => {
+    const preserved = Object.fromEntries(
+      Object.entries(normalizeQuery(route.query)).filter(
+        ([key]) => !managedQueryKeys.has(key) && !isFilterBracketQueryKey(key)
+      )
+    );
+
+    return {
+      ...preserved,
+      ...buildStateQuery(),
+    };
+  };
+
+  const syncStateToUrl = async () => {
+    const currentQuery = normalizeQuery(route.query);
+    const nextQuery = buildNextQuery();
+
+    if (areQueryObjectsEqual(currentQuery, nextQuery)) {
+      return;
+    }
+
+    try {
+      await router.replace({ query: nextQuery });
+    } catch {
+      // ignore navigation race in the same route
     }
   };
 
@@ -827,14 +1116,104 @@
     navigateTo(localePath(`/clients/${ownerId}`));
   };
 
+  const handleOpenCreateModal = () => {
+    if (!canCreateAccounts.value) return;
+
+    openModal(AccountsPanelAddNew, {
+      title: resolveText("admin.accounts.form.titles.create", "Create account"),
+    });
+  };
+
+  const handleOpenEditModal = (account: AdminAccount) => {
+    if (!account?.id || !canUpdateAccounts.value) return;
+
+    actionMenuId.value = null;
+    openModal(AccountsPanelEdit, {
+      id: account.id,
+      title: resolveText("admin.accounts.form.titles.edit", "Edit account"),
+    });
+  };
+
+  const toggleActionMenu = (accountId: string) => {
+    if (!showActionColumn.value) return;
+
+    actionMenuId.value = actionMenuId.value === accountId ? null : accountId;
+  };
+
+  const replaceAccountInList = (nextAccount: AdminAccount) => {
+    accountsData.value = accountsData.value.map(account =>
+      account.id === nextAccount.id ? { ...account, ...nextAccount } : account
+    );
+  };
+
+  const handleRefreshBalance = async (account: AdminAccount) => {
+    if (!account?.id || !canUpdateAccounts.value || refreshingAccountId.value === account.id) return;
+
+    actionMenuId.value = null;
+    refreshingAccountId.value = account.id;
+
+    try {
+      const response = await appCore.adminModules.accounts.refreshBalance(account.id);
+      const refreshedAccount = response?.data?.data?.account as AdminAccount | undefined;
+
+      if (refreshedAccount?.id) {
+        replaceAccountInList(refreshedAccount);
+      }
+
+      await loadStats();
+      toast.success(resolveText("admin.accounts.messages.refreshSuccess", "Account balance updated."));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          resolveText("admin.accounts.messages.refreshError", "Failed to refresh account balance.")
+      );
+    } finally {
+      refreshingAccountId.value = null;
+    }
+  };
+
+  const handleDeleteAccount = async (account: AdminAccount) => {
+    if (!account?.id || !canDeleteAccounts.value || deletingAccountId.value === account.id) return;
+
+    const confirmed = window.confirm(
+      resolveText("admin.accounts.messages.archiveConfirm", "Archive this account?")
+    );
+
+    if (!confirmed) return;
+
+    actionMenuId.value = null;
+    deletingAccountId.value = account.id;
+
+    try {
+      await appCore.adminModules.accounts.delete(account.id);
+
+      if (accountsData.value.length === 1 && page.value > DEFAULT_PAGE) {
+        page.value -= 1;
+      }
+
+      await loadAll();
+      await syncStateToUrl();
+      toast.success(resolveText("admin.accounts.messages.archiveSuccess", "Account archived."));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          resolveText("admin.accounts.messages.archiveError", "Failed to archive account.")
+      );
+    } finally {
+      deletingAccountId.value = null;
+    }
+  };
+
   const handleChangePerPage = async (value: number) => {
     perPage.value = value;
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const handleChangePage = async (value: number) => {
     page.value = value;
     await loadData();
+    await syncStateToUrl();
   };
 
   const handleInputSearch = debounce(async (value: string) => {
@@ -842,6 +1221,7 @@
       isLoadingSearch.value = true;
       searchFilter.value = value;
       await loadData({ resetPage: true });
+      await syncStateToUrl();
     } finally {
       isLoadingSearch.value = false;
     }
@@ -850,21 +1230,25 @@
   const handleOrderBy = async (value: string) => {
     orderBy.value = value;
     await loadData();
+    await syncStateToUrl();
   };
 
   const toggleOrderDirection = async () => {
     orderDirection.value = orderDirection.value === ORDER_DIRECTION_ASC ? ORDER_DIRECTION_DESC : ORDER_DIRECTION_ASC;
     await loadData();
+    await syncStateToUrl();
   };
 
-  const handleChangeViewMode = (value: string) => {
+  const handleChangeViewMode = async (value: string) => {
     if (value === "table" || value === "cards" || value === "full") {
       viewMode.value = value;
+      await syncStateToUrl();
     }
   };
 
   const handleClickRefresh = async () => {
     await loadAll();
+    await syncStateToUrl();
   };
 
   const setDraftFilterValue = (key: FilterKey, value: unknown) => {
@@ -894,18 +1278,21 @@
     appliedFilters.value = cloneFilters(draftFilters.value);
     isFiltersPopoverOpen.value = false;
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const removeAppliedFilter = async (key: FilterKey) => {
     appliedFilters.value = { ...appliedFilters.value, [key]: "" };
     draftFilters.value = { ...draftFilters.value, [key]: "" };
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const clearAllAppliedFilters = async () => {
     appliedFilters.value = createEmptyFilters();
     draftFilters.value = createEmptyFilters();
     await loadData({ resetPage: true });
+    await syncStateToUrl();
   };
 
   const handleClickOutsideFilters = (event: MouseEvent) => {
@@ -915,6 +1302,10 @@
     if (filtersPopoverRef.value && !filtersPopoverRef.value.contains(target)) {
       isFiltersPopoverOpen.value = false;
     }
+  };
+
+  const handleClickOutsideActionMenu = () => {
+    actionMenuId.value = null;
   };
 
   const handleExternalReload = async () => {
@@ -952,16 +1343,22 @@
 
   onMounted(async () => {
     initViewMode();
+    initStateFromQuery();
+    await syncStateToUrl();
     await loadAll();
     isInitialLoading.value = false;
 
+    useEventBus.on("loadDataForAdminAccounts", handleExternalReload);
     useEventBus.on("loadDataForAdmins", handleExternalReload);
     document.addEventListener("click", handleClickOutsideFilters);
+    document.addEventListener("click", handleClickOutsideActionMenu);
   });
 
   onBeforeUnmount(() => {
+    useEventBus.off("loadDataForAdminAccounts", handleExternalReload);
     useEventBus.off("loadDataForAdmins", handleExternalReload);
     document.removeEventListener("click", handleClickOutsideFilters);
+    document.removeEventListener("click", handleClickOutsideActionMenu);
   });
 </script>
 
@@ -1196,5 +1593,51 @@
     line-height: 1;
     color: var(--ui-text-secondary);
   }
-</style>
 
+  .accounts-row-action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--color-stroke-ui-dark);
+    color: var(--ui-text-main);
+  }
+
+  .accounts-row-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 30;
+    min-width: 190px;
+    padding: 6px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-panel);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  .accounts-row-menu__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-text-main);
+    text-align: left;
+    font-size: 13px;
+  }
+
+  .accounts-row-menu__item:hover {
+    background: var(--color-stroke-ui-dark);
+  }
+
+  .accounts-row-menu__item.danger {
+    color: var(--ui-sticker-danger);
+  }
+</style>
