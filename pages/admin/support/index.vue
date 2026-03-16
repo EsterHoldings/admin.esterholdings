@@ -424,6 +424,7 @@
   import TicketsCreateNew from "~/pages/admin/support/components/TicketsCreateNew.vue";
   import { useRouter } from "vue-router";
   import useEventBus from "~/composables/useEventBus";
+  import { useLocalePath } from "~/.nuxt/imports";
 
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
@@ -467,6 +468,7 @@
 
   const appCore = useAppCore();
   const router = useRouter();
+  const localePath = useLocalePath();
 
   const isLoading = ref(false);
   const search = ref("");
@@ -1156,7 +1158,9 @@
     await loadData();
   };
 
-  const handleClickRow = (ticketId: string) => router.push(`/support/${ticketId}`);
+  const buildSupportRoute = (ticketId: string) => localePath(`/support/${ticketId}`);
+
+  const handleClickRow = (ticketId: string) => router.push(buildSupportRoute(ticketId));
 
   const handleChatIconClick = (ticket: any) => {
     const ticketId = String(ticket?.id ?? "");
@@ -1164,12 +1168,12 @@
 
     const channel = getTicketChannelKey(ticket?.channel, ticket?.reply_email);
     if (channel === "email") {
-      router.push(`/support/${ticketId}`);
+      router.push(buildSupportRoute(ticketId));
       return;
     }
 
     if (isMobileViewport.value) {
-      router.push(`/support/${ticketId}`);
+      router.push(buildSupportRoute(ticketId));
       return;
     }
 

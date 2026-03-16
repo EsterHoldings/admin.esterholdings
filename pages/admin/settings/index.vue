@@ -19,6 +19,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { definePageMeta } from "~/.nuxt/imports";
 
 import TabsDefault from "~/components/block/tabs/TabsDefault.vue";
 import UiTextH4 from "~/components/ui/UiTextH4.vue";
@@ -26,6 +27,10 @@ import UiTextH4 from "~/components/ui/UiTextH4.vue";
 import Appearance from "./components/Appearance.vue";
 import General from "./components/General.vue";
 import Secure from "./components/Secure.vue";
+
+definePageMeta({
+  middleware: ["admin-middleware"],
+});
 
 const { t } = useI18n();
 

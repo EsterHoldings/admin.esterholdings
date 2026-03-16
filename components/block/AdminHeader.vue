@@ -60,6 +60,7 @@
               v-if="profileMenuIsOpen"
               @click.stop>
               <NuxtLink
+                v-if="canViewProfile"
                 :to="localePath('/profile')"
                 aria-label="Profile">
                 <div
@@ -102,6 +103,7 @@
               <UiSpacer :heightNone="true" />
 
               <NuxtLink
+                v-if="canViewSupport"
                 :to="localePath('/support')"
                 aria-label="Help Center">
                 <div
@@ -175,6 +177,8 @@
 
   const route = useRoute();
   const currentRouteName = computed(() => route.name);
+  const canViewProfile = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-profile"));
+  const canViewSupport = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-support"));
 
   const isThemeLight = computed(() => {
     return themeStore.currentTheme !== "dark";

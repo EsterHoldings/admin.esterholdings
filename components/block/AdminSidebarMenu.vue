@@ -62,6 +62,7 @@
 
   const hasPermission = (required?: string | string[]) => {
     if (!required) return true;
+    if (adminAuthStore.hasRole("super-admin")) return true;
 
     const list = Array.isArray(required) ? required : [required];
     return list.some(permissionName => adminAuthStore.hasPermission(permissionName));
@@ -128,7 +129,7 @@
         title: t("admin.menu.access"),
         to: localePath("/access"),
         icon: UiIconKeys,
-        displayIfHasPermission: ["view-admins", "view-roles", "view-permissions"],
+        displayIfHasPermission: "view-access",
       },
     ];
 

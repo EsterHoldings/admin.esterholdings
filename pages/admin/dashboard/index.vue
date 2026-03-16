@@ -106,6 +106,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { navigateTo } from "nuxt/app";
+import { definePageMeta } from "~/.nuxt/imports";
 
 import PanelDefault from "~/components/block/panels/PanelDefault.vue";
 import UiBadge from "~/components/ui/UiBadge.vue";
@@ -118,8 +119,21 @@ import UiIconPayment from "~/components/ui/UiIconPayment.vue";
 import UiIconWithdraw from "~/components/ui/UiIconWithdraw.vue";
 import UiIconSetting from "~/components/ui/UiIconSetting.vue";
 import UiIconWarningFull from "~/components/ui/UiIconWarningFull.vue";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
+import { canAccessAdminPath } from "~/constants/adminPagePermissions";
+
+definePageMeta({
+  middleware: ["admin-middleware"],
+});
 
 const { t } = useI18n({ useScope: "global" });
+const adminAuthStore = useAdminAuthStore();
+
+const canAccessPath = (path: string) =>
+  canAccessAdminPath(path, {
+    hasPermission: permission => adminAuthStore.hasPermission(permission),
+    hasRole: role => adminAuthStore.hasRole(role),
+  });
 
 const priorityCards = computed(() => [
   {
@@ -143,7 +157,7 @@ const priorityCards = computed(() => [
     icon: UiIconWarningFull,
     to: "/verifications",
   },
-]);
+].filter(card => canAccessPath(card.to)));
 
 const statCards = computed(() => [
   {
@@ -170,19 +184,19 @@ const statCards = computed(() => [
     icon: UiIconWithdraw,
     to: "/payments",
   },
-]);
+].filter(card => canAccessPath(card.to)));
 
-const recentUsers = [
+const recentUsers = computed(() => [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", status: "active", to: "/clients/1" },
   { id: 2, name: "Mark Lee", email: "mark@example.com", status: "pending", to: "/clients/2" },
   { id: 3, name: "Sara Kim", email: "sara@example.com", status: "active", to: "/clients/3" },
-];
+].filter(user => canAccessPath(user.to)));
 
-const recentPayments = [
+const recentPayments = computed(() => [
   { id: 1, amount: "$1,250", currency: "USD", status: "success", account: "MT4-123456", to: "/payments" },
   { id: 2, amount: "$980", currency: "USD", status: "pending", account: "MT4-234567", to: "/payments" },
   { id: 3, amount: "$2,400", currency: "USD", status: "success", account: "MT4-345678", to: "/payments" },
-];
+].filter(payment => canAccessPath(payment.to)));
 
 const handleNavigate = (to?: string) => {
   if (!to) return;
