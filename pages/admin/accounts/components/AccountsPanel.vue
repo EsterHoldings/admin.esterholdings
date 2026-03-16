@@ -40,6 +40,7 @@
               <UiInput
                 class="w-full"
                 :placeholder="resolveText('admin.accounts.components.accounts-panel-search.placeholder', 'Search accounts...')"
+                :isLoading="isLoadingSearch"
                 @input="handleInputSearch"
                 :value="searchFilter"
               >
@@ -92,10 +93,13 @@
               >
                 <UiButtonDefault
                   state="info--small"
-                  class="!w-[44px]"
+                  class="min-w-[120px] shrink-0"
                   @click.stop="toggleFiltersPopover"
                 >
-                  <UiIconFilters class="!h-4 !w-4" />
+                  <span class="inline-flex items-center gap-2">
+                    <UiIconFilters class="!h-4 !w-4" />
+                    <span>{{ resolveText("admin.accounts.filters.title", "Filters") }}</span>
+                  </span>
                 </UiButtonDefault>
 
                 <div
@@ -267,14 +271,6 @@
                 </div>
               </div>
 
-              <UiButtonDefault
-                v-if="canCreateAccounts"
-                state="secondary"
-                class="min-w-[150px] whitespace-nowrap"
-                @click="handleOpenCreateModal"
-              >
-                {{ resolveText("admin.accounts.actions.create", "New account") }}
-              </UiButtonDefault>
             </div>
           </div>
 
@@ -508,7 +504,6 @@
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import UiIconFilters from "~/components/ui/UiIconFilters.vue";
   import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
-  import AccountsPanelAddNew from "~/pages/admin/accounts/components/AccountsPanelAddNew.vue";
   import AccountsPanelEdit from "~/pages/admin/accounts/components/AccountsPanelEdit.vue";
 
   type ViewMode = "cards" | "table" | "full";
@@ -523,6 +518,7 @@
     | "payment_type"
     | "type_id"
     | "type_name"
+    | "type_group"
     | "leverage_id"
     | "is_favorite"
     | "balance_from"
@@ -585,14 +581,6 @@
   const DEFAULT_ORDER_BY = "created_at";
   const DEFAULT_VIEW_MODE: ViewMode = "table";
   const ORDER_BY_OPTIONS = ["created_at", "number", "balance", "user_id"] as const;
-  const QUERY_KEY_PAGE = "page";
-  const QUERY_KEY_PER_PAGE = "perPage";
-  const QUERY_KEY_SEARCH = "search";
-  const QUERY_KEY_ORDER_BY = "orderBy";
-  const QUERY_KEY_ORDER_DIRECTION = "orderDirection";
-  const QUERY_KEY_VIEW_MODE = "view";
-  const FILTER_QUERY_PREFIX = "filter_";
-
   const ALL_SEARCH_FIELDS = [
     "id",
     "user_id",
@@ -608,7 +596,15 @@
     "owner_email",
     "owner_phone",
     "type_name",
-  ];
+    "type_group",
+  ] as const;
+  const QUERY_KEY_PAGE = "page";
+  const QUERY_KEY_PER_PAGE = "perPage";
+  const QUERY_KEY_SEARCH = "search";
+  const QUERY_KEY_ORDER_BY = "orderBy";
+  const QUERY_KEY_ORDER_DIRECTION = "orderDirection";
+  const QUERY_KEY_VIEW_MODE = "view";
+  const FILTER_QUERY_PREFIX = "filter_";
 
   const createEmptyFilters = (): AccountFilters => ({
     id: "",
@@ -621,6 +617,7 @@
     payment_type: "",
     type_id: "",
     type_name: "",
+    type_group: "",
     leverage_id: "",
     is_favorite: "",
     balance_from: "",
@@ -726,7 +723,6 @@
   const adminAuthStore = useAdminAuthStore();
   const toast = useToast();
   const { openModal } = inject("modalControl") as { openModal: (component: unknown, props?: Record<string, unknown>) => void };
-
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
     return value === key ? fallback : value;
@@ -787,6 +783,7 @@
     { key: "owner_phone" as FilterKey, label: resolveText("admin.accounts.filters.fields.owner_phone", "Owner phone") },
     { key: "number" as FilterKey, label: resolveText("admin.accounts.columns.number", "Account number") },
     { key: "type_name" as FilterKey, label: resolveText("admin.accounts.columns.type", "Type") },
+    { key: "type_group" as FilterKey, label: resolveText("admin.accounts.filters.fields.type_group", "Type group") },
   ]);
 
   const filterSelectFieldOptions = computed(() => {
@@ -850,6 +847,7 @@
     payment_type: resolveText("admin.accounts.filters.fields.payment_type", "Payment type"),
     type_id: resolveText("admin.accounts.filters.fields.type_id", "Type ID"),
     type_name: resolveText("admin.accounts.columns.type", "Type"),
+    type_group: resolveText("admin.accounts.filters.fields.type_group", "Type group"),
     leverage_id: resolveText("admin.accounts.filters.fields.leverage_id", "Leverage ID"),
     is_favorite: resolveText("admin.accounts.filters.fields.is_favorite", "Favorite"),
     balance_from: resolveText("admin.accounts.filters.fields.balance_from", "Balance from"),
@@ -1044,7 +1042,6 @@
     },
   ]);
 
-  const canCreateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-accounts"));
   const canUpdateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts"));
   const canDeleteAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-accounts"));
   const showActionColumn = computed(() => canUpdateAccounts.value || canDeleteAccounts.value);
@@ -1192,11 +1189,11 @@
       const params = {
         page: page.value,
         perPage: perPage.value,
+        search: searchFilter.value,
         searchFilter: searchFilter.value,
-        searchFields: ALL_SEARCH_FIELDS.join(","),
+        searchFields: [...ALL_SEARCH_FIELDS],
         orderBy: orderBy.value,
         orderDirection: orderDirection.value,
-        filters: filtersPayload,
         ...flatFilters,
       };
 
@@ -1205,9 +1202,13 @@
 
       totalRows.value = Number(payload?.total ?? 0);
       accountsData.value = Array.isArray(payload?.data) ? payload.data : [];
-    } catch {
+    } catch (error: any) {
       totalRows.value = 0;
       accountsData.value = [];
+      toast.error(
+        error?.response?.data?.message ||
+          resolveText("admin.accounts.messages.loadError", "Failed to load accounts.")
+      );
     } finally {
       isLoading.value = false;
     }
@@ -1304,14 +1305,6 @@
     const ownerId = String(account?.user_id ?? "").trim();
     if (!ownerId) return;
     navigateTo(localePath(`/clients/${ownerId}`));
-  };
-
-  const handleOpenCreateModal = () => {
-    if (!canCreateAccounts.value) return;
-
-    openModal(AccountsPanelAddNew, {
-      title: resolveText("admin.accounts.form.titles.create", "Create account"),
-    });
   };
 
   const handleOpenEditModal = (account: AdminAccount) => {
@@ -1415,7 +1408,7 @@
     } finally {
       isLoadingSearch.value = false;
     }
-  }, 300);
+  }, 500);
 
   const handleOrderBy = async (value: string) => {
     orderBy.value = value;
@@ -1548,14 +1541,12 @@
     isInitialLoading.value = false;
 
     useEventBus.on("loadDataForAdminAccounts", handleExternalReload);
-    useEventBus.on("loadDataForAdmins", handleExternalReload);
     document.addEventListener("click", handleClickOutsideFilters);
     document.addEventListener("click", handleClickOutsideActionMenu);
   });
 
   onBeforeUnmount(() => {
     useEventBus.off("loadDataForAdminAccounts", handleExternalReload);
-    useEventBus.off("loadDataForAdmins", handleExternalReload);
     document.removeEventListener("click", handleClickOutsideFilters);
     document.removeEventListener("click", handleClickOutsideActionMenu);
   });
