@@ -866,15 +866,20 @@
     alreadyParticipant: boolean;
   };
   const participants = ref<ParticipantItem[]>([]);
+  const presenceOnlineAdmins = ref<Array<Record<string, unknown>>>([]);
+  const presenceOnlineClient = ref<Record<string, unknown> | null>(null);
   const participantsPreview = computed(() => participants.value.slice(0, 5));
   const participantsHiddenCount = computed(() =>
     Math.max(0, participants.value.length - participantsPreview.value.length)
   );
   const onlineParticipantsCount = computed(() => participants.value.filter(participant => participant.online).length);
   const totalParticipantsCount = computed(() => participants.value.length);
-  const counterpartyOnline = computed(() =>
-    participants.value.some(participant => participant.roleKey === "customer" && participant.online)
-  );
+  const counterpartyOnline = computed(() => {
+    const onlineCustomerId = normalizeText(presenceOnlineClient.value?.id);
+    if (onlineCustomerId) return true;
+
+    return participants.value.some(participant => participant.roleKey === "customer" && participant.online);
+  });
   const isParticipantsAddPanelOpen = ref(false);
   const participantsAdminSearch = ref("");
   const participantsAdminLoading = ref(false);
@@ -980,7 +985,17 @@
     const normalizedPayload = Array.isArray(payload) ? payload.filter(item => item && typeof item === "object") : [];
     participants.value = mapParticipantsFromPayload(normalizedPayload as Array<Record<string, unknown>>);
   };
+  const applyPresenceSnapshot = (payload: Record<string, unknown>) => {
+    presenceOnlineAdmins.value = Array.isArray(payload.online_admins)
+      ? (payload.online_admins.filter(item => item && typeof item === "object") as Array<Record<string, unknown>>)
+      : [];
+    presenceOnlineClient.value =
+      payload.online_client && typeof payload.online_client === "object"
+        ? (payload.online_client as Record<string, unknown>)
+        : null;
+  };
   const updateParticipantsOnlineFromPresence = (payload: Record<string, unknown>) => {
+    applyPresenceSnapshot(payload);
     if (!participants.value.length) return;
 
     const onlineAdminsRaw = Array.isArray(payload.online_admins) ? payload.online_admins : [];
@@ -2163,6 +2178,7 @@
     ticketReplyEmail.value = normalizeText(ticket?.reply_email ?? creatorEmail);
     const creatorPhotoUrl = normalizeText(creator?.photo_url);
     const creatorFullName = buildFullName(creatorFirstName, creatorLastName);
+    applyPresenceSnapshot({});
     const serverParticipants = Array.isArray(ticket?.participants) ? ticket.participants : [];
     if (serverParticipants.length > 0) {
       applyParticipantsPayload(serverParticipants);
@@ -2249,6 +2265,8 @@
       currentUser.linkedUserId = actorParticipantId;
     }
 
+    applyPresenceSnapshot(payload as Record<string, unknown>);
+
     const participantsPayload = Array.isArray(payload.participants) ? payload.participants : [];
     if (participantsPayload.length > 0) {
       applyParticipantsPayload(participantsPayload);
@@ -2333,7 +2351,6 @@
   };
 
   onMounted(async () => {
-    useEventBus.on(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     useEventBus.on(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     updateViewportState();
     window.addEventListener("resize", updateViewportState, { passive: true });
@@ -2402,7 +2419,6 @@
   });
 
   onBeforeUnmount(() => {
-    useEventBus.off(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     useEventBus.off(SUPPORT_MESSAGE_UPDATED_EVENT, handleSupportMessageUpdated);
     window.removeEventListener("resize", updateViewportState);
     window.removeEventListener("keydown", handleLibraryMediaViewerKeydown);
