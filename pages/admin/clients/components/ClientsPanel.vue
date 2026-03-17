@@ -649,10 +649,25 @@
   const appCore = useAppCore();
   const { $echo } = useNuxtApp() as unknown as { $echo?: any };
 
+  const getNormalizedRoutePath = () => {
+    const segments = route.path.split("/").filter(Boolean);
+    const currentLocale = String(locale.value ?? "")
+      .trim()
+      .toLowerCase();
+
+    if (currentLocale !== "" && segments[0]?.toLowerCase() === currentLocale) {
+      segments.shift();
+    }
+
+    return `/${segments.join("/")}`;
+  };
+
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
     return value === key ? fallback : value;
   };
+
+  const isClientsIndexRoute = computed(() => getNormalizedRoutePath() === "/clients");
 
   const isLoading = ref(false);
   const isInitialLoading = ref(true);
@@ -1086,6 +1101,10 @@
   };
 
   const loadData = async ({ resetPage = false, silent = false }: { resetPage?: boolean; silent?: boolean } = {}) => {
+    if (!isClientsIndexRoute.value) {
+      return;
+    }
+
     if (resetPage) {
       page.value = 1;
     }
@@ -1129,6 +1148,10 @@
   };
 
   const loadStats = async (silent = false) => {
+    if (!isClientsIndexRoute.value) {
+      return;
+    }
+
     if (!silent) {
       isStatsLoading.value = true;
     }
@@ -1161,6 +1184,10 @@
   };
 
   const loadAll = async () => {
+    if (!isClientsIndexRoute.value) {
+      return;
+    }
+
     await Promise.all([loadData(), loadStats()]);
   };
 
@@ -1290,7 +1317,7 @@
   };
 
   const startPolling = () => {
-    if (pollingTimer) return;
+    if (!isClientsIndexRoute.value || pollingTimer) return;
 
     pollingTimer = setInterval(() => {
       loadData({ silent: true }).catch(() => {});
@@ -1324,7 +1351,7 @@
   };
 
   const scheduleOnlineSync = () => {
-    if (realtimeSyncTimer) return;
+    if (!isClientsIndexRoute.value || realtimeSyncTimer) return;
 
     realtimeSyncTimer = setTimeout(() => {
       realtimeSyncTimer = null;
@@ -1444,6 +1471,8 @@
   };
 
   const connectRealtime = () => {
+    if (!isClientsIndexRoute.value) return;
+
     const echoClient = resolveEchoClient();
     if (!echoClient) return;
 
@@ -1471,7 +1500,7 @@
   };
 
   const bindRealtimeSocketStateListener = () => {
-    if (realtimeSocketStateHandler) return;
+    if (!isClientsIndexRoute.value || realtimeSocketStateHandler) return;
 
     const echoClient = resolveEchoClient();
     const connection = echoClient?.connector?.pusher?.connection;
@@ -1505,7 +1534,7 @@
   };
 
   const startRealtimeRetry = () => {
-    if (realtimeRetryTimer) return;
+    if (!isClientsIndexRoute.value || realtimeRetryTimer) return;
 
     realtimeRetryTimer = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
@@ -1523,6 +1552,8 @@
   };
 
   const handleRealtimeResume = () => {
+    if (!isClientsIndexRoute.value) return;
+
     reconnectRealtimeSocketTransport();
     connectRealtime();
     scheduleOnlineSync();
@@ -1597,21 +1628,52 @@
   onMounted(async () => {
     initViewMode();
     initStateFromQuery();
-    await syncStateToUrl();
-    await loadAll();
+    if (isClientsIndexRoute.value) {
+      await syncStateToUrl();
+      await loadAll();
+    }
     isInitialLoading.value = false;
 
     useEventBus.on("loadDataForAdmins", handleExternalReload);
-    connectRealtime();
-    bindRealtimeSocketStateListener();
-    startRealtimeRetry();
-    startPolling();
-    window.addEventListener("focus", handleWindowFocus);
-    attachRealtimeResumeListeners();
-    handleRealtimeResume();
+    if (isClientsIndexRoute.value) {
+      connectRealtime();
+      bindRealtimeSocketStateListener();
+      startRealtimeRetry();
+      startPolling();
+      window.addEventListener("focus", handleWindowFocus);
+      attachRealtimeResumeListeners();
+      handleRealtimeResume();
+    }
 
     document.addEventListener("click", handleClickOutsideFilters);
   });
+
+  watch(
+    () => route.path,
+    async () => {
+      if (isClientsIndexRoute.value) {
+        initStateFromQuery();
+        await syncStateToUrl();
+        await loadAll();
+        connectRealtime();
+        bindRealtimeSocketStateListener();
+        startRealtimeRetry();
+        startPolling();
+        window.addEventListener("focus", handleWindowFocus);
+        attachRealtimeResumeListeners();
+        handleRealtimeResume();
+        return;
+      }
+
+      disconnectRealtime();
+      unbindRealtimeSocketStateListener();
+      stopRealtimeRetry();
+      stopPolling();
+      clearScheduledOnlineSync();
+      window.removeEventListener("focus", handleWindowFocus);
+      detachRealtimeResumeListeners();
+    }
+  );
 
   onBeforeUnmount(() => {
     useEventBus.off("loadDataForAdmins", handleExternalReload);

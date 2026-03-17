@@ -1388,6 +1388,48 @@
       "index": {
         "title": "Clientes",
         "subtitle": "Lista de clientes"
+      },
+      "tabs": {
+        "settings": "Settings",
+        "security": "Security"
+      },
+      "supportMode": {
+        "label": "Support mode",
+        "simple": "Simple form",
+        "full": "Full chat support",
+        "updated": "Support mode updated.",
+        "updateFailed": "Failed to update support mode."
+      },
+      "settings": {
+        "supportMode": {
+          "title": "Support mode",
+          "description": "Choose how the client can contact support.",
+          "simple": "Simple form",
+          "full": "Full chat support"
+        }
+      },
+      "security": {
+        "password": {
+          "title": "Change password",
+          "description": "Set a new password for this client account.",
+          "sendEmail": "Send new password to client email",
+          "recipient": "Recipient",
+          "emailMissing": "Client email is missing.",
+          "submit": "Save password",
+          "success": "Password updated successfully.",
+          "successWithEmail": "Password updated and email sent.",
+          "error": "Failed to update password.",
+          "validation": {
+            "required": "Password is required.",
+            "min": "Password must contain at least 8 characters.",
+            "confirmationRequired": "Password confirmation is required.",
+            "confirmed": "Passwords do not match."
+          }
+        },
+        "help": {
+          "title": "Password delivery",
+          "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        }
       }
     },
     "verifications": {

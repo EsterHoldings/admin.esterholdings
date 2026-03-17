@@ -55,6 +55,7 @@
 
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
   import TabReferrals from "~/pages/admin/clients/[id]/components/TabReferrals.vue";
+  import TabSecurity from "~/pages/admin/clients/[id]/components/TabSecurity.vue";
   import TabSettings from "~/pages/admin/clients/[id]/components/TabSettings.vue";
   import TabVerification from "~/pages/admin/clients/[id]/components/TabVerification.vue";
   import TabsAsList from "~/components/block/tabs/TabsAsList.vue";
@@ -99,12 +100,18 @@
     Object.assign(userData, resp.data.data);
   };
 
-  const STORAGE_KEY = "profileActiveTab";
+  const STORAGE_KEY = "adminClientDetailActiveTab";
+  const resolveText = (key: string, fallback: string) => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
+
   const tabsList = computed(() => [
     { label: "KYC", component: TabKYC },
-    { label: "Верификация", component: TabVerification },
-    { label: "Рефералы", component: TabReferrals },
-    { label: t("clients.tabs.settings"), component: TabSettings },
+    { label: resolveText("admin.clients.tabs.verification", "Verification"), component: TabVerification },
+    { label: resolveText("admin.clients.tabs.referrals", "Referrals"), component: TabReferrals },
+    { label: resolveText("admin.clients.tabs.settings", "Settings"), component: TabSettings },
+    { label: resolveText("admin.clients.tabs.security", "Security"), component: TabSecurity },
   ]);
 
   const activeTabIndex = ref(0);

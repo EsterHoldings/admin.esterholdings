@@ -35,39 +35,74 @@
         "Trading": [
           {
             "section": "Account overview",
-            "items": ["Standard", "Pro", "Islamic", "Demo"]
+            "items": [
+              "Standard",
+              "Pro",
+              "Islamic",
+              "Demo"
+            ]
           },
           {
             "section": "Market Instruments",
-            "items": ["Forex", "Metals", "Crypto CFDs", "Indices", "Shares", "Energy", "ETFs"]
+            "items": [
+              "Forex",
+              "Metals",
+              "Crypto CFDs",
+              "Indices",
+              "Shares",
+              "Energy",
+              "ETFs"
+            ]
           },
           {
             "section": "Platform",
-            "items": ["MT4 Desktop", "MT 4 Mobile"]
+            "items": [
+              "MT4 Desktop",
+              "MT 4 Mobile"
+            ]
           },
           {
             "section": "Trading conditions",
-            "items": ["Account replenishment", "Withdrawal of funds"]
+            "items": [
+              "Account replenishment",
+              "Withdrawal of funds"
+            ]
           },
           {
             "section": "Trader's HUB",
-            "items": ["Trader's blog", "Economic calendar", "Market news"]
+            "items": [
+              "Trader's blog",
+              "Economic calendar",
+              "Market news"
+            ]
           },
           {
             "section": "TANDEM trading",
-            "items": ["For trader", "For investor"]
+            "items": [
+              "For trader",
+              "For investor"
+            ]
           }
         ],
         "Partnership": [
           {
             "section": "Partnership",
-            "items": ["Register IB/ Partnership", "How IB generate income"]
+            "items": [
+              "Register IB/ Partnership",
+              "How IB generate income"
+            ]
           }
         ],
         "Company": [
           {
             "section": "Company",
-            "items": ["About the company", "Documents", "Company news", "Contacts", "Career"]
+            "items": [
+              "About the company",
+              "Documents",
+              "Company news",
+              "Contacts",
+              "Career"
+            ]
           }
         ]
       }
@@ -200,7 +235,11 @@
           "title": "Demo",
           "subtitle": "account",
           "description": "Risk-free trading with virtual funds, perfect for beginners to explore markets.",
-          "features": ["Leverage up to 1:100", "Spreads from 0.0 pips", "No deposit required"],
+          "features": [
+            "Leverage up to 1:100",
+            "Spreads from 0.0 pips",
+            "No deposit required"
+          ],
           "buttonText": "Try Demo Now",
           "isRecommended": true
         },
@@ -210,7 +249,11 @@
           "title": "Standard",
           "subtitle": "account",
           "description": "Easy access to spot markets with low fees and — ideal for beginners and active traders.",
-          "features": ["Leverage up to 1:100", "Spreads from 1.2 pips", "First deposit of $50"],
+          "features": [
+            "Leverage up to 1:100",
+            "Spreads from 1.2 pips",
+            "First deposit of $50"
+          ],
           "buttonText": "Open Standard Account",
           "isRecommended": false
         },
@@ -220,7 +263,11 @@
           "title": "Pro",
           "subtitle": "account",
           "description": "Experience tight spreads, higher leverage, and full control over every trade.",
-          "features": ["Leverage up to 1:100", "Spreads from 0.0 pips", "First deposit of $1000"],
+          "features": [
+            "Leverage up to 1:100",
+            "Spreads from 0.0 pips",
+            "First deposit of $1000"
+          ],
           "buttonText": "Trade Like a Pro",
           "isRecommended": false
         },
@@ -230,7 +277,11 @@
           "title": "Tandem",
           "subtitle": "account",
           "description": "Pair with a partner, mentor, or co-trader and grow together with synchronized strategies.",
-          "features": ["Leverage up to 1:100", "Shared account access", "Real-time trade mirroring"],
+          "features": [
+            "Leverage up to 1:100",
+            "Shared account access",
+            "Real-time trade mirroring"
+          ],
           "buttonText": "Trade Together",
           "isRecommended": false
         },
@@ -240,7 +291,11 @@
           "title": "Islamic",
           "subtitle": "account",
           "description": "Swap-free. Shariah-compliant. Trade without interest, with full platform access.",
-          "features": ["Leverage up to 1:100", "No swap / interest fees", "Access to all trading instruments"],
+          "features": [
+            "Leverage up to 1:100",
+            "No swap / interest fees",
+            "Access to all trading instruments"
+          ],
           "buttonText": "Open Islamic Account",
           "isRecommended": false
         }
@@ -431,7 +486,10 @@
         "career": {
           "title": "Career",
           "subtitle": "At the present moment the company is seeking the following specialists:",
-          "positions": ["SALES MANAGER", "HEADMASTER OF THE DEPARTMENT OF ANALYTICS"],
+          "positions": [
+            "SALES MANAGER",
+            "HEADMASTER OF THE DEPARTMENT OF ANALYTICS"
+          ],
           "cta": "IF YOU ARE READY TO DYNAMIC GROWTH, YOU ARE AMBITIOUS AND TALENTLY, SEND YOUR SUMMARY.",
           "button": "SEND CV"
         },
@@ -628,15 +686,30 @@
       "description": "The main goal of Ester is to create the best and most transparent conditions for retail and corporate traders.",
       "trading": {
         "title": "Trading",
-        "items": ["Account overview", "Markets", "Platform", "Terms of trade", "Tandem trading"]
+        "items": [
+          "Account overview",
+          "Markets",
+          "Platform",
+          "Terms of trade",
+          "Tandem trading"
+        ]
       },
       "partnership": {
         "title": "Partnership",
-        "items": ["Register IB/ Partnership", "How IB generate income"]
+        "items": [
+          "Register IB/ Partnership",
+          "How IB generate income"
+        ]
       },
       "company": {
         "title": "Company",
-        "items": ["About the company", "Documents", "Company news", "Contacts", "Career"]
+        "items": [
+          "About the company",
+          "Documents",
+          "Company news",
+          "Contacts",
+          "Career"
+        ]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1362,7 +1435,10 @@
         "offlineNow": "Offline"
       },
       "tabs": {
-        "settings": "Settings"
+        "verification": "Verification",
+        "referrals": "Referrals",
+        "settings": "Settings",
+        "security": "Security"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1447,6 +1523,37 @@
         "depositsWeek": "Deposits this week",
         "depositsMonth": "Deposits this month",
         "depositsYear": "Deposits this year"
+      },
+      "security": {
+        "password": {
+          "title": "Change password",
+          "description": "Set a new password for this client account.",
+          "labels": {
+            "newPassword": "New password",
+            "confirmation": "New password confirmation"
+          },
+          "placeholders": {
+            "newPassword": "*********",
+            "confirmation": "*********"
+          },
+          "sendEmail": "Send new password to client email",
+          "recipient": "Recipient",
+          "emailMissing": "Client email is missing.",
+          "submit": "Save password",
+          "success": "Password updated successfully.",
+          "successWithEmail": "Password updated and email sent.",
+          "error": "Failed to update password.",
+          "validation": {
+            "required": "Password is required.",
+            "min": "Password must contain at least 8 characters.",
+            "confirmationRequired": "Password confirmation is required.",
+            "confirmed": "Passwords do not match."
+          }
+        },
+        "help": {
+          "title": "Password delivery",
+          "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        }
       }
     },
     "verifications": {

@@ -1,20 +1,25 @@
 <template>
-  <div class="referrals-page">
-    <div class="referrals-page__title">
-      <UiTextH4>Referrals</UiTextH4>
-      <UiTextParagraph>list</UiTextParagraph>
-    </div>
-    <div class="referrals-page__content">
-      <ClientsPanel/>
-    </div>
-  </div>
+  <PageStructureDefault>
+    <template #header>
+      <div class="flex flex-col gap-1 text-[var(--ui-text-main)]">
+        <UiTextH4>{{ resolveText("admin.menu.referral", "Referral system") }}</UiTextH4>
+        <UiTextParagraph>{{ resolveText("admin.common.comingSoon", "Section is under development.") }}</UiTextParagraph>
+      </div>
+    </template>
+
+    <template #content>
+      <div class="rounded-[20px] border border-[var(--ui-primary-main)] bg-[var(--ui-background-panel)] p-6 text-[var(--ui-text-secondary)]">
+        {{ resolveText("admin.common.comingSoon", "Section is under development.") }}
+      </div>
+    </template>
+  </PageStructureDefault>
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue-i18n";
-import {definePageMeta} from "~/.nuxt/imports";
+import { definePageMeta } from "~/.nuxt/imports";
+import { useI18n } from "vue-i18n";
 
-import ClientsPanel from "~/pages/admin/clients/components/ClientsPanel.vue";
+import PageStructureDefault from "~/components/block/pages/PageStructureDefault.vue";
 import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import UiTextH4 from "~/components/ui/UiTextH4.vue";
 
@@ -22,24 +27,10 @@ definePageMeta({
   middleware: ["admin-middleware"],
 });
 
-const {t} = useI18n({useScope: "global"});
+const { t } = useI18n({ useScope: "global" });
+
+const resolveText = (key: string, fallback: string) => {
+  const value = t(key);
+  return value === key ? fallback : value;
+};
 </script>
-
-<style lang="scss" scoped>
-.referrals {
-  &-page {
-    height: calc(100vh - 40px);
-    width: 100%;
-    padding: 20px;
-
-    &__title {
-      margin-bottom: 20px;
-      color: var(--ui-text-main);
-    }
-
-    &__content {
-      padding-bottom: 20px;
-    }
-  }
-}
-</style>
