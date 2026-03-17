@@ -338,6 +338,7 @@
                   :value="draftFilters[field.key] || null"
                   :data="field.options"
                   @change="value => setDraftFilterValue(field.key, value)"
+                  @open="handleFilterOptionOpen(field.key)"
                   @search="value => handleFilterOptionSearch(field.key, value)"
                 />
                 <button
@@ -371,6 +372,7 @@
                   :value="draftFilters[field.key] || null"
                   :data="field.options"
                   @change="value => setDraftFilterValue(field.key, value)"
+                  @open="handleFilterOptionOpen(field.key)"
                   @search="value => handleFilterOptionSearch(field.key, value)"
                 />
                 <button
@@ -546,6 +548,7 @@
     SelectFilterKey,
     "id" | "user_id" | "owner_name" | "owner_email" | "owner_phone" | "number" | "type_name" | "type_group"
   >;
+  type RemoteSelectFilterKey = Exclude<SelectFilterKey, "is_favorite">;
   type DynamicFilterOptionsMap = Record<DynamicSelectFilterKey, SelectOption[]>;
   type FilterSearchQueryMap = Record<SelectFilterKey, string>;
 
@@ -642,6 +645,20 @@
     "type_name",
     "type_group",
   ] as const satisfies ReadonlyArray<DynamicSelectFilterKey>;
+  const REMOTE_SELECT_FILTER_KEYS = [
+    "id",
+    "user_id",
+    "owner_name",
+    "owner_email",
+    "owner_phone",
+    "number",
+    "currency",
+    "payment_type",
+    "type_id",
+    "type_name",
+    "type_group",
+    "leverage_id",
+  ] as const satisfies ReadonlyArray<RemoteSelectFilterKey>;
   const QUERY_KEY_PAGE = "page";
   const QUERY_KEY_PER_PAGE = "perPage";
   const QUERY_KEY_SEARCH = "search";
@@ -944,6 +961,9 @@
 
   const isDynamicSelectFilterKey = (key: SelectFilterKey): key is DynamicSelectFilterKey =>
     (DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key);
+
+  const isRemoteSelectFilterKey = (key: SelectFilterKey): key is RemoteSelectFilterKey =>
+    (REMOTE_SELECT_FILTER_KEYS as readonly string[]).includes(key);
 
   const normalizeSelectOptions = (items: any[] = []): SelectOption[] =>
     items.map((item: any) => ({
@@ -1403,7 +1423,7 @@
     }
   };
 
-  const loadFilterMeta = async (options: { filterField?: DynamicSelectFilterKey; filterSearch?: string } = {}) => {
+  const loadFilterMeta = async (options: { filterField?: RemoteSelectFilterKey; filterSearch?: string } = {}) => {
     const { filterField, filterSearch = "" } = options;
 
     try {
@@ -1429,11 +1449,33 @@
       const filterOptions = payload?.filter_options ?? {};
       const nextDynamicOptions = { ...dynamicFilterOptions.value };
 
-      for (const key of DYNAMIC_SELECT_FILTER_KEYS) {
-        if (filterField && key !== filterField) continue;
+      if (filterField) {
+        const normalizedOptions = normalizeSelectOptions(Array.isArray(filterOptions?.[filterField]) ? filterOptions[filterField] : []);
 
-        if (Array.isArray(filterOptions?.[key])) {
-          nextDynamicOptions[key] = normalizeSelectOptions(filterOptions[key]);
+        switch (filterField) {
+          case "type_id":
+            accountTypeFilterOptions.value = normalizedOptions;
+            break;
+          case "leverage_id":
+            leverageFilterOptions.value = normalizedOptions;
+            break;
+          case "currency":
+            currencyFilterOptions.value = normalizedOptions;
+            break;
+          case "payment_type":
+            paymentTypeFilterOptions.value = normalizedOptions;
+            break;
+          default:
+            if (isDynamicSelectFilterKey(filterField)) {
+              nextDynamicOptions[filterField] = normalizedOptions;
+            }
+            break;
+        }
+      } else {
+        for (const key of DYNAMIC_SELECT_FILTER_KEYS) {
+          if (Array.isArray(filterOptions?.[key])) {
+            nextDynamicOptions[key] = normalizeSelectOptions(filterOptions[key]);
+          }
         }
       }
 
@@ -1605,7 +1647,7 @@
       [key]: query,
     };
 
-    if (!isDynamicSelectFilterKey(key)) {
+    if (!isRemoteSelectFilterKey(key)) {
       return;
     }
 
@@ -1616,7 +1658,18 @@
 
     filterSearchTimers.set(key, window.setTimeout(async () => {
       await loadFilterMeta({ filterField: key, filterSearch: query });
-    }, 300));
+    }, 500));
+  };
+
+  const handleFilterOptionOpen = async (key: SelectFilterKey) => {
+    if (!isRemoteSelectFilterKey(key)) {
+      return;
+    }
+
+    await loadFilterMeta({
+      filterField: key,
+      filterSearch: filterSearchQueries.value[key] ?? "",
+    });
   };
 
   const clearDraftFilterValue = (key: FilterKey) => {

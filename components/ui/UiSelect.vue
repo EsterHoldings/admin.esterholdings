@@ -134,6 +134,8 @@
     (e: "blur", v: string): void;
     (e: "loadMore"): void;
     (e: "search", v: string): void;
+    (e: "open"): void;
+    (e: "close"): void;
   }>();
 
   const data = computed<Option[]>(() => props.data);
@@ -197,6 +199,7 @@
 
     isOpen.value = !isOpen.value;
     if (isOpen.value) {
+      emit("open");
       nextTick(() => {
         calcPlacement();
         if (props.searchable) {
@@ -205,6 +208,7 @@
         addGlobalListeners();
       });
     } else {
+      emit("close");
       emit("blur", internalValue.value ?? "");
       removeGlobalListeners();
     }
@@ -231,6 +235,7 @@
     isOpen.value = false;
     internalValue.value = item?.value ?? null;
     emit("change", internalValue.value);
+    emit("close");
     emit("blur", internalValue.value ?? "");
     removeGlobalListeners();
   }
@@ -265,6 +270,7 @@
     if (!el) return;
     if (!el.contains(e.target as Node)) {
       isOpen.value = false;
+      emit("close");
       emit("blur", internalValue.value ?? "");
       removeGlobalListeners();
     }
@@ -274,6 +280,7 @@
     if (!isOpen.value) return;
     if (e.key === "Escape") {
       isOpen.value = false;
+      emit("close");
       emit("blur", internalValue.value ?? "");
       removeGlobalListeners();
     }
