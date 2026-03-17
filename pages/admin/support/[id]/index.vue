@@ -634,7 +634,7 @@
 
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
-  import { definePageMeta, useHead } from "~/.nuxt/imports";
+  import { definePageMeta, useHead, useNuxtApp } from "~/.nuxt/imports";
   import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
@@ -764,6 +764,7 @@
 
   const route = useRoute();
   const router = useRouter();
+  const { $echo } = useNuxtApp() as { $echo?: any };
 
   const appCore = useAppCore();
   const toast = useToast();
@@ -880,6 +881,8 @@
   const participantsAdminAddingId = ref("");
   const participantsAdminCandidates = ref<ParticipantAdminCandidate[]>([]);
   let participantsAdminSearchTimer: ReturnType<typeof setTimeout> | null = null;
+  let participantsPresencePollTimer: ReturnType<typeof setInterval> | null = null;
+  let supportTicketChannel: any = null;
   const tabs = computed(() => [
     { id: "media" as SupportTab, label: supportText.media, count: mediaItems.value.length },
     { id: "documents" as SupportTab, label: supportText.documents, count: documentItems.value.length },
@@ -2220,6 +2223,22 @@
     }
   };
 
+  const stopParticipantsPresencePoll = () => {
+    if (!participantsPresencePollTimer) return;
+    clearInterval(participantsPresencePollTimer);
+    participantsPresencePollTimer = null;
+  };
+
+  const startParticipantsPresencePoll = () => {
+    stopParticipantsPresencePoll();
+    if (isEmailTicket.value) return;
+
+    participantsPresencePollTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      void refreshParticipantsFromTicket();
+    }, 5000);
+  };
+
   const handleSupportPresenceUpdated = (payload?: any) => {
     if (!payload || typeof payload !== "object") return;
 
@@ -2237,6 +2256,48 @@
     }
 
     updateParticipantsOnlineFromPresence(payload as Record<string, unknown>);
+  };
+
+  const resolveEchoClient = () => {
+    if ($echo && typeof $echo.private === "function") {
+      return $echo;
+    }
+
+    if (typeof window !== "undefined") {
+      const fallbackEcho = (window as any).Echo;
+      if (fallbackEcho && typeof fallbackEcho.private === "function") {
+        return fallbackEcho;
+      }
+    }
+
+    return null;
+  };
+
+  const disconnectSupportPresenceRealtime = () => {
+    if (!supportTicketChannel) return;
+
+    supportTicketChannel.stopListening(".ticket.presence.updated", handleSupportPresenceUpdated);
+    supportTicketChannel.stopListening("ticket.presence.updated", handleSupportPresenceUpdated);
+    supportTicketChannel.stopListening(".App\\Events\\TicketPresenceUpdated", handleSupportPresenceUpdated);
+    supportTicketChannel.stopListening("App\\Events\\TicketPresenceUpdated", handleSupportPresenceUpdated);
+    supportTicketChannel = null;
+  };
+
+  const connectSupportPresenceRealtime = () => {
+    if (!id.value || isEmailTicket.value || supportTicketChannel) return;
+
+    const echoClient = resolveEchoClient();
+    if (!echoClient) return;
+
+    supportTicketChannel = echoClient.private(`support.ticket.${id.value}`);
+    supportTicketChannel.stopListening(".ticket.presence.updated", handleSupportPresenceUpdated);
+    supportTicketChannel.stopListening("ticket.presence.updated", handleSupportPresenceUpdated);
+    supportTicketChannel.stopListening(".App\\Events\\TicketPresenceUpdated", handleSupportPresenceUpdated);
+    supportTicketChannel.stopListening("App\\Events\\TicketPresenceUpdated", handleSupportPresenceUpdated);
+    supportTicketChannel.listen(".ticket.presence.updated", handleSupportPresenceUpdated);
+    supportTicketChannel.listen("ticket.presence.updated", handleSupportPresenceUpdated);
+    supportTicketChannel.listen(".App\\Events\\TicketPresenceUpdated", handleSupportPresenceUpdated);
+    supportTicketChannel.listen("App\\Events\\TicketPresenceUpdated", handleSupportPresenceUpdated);
   };
 
   const handleSupportMessageUpdated = (payload?: any) => {
@@ -2301,7 +2362,9 @@
       await loadEmailThread();
     } else {
       await loadLibraryFromChat();
+      connectSupportPresenceRealtime();
     }
+    startParticipantsPresencePoll();
     scheduleDesktopGridMeasure();
     window.addEventListener("pointerdown", handleParticipantsPointerDown);
   });
@@ -2320,6 +2383,9 @@
     }));
     if (isEmailTicket.value) {
       void loadEmailThread();
+      disconnectSupportPresenceRealtime();
+    } else {
+      connectSupportPresenceRealtime();
     }
   });
 
@@ -2351,6 +2417,8 @@
       clearTimeout(participantsAdminSearchTimer);
       participantsAdminSearchTimer = null;
     }
+    stopParticipantsPresencePoll();
+    disconnectSupportPresenceRealtime();
     handleSideScrollMouseUp();
     closeLibraryMediaViewer();
   });
