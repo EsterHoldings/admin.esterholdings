@@ -1645,16 +1645,28 @@
     }
 
     const triggerRect = filtersTriggerRef.value.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
+    const margin = 12;
+    const gap = 8;
     const preferredWidth = Math.min(Math.max(viewportWidth - 24, 320), 560);
     const left = Math.max(12, Math.min(triggerRect.right - preferredWidth, viewportWidth - preferredWidth - 12));
+    const spaceBelow = viewportHeight - triggerRect.bottom - gap - margin;
+    const spaceAbove = triggerRect.top - gap - margin;
+    const shouldOpenAbove = spaceBelow < 360 && spaceAbove > spaceBelow;
+    const availableHeight = shouldOpenAbove ? spaceAbove : spaceBelow;
+    const maxHeight = Math.max(220, Math.min(760, availableHeight));
+    const top = shouldOpenAbove
+      ? Math.max(margin, triggerRect.top - gap - maxHeight)
+      : Math.max(margin, triggerRect.bottom + gap);
 
     filtersPopoverStyle.value = {
       position: "fixed",
-      top: `${Math.round(triggerRect.bottom + 8)}px`,
+      top: `${Math.round(top)}px`,
       left: `${Math.round(left)}px`,
       width: `${Math.round(preferredWidth)}px`,
       maxWidth: "calc(100vw - 24px)",
+      maxHeight: `${Math.round(maxHeight)}px`,
     };
   };
 
@@ -1903,12 +1915,14 @@
     max-height: min(70vh, 760px);
     border: 1px solid var(--color-stroke-ui-light);
     border-radius: 10px;
-    background: var(--ui-background-panel);
-    box-shadow: 0 12px 30px color-mix(in srgb, var(--ui-background) 70%, transparent);
+    background: color-mix(in srgb, var(--ui-background-panel) 92%, var(--ui-background) 8%);
+    box-shadow: 0 18px 44px color-mix(in srgb, var(--ui-background) 84%, transparent);
+    backdrop-filter: blur(6px);
     padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    overflow: hidden;
   }
 
   .accounts-filters-popover__title {
