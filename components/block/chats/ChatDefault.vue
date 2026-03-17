@@ -1193,6 +1193,7 @@
   const MAX_PENDING_ATTACHMENTS = 10;
   const UPLOAD_REQUEST_TIMEOUT_MS = 15 * 60 * 1000;
   const PENDING_MESSAGE_MATCH_WINDOW_MS = 2 * 60 * 1000;
+  const SUPPORT_PRESENCE_HEARTBEAT_MS = 5000;
   const VIEWER_SWIPE_THRESHOLD = 52;
   const VIEWER_MAX_VERTICAL_DRIFT = 120;
   const resolveText = (key: string, fallback: string): string => {
@@ -3333,7 +3334,7 @@
     stopPresenceHeartbeat();
     hb = setInterval(() => {
       apiOpen(ticketId).catch(() => {});
-    }, 15000);
+    }, SUPPORT_PRESENCE_HEARTBEAT_MS);
   }
 
   watch(
@@ -3454,14 +3455,23 @@
   };
 
   const subscribeRealtimeForTicket = async (ticketId: string) => {
-    const previousTicketId = activeRealtimeTicketId || ticketId;
+    const previousTicketId = activeRealtimeTicketId;
     reconnectSocketTransport();
-    leavePrivate(previousTicketId);
-    leavePresence(previousTicketId);
+
+    if (previousTicketId && previousTicketId !== ticketId) {
+      leavePrivate(previousTicketId);
+      leavePresence(previousTicketId);
+      apiClose(previousTicketId).catch(() => {});
+    }
 
     if (hasEchoClient()) {
-      joinPresence(ticketId);
-      privateChan = subscribePrivate(ticketId);
+      if (!presenceChan || previousTicketId !== ticketId) {
+        joinPresence(ticketId);
+      }
+
+      if (!privateChan || previousTicketId !== ticketId) {
+        privateChan = subscribePrivate(ticketId);
+      }
     }
 
     activeRealtimeTicketId = ticketId;
@@ -3479,8 +3489,19 @@
   };
 
   const handleVisibilityChange = () => {
-    if (typeof document === "undefined" || document.visibilityState !== "visible") return;
-    void handleRealtimeResume();
+    if (typeof document === "undefined") return;
+
+    if (document.visibilityState === "hidden") {
+      const activeTicketId = activeRealtimeTicketId || props.ticketId;
+      stopPresenceHeartbeat();
+      leavePresence(activeTicketId);
+      apiClose(activeTicketId).catch(() => {});
+      return;
+    }
+
+    if (document.visibilityState === "visible") {
+      void handleRealtimeResume();
+    }
   };
 
   const handleBrowserOnline = () => {
@@ -3489,6 +3510,13 @@
 
   const handlePageShow = () => {
     void handleRealtimeResume();
+  };
+
+  const handlePageHide = () => {
+    const activeTicketId = activeRealtimeTicketId || props.ticketId;
+    stopPresenceHeartbeat();
+    leavePresence(activeTicketId);
+    apiClose(activeTicketId).catch(() => {});
   };
 
   async function markReadUpToMessageId(messageId: string) {
@@ -3611,6 +3639,7 @@
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("online", handleBrowserOnline);
     window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("pagehide", handlePageHide);
     appResumeListenersAttached = true;
     bindSocketStateListener();
     startRealtimeFallbackSync();
@@ -3657,6 +3686,7 @@
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleBrowserOnline);
       window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("pagehide", handlePageHide);
       appResumeListenersAttached = false;
     }
 
@@ -3672,6 +3702,7 @@
       clearAllRemoteTyping();
       leavePrivate(oldId);
       leavePresence(oldId);
+      apiClose(oldId).catch(() => {});
       await subscribeRealtimeForTicket(id).catch(error => {
         console.error("[ChatDefault] subscribeRealtimeForTicket failed", error);
       });
