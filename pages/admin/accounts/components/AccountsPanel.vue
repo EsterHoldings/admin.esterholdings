@@ -126,9 +126,12 @@
                         <div class="accounts-filters-popover__control">
                           <UiSelect
                             :withoutNoSelect="false"
+                            :searchable="Boolean(field.searchable)"
+                            :searchValue="filterSearchQueries[field.key]"
                             :value="draftFilters[field.key] || null"
                             :data="field.options"
                             @change="value => setDraftFilterValue(field.key, value)"
+                            @search="value => handleFilterOptionSearch(field.key, value)"
                           />
                           <button
                             v-if="hasDraftFilterValue(field.key)"
@@ -154,12 +157,14 @@
                       >
                         <span>{{ field.label }}</span>
                         <div class="accounts-filters-popover__control">
-                          <input
-                            class="accounts-filters-popover__input"
-                            type="text"
-                            :value="draftFilters[field.key]"
-                            :placeholder="field.label"
-                            @input="event => handleDraftTextInput(field.key, event)"
+                          <UiSelect
+                            :withoutNoSelect="false"
+                            :searchable="true"
+                            :searchValue="filterSearchQueries[field.key]"
+                            :value="draftFilters[field.key] || null"
+                            :data="field.options"
+                            @change="value => setDraftFilterValue(field.key, value)"
+                            @search="value => handleFilterOptionSearch(field.key, value)"
                           />
                           <button
                             v-if="hasDraftFilterValue(field.key)"
@@ -529,6 +534,16 @@
     | "updated_at_to";
 
   type AccountFilters = Record<FilterKey, string>;
+  type SelectFilterKey = Exclude<
+    FilterKey,
+    "balance_from" | "balance_to" | "created_at_from" | "created_at_to" | "updated_at_from" | "updated_at_to"
+  >;
+  type DynamicSelectFilterKey = Extract<
+    SelectFilterKey,
+    "id" | "user_id" | "owner_name" | "owner_email" | "owner_phone" | "number" | "type_name" | "type_group"
+  >;
+  type DynamicFilterOptionsMap = Record<DynamicSelectFilterKey, SelectOption[]>;
+  type FilterSearchQueryMap = Record<SelectFilterKey, string>;
 
   interface AdminAccount {
     id: string;
@@ -598,6 +613,31 @@
     "type_name",
     "type_group",
   ] as const;
+  const SELECT_FILTER_KEYS = [
+    "id",
+    "user_id",
+    "owner_name",
+    "owner_email",
+    "owner_phone",
+    "number",
+    "currency",
+    "payment_type",
+    "type_id",
+    "type_name",
+    "type_group",
+    "leverage_id",
+    "is_favorite",
+  ] as const satisfies ReadonlyArray<SelectFilterKey>;
+  const DYNAMIC_SELECT_FILTER_KEYS = [
+    "id",
+    "user_id",
+    "owner_name",
+    "owner_email",
+    "owner_phone",
+    "number",
+    "type_name",
+    "type_group",
+  ] as const satisfies ReadonlyArray<DynamicSelectFilterKey>;
   const QUERY_KEY_PAGE = "page";
   const QUERY_KEY_PER_PAGE = "perPage";
   const QUERY_KEY_SEARCH = "search";
@@ -630,6 +670,31 @@
 
   const cloneFilters = (source: AccountFilters): AccountFilters => ({ ...source });
   const FILTER_KEYS = Object.keys(createEmptyFilters()) as FilterKey[];
+  const createEmptyDynamicFilterOptions = (): DynamicFilterOptionsMap => ({
+    id: [],
+    user_id: [],
+    owner_name: [],
+    owner_email: [],
+    owner_phone: [],
+    number: [],
+    type_name: [],
+    type_group: [],
+  });
+  const createEmptyFilterSearchQueries = (): FilterSearchQueryMap => ({
+    id: "",
+    user_id: "",
+    owner_name: "",
+    owner_email: "",
+    owner_phone: "",
+    number: "",
+    currency: "",
+    payment_type: "",
+    type_id: "",
+    type_name: "",
+    type_group: "",
+    leverage_id: "",
+    is_favorite: "",
+  });
 
   const sanitizeFilterValue = (value: unknown): string => {
     if (typeof value === "string") return value.trim();
@@ -766,6 +831,9 @@
   const draftFilters = ref<AccountFilters>(createEmptyFilters());
   const isFiltersPopoverOpen = ref(false);
   const filtersPopoverRef = ref<HTMLElement | null>(null);
+  const dynamicFilterOptions = ref<DynamicFilterOptionsMap>(createEmptyDynamicFilterOptions());
+  const filterSearchQueries = ref<FilterSearchQueryMap>(createEmptyFilterSearchQueries());
+  const filterSearchTimers = new Map<SelectFilterKey, ReturnType<typeof window.setTimeout>>();
   const accountTypeFilterOptions = ref<SelectOption[]>([]);
   const leverageFilterOptions = ref<SelectOption[]>([]);
   const currencyFilterOptions = ref<SelectOption[]>([]);
@@ -776,32 +844,62 @@
   });
 
   const filterTextFieldOptions = computed(() => [
-    { key: "id" as FilterKey, label: "ID" },
-    { key: "user_id" as FilterKey, label: resolveText("admin.accounts.filters.fields.user_id", "User ID") },
-    { key: "owner_name" as FilterKey, label: resolveText("admin.accounts.filters.fields.owner_name", "Owner name") },
-    { key: "owner_email" as FilterKey, label: resolveText("admin.accounts.filters.fields.owner_email", "Owner email") },
-    { key: "owner_phone" as FilterKey, label: resolveText("admin.accounts.filters.fields.owner_phone", "Owner phone") },
-    { key: "number" as FilterKey, label: resolveText("admin.accounts.columns.number", "Account number") },
-    { key: "type_name" as FilterKey, label: resolveText("admin.accounts.columns.type", "Type") },
-    { key: "type_group" as FilterKey, label: resolveText("admin.accounts.filters.fields.type_group", "Type group") },
+    { key: "id" as DynamicSelectFilterKey, label: "ID", options: getFilterOptions("id") },
+    {
+      key: "user_id" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.filters.fields.user_id", "User ID"),
+      options: getFilterOptions("user_id"),
+    },
+    {
+      key: "owner_name" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.filters.fields.owner_name", "Owner name"),
+      options: getFilterOptions("owner_name"),
+    },
+    {
+      key: "owner_email" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.filters.fields.owner_email", "Owner email"),
+      options: getFilterOptions("owner_email"),
+    },
+    {
+      key: "owner_phone" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.filters.fields.owner_phone", "Owner phone"),
+      options: getFilterOptions("owner_phone"),
+    },
+    {
+      key: "number" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.columns.number", "Account number"),
+      options: getFilterOptions("number"),
+    },
+    {
+      key: "type_name" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.columns.type", "Type"),
+      options: getFilterOptions("type_name"),
+    },
+    {
+      key: "type_group" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.filters.fields.type_group", "Type group"),
+      options: getFilterOptions("type_group"),
+    },
   ]);
 
   const filterSelectFieldOptions = computed(() => {
-    const fields: Array<{ key: FilterKey; label: string; options: SelectOption[] }> = [
+    const fields: Array<{ key: SelectFilterKey; label: string; options: SelectOption[]; searchable?: boolean }> = [
       {
         key: "is_favorite",
         label: resolveText("admin.accounts.filters.fields.is_favorite", "Favorite"),
-        options: favoriteOptions.value,
+        options: getFilterOptions("is_favorite"),
       },
       {
         key: "type_id",
         label: resolveText("admin.accounts.columns.type", "Type"),
-        options: accountTypeFilterOptions.value,
+        options: getFilterOptions("type_id"),
+        searchable: true,
       },
       {
         key: "leverage_id",
         label: resolveText("admin.accounts.columns.leverage", "Leverage"),
-        options: leverageFilterOptions.value,
+        options: getFilterOptions("leverage_id"),
+        searchable: true,
       },
     ];
 
@@ -809,7 +907,8 @@
       fields.push({
         key: "currency",
         label: resolveText("admin.accounts.filters.fields.currency", "Currency"),
-        options: currencyFilterOptions.value,
+        options: getFilterOptions("currency"),
+        searchable: true,
       });
     }
 
@@ -817,7 +916,8 @@
       fields.push({
         key: "payment_type",
         label: resolveText("admin.accounts.filters.fields.payment_type", "Payment type"),
-        options: paymentTypeFilterOptions.value,
+        options: getFilterOptions("payment_type"),
+        searchable: true,
       });
     }
 
@@ -835,6 +935,50 @@
     { id: "yes", value: "yes", text: resolveText("admin.accounts.filters.values.yes", "Yes") },
     { id: "no", value: "no", text: resolveText("admin.accounts.filters.values.no", "No") },
   ]);
+
+  const isDynamicSelectFilterKey = (key: SelectFilterKey): key is DynamicSelectFilterKey =>
+    (DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key);
+
+  const normalizeSelectOptions = (items: any[] = []): SelectOption[] =>
+    items.map((item: any) => ({
+      id: String(item?.id ?? item?.value ?? ""),
+      value: String(item?.value ?? item?.id ?? ""),
+      text: String(item?.text ?? item?.name ?? item?.value ?? item?.id ?? "-"),
+    }));
+
+  const filterOptionsByQuery = (options: SelectOption[], query: string): SelectOption[] => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return options;
+    }
+
+    return options.filter(option => {
+      const haystack = `${option.text} ${option.value}`.trim().toLowerCase();
+      return haystack.includes(normalizedQuery);
+    });
+  };
+
+  const getFilterOptions = (key: SelectFilterKey): SelectOption[] => {
+    const query = filterSearchQueries.value[key] ?? "";
+
+    if (isDynamicSelectFilterKey(key)) {
+      return filterOptionsByQuery(dynamicFilterOptions.value[key] ?? [], query);
+    }
+
+    const baseOptionsMap: Partial<Record<SelectFilterKey, SelectOption[]>> = {
+      is_favorite: favoriteOptions.value,
+      type_id: accountTypeFilterOptions.value,
+      leverage_id: leverageFilterOptions.value,
+      currency: currencyFilterOptions.value,
+      payment_type: paymentTypeFilterOptions.value,
+    };
+
+    return filterOptionsByQuery(baseOptionsMap[key] ?? [], query);
+  };
+
+  const resetFilterSearchQueries = () => {
+    filterSearchQueries.value = createEmptyFilterSearchQueries();
+  };
 
   const filterLabelMap = computed<Record<FilterKey, string>>(() => ({
     id: "ID",
@@ -870,6 +1014,15 @@
           : value === "no"
             ? resolveText("admin.accounts.filters.values.no", "No")
             : value;
+      case "id":
+      case "user_id":
+      case "owner_name":
+      case "owner_email":
+      case "owner_phone":
+      case "number":
+      case "type_name":
+      case "type_group":
+        return getFilterOptionText(dynamicFilterOptions.value[key as DynamicSelectFilterKey] ?? [], value);
       case "type_id":
         return getFilterOptionText(accountTypeFilterOptions.value, value);
       case "leverage_id":
@@ -1244,52 +1397,51 @@
     }
   };
 
-  const loadFilterMeta = async () => {
+  const loadFilterMeta = async (options: { filterField?: DynamicSelectFilterKey; filterSearch?: string } = {}) => {
+    const { filterField, filterSearch = "" } = options;
+
     try {
-      const response = await appCore.adminModules.accounts.getMeta();
+      const response = await appCore.adminModules.accounts.getMeta({
+        filter_field: filterField,
+        filter_search: filterSearch,
+        limit: 25,
+      });
       const payload = response?.data?.data ?? {};
 
-      accountTypeFilterOptions.value = Array.isArray(payload?.account_types)
-        ? payload.account_types.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.name ?? item?.id ?? "-"),
-          }))
-        : [];
-
-      leverageFilterOptions.value = Array.isArray(payload?.leverages)
-        ? payload.leverages.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.label ?? item?.value ?? "-"),
-          }))
-        : [];
-
-      currencyFilterOptions.value = Array.isArray(payload?.currencies)
-        ? payload.currencies.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.value ?? item?.id ?? "-"),
-          }))
-        : [];
-
-      paymentTypeFilterOptions.value = Array.isArray(payload?.payment_types)
-        ? payload.payment_types.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.value ?? item?.id ?? "-"),
-          }))
-        : [];
+      if (!filterField) {
+        accountTypeFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.account_types) ? payload.account_types : []);
+        leverageFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.leverages) ? payload.leverages : []);
+        currencyFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.currencies) ? payload.currencies : []);
+        paymentTypeFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.payment_types) ? payload.payment_types : []);
+      }
 
       accountFilterFeatures.value = {
         currency: Boolean(payload?.features?.currency ?? true),
         payment_type: Boolean(payload?.features?.payment_type ?? true),
       };
+
+      const filterOptions = payload?.filter_options ?? {};
+      const nextDynamicOptions = { ...dynamicFilterOptions.value };
+
+      for (const key of DYNAMIC_SELECT_FILTER_KEYS) {
+        if (filterField && key !== filterField) continue;
+
+        if (Array.isArray(filterOptions?.[key])) {
+          nextDynamicOptions[key] = normalizeSelectOptions(filterOptions[key]);
+        }
+      }
+
+      dynamicFilterOptions.value = nextDynamicOptions;
     } catch {
+      if (filterField) {
+        return;
+      }
+
       accountTypeFilterOptions.value = [];
       leverageFilterOptions.value = [];
       currencyFilterOptions.value = [];
       paymentTypeFilterOptions.value = [];
+      dynamicFilterOptions.value = createEmptyDynamicFilterOptions();
       accountFilterFeatures.value = {
         currency: false,
         payment_type: false,
@@ -1441,8 +1593,35 @@
     };
   };
 
+  const handleFilterOptionSearch = (key: SelectFilterKey, query: string) => {
+    filterSearchQueries.value = {
+      ...filterSearchQueries.value,
+      [key]: query,
+    };
+
+    if (!isDynamicSelectFilterKey(key)) {
+      return;
+    }
+
+    const activeTimer = filterSearchTimers.get(key);
+    if (activeTimer) {
+      window.clearTimeout(activeTimer);
+    }
+
+    filterSearchTimers.set(key, window.setTimeout(async () => {
+      await loadFilterMeta({ filterField: key, filterSearch: query });
+    }, 300));
+  };
+
   const clearDraftFilterValue = (key: FilterKey) => {
     setDraftFilterValue(key, "");
+
+    if ((SELECT_FILTER_KEYS as readonly string[]).includes(key)) {
+      filterSearchQueries.value = {
+        ...filterSearchQueries.value,
+        [key as SelectFilterKey]: "",
+      };
+    }
   };
 
   const hasDraftFilterValue = (key: FilterKey): boolean => {
@@ -1457,17 +1636,20 @@
   const toggleFiltersPopover = () => {
     if (!isFiltersPopoverOpen.value) {
       draftFilters.value = cloneFilters(appliedFilters.value);
+      resetFilterSearchQueries();
     }
     isFiltersPopoverOpen.value = !isFiltersPopoverOpen.value;
   };
 
   const resetDraftFilters = () => {
     draftFilters.value = createEmptyFilters();
+    resetFilterSearchQueries();
   };
 
   const applyDraftFilters = async () => {
     appliedFilters.value = cloneFilters(draftFilters.value);
     isFiltersPopoverOpen.value = false;
+    resetFilterSearchQueries();
     await loadData({ resetPage: true });
     await syncStateToUrl();
   };
@@ -1482,6 +1664,7 @@
   const clearAllAppliedFilters = async () => {
     appliedFilters.value = createEmptyFilters();
     draftFilters.value = createEmptyFilters();
+    resetFilterSearchQueries();
     await loadData({ resetPage: true });
     await syncStateToUrl();
   };
@@ -1546,6 +1729,8 @@
   });
 
   onBeforeUnmount(() => {
+    filterSearchTimers.forEach(timerId => window.clearTimeout(timerId));
+    filterSearchTimers.clear();
     useEventBus.off("loadDataForAdminAccounts", handleExternalReload);
     document.removeEventListener("click", handleClickOutsideFilters);
     document.removeEventListener("click", handleClickOutsideActionMenu);
@@ -1588,14 +1773,17 @@
 
   .accounts-stat-card.is-balance-summary {
     grid-column: 1 / -1;
-    background:
-      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-accent) 16%, transparent) 0%, transparent 70.44%),
-      var(--ui-background-card);
+    background: transparent;
+    padding: 0;
   }
 
   .accounts-stat-card__label {
     font-size: 12px;
     color: var(--ui-text-secondary);
+  }
+
+  .accounts-stat-card.is-balance-summary .accounts-stat-card__label {
+    margin-bottom: 8px;
   }
 
   .accounts-stat-card__value {
@@ -1607,7 +1795,7 @@
   }
 
   .accounts-stat-card__balance-grid {
-    margin-top: 8px;
+    margin-top: 0;
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 8px;
@@ -1620,9 +1808,9 @@
   }
 
   .accounts-stat-card__balance-item {
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--ui-background-panel) 80%, transparent);
-    padding: 8px 10px;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
   }
 
   .accounts-stat-card__balance-label {
