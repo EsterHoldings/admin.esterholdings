@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "Autenticazione a due fattori",
+          "enabledDescription": "L’autenticazione a due fattori è abilitata per questo cliente.",
+          "disabledDescription": "L’autenticazione a due fattori è attualmente disabilitata per questo cliente.",
+          "statusEnabled": "Abilitata",
+          "statusDisabled": "Disabilitata",
+          "disable": "Disabilita 2FA",
+          "disableSuccess": "2FA disabilitata con successo.",
+          "disableError": "Impossibile disabilitare la 2FA."
         }
       }
     },

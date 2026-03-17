@@ -5,26 +5,31 @@
         v-for="card in metricCards"
         :key="card.id">
         <template v-if="card.kind === 'is-deposits-summary'">
-          <div
+          <button
             v-for="segment in card.segments"
             :key="`${card.id}-${segment.id}`"
-            class="clients-stat-card is-deposit-segment">
+            type="button"
+            class="clients-stat-card is-deposit-segment"
+            :class="{ 'is-active': segment.isActive }"
+            @click="handleMetricSegmentClick(card.id, segment.id)">
             <div class="clients-stat-card__deposits-label">{{ segment.label }}</div>
             <div
               class="clients-stat-card__deposits-value"
               :class="`size-${segment.size}`">
               {{ segment.value }}
             </div>
-          </div>
+          </button>
         </template>
 
-        <div
+        <button
           v-else
+          type="button"
           class="clients-stat-card"
-          :class="card.kind">
+          :class="[card.kind, { 'is-active': card.isActive }]"
+          @click="handleMetricCardClick(card.id)">
           <div class="clients-stat-card__label">{{ card.label }}</div>
           <div class="clients-stat-card__value">{{ card.value }}</div>
-        </div>
+        </button>
       </template>
     </div>
 
@@ -77,173 +82,17 @@
                 @update:modelValue="handleChangeViewMode" />
 
               <div
-                ref="filtersPopoverRef"
+                ref="filtersTriggerRef"
                 class="relative">
                 <UiButtonDefault
                   state="info--small"
-                  class="!w-[44px]"
-                  @click.stop="toggleFiltersPopover">
-                  <UiIconFilters class="!h-4 !w-4" />
+                  class="min-w-[120px] shrink-0"
+                  @click="toggleFiltersPopover">
+                  <span class="inline-flex items-center gap-2">
+                    <UiIconFilters class="!h-4 !w-4" />
+                    <span>{{ t("admin.clients.filters.title", "Filters") }}</span>
+                  </span>
                 </UiButtonDefault>
-
-                <div
-                  v-if="isFiltersPopoverOpen"
-                  class="clients-filters-popover"
-                  @click.stop>
-                  <div class="clients-filters-popover__title">
-                    {{ t("admin.clients.filters.title", "Filters") }}
-                  </div>
-
-                  <div class="clients-filters-popover__body">
-                    <div class="clients-filters-popover__section-title">
-                      {{ t("admin.clients.filters.sections.statuses", "Statuses") }}
-                    </div>
-
-                    <div class="clients-filters-popover__grid clients-filters-popover__grid--status">
-                      <label class="clients-filters-popover__field">
-                        <span>{{ t("admin.clients.filters.fields.online_status", "Online status") }}</span>
-                        <div class="clients-filters-popover__control">
-                          <UiSelect
-                            :withoutNoSelect="false"
-                            :value="draftFilters.online_status || null"
-                            :data="onlineStatusOptions"
-                            @change="value => setDraftFilterValue('online_status', value)" />
-                          <button
-                            v-if="hasDraftFilterValue('online_status')"
-                            type="button"
-                            class="clients-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue('online_status')">
-                            ×
-                          </button>
-                        </div>
-                      </label>
-
-                      <label class="clients-filters-popover__field">
-                        <span>{{ t("admin.clients.filters.fields.email_verified", "Email verification") }}</span>
-                        <div class="clients-filters-popover__control">
-                          <UiSelect
-                            :withoutNoSelect="false"
-                            :value="draftFilters.email_verified || null"
-                            :data="emailVerifiedOptions"
-                            @change="value => setDraftFilterValue('email_verified', value)" />
-                          <button
-                            v-if="hasDraftFilterValue('email_verified')"
-                            type="button"
-                            class="clients-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue('email_verified')">
-                            ×
-                          </button>
-                        </div>
-                      </label>
-
-                      <label class="clients-filters-popover__field">
-                        <span>{{ t("admin.clients.filters.fields.has_photo", "Photo") }}</span>
-                        <div class="clients-filters-popover__control">
-                          <UiSelect
-                            :withoutNoSelect="false"
-                            :value="draftFilters.has_photo || null"
-                            :data="hasPhotoOptions"
-                            @change="value => setDraftFilterValue('has_photo', value)" />
-                          <button
-                            v-if="hasDraftFilterValue('has_photo')"
-                            type="button"
-                            class="clients-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue('has_photo')">
-                            ×
-                          </button>
-                        </div>
-                      </label>
-
-                      <label class="clients-filters-popover__field">
-                        <span>{{ t("admin.clients.filters.fields.two_factor_enabled", "2FA") }}</span>
-                        <div class="clients-filters-popover__control">
-                          <UiSelect
-                            :withoutNoSelect="false"
-                            :value="draftFilters.two_factor_enabled || null"
-                            :data="twoFactorOptions"
-                            @change="value => setDraftFilterValue('two_factor_enabled', value)" />
-                          <button
-                            v-if="hasDraftFilterValue('two_factor_enabled')"
-                            type="button"
-                            class="clients-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue('two_factor_enabled')">
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div class="clients-filters-popover__section-title">
-                      {{ t("admin.clients.filters.sections.text", "Text fields") }}
-                    </div>
-
-                    <div class="clients-filters-popover__grid">
-                      <label
-                        v-for="field in filterTextFieldOptions"
-                        :key="field.key"
-                        class="clients-filters-popover__field">
-                        <span>{{ field.label }}</span>
-                        <div class="clients-filters-popover__control">
-                          <input
-                            class="clients-filters-popover__input"
-                            type="text"
-                            :value="draftFilters[field.key]"
-                            :placeholder="field.label"
-                            @input="event => handleDraftTextInput(field.key, event)" />
-                          <button
-                            v-if="hasDraftFilterValue(field.key)"
-                            type="button"
-                            class="clients-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue(field.key)">
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div class="clients-filters-popover__section-title">
-                      {{ t("admin.clients.filters.sections.dates", "Date ranges") }}
-                    </div>
-
-                    <div class="clients-filters-popover__grid">
-                      <label
-                        v-for="field in filterDateFieldOptions"
-                        :key="field.key"
-                        class="clients-filters-popover__field">
-                        <span>{{ field.label }}</span>
-                        <div class="clients-filters-popover__control">
-                          <input
-                            class="clients-filters-popover__input"
-                            type="date"
-                            :value="draftFilters[field.key]"
-                            @input="event => handleDraftTextInput(field.key, event)" />
-                          <button
-                            v-if="hasDraftFilterValue(field.key)"
-                            type="button"
-                            class="clients-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue(field.key)">
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div class="clients-filters-popover__actions">
-                    <UiButtonDefault
-                      state="info--small"
-                      class="!w-full"
-                      @click="resetDraftFilters">
-                      {{ t("admin.clients.filters.reset", "Reset") }}
-                    </UiButtonDefault>
-                    <UiButtonDefault
-                      state="info--small"
-                      class="!w-full"
-                      @click="applyDraftFilters">
-                      {{ t("admin.clients.filters.apply", "Apply") }}
-                    </UiButtonDefault>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -395,11 +244,130 @@
       :totalRows="totalRows"
       @perPageChange="handleChangePerPage"
       @pageChange="handleChangePage" />
+
+    <Teleport to="body">
+      <div
+        v-if="isFiltersPopoverOpen"
+        ref="filtersPopoverPanelRef"
+        class="clients-filters-popover"
+        :style="filtersPopoverStyle"
+        @click.stop>
+        <div class="clients-filters-popover__title">
+          {{ t("admin.clients.filters.title", "Filters") }}
+        </div>
+
+        <div class="clients-filters-popover__body">
+          <div class="clients-filters-popover__section-title">
+            {{ t("admin.clients.filters.sections.statuses", "Statuses") }}
+          </div>
+
+          <div class="clients-filters-popover__grid clients-filters-popover__grid--status">
+            <label
+              v-for="field in filterSelectFieldOptions"
+              :key="field.key"
+              class="clients-filters-popover__field">
+              <span>{{ field.label }}</span>
+              <div class="clients-filters-popover__control">
+                <UiSelect
+                  :withoutNoSelect="false"
+                  :searchable="Boolean(field.searchable)"
+                  :searchValue="filterSearchQueries[field.key]"
+                  :value="draftFilters[field.key] || null"
+                  :data="field.options"
+                  @change="value => setDraftFilterValue(field.key, value)"
+                  @open="handleFilterOptionOpen(field.key)"
+                  @search="value => handleFilterOptionSearch(field.key, value)" />
+                <button
+                  v-if="hasDraftFilterValue(field.key)"
+                  type="button"
+                  class="clients-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue(field.key)">
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+
+          <div class="clients-filters-popover__section-title">
+            {{ t("admin.clients.filters.sections.text", "Text fields") }}
+          </div>
+
+          <div class="clients-filters-popover__grid">
+            <label
+              v-for="field in filterTextFieldOptions"
+              :key="field.key"
+              class="clients-filters-popover__field">
+              <span>{{ field.label }}</span>
+              <div class="clients-filters-popover__control">
+                <UiSelect
+                  :withoutNoSelect="false"
+                  searchable
+                  :searchValue="filterSearchQueries[field.key]"
+                  :value="draftFilters[field.key] || null"
+                  :data="field.options"
+                  @change="value => setDraftFilterValue(field.key, value)"
+                  @open="handleFilterOptionOpen(field.key)"
+                  @search="value => handleFilterOptionSearch(field.key, value)" />
+                <button
+                  v-if="hasDraftFilterValue(field.key)"
+                  type="button"
+                  class="clients-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue(field.key)">
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+
+          <div class="clients-filters-popover__section-title">
+            {{ t("admin.clients.filters.sections.dates", "Date ranges") }}
+          </div>
+
+          <div class="clients-filters-popover__grid">
+            <label
+              v-for="field in filterDateFieldOptions"
+              :key="field.key"
+              class="clients-filters-popover__field">
+              <span>{{ field.label }}</span>
+              <div class="clients-filters-popover__control">
+                <input
+                  class="clients-filters-popover__input"
+                  type="date"
+                  :value="draftFilters[field.key]"
+                  @input="event => handleDraftTextInput(field.key, event)" />
+                <button
+                  v-if="hasDraftFilterValue(field.key)"
+                  type="button"
+                  class="clients-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue(field.key)">
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="clients-filters-popover__actions">
+          <UiButtonDefault
+            state="info--small"
+            class="!w-full"
+            @click="resetDraftFilters">
+            {{ t("admin.clients.filters.reset", "Reset") }}
+          </UiButtonDefault>
+          <UiButtonDefault
+            state="info--small"
+            class="!w-full"
+            @click="applyDraftFilters">
+            {{ t("admin.clients.filters.apply", "Apply") }}
+          </UiButtonDefault>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, h, onBeforeUnmount, onMounted, ref, watch } from "vue";
+  import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
   import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from "vue-router";
   import { useI18n } from "vue-i18n";
   import { debounce } from "~/utils/helper/debounce";
@@ -451,6 +419,12 @@
       month: number;
       year: number;
     };
+  }
+
+  interface SelectOption {
+    id: string;
+    value: string;
+    text: string;
   }
 
   const ORDER_DIRECTION_ASC = "asc";
@@ -510,6 +484,8 @@
     | "email_verified"
     | "has_photo"
     | "two_factor_enabled"
+    | "created_period"
+    | "deposit_period"
     | "birthdate_from"
     | "birthdate_to"
     | "created_at_from"
@@ -520,6 +496,47 @@
     | "updated_at_to";
 
   type ClientFilters = Record<FilterKey, string>;
+  type SelectFilterKey = Extract<
+    FilterKey,
+    | "online_status"
+    | "email_verified"
+    | "has_photo"
+    | "two_factor_enabled"
+    | "created_period"
+    | "deposit_period"
+    | "id"
+    | "email"
+    | "first_name"
+    | "mid_name"
+    | "last_name"
+    | "phone"
+    | "country"
+    | "state"
+    | "city"
+    | "address"
+    | "postal_code"
+    | "provider_name"
+    | "provider_id"
+  >;
+  type DynamicSelectFilterKey = Extract<
+    SelectFilterKey,
+    | "id"
+    | "email"
+    | "first_name"
+    | "mid_name"
+    | "last_name"
+    | "phone"
+    | "country"
+    | "state"
+    | "city"
+    | "address"
+    | "postal_code"
+    | "provider_name"
+    | "provider_id"
+  >;
+  type RemoteSelectFilterKey = DynamicSelectFilterKey;
+  type DynamicFilterOptionsMap = Record<DynamicSelectFilterKey, SelectOption[]>;
+  type FilterSearchQueryMap = Record<SelectFilterKey, string>;
 
   const createEmptyFilters = (): ClientFilters => ({
     id: "",
@@ -539,6 +556,8 @@
     email_verified: "",
     has_photo: "",
     two_factor_enabled: "",
+    created_period: "",
+    deposit_period: "",
     birthdate_from: "",
     birthdate_to: "",
     created_at_from: "",
@@ -551,6 +570,80 @@
 
   const cloneFilters = (source: ClientFilters): ClientFilters => ({ ...source });
   const FILTER_KEYS = Object.keys(createEmptyFilters()) as FilterKey[];
+  const SELECT_FILTER_KEYS = [
+    "online_status",
+    "email_verified",
+    "has_photo",
+    "two_factor_enabled",
+    "created_period",
+    "deposit_period",
+    "id",
+    "email",
+    "first_name",
+    "mid_name",
+    "last_name",
+    "phone",
+    "country",
+    "state",
+    "city",
+    "address",
+    "postal_code",
+    "provider_name",
+    "provider_id",
+  ] as const satisfies ReadonlyArray<SelectFilterKey>;
+  const DYNAMIC_SELECT_FILTER_KEYS = [
+    "id",
+    "email",
+    "first_name",
+    "mid_name",
+    "last_name",
+    "phone",
+    "country",
+    "state",
+    "city",
+    "address",
+    "postal_code",
+    "provider_name",
+    "provider_id",
+  ] as const satisfies ReadonlyArray<DynamicSelectFilterKey>;
+
+  const createEmptyDynamicFilterOptions = (): DynamicFilterOptionsMap => ({
+    id: [],
+    email: [],
+    first_name: [],
+    mid_name: [],
+    last_name: [],
+    phone: [],
+    country: [],
+    state: [],
+    city: [],
+    address: [],
+    postal_code: [],
+    provider_name: [],
+    provider_id: [],
+  });
+
+  const createEmptyFilterSearchQueries = (): FilterSearchQueryMap => ({
+    online_status: "",
+    email_verified: "",
+    has_photo: "",
+    two_factor_enabled: "",
+    created_period: "",
+    deposit_period: "",
+    id: "",
+    email: "",
+    first_name: "",
+    mid_name: "",
+    last_name: "",
+    phone: "",
+    country: "",
+    state: "",
+    city: "",
+    address: "",
+    postal_code: "",
+    provider_name: "",
+    provider_id: "",
+  });
 
   const sanitizeFilterValue = (value: unknown): string => {
     if (typeof value === "string") {
@@ -702,7 +795,12 @@
   const appliedFilters = ref<ClientFilters>(createEmptyFilters());
   const draftFilters = ref<ClientFilters>(createEmptyFilters());
   const isFiltersPopoverOpen = ref(false);
-  const filtersPopoverRef = ref<HTMLElement | null>(null);
+  const filtersTriggerRef = ref<HTMLElement | null>(null);
+  const filtersPopoverPanelRef = ref<HTMLElement | null>(null);
+  const filtersPopoverStyle = ref<Record<string, string>>({});
+  const dynamicFilterOptions = ref<DynamicFilterOptionsMap>(createEmptyDynamicFilterOptions());
+  const filterSearchQueries = ref<FilterSearchQueryMap>(createEmptyFilterSearchQueries());
+  const filterSearchTimers = new Map<SelectFilterKey, ReturnType<typeof window.setTimeout>>();
 
   let pollingTimer: ReturnType<typeof setInterval> | null = null;
   let supportGlobalChannel: any = null;
@@ -713,26 +811,178 @@
   let realtimeSocketStateHandler: ((states: any) => void) | null = null;
   let realtimeResumeListenersAttached = false;
 
+  const normalizeSelectOptions = (items: any[] = []): SelectOption[] =>
+    items.map((item: any) => ({
+      id: String(item?.id ?? item?.value ?? ""),
+      value: String(item?.value ?? item?.id ?? ""),
+      text: String(item?.text ?? item?.name ?? item?.value ?? item?.id ?? "-"),
+    }));
+
+  const filterOptionsByQuery = (options: SelectOption[], query: string): SelectOption[] => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return options;
+    }
+
+    return options.filter(option => {
+      const haystack = `${option.text} ${option.value}`.trim().toLowerCase();
+      return haystack.includes(normalizedQuery);
+    });
+  };
+
+  const resetFilterSearchQueries = () => {
+    filterSearchQueries.value = createEmptyFilterSearchQueries();
+  };
+
+  const getFilterOptionText = (options: SelectOption[], value: string): string => {
+    return options.find(option => option.value === value)?.text ?? value;
+  };
+
   const filterTextFieldOptions = computed(() => [
-    { key: "id" as FilterKey, label: "ID" },
-    { key: "email" as FilterKey, label: t("admin.accounts.components.accounts-panel.columns.email") },
+    { key: "id" as DynamicSelectFilterKey, label: "ID", options: getFilterOptions("id") },
     {
-      key: "first_name" as FilterKey,
-      label: t("admin.clients.components.clients-panel.columns.first_name", "First name"),
+      key: "email" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.components.accounts-panel.columns.email", "Email"),
+      options: getFilterOptions("email"),
     },
-    { key: "mid_name" as FilterKey, label: t("admin.clients.filters.fields.mid_name", "Middle name") },
     {
-      key: "last_name" as FilterKey,
-      label: t("admin.clients.components.clients-panel.columns.last_name", "Last name"),
+      key: "first_name" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.components.clients-panel.columns.first_name", "First name"),
+      options: getFilterOptions("first_name"),
     },
-    { key: "phone" as FilterKey, label: t("admin.accounts.components.accounts-panel.columns.phone") },
-    { key: "country" as FilterKey, label: t("admin.clients.columns.country", "Country") },
-    { key: "state" as FilterKey, label: t("admin.clients.columns.state", "State / Region") },
-    { key: "city" as FilterKey, label: t("admin.clients.columns.city", "City") },
-    { key: "address" as FilterKey, label: t("admin.clients.columns.address", "Address") },
-    { key: "postal_code" as FilterKey, label: t("admin.clients.columns.postalCode", "Postal code") },
-    { key: "provider_name" as FilterKey, label: t("admin.clients.filters.fields.provider_name", "Provider name") },
-    { key: "provider_id" as FilterKey, label: t("admin.clients.filters.fields.provider_id", "Provider ID") },
+    {
+      key: "mid_name" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.filters.fields.mid_name", "Middle name"),
+      options: getFilterOptions("mid_name"),
+    },
+    {
+      key: "last_name" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.components.clients-panel.columns.last_name", "Last name"),
+      options: getFilterOptions("last_name"),
+    },
+    {
+      key: "phone" as DynamicSelectFilterKey,
+      label: resolveText("admin.accounts.components.accounts-panel.columns.phone", "Phone"),
+      options: getFilterOptions("phone"),
+    },
+    {
+      key: "country" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.columns.country", "Country"),
+      options: getFilterOptions("country"),
+    },
+    {
+      key: "state" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.columns.state", "State / Region"),
+      options: getFilterOptions("state"),
+    },
+    { key: "city" as DynamicSelectFilterKey, label: resolveText("admin.clients.columns.city", "City"), options: getFilterOptions("city") },
+    {
+      key: "address" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.columns.address", "Address"),
+      options: getFilterOptions("address"),
+    },
+    {
+      key: "postal_code" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.columns.postalCode", "Postal code"),
+      options: getFilterOptions("postal_code"),
+    },
+    {
+      key: "provider_name" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.filters.fields.provider_name", "Provider name"),
+      options: getFilterOptions("provider_name"),
+    },
+    {
+      key: "provider_id" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.filters.fields.provider_id", "Provider ID"),
+      options: getFilterOptions("provider_id"),
+    },
+  ]);
+
+  const onlineStatusOptions = computed(() => [
+    { id: "online", value: "online", text: resolveText("admin.clients.filters.values.online", "Online") },
+    { id: "offline", value: "offline", text: resolveText("admin.clients.filters.values.offline", "Offline") },
+  ]);
+
+  const emailVerifiedOptions = computed(() => [
+    { id: "verified", value: "verified", text: resolveText("admin.clients.filters.values.verified", "Verified") },
+    { id: "unverified", value: "unverified", text: resolveText("admin.clients.filters.values.unverified", "Unverified") },
+  ]);
+
+  const hasPhotoOptions = computed(() => [
+    { id: "yes", value: "yes", text: resolveText("admin.clients.filters.values.yes", "Yes") },
+    { id: "no", value: "no", text: resolveText("admin.clients.filters.values.no", "No") },
+  ]);
+
+  const twoFactorOptions = computed(() => [
+    { id: "enabled", value: "enabled", text: resolveText("admin.clients.filters.values.enabled", "Enabled") },
+    { id: "disabled", value: "disabled", text: resolveText("admin.clients.filters.values.disabled", "Disabled") },
+  ]);
+
+  const createdPeriodOptions = computed(() => [
+    { id: "today", value: "today", text: resolveText("admin.clients.filters.values.today", "Today") },
+    { id: "week", value: "week", text: resolveText("admin.clients.filters.values.week", "Week") },
+    { id: "month", value: "month", text: resolveText("admin.clients.filters.values.month", "Month") },
+  ]);
+
+  const depositPeriodOptions = computed(() => [
+    { id: "today", value: "today", text: resolveText("admin.clients.filters.values.today", "Today") },
+    { id: "week", value: "week", text: resolveText("admin.clients.filters.values.week", "Week") },
+    { id: "month", value: "month", text: resolveText("admin.clients.filters.values.month", "Month") },
+    { id: "year", value: "year", text: resolveText("admin.clients.filters.values.year", "Year") },
+  ]);
+
+  const getFilterOptions = (key: SelectFilterKey): SelectOption[] => {
+    const query = filterSearchQueries.value[key] ?? "";
+
+    const staticOptionsMap: Partial<Record<SelectFilterKey, SelectOption[]>> = {
+      online_status: onlineStatusOptions.value,
+      email_verified: emailVerifiedOptions.value,
+      has_photo: hasPhotoOptions.value,
+      two_factor_enabled: twoFactorOptions.value,
+      created_period: createdPeriodOptions.value,
+      deposit_period: depositPeriodOptions.value,
+    };
+
+    if ((DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key)) {
+      return filterOptionsByQuery(dynamicFilterOptions.value[key as DynamicSelectFilterKey] ?? [], query);
+    }
+
+    return filterOptionsByQuery(staticOptionsMap[key] ?? [], query);
+  };
+
+  const filterSelectFieldOptions = computed<
+    Array<{ key: SelectFilterKey; label: string; options: SelectOption[]; searchable?: boolean }>
+  >(() => [
+    {
+      key: "online_status",
+      label: resolveText("admin.clients.filters.fields.online_status", "Online status"),
+      options: getFilterOptions("online_status"),
+    },
+    {
+      key: "email_verified",
+      label: resolveText("admin.clients.filters.fields.email_verified", "Email verification"),
+      options: getFilterOptions("email_verified"),
+    },
+    {
+      key: "has_photo",
+      label: resolveText("admin.clients.filters.fields.has_photo", "Photo"),
+      options: getFilterOptions("has_photo"),
+    },
+    {
+      key: "two_factor_enabled",
+      label: resolveText("admin.clients.filters.fields.two_factor_enabled", "2FA"),
+      options: getFilterOptions("two_factor_enabled"),
+    },
+    {
+      key: "created_period",
+      label: resolveText("admin.clients.filters.fields.created_period", "Created period"),
+      options: getFilterOptions("created_period"),
+    },
+    {
+      key: "deposit_period",
+      label: resolveText("admin.clients.filters.fields.deposit_period", "Deposit period"),
+      options: getFilterOptions("deposit_period"),
+    },
   ]);
 
   const filterDateFieldOptions = computed(() => [
@@ -752,63 +1002,62 @@
     { key: "updated_at_to" as FilterKey, label: t("admin.clients.filters.fields.updated_at_to", "Updated to") },
   ]);
 
-  const onlineStatusOptions = computed(() => [
-    { id: "online", value: "online", text: t("admin.clients.filters.values.online", "Online") },
-    { id: "offline", value: "offline", text: t("admin.clients.filters.values.offline", "Offline") },
-  ]);
+  const isDynamicSelectFilterKey = (key: SelectFilterKey): key is DynamicSelectFilterKey =>
+    (DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key);
 
-  const emailVerifiedOptions = computed(() => [
-    { id: "verified", value: "verified", text: t("admin.clients.filters.values.verified", "Verified") },
-    { id: "unverified", value: "unverified", text: t("admin.clients.filters.values.unverified", "Unverified") },
-  ]);
+  const isRemoteSelectFilterKey = (key: SelectFilterKey): key is RemoteSelectFilterKey => isDynamicSelectFilterKey(key);
 
-  const hasPhotoOptions = computed(() => [
-    { id: "yes", value: "yes", text: t("admin.clients.filters.values.yes", "Yes") },
-    { id: "no", value: "no", text: t("admin.clients.filters.values.no", "No") },
-  ]);
+  const getFilterDisplayValue = (key: FilterKey, value: string): string => {
+    if (isDynamicSelectFilterKey(key as SelectFilterKey)) {
+      return getFilterOptionText(dynamicFilterOptions.value[key as DynamicSelectFilterKey] ?? [], value);
+    }
 
-  const twoFactorOptions = computed(() => [
-    { id: "enabled", value: "enabled", text: t("admin.clients.filters.values.enabled", "Enabled") },
-    { id: "disabled", value: "disabled", text: t("admin.clients.filters.values.disabled", "Disabled") },
-  ]);
+    return filterValueLabelMap.value[value] ?? value;
+  };
 
   const filterLabelMap = computed<Record<FilterKey, string>>(() => ({
     id: "ID",
-    email: t("admin.accounts.components.accounts-panel.columns.email"),
-    first_name: t("admin.clients.components.clients-panel.columns.first_name", "First name"),
-    mid_name: t("admin.clients.filters.fields.mid_name", "Middle name"),
-    last_name: t("admin.clients.components.clients-panel.columns.last_name", "Last name"),
-    phone: t("admin.accounts.components.accounts-panel.columns.phone"),
-    country: t("admin.clients.columns.country", "Country"),
-    state: t("admin.clients.columns.state", "State / Region"),
-    city: t("admin.clients.columns.city", "City"),
-    address: t("admin.clients.columns.address", "Address"),
-    postal_code: t("admin.clients.columns.postalCode", "Postal code"),
-    provider_name: t("admin.clients.filters.fields.provider_name", "Provider name"),
-    provider_id: t("admin.clients.filters.fields.provider_id", "Provider ID"),
-    online_status: t("admin.clients.filters.fields.online_status", "Online status"),
-    email_verified: t("admin.clients.filters.fields.email_verified", "Email verification"),
-    has_photo: t("admin.clients.filters.fields.has_photo", "Photo"),
-    two_factor_enabled: t("admin.clients.filters.fields.two_factor_enabled", "2FA"),
-    birthdate_from: t("admin.clients.filters.fields.birthdate_from", "Birthdate from"),
-    birthdate_to: t("admin.clients.filters.fields.birthdate_to", "Birthdate to"),
-    created_at_from: t("admin.clients.filters.fields.created_at_from", "Created from"),
-    created_at_to: t("admin.clients.filters.fields.created_at_to", "Created to"),
-    email_verified_at_from: t("admin.clients.filters.fields.email_verified_at_from", "Email verified from"),
-    email_verified_at_to: t("admin.clients.filters.fields.email_verified_at_to", "Email verified to"),
-    updated_at_from: t("admin.clients.filters.fields.updated_at_from", "Updated from"),
-    updated_at_to: t("admin.clients.filters.fields.updated_at_to", "Updated to"),
+    email: resolveText("admin.accounts.components.accounts-panel.columns.email", "Email"),
+    first_name: resolveText("admin.clients.components.clients-panel.columns.first_name", "First name"),
+    mid_name: resolveText("admin.clients.filters.fields.mid_name", "Middle name"),
+    last_name: resolveText("admin.clients.components.clients-panel.columns.last_name", "Last name"),
+    phone: resolveText("admin.accounts.components.accounts-panel.columns.phone", "Phone"),
+    country: resolveText("admin.clients.columns.country", "Country"),
+    state: resolveText("admin.clients.columns.state", "State / Region"),
+    city: resolveText("admin.clients.columns.city", "City"),
+    address: resolveText("admin.clients.columns.address", "Address"),
+    postal_code: resolveText("admin.clients.columns.postalCode", "Postal code"),
+    provider_name: resolveText("admin.clients.filters.fields.provider_name", "Provider name"),
+    provider_id: resolveText("admin.clients.filters.fields.provider_id", "Provider ID"),
+    online_status: resolveText("admin.clients.filters.fields.online_status", "Online status"),
+    email_verified: resolveText("admin.clients.filters.fields.email_verified", "Email verification"),
+    has_photo: resolveText("admin.clients.filters.fields.has_photo", "Photo"),
+    two_factor_enabled: resolveText("admin.clients.filters.fields.two_factor_enabled", "2FA"),
+    created_period: resolveText("admin.clients.filters.fields.created_period", "Created period"),
+    deposit_period: resolveText("admin.clients.filters.fields.deposit_period", "Deposit period"),
+    birthdate_from: resolveText("admin.clients.filters.fields.birthdate_from", "Birthdate from"),
+    birthdate_to: resolveText("admin.clients.filters.fields.birthdate_to", "Birthdate to"),
+    created_at_from: resolveText("admin.clients.filters.fields.created_at_from", "Created from"),
+    created_at_to: resolveText("admin.clients.filters.fields.created_at_to", "Created to"),
+    email_verified_at_from: resolveText("admin.clients.filters.fields.email_verified_at_from", "Email verified from"),
+    email_verified_at_to: resolveText("admin.clients.filters.fields.email_verified_at_to", "Email verified to"),
+    updated_at_from: resolveText("admin.clients.filters.fields.updated_at_from", "Updated from"),
+    updated_at_to: resolveText("admin.clients.filters.fields.updated_at_to", "Updated to"),
   }));
 
   const filterValueLabelMap = computed<Record<string, string>>(() => ({
-    online: t("admin.clients.filters.values.online", "Online"),
-    offline: t("admin.clients.filters.values.offline", "Offline"),
-    verified: t("admin.clients.filters.values.verified", "Verified"),
-    unverified: t("admin.clients.filters.values.unverified", "Unverified"),
-    yes: t("admin.clients.filters.values.yes", "Yes"),
-    no: t("admin.clients.filters.values.no", "No"),
-    enabled: t("admin.clients.filters.values.enabled", "Enabled"),
-    disabled: t("admin.clients.filters.values.disabled", "Disabled"),
+    online: resolveText("admin.clients.filters.values.online", "Online"),
+    offline: resolveText("admin.clients.filters.values.offline", "Offline"),
+    verified: resolveText("admin.clients.filters.values.verified", "Verified"),
+    unverified: resolveText("admin.clients.filters.values.unverified", "Unverified"),
+    yes: resolveText("admin.clients.filters.values.yes", "Yes"),
+    no: resolveText("admin.clients.filters.values.no", "No"),
+    enabled: resolveText("admin.clients.filters.values.enabled", "Enabled"),
+    disabled: resolveText("admin.clients.filters.values.disabled", "Disabled"),
+    today: resolveText("admin.clients.filters.values.today", "Today"),
+    week: resolveText("admin.clients.filters.values.week", "Week"),
+    month: resolveText("admin.clients.filters.values.month", "Month"),
+    year: resolveText("admin.clients.filters.values.year", "Year"),
   }));
 
   const activeFilterChips = computed(() => {
@@ -817,7 +1066,7 @@
       .map(([key, value]) => ({
         key,
         label: filterLabelMap.value[key] ?? key,
-        value: filterValueLabelMap.value[value] ?? value,
+        value: getFilterDisplayValue(key, value),
       }));
   });
 
@@ -911,24 +1160,28 @@
       kind: statsData.value.online_clients_now > 0 ? "is-online-active" : "is-neutral",
       label: resolveText("admin.clients.stats.onlineNow", "Online now"),
       value: formatCount(statsData.value.online_clients_now),
+      isActive: appliedFilters.value.online_status === "online",
     },
     {
       id: "new_today",
       kind: "is-neutral",
       label: resolveText("admin.clients.stats.newToday", "New clients today"),
       value: formatCount(statsData.value.new_clients.today),
+      isActive: appliedFilters.value.created_period === "today",
     },
     {
       id: "new_week",
       kind: "is-neutral",
       label: resolveText("admin.clients.stats.newWeek", "New clients this week"),
       value: formatCount(statsData.value.new_clients.week),
+      isActive: appliedFilters.value.created_period === "week",
     },
     {
       id: "new_month",
       kind: "is-neutral",
       label: resolveText("admin.clients.stats.newMonth", "New clients this month"),
       value: formatCount(statsData.value.new_clients.month),
+      isActive: appliedFilters.value.created_period === "month",
     },
     {
       id: "deposits_summary",
@@ -940,24 +1193,28 @@
           label: resolveText("admin.clients.stats.depositsToday", "Today"),
           value: formatMoney(statsData.value.deposits_sum.today),
           size: "xl",
+          isActive: appliedFilters.value.deposit_period === "today",
         },
         {
           id: "week",
           label: resolveText("admin.clients.stats.depositsWeek", "Week"),
           value: formatMoney(statsData.value.deposits_sum.week),
           size: "lg",
+          isActive: appliedFilters.value.deposit_period === "week",
         },
         {
           id: "month",
           label: resolveText("admin.clients.stats.depositsMonth", "Month"),
           value: formatMoney(statsData.value.deposits_sum.month),
           size: "md",
+          isActive: appliedFilters.value.deposit_period === "month",
         },
         {
           id: "year",
           label: resolveText("admin.clients.stats.depositsYear", "Year"),
           value: formatMoney(statsData.value.deposits_sum.year),
           size: "sm",
+          isActive: appliedFilters.value.deposit_period === "year",
         },
       ],
     },
@@ -1183,6 +1440,42 @@
     }
   };
 
+  const loadFilterMeta = async (options: { filterField?: RemoteSelectFilterKey; filterSearch?: string } = {}) => {
+    const { filterField, filterSearch = "" } = options;
+
+    try {
+      const response = await appCore.adminModules.clients.getMeta({
+        filter_field: filterField,
+        filter_search: filterSearch,
+        limit: 25,
+      });
+
+      const payload = response?.data?.data ?? {};
+      const filterOptions = payload?.filter_options ?? {};
+      const nextDynamicOptions = { ...dynamicFilterOptions.value };
+
+      if (filterField) {
+        if (Array.isArray(filterOptions?.[filterField])) {
+          nextDynamicOptions[filterField] = normalizeSelectOptions(filterOptions[filterField]);
+        }
+      } else {
+        for (const key of DYNAMIC_SELECT_FILTER_KEYS) {
+          if (Array.isArray(filterOptions?.[key])) {
+            nextDynamicOptions[key] = normalizeSelectOptions(filterOptions[key]);
+          }
+        }
+      }
+
+      dynamicFilterOptions.value = nextDynamicOptions;
+    } catch {
+      if (filterField) {
+        return;
+      }
+
+      dynamicFilterOptions.value = createEmptyDynamicFilterOptions();
+    }
+  };
+
   const loadAll = async () => {
     if (!isClientsIndexRoute.value) {
       return;
@@ -1218,7 +1511,7 @@
     } finally {
       isLoadingSearch.value = false;
     }
-  }, 300);
+  }, 500);
 
   const handleOrderBy = async (value: string) => {
     orderBy.value = value;
@@ -1251,6 +1544,40 @@
     };
   };
 
+  const handleFilterOptionSearch = (key: SelectFilterKey, query: string) => {
+    filterSearchQueries.value = {
+      ...filterSearchQueries.value,
+      [key]: query,
+    };
+
+    if (!isRemoteSelectFilterKey(key)) {
+      return;
+    }
+
+    const activeTimer = filterSearchTimers.get(key);
+    if (activeTimer) {
+      window.clearTimeout(activeTimer);
+    }
+
+    filterSearchTimers.set(
+      key,
+      window.setTimeout(async () => {
+        await loadFilterMeta({ filterField: key, filterSearch: query });
+      }, 500)
+    );
+  };
+
+  const handleFilterOptionOpen = async (key: SelectFilterKey) => {
+    if (!isRemoteSelectFilterKey(key)) {
+      return;
+    }
+
+    await loadFilterMeta({
+      filterField: key,
+      filterSearch: filterSearchQueries.value[key] ?? "",
+    });
+  };
+
   const handleDraftTextInput = (key: FilterKey, event: Event) => {
     const target = event.target as HTMLInputElement | null;
     setDraftFilterValue(key, target?.value ?? "");
@@ -1258,27 +1585,73 @@
 
   const clearDraftFilterValue = (key: FilterKey) => {
     setDraftFilterValue(key, "");
+
+    if ((SELECT_FILTER_KEYS as readonly string[]).includes(key)) {
+      filterSearchQueries.value = {
+        ...filterSearchQueries.value,
+        [key as SelectFilterKey]: "",
+      };
+    }
   };
 
   const hasDraftFilterValue = (key: FilterKey) => {
     return sanitizeFilterValue(draftFilters.value[key]) !== "";
   };
 
-  const toggleFiltersPopover = () => {
+  const updateFiltersPopoverPosition = () => {
+    if (!isFiltersPopoverOpen.value || !filtersTriggerRef.value) {
+      return;
+    }
+
+    const triggerRect = filtersTriggerRef.value.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const margin = 12;
+    const gap = 8;
+    const preferredWidth = Math.min(Math.max(viewportWidth - 24, 320), 560);
+    const left = Math.max(12, Math.min(triggerRect.right - preferredWidth, viewportWidth - preferredWidth - 12));
+    const spaceBelow = viewportHeight - triggerRect.bottom - gap - margin;
+    const spaceAbove = triggerRect.top - gap - margin;
+    const shouldOpenAbove = spaceBelow < 360 && spaceAbove > spaceBelow;
+    const availableHeight = shouldOpenAbove ? spaceAbove : spaceBelow;
+    const maxHeight = Math.max(220, Math.min(760, availableHeight));
+    const top = shouldOpenAbove
+      ? Math.max(margin, triggerRect.top - gap - maxHeight)
+      : Math.max(margin, triggerRect.bottom + gap);
+
+    filtersPopoverStyle.value = {
+      position: "fixed",
+      top: `${Math.round(top)}px`,
+      left: `${Math.round(left)}px`,
+      width: `${Math.round(preferredWidth)}px`,
+      maxWidth: "calc(100vw - 24px)",
+      maxHeight: `${Math.round(maxHeight)}px`,
+    };
+  };
+
+  const toggleFiltersPopover = async () => {
     if (!isFiltersPopoverOpen.value) {
       draftFilters.value = cloneFilters(appliedFilters.value);
+      resetFilterSearchQueries();
     }
 
     isFiltersPopoverOpen.value = !isFiltersPopoverOpen.value;
+
+    if (isFiltersPopoverOpen.value) {
+      await nextTick();
+      updateFiltersPopoverPosition();
+    }
   };
 
   const resetDraftFilters = () => {
     draftFilters.value = createEmptyFilters();
+    resetFilterSearchQueries();
   };
 
   const applyDraftFilters = async () => {
     appliedFilters.value = cloneFilters(draftFilters.value);
     isFiltersPopoverOpen.value = false;
+    resetFilterSearchQueries();
     await loadData({ resetPage: true });
     await syncStateToUrl();
   };
@@ -1294,6 +1667,13 @@
       [key]: "",
     };
 
+    if ((SELECT_FILTER_KEYS as readonly string[]).includes(key)) {
+      filterSearchQueries.value = {
+        ...filterSearchQueries.value,
+        [key as SelectFilterKey]: "",
+      };
+    }
+
     await loadData({ resetPage: true });
     await syncStateToUrl();
   };
@@ -1301,6 +1681,7 @@
   const clearAllAppliedFilters = async () => {
     appliedFilters.value = createEmptyFilters();
     draftFilters.value = createEmptyFilters();
+    resetFilterSearchQueries();
     await loadData({ resetPage: true });
     await syncStateToUrl();
   };
@@ -1311,9 +1692,56 @@
     const target = event.target as Node | null;
     if (!target) return;
 
-    if (filtersPopoverRef.value && !filtersPopoverRef.value.contains(target)) {
+    const clickedOnTrigger = filtersTriggerRef.value?.contains(target) ?? false;
+    const clickedOnPopover = filtersPopoverPanelRef.value?.contains(target) ?? false;
+
+    if (!clickedOnTrigger && !clickedOnPopover) {
       isFiltersPopoverOpen.value = false;
     }
+  };
+
+  const handleMetricCardClick = async (cardId: string) => {
+    const nextFilters = cloneFilters(appliedFilters.value);
+
+    if (cardId === "online_now") {
+      nextFilters.online_status = nextFilters.online_status === "online" ? "" : "online";
+    }
+
+    if (cardId === "new_today") {
+      nextFilters.created_period = nextFilters.created_period === "today" ? "" : "today";
+      nextFilters.created_at_from = "";
+      nextFilters.created_at_to = "";
+    }
+
+    if (cardId === "new_week") {
+      nextFilters.created_period = nextFilters.created_period === "week" ? "" : "week";
+      nextFilters.created_at_from = "";
+      nextFilters.created_at_to = "";
+    }
+
+    if (cardId === "new_month") {
+      nextFilters.created_period = nextFilters.created_period === "month" ? "" : "month";
+      nextFilters.created_at_from = "";
+      nextFilters.created_at_to = "";
+    }
+
+    appliedFilters.value = nextFilters;
+    draftFilters.value = cloneFilters(nextFilters);
+    await loadData({ resetPage: true });
+    await syncStateToUrl();
+  };
+
+  const handleMetricSegmentClick = async (_cardId: string, segmentId: string) => {
+    const nextFilters = cloneFilters(appliedFilters.value);
+    nextFilters.deposit_period = nextFilters.deposit_period === segmentId ? "" : segmentId;
+    appliedFilters.value = nextFilters;
+    draftFilters.value = cloneFilters(nextFilters);
+    await loadData({ resetPage: true });
+    await syncStateToUrl();
+  };
+
+  const handleFiltersPopoverViewportChange = () => {
+    updateFiltersPopoverPosition();
   };
 
   const startPolling = () => {
@@ -1629,6 +2057,7 @@
     initViewMode();
     initStateFromQuery();
     if (isClientsIndexRoute.value) {
+      await loadFilterMeta();
       await syncStateToUrl();
       await loadAll();
     }
@@ -1646,6 +2075,8 @@
     }
 
     document.addEventListener("click", handleClickOutsideFilters);
+    window.addEventListener("resize", handleFiltersPopoverViewportChange, { passive: true });
+    window.addEventListener("scroll", handleFiltersPopoverViewportChange, true);
   });
 
   watch(
@@ -1653,6 +2084,7 @@
     async () => {
       if (isClientsIndexRoute.value) {
         initStateFromQuery();
+        await loadFilterMeta();
         await syncStateToUrl();
         await loadAll();
         connectRealtime();
@@ -1685,6 +2117,19 @@
     window.removeEventListener("focus", handleWindowFocus);
     detachRealtimeResumeListeners();
     document.removeEventListener("click", handleClickOutsideFilters);
+    window.removeEventListener("resize", handleFiltersPopoverViewportChange);
+    window.removeEventListener("scroll", handleFiltersPopoverViewportChange, true);
+    filterSearchTimers.forEach(timerId => window.clearTimeout(timerId));
+    filterSearchTimers.clear();
+  });
+
+  watch(isFiltersPopoverOpen, async isOpen => {
+    if (!isOpen) {
+      return;
+    }
+
+    await nextTick();
+    updateFiltersPopoverPosition();
   });
 </script>
 
@@ -1709,16 +2154,39 @@
 
   .clients-stat-card {
     border-radius: 10px;
-    border: none;
+    border: 1px solid transparent;
     background:
       linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
       var(--ui-background-card);
     padding: 12px;
+    text-align: left;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .clients-stat-card:hover {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 28%, transparent);
+  }
+
+  .clients-stat-card.is-active {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 42%, transparent);
+    background:
+      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 18%, transparent) 0%, transparent 70.44%),
+      var(--ui-background-card);
   }
 
   .clients-stat-card.is-online-active {
     background:
       linear-gradient(136deg, color-mix(in srgb, var(--ui-sticker-success) 18%, transparent) 0%, transparent 70.44%),
+      var(--ui-background-card);
+  }
+
+  .clients-stat-card.is-online-active.is-active {
+    border-color: color-mix(in srgb, var(--ui-sticker-success) 44%, transparent);
+    background:
+      linear-gradient(136deg, color-mix(in srgb, var(--ui-sticker-success) 24%, transparent) 0%, transparent 70.44%),
       var(--ui-background-card);
   }
 
@@ -1774,20 +2242,20 @@
   }
 
   .clients-filters-popover {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 8px);
-    z-index: 40;
+    position: fixed;
+    z-index: 1200;
     width: min(92vw, 560px);
     max-height: min(70vh, 760px);
     border: 1px solid var(--color-stroke-ui-light);
     border-radius: 10px;
-    background: var(--ui-background-panel);
-    box-shadow: 0 12px 30px color-mix(in srgb, var(--ui-background) 70%, transparent);
+    background: color-mix(in srgb, var(--ui-background-panel) 92%, var(--ui-background) 8%);
+    box-shadow: 0 18px 44px color-mix(in srgb, var(--ui-background) 84%, transparent);
+    backdrop-filter: blur(6px);
     padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    overflow: hidden;
   }
 
   .clients-filters-popover__title {

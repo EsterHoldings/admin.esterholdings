@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "二要素認証",
+          "enabledDescription": "このクライアントでは二要素認証が有効になっています。",
+          "disabledDescription": "このクライアントでは現在二要素認証が無効です。",
+          "statusEnabled": "有効",
+          "statusDisabled": "無効",
+          "disable": "2FAを無効化",
+          "disableSuccess": "2FAを無効化しました。",
+          "disableError": "2FAを無効化できませんでした。"
         }
       }
     },

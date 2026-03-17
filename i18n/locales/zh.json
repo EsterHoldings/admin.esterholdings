@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "双重身份验证",
+          "enabledDescription": "该客户已启用双重身份验证。",
+          "disabledDescription": "该客户当前未启用双重身份验证。",
+          "statusEnabled": "已启用",
+          "statusDisabled": "已禁用",
+          "disable": "禁用 2FA",
+          "disableSuccess": "2FA 已成功禁用。",
+          "disableError": "无法禁用 2FA。"
         }
       }
     },

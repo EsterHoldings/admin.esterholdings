@@ -1494,6 +1494,8 @@
           "email_verified": "Email verification",
           "has_photo": "Photo",
           "two_factor_enabled": "2FA",
+          "created_period": "Created period",
+          "deposit_period": "Deposit period",
           "birthdate_from": "Birthdate from",
           "birthdate_to": "Birthdate to",
           "created_at_from": "Created from",
@@ -1511,7 +1513,11 @@
           "yes": "Yes",
           "no": "No",
           "enabled": "Enabled",
-          "disabled": "Disabled"
+          "disabled": "Disabled",
+          "today": "Today",
+          "week": "Week",
+          "month": "Month",
+          "year": "Year"
         }
       },
       "stats": {
@@ -1553,6 +1559,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "Two-factor authentication",
+          "enabledDescription": "Two-factor authentication is enabled for this client.",
+          "disabledDescription": "Two-factor authentication is currently disabled for this client.",
+          "statusEnabled": "Enabled",
+          "statusDisabled": "Disabled",
+          "disable": "Disable 2FA",
+          "disableSuccess": "2FA disabled successfully.",
+          "disableError": "Failed to disable 2FA."
         }
       }
     },

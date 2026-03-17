@@ -43,6 +43,10 @@ export class ClientsService {
     return await this.useApi.post(`/admin/clients/${id}/password`, data);
   }
 
+  async disableTwoFactor(id: any) {
+    return await this.useApi.post(`/admin/clients/${id}/2fa/disable`);
+  }
+
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
     return await this.useApi.delete(`/admin/clients/${id}/payment-details/${paymentDetailId}`);
   }

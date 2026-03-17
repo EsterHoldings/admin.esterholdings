@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "אימות דו-שלבי",
+          "enabledDescription": "אימות דו-שלבי מופעל עבור הלקוח הזה.",
+          "disabledDescription": "אימות דו-שלבי כבוי כרגע עבור הלקוח הזה.",
+          "statusEnabled": "מופעל",
+          "statusDisabled": "כבוי",
+          "disable": "כבה 2FA",
+          "disableSuccess": "2FA כובה בהצלחה.",
+          "disableError": "לא ניתן היה לכבות את 2FA."
         }
       }
     },

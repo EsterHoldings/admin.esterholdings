@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "İki faktörlü kimlik doğrulama",
+          "enabledDescription": "Bu müşteri için iki faktörlü kimlik doğrulama etkin.",
+          "disabledDescription": "Bu müşteri için iki faktörlü kimlik doğrulama şu anda devre dışı.",
+          "statusEnabled": "Etkin",
+          "statusDisabled": "Devre dışı",
+          "disable": "2FA’yı devre dışı bırak",
+          "disableSuccess": "2FA başarıyla devre dışı bırakıldı.",
+          "disableError": "2FA devre dışı bırakılamadı."
         }
       }
     },

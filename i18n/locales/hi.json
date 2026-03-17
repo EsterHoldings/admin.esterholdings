@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "दो-स्तरीय प्रमाणीकरण",
+          "enabledDescription": "इस क्लाइंट के लिए दो-स्तरीय प्रमाणीकरण सक्षम है।",
+          "disabledDescription": "इस क्लाइंट के लिए दो-स्तरीय प्रमाणीकरण अभी अक्षम है।",
+          "statusEnabled": "सक्षम",
+          "statusDisabled": "अक्षम",
+          "disable": "2FA बंद करें",
+          "disableSuccess": "2FA सफलतापूर्वक बंद कर दिया गया।",
+          "disableError": "2FA बंद नहीं किया जा सका।"
         }
       }
     },

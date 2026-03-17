@@ -2,6 +2,49 @@
   <div class="client-security">
     <div class="client-security__column client-security__column--main">
       <PanelDefault class="client-security__panel">
+        <div class="client-security__two-factor-header">
+          <div class="client-security__panel-header client-security__panel-header--compact">
+            <UiTextH5>{{ resolveText("admin.clients.security.twoFactor.title", "Two-factor authentication") }}</UiTextH5>
+            <UiTextSmall class="client-security__muted">
+              {{
+                twoFactorEnabled
+                  ? resolveText("admin.clients.security.twoFactor.enabledDescription", "Two-factor authentication is enabled for this client.")
+                  : resolveText("admin.clients.security.twoFactor.disabledDescription", "Two-factor authentication is currently disabled for this client.")
+              }}
+            </UiTextSmall>
+          </div>
+
+          <span
+            class="client-security__status-pill"
+            :class="{
+              'client-security__status-pill--enabled': twoFactorEnabled,
+              'client-security__status-pill--disabled': !twoFactorEnabled,
+            }"
+          >
+            {{
+              twoFactorEnabled
+                ? resolveText("admin.clients.security.twoFactor.statusEnabled", "Enabled")
+                : resolveText("admin.clients.security.twoFactor.statusDisabled", "Disabled")
+            }}
+          </span>
+        </div>
+
+        <div
+          v-if="twoFactorEnabled"
+          class="client-security__two-factor-actions"
+        >
+          <UiButtonDefault
+            state="danger--outline"
+            :disabled="isTwoFactorDisabling"
+            :isLoading="isTwoFactorDisabling"
+            @click="handleDisableTwoFactor"
+          >
+            {{ resolveText("admin.clients.security.twoFactor.disable", "Disable 2FA") }}
+          </UiButtonDefault>
+        </div>
+      </PanelDefault>
+
+      <PanelDefault class="client-security__panel">
         <div class="client-security__panel-header">
           <UiTextH5>{{ resolveText("admin.clients.security.password.title", "Change password") }}</UiTextH5>
           <UiTextSmall class="client-security__muted">
@@ -101,6 +144,7 @@
 
   interface UserData {
     email?: string | null;
+    two_factor_enabled?: boolean | null;
   }
 
   const props = defineProps<{
@@ -118,6 +162,7 @@
   };
 
   const isSubmitting = ref(false);
+  const isTwoFactorDisabling = ref(false);
   const isPasswordDirty = ref(false);
   const isConfirmationDirty = ref(false);
 
@@ -128,6 +173,7 @@
   });
 
   const hasEmail = computed(() => String(props.userData?.email ?? "").trim() !== "");
+  const twoFactorEnabled = computed(() => Boolean(props.userData?.two_factor_enabled));
   const userEmailDisplay = computed(() => {
     if (!hasEmail.value) {
       return resolveText("admin.clients.security.password.emailMissing", "Client email is missing.");
@@ -207,6 +253,27 @@
     isConfirmationDirty.value = true;
   };
 
+  const handleDisableTwoFactor = async () => {
+    if (isTwoFactorDisabling.value || !twoFactorEnabled.value) {
+      return;
+    }
+
+    try {
+      isTwoFactorDisabling.value = true;
+      await appCore.adminModules.clients.disableTwoFactor(props.clientId);
+      props.userData.two_factor_enabled = false;
+      toast.success(resolveText("admin.clients.security.twoFactor.disableSuccess", "2FA disabled successfully."));
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        resolveText("admin.clients.security.twoFactor.disableError", "Failed to disable 2FA.");
+      toast.error(message);
+      console.error("Failed to disable client 2FA", error);
+    } finally {
+      isTwoFactorDisabling.value = false;
+    }
+  };
+
   const handleSubmit = async () => {
     if (isSubmitting.value) {
       return;
@@ -274,6 +341,10 @@
       flex-direction: column;
       gap: 8px;
       margin-bottom: 20px;
+
+      &--compact {
+        margin-bottom: 0;
+      }
     }
 
     &__muted {
@@ -289,6 +360,44 @@
 
     &__field {
       margin: 0;
+    }
+
+    &__two-factor-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    &__status-pill {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 0.875rem;
+      font-weight: 700;
+
+      &--enabled {
+        color: var(--color-success);
+        border-color: color-mix(in srgb, var(--color-success) 45%, transparent);
+        background: color-mix(in srgb, var(--color-success) 14%, transparent);
+      }
+
+      &--disabled {
+        color: var(--ui-text-secondary);
+        border-color: color-mix(in srgb, var(--ui-text-secondary) 25%, transparent);
+        background: color-mix(in srgb, var(--ui-text-secondary) 10%, transparent);
+      }
+    }
+
+    &__two-factor-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-start;
     }
 
     &__email-toggle {
@@ -331,12 +440,21 @@
         padding: 16px;
       }
 
+      &__two-factor-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
       &__email-toggle {
         align-items: flex-start;
         flex-direction: column;
       }
 
       &__actions :deep(button) {
+        width: 100%;
+      }
+
+      &__two-factor-actions :deep(button) {
         width: 100%;
       }
     }

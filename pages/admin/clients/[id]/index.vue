@@ -92,6 +92,7 @@
     postal_code: null,
     state: null,
     support_mode: "simple",
+    two_factor_enabled: false,
     updated_at: null,
   });
 

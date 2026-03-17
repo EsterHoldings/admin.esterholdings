@@ -1429,6 +1429,16 @@
         "help": {
           "title": "Password delivery",
           "description": "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back."
+        },
+        "twoFactor": {
+          "title": "2단계 인증",
+          "enabledDescription": "이 클라이언트에 대해 2단계 인증이 활성화되어 있습니다.",
+          "disabledDescription": "이 클라이언트에 대해 현재 2단계 인증이 비활성화되어 있습니다.",
+          "statusEnabled": "활성화됨",
+          "statusDisabled": "비활성화됨",
+          "disable": "2FA 비활성화",
+          "disableSuccess": "2FA가 성공적으로 비활성화되었습니다.",
+          "disableError": "2FA를 비활성화하지 못했습니다."
         }
       }
     },

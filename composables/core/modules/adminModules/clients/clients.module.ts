@@ -39,6 +39,10 @@ export class ClientsModule {
     return await this.clientsService.updatePassword(id, data);
   }
 
+  async disableTwoFactor(id: any): Promise<any> {
+    return await this.clientsService.disableTwoFactor(id);
+  }
+
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
     return await this.clientsService.deletePaymentDetail(id, paymentDetailId);
   }
