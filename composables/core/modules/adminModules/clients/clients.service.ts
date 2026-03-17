@@ -15,6 +15,10 @@ export class ClientsService {
     return await this.useApi.get("/admin/clients/stats", params);
   }
 
+  async getMeta(params: object = {}): Promise<any> {
+    return await this.useApi.get("/admin/clients/meta", params);
+  }
+
   async getById(id: any) {
     return await this.useApi.get(`/admin/clients/${id}`);
   }
