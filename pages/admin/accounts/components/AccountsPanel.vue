@@ -88,192 +88,19 @@
               />
 
               <div
-                ref="filtersPopoverRef"
+                ref="filtersTriggerRef"
                 class="relative"
               >
                 <UiButtonDefault
                   state="info--small"
                   class="min-w-[120px] shrink-0"
-                  @click.stop="toggleFiltersPopover"
+                  @click="toggleFiltersPopover"
                 >
                   <span class="inline-flex items-center gap-2">
                     <UiIconFilters class="!h-4 !w-4" />
                     <span>{{ resolveText("admin.accounts.filters.title", "Filters") }}</span>
                   </span>
                 </UiButtonDefault>
-
-                <div
-                  v-if="isFiltersPopoverOpen"
-                  class="accounts-filters-popover"
-                  @click.stop
-                >
-                  <div class="accounts-filters-popover__title">
-                    {{ resolveText("admin.accounts.filters.title", "Filters") }}
-                  </div>
-
-                  <div class="accounts-filters-popover__body">
-                    <div class="accounts-filters-popover__section-title">
-                      {{ resolveText("admin.accounts.filters.sections.selects", "Select filters") }}
-                    </div>
-
-                    <div class="accounts-filters-popover__grid accounts-filters-popover__grid--status">
-                      <label
-                        v-for="field in filterSelectFieldOptions"
-                        :key="field.key"
-                        class="accounts-filters-popover__field"
-                      >
-                        <span>{{ field.label }}</span>
-                        <div class="accounts-filters-popover__control">
-                          <UiSelect
-                            :withoutNoSelect="false"
-                            :searchable="Boolean(field.searchable)"
-                            :searchValue="filterSearchQueries[field.key]"
-                            :value="draftFilters[field.key] || null"
-                            :data="field.options"
-                            @change="value => setDraftFilterValue(field.key, value)"
-                            @search="value => handleFilterOptionSearch(field.key, value)"
-                          />
-                          <button
-                            v-if="hasDraftFilterValue(field.key)"
-                            type="button"
-                            class="accounts-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue(field.key)"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div class="accounts-filters-popover__section-title">
-                      {{ resolveText("admin.accounts.filters.sections.text", "Text fields") }}
-                    </div>
-
-                    <div class="accounts-filters-popover__grid">
-                      <label
-                        v-for="field in filterTextFieldOptions"
-                        :key="field.key"
-                        class="accounts-filters-popover__field"
-                      >
-                        <span>{{ field.label }}</span>
-                        <div class="accounts-filters-popover__control">
-                          <UiSelect
-                            :withoutNoSelect="false"
-                            :searchable="true"
-                            :searchValue="filterSearchQueries[field.key]"
-                            :value="draftFilters[field.key] || null"
-                            :data="field.options"
-                            @change="value => setDraftFilterValue(field.key, value)"
-                            @search="value => handleFilterOptionSearch(field.key, value)"
-                          />
-                          <button
-                            v-if="hasDraftFilterValue(field.key)"
-                            type="button"
-                            class="accounts-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue(field.key)"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div class="accounts-filters-popover__section-title">
-                      {{ resolveText("admin.accounts.filters.sections.ranges", "Ranges") }}
-                    </div>
-
-                    <div class="accounts-filters-popover__grid">
-                      <label class="accounts-filters-popover__field">
-                        <span>{{ resolveText("admin.accounts.filters.fields.balance_from", "Balance from") }}</span>
-                        <div class="accounts-filters-popover__control">
-                          <input
-                            class="accounts-filters-popover__input"
-                            type="number"
-                            step="0.01"
-                            :value="draftFilters.balance_from"
-                            @input="event => handleDraftTextInput('balance_from', event)"
-                          />
-                          <button
-                            v-if="hasDraftFilterValue('balance_from')"
-                            type="button"
-                            class="accounts-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue('balance_from')"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </label>
-
-                      <label class="accounts-filters-popover__field">
-                        <span>{{ resolveText("admin.accounts.filters.fields.balance_to", "Balance to") }}</span>
-                        <div class="accounts-filters-popover__control">
-                          <input
-                            class="accounts-filters-popover__input"
-                            type="number"
-                            step="0.01"
-                            :value="draftFilters.balance_to"
-                            @input="event => handleDraftTextInput('balance_to', event)"
-                          />
-                          <button
-                            v-if="hasDraftFilterValue('balance_to')"
-                            type="button"
-                            class="accounts-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue('balance_to')"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div class="accounts-filters-popover__section-title">
-                      {{ resolveText("admin.accounts.filters.sections.dates", "Date ranges") }}
-                    </div>
-
-                    <div class="accounts-filters-popover__grid">
-                      <label
-                        v-for="field in filterDateFieldOptions"
-                        :key="field.key"
-                        class="accounts-filters-popover__field"
-                      >
-                        <span>{{ field.label }}</span>
-                        <div class="accounts-filters-popover__control">
-                          <input
-                            class="accounts-filters-popover__input"
-                            type="date"
-                            :value="draftFilters[field.key]"
-                            @input="event => handleDraftTextInput(field.key, event)"
-                          />
-                          <button
-                            v-if="hasDraftFilterValue(field.key)"
-                            type="button"
-                            class="accounts-filters-popover__clear"
-                            @click.prevent.stop="clearDraftFilterValue(field.key)"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div class="accounts-filters-popover__actions">
-                    <UiButtonDefault
-                      state="info--small"
-                      class="!w-full"
-                      @click="resetDraftFilters"
-                    >
-                      {{ resolveText("admin.accounts.filters.reset", "Reset") }}
-                    </UiButtonDefault>
-                    <UiButtonDefault
-                      state="info--small"
-                      class="!w-full"
-                      @click="applyDraftFilters"
-                    >
-                      {{ resolveText("admin.accounts.filters.apply", "Apply") }}
-                    </UiButtonDefault>
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -478,11 +305,188 @@
       @perPageChange="handleChangePerPage"
       @pageChange="handleChangePage"
     />
+
+    <Teleport to="body">
+      <div
+        v-if="isFiltersPopoverOpen"
+        ref="filtersPopoverPanelRef"
+        class="accounts-filters-popover"
+        :style="filtersPopoverStyle"
+        @click.stop
+      >
+        <div class="accounts-filters-popover__title">
+          {{ resolveText("admin.accounts.filters.title", "Filters") }}
+        </div>
+
+        <div class="accounts-filters-popover__body">
+          <div class="accounts-filters-popover__section-title">
+            {{ resolveText("admin.accounts.filters.sections.selects", "Select filters") }}
+          </div>
+
+          <div class="accounts-filters-popover__grid accounts-filters-popover__grid--status">
+            <label
+              v-for="field in filterSelectFieldOptions"
+              :key="field.key"
+              class="accounts-filters-popover__field"
+            >
+              <span>{{ field.label }}</span>
+              <div class="accounts-filters-popover__control">
+                <UiSelect
+                  :withoutNoSelect="false"
+                  :searchable="Boolean(field.searchable)"
+                  :searchValue="filterSearchQueries[field.key]"
+                  :value="draftFilters[field.key] || null"
+                  :data="field.options"
+                  @change="value => setDraftFilterValue(field.key, value)"
+                  @search="value => handleFilterOptionSearch(field.key, value)"
+                />
+                <button
+                  v-if="hasDraftFilterValue(field.key)"
+                  type="button"
+                  class="accounts-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue(field.key)"
+                >
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+
+          <div class="accounts-filters-popover__section-title">
+            {{ resolveText("admin.accounts.filters.sections.text", "Text fields") }}
+          </div>
+
+          <div class="accounts-filters-popover__grid">
+            <label
+              v-for="field in filterTextFieldOptions"
+              :key="field.key"
+              class="accounts-filters-popover__field"
+            >
+              <span>{{ field.label }}</span>
+              <div class="accounts-filters-popover__control">
+                <UiSelect
+                  :withoutNoSelect="false"
+                  :searchable="true"
+                  :searchValue="filterSearchQueries[field.key]"
+                  :value="draftFilters[field.key] || null"
+                  :data="field.options"
+                  @change="value => setDraftFilterValue(field.key, value)"
+                  @search="value => handleFilterOptionSearch(field.key, value)"
+                />
+                <button
+                  v-if="hasDraftFilterValue(field.key)"
+                  type="button"
+                  class="accounts-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue(field.key)"
+                >
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+
+          <div class="accounts-filters-popover__section-title">
+            {{ resolveText("admin.accounts.filters.sections.ranges", "Ranges") }}
+          </div>
+
+          <div class="accounts-filters-popover__grid">
+            <label class="accounts-filters-popover__field">
+              <span>{{ resolveText("admin.accounts.filters.fields.balance_from", "Balance from") }}</span>
+              <div class="accounts-filters-popover__control">
+                <input
+                  class="accounts-filters-popover__input"
+                  type="number"
+                  step="0.01"
+                  :value="draftFilters.balance_from"
+                  @input="event => handleDraftTextInput('balance_from', event)"
+                />
+                <button
+                  v-if="hasDraftFilterValue('balance_from')"
+                  type="button"
+                  class="accounts-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue('balance_from')"
+                >
+                  ×
+                </button>
+              </div>
+            </label>
+
+            <label class="accounts-filters-popover__field">
+              <span>{{ resolveText("admin.accounts.filters.fields.balance_to", "Balance to") }}</span>
+              <div class="accounts-filters-popover__control">
+                <input
+                  class="accounts-filters-popover__input"
+                  type="number"
+                  step="0.01"
+                  :value="draftFilters.balance_to"
+                  @input="event => handleDraftTextInput('balance_to', event)"
+                />
+                <button
+                  v-if="hasDraftFilterValue('balance_to')"
+                  type="button"
+                  class="accounts-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue('balance_to')"
+                >
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+
+          <div class="accounts-filters-popover__section-title">
+            {{ resolveText("admin.accounts.filters.sections.dates", "Date ranges") }}
+          </div>
+
+          <div class="accounts-filters-popover__grid">
+            <label
+              v-for="field in filterDateFieldOptions"
+              :key="field.key"
+              class="accounts-filters-popover__field"
+            >
+              <span>{{ field.label }}</span>
+              <div class="accounts-filters-popover__control">
+                <input
+                  class="accounts-filters-popover__input"
+                  type="date"
+                  :value="draftFilters[field.key]"
+                  @input="event => handleDraftTextInput(field.key, event)"
+                />
+                <button
+                  v-if="hasDraftFilterValue(field.key)"
+                  type="button"
+                  class="accounts-filters-popover__clear"
+                  @click.prevent.stop="clearDraftFilterValue(field.key)"
+                >
+                  ×
+                </button>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="accounts-filters-popover__actions">
+          <UiButtonDefault
+            state="info--small"
+            class="!w-full"
+            @click="resetDraftFilters"
+          >
+            {{ resolveText("admin.accounts.filters.reset", "Reset") }}
+          </UiButtonDefault>
+          <UiButtonDefault
+            state="info--small"
+            class="!w-full"
+            @click="applyDraftFilters"
+          >
+            {{ resolveText("admin.accounts.filters.apply", "Apply") }}
+          </UiButtonDefault>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, h, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+  import { computed, h, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
   import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from "vue-router";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
@@ -830,7 +834,9 @@
   const appliedFilters = ref<AccountFilters>(createEmptyFilters());
   const draftFilters = ref<AccountFilters>(createEmptyFilters());
   const isFiltersPopoverOpen = ref(false);
-  const filtersPopoverRef = ref<HTMLElement | null>(null);
+  const filtersTriggerRef = ref<HTMLElement | null>(null);
+  const filtersPopoverPanelRef = ref<HTMLElement | null>(null);
+  const filtersPopoverStyle = ref<Record<string, string>>({});
   const dynamicFilterOptions = ref<DynamicFilterOptionsMap>(createEmptyDynamicFilterOptions());
   const filterSearchQueries = ref<FilterSearchQueryMap>(createEmptyFilterSearchQueries());
   const filterSearchTimers = new Map<SelectFilterKey, ReturnType<typeof window.setTimeout>>();
@@ -1633,12 +1639,36 @@
     setDraftFilterValue(key, target?.value ?? "");
   };
 
-  const toggleFiltersPopover = () => {
+  const updateFiltersPopoverPosition = () => {
+    if (!isFiltersPopoverOpen.value || !filtersTriggerRef.value) {
+      return;
+    }
+
+    const triggerRect = filtersTriggerRef.value.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const preferredWidth = Math.min(Math.max(viewportWidth - 24, 320), 560);
+    const left = Math.max(12, Math.min(triggerRect.right - preferredWidth, viewportWidth - preferredWidth - 12));
+
+    filtersPopoverStyle.value = {
+      position: "fixed",
+      top: `${Math.round(triggerRect.bottom + 8)}px`,
+      left: `${Math.round(left)}px`,
+      width: `${Math.round(preferredWidth)}px`,
+      maxWidth: "calc(100vw - 24px)",
+    };
+  };
+
+  const toggleFiltersPopover = async () => {
     if (!isFiltersPopoverOpen.value) {
       draftFilters.value = cloneFilters(appliedFilters.value);
       resetFilterSearchQueries();
     }
     isFiltersPopoverOpen.value = !isFiltersPopoverOpen.value;
+
+    if (isFiltersPopoverOpen.value) {
+      await nextTick();
+      updateFiltersPopoverPosition();
+    }
   };
 
   const resetDraftFilters = () => {
@@ -1673,7 +1703,11 @@
     if (!isFiltersPopoverOpen.value) return;
     const target = event.target as Node | null;
     if (!target) return;
-    if (filtersPopoverRef.value && !filtersPopoverRef.value.contains(target)) {
+
+    const clickedOnTrigger = filtersTriggerRef.value?.contains(target) ?? false;
+    const clickedOnPopover = filtersPopoverPanelRef.value?.contains(target) ?? false;
+
+    if (!clickedOnTrigger && !clickedOnPopover) {
       isFiltersPopoverOpen.value = false;
     }
   };
@@ -1684,6 +1718,10 @@
 
   const handleExternalReload = async () => {
     await loadAll();
+  };
+
+  const handleFiltersPopoverViewportChange = () => {
+    updateFiltersPopoverPosition();
   };
 
   const formatDate = (date?: string) => {
@@ -1726,6 +1764,8 @@
     useEventBus.on("loadDataForAdminAccounts", handleExternalReload);
     document.addEventListener("click", handleClickOutsideFilters);
     document.addEventListener("click", handleClickOutsideActionMenu);
+    window.addEventListener("resize", handleFiltersPopoverViewportChange, { passive: true });
+    window.addEventListener("scroll", handleFiltersPopoverViewportChange, true);
   });
 
   onBeforeUnmount(() => {
@@ -1734,6 +1774,17 @@
     useEventBus.off("loadDataForAdminAccounts", handleExternalReload);
     document.removeEventListener("click", handleClickOutsideFilters);
     document.removeEventListener("click", handleClickOutsideActionMenu);
+    window.removeEventListener("resize", handleFiltersPopoverViewportChange);
+    window.removeEventListener("scroll", handleFiltersPopoverViewportChange, true);
+  });
+
+  watch(isFiltersPopoverOpen, async isOpen => {
+    if (!isOpen) {
+      return;
+    }
+
+    await nextTick();
+    updateFiltersPopoverPosition();
   });
 </script>
 
@@ -1846,10 +1897,8 @@
   }
 
   .accounts-filters-popover {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 8px);
-    z-index: 40;
+    position: fixed;
+    z-index: 1200;
     width: min(92vw, 560px);
     max-height: min(70vh, 760px);
     border: 1px solid var(--color-stroke-ui-light);
