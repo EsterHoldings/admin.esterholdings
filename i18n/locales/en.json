@@ -744,6 +744,19 @@
       "notifications": "Notifications",
       "markAllRead": "Mark all read",
       "emptyNotifications": "You have no notifications yet",
+      "notificationTemplates": {
+        "withdrawalRequestCreated": {
+          "title": "New withdrawal request",
+          "message": "{client} • {amount} {currency} • account {account}"
+        },
+        "statuses": {
+          "pending": "Pending",
+          "processing": "Processing",
+          "successful": "Successful",
+          "failed": "Failed",
+          "cancelled": "Cancelled"
+        }
+      },
       "accountSettings": "Account Settings",
       "switchToLight": "Switch to Light",
       "switchToDark": "Switch to Dark",

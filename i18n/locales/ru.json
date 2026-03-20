@@ -744,6 +744,19 @@
       "notifications": "Уведомления",
       "markAllRead": "Отметить все прочитанными",
       "emptyNotifications": "У вас пока нет уведомлений",
+      "notificationTemplates": {
+        "withdrawalRequestCreated": {
+          "title": "Новая заявка на вывод",
+          "message": "{client} • {amount} {currency} • счёт {account}"
+        },
+        "statuses": {
+          "pending": "Ожидает",
+          "processing": "В обработке",
+          "successful": "Успешно",
+          "failed": "Ошибка",
+          "cancelled": "Отклонена"
+        }
+      },
       "accountSettings": "Настройки аккаунта",
       "switchToLight": "Переключить на светлую",
       "switchToDark": "Переключить на темную",

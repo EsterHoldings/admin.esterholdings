@@ -305,7 +305,9 @@
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
   import useAppCore from "~/composables/useAppCore";
+  import useEventBus from "~/composables/useEventBus";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
+  import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
   definePageMeta({
     middleware: ["admin-middleware"],
@@ -337,6 +339,8 @@
   const toast = useToast();
   const appCore = useAppCore();
   const adminAuthStore = useAdminAuthStore();
+  const adminNotificationsStore = useAdminNotificationsStore();
+  const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
 
   const requests = ref<WithdrawalRequestItem[]>([]);
   const isLoading = ref(false);
@@ -595,6 +599,18 @@
     await Promise.all([loadRequests(), loadStats()]);
   };
 
+  const markWithdrawalNotificationsSeen = async (): Promise<void> => {
+    try {
+      const types = ["payments.withdrawal.created"];
+      const response = await appCore.adminModules.notifications.markReadByTypes(["payments.withdrawal.created"]);
+      const summary = response?.data?.data ?? {};
+      adminNotificationsStore.applySummary(summary);
+      useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, { types, summary });
+    } catch {
+      // no-op
+    }
+  };
+
   const handleSearchInput = async (value: string): Promise<void> => {
     searchFilter.value = value;
     await loadRequests();
@@ -775,7 +791,13 @@
     }
   };
 
-  onMounted(refreshAll);
+  onMounted(async () => {
+    await refreshAll();
+
+    if (!errorMessage.value) {
+      await markWithdrawalNotificationsSeen();
+    }
+  });
 </script>
 
 <style scoped lang="scss">
