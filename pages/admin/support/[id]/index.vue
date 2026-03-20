@@ -875,10 +875,7 @@
   const onlineParticipantsCount = computed(() => participants.value.filter(participant => participant.online).length);
   const totalParticipantsCount = computed(() => participants.value.length);
   const counterpartyOnline = computed(() => {
-    const onlineCustomerId = normalizeText(presenceOnlineClient.value?.id);
-    if (onlineCustomerId) return true;
-
-    return participants.value.some(participant => participant.roleKey === "customer" && participant.online);
+    return participants.value.some(participant => participant.online && !participant.isYou);
   });
   const isParticipantsAddPanelOpen = ref(false);
   const participantsAdminSearch = ref("");

@@ -3244,6 +3244,15 @@
   const isCounterpartyOnline = computed(() => {
     const participants = Array.isArray(presenceState.participants) ? presenceState.participants : [];
 
+    const participantOtherOnline = participants.some((participant: any) => {
+      if (!participant || typeof participant !== "object") return false;
+      return Boolean(participant.online) && !isCurrentPresenceUserId(participant.id);
+    });
+
+    if (participantOtherOnline) {
+      return true;
+    }
+
     if (props.adminChat) {
       const participantCustomerOnline = participants.some((participant: any) => {
         if (!participant || typeof participant !== "object") return false;
@@ -3294,16 +3303,17 @@
 
   const effectiveCounterpartyOnline = computed(() => {
     const propCounterpartyOnline = typeof props.counterpartyOnline === "boolean" ? props.counterpartyOnline : null;
+    const resolvedLiveCounterpartyOnline = isCounterpartyOnline.value || propCounterpartyOnline === true;
 
     if (hasLivePresenceState.value) {
-      return isCounterpartyOnline.value;
+      return resolvedLiveCounterpartyOnline;
     }
 
     if (propCounterpartyOnline !== null) {
       return propCounterpartyOnline;
     }
 
-    return isCounterpartyOnline.value;
+    return resolvedLiveCounterpartyOnline;
   });
 
   const emitSupportPresencePayload = () => {
