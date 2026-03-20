@@ -19,7 +19,9 @@
     </div>
 
     <div class="side-bar-cabinet__content">
-      <AdminSidebarMenu :supportUnreadCount="supportUnreadCount" />
+      <AdminSidebarMenu
+        :supportUnreadCount="supportUnreadCount"
+        :withdrawalRequestsUnreadCount="adminNotificationsStore.unreadWithdrawalRequestsCount" />
     </div>
 
     <div class="side-bar-cabinet__logout">
@@ -38,6 +40,7 @@
   import { useRoute } from "vue-router";
   import { useToast } from "vue-toastification";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
+  import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
   import { useThemeStore } from "~/stores/themeStore.js";
   import { useLocalePath } from "~/.nuxt/imports";
   import useAppCore from "~/composables/useAppCore";
@@ -50,6 +53,7 @@
   const emit = defineEmits(["close"]);
 
   const adminAuthStore = useAdminAuthStore();
+  const adminNotificationsStore = useAdminNotificationsStore();
   const appCore = useAppCore();
   const localePath = useLocalePath();
   const themeStore = useThemeStore();

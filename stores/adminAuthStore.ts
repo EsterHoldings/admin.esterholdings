@@ -14,6 +14,17 @@ interface Permission {
   name: string;
 }
 
+type AdminUser = {
+  id: string;
+  nickname?: string | null;
+  email?: string | null;
+  name?: string | null;
+  user_id?: string | null;
+  photo_url?: string | null;
+  avatar_url?: string | null;
+  avatar?: string | null;
+};
+
 export const useAdminAuthStore = defineStore("adminAuth", () => {
   const LEGACY_ADMIN_ACCESS_TOKEN_KEY = "access_token";
   const ADMIN_ROLES_CACHE_KEY = "admin_roles_cache";
@@ -114,11 +125,20 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     permissions.value = p;
   }
 
+  function setUser(value: AdminUser | null) {
+    user.value = value;
+
+    const resolvedPhoto = value?.photo_url || value?.avatar_url || value?.avatar || "";
+    photoUrl.value = typeof resolvedPhoto === "string" ? resolvedPhoto : "";
+  }
+
   async function initAuth(options: { force?: boolean } = {}) {
     if (!process.client) return;
     if (!accessToken.value) {
       roles.value = [];
       permissions.value = [];
+      user.value = null;
+      photoUrl.value = "";
       isAuthInitializing.value = false;
       isAuthInitialized.value = false;
       authInitError.value = "";
@@ -129,7 +149,7 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
       return initAuthPromise;
     }
 
-    if (isAuthInitialized.value && !options.force) {
+    if (isAuthInitialized.value && !options.force && user.value) {
       return;
     }
 
@@ -140,9 +160,16 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
 
     initAuthPromise = (async () => {
       try {
-        const response = await appCore.adminModules.auth.getAvailablePermissions();
-        setRoles(response?.data?.data?.roles || []);
-        setPermissions(response?.data?.data?.permissions || []);
+        const [permissionsResponse, userResponse] = await Promise.all([
+          appCore.adminModules.auth.getAvailablePermissions(),
+          appCore.adminModules.auth.getAuthUser(),
+        ]);
+
+        setRoles(permissionsResponse?.data?.data?.roles || []);
+        setPermissions(permissionsResponse?.data?.data?.permissions || []);
+
+        const rawUser = userResponse?.data?.data ?? userResponse?.data ?? null;
+        setUser(rawUser && typeof rawUser === "object" ? rawUser : null);
         isAuthInitialized.value = true;
       } catch (error) {
         authInitError.value = error instanceof Error ? error.message : "Failed to initialize admin auth";
@@ -207,9 +234,12 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     isAuthInitializing,
     isAuthenticated,
     permissions,
+    photoUrl,
     roles,
     setAccessToken,
     setPermissions,
     setRoles,
+    setUser,
+    user,
   };
 });

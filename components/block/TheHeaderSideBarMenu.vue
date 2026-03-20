@@ -13,6 +13,7 @@
           :title="menuItem.title"
           :to="menuItem.to"
           :icon="menuItem.icon"
+          :notificationsCount="menuItem.notificationsCount ?? 0"
           :sideBarIsOpen="sideBarIsOpen"
           :key="menuItem.title"
           @click="handleClickMenuItem"
@@ -43,10 +44,12 @@ import { useRouter } from "vue-router";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 import { computed } from "vue";
 import {useLocalePath} from "~/.nuxt/imports";
+import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
 const { t } = useI18n();
 const localePath = useLocalePath();
 const store = useAdminAuthStore();
+const adminNotificationsStore = useAdminNotificationsStore();
 
 const hasPermission = (required?: string | string[]) => {
   if (!required) return true;
@@ -62,6 +65,10 @@ const props = defineProps({
   sideBarIsOpen: {
     type: Boolean,
     default: false,
+  },
+  supportUnreadCount: {
+    type: Number,
+    default: 0,
   },
 });
 
@@ -95,12 +102,14 @@ const menuItems = [
     to: localePath("/withdrawal-requests"),
     icon: UiIconProfile,
     displayIfHasPermission: "view-payments",
+    notificationsCount: adminNotificationsStore.unreadWithdrawalRequestsCount,
   },
   {
     title: t("admin.menu.support"),
     to: localePath("/support"),
     icon: UiIconSupport,
     displayIfHasPermission: "view-support",
+    notificationsCount: props.supportUnreadCount,
   },
   {
     title: t("admin.menu.referral"),

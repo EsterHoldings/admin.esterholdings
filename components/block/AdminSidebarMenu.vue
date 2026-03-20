@@ -47,9 +47,11 @@
   const props = withDefaults(
     defineProps<{
       supportUnreadCount?: number;
+      withdrawalRequestsUnreadCount?: number;
     }>(),
     {
       supportUnreadCount: 0,
+      withdrawalRequestsUnreadCount: 0,
     }
   );
   const addCurrentLocaleToPath = (path = "") => {
@@ -99,6 +101,7 @@
         to: localePath("/withdrawal-requests"),
         icon: UiIconProfile,
         displayIfHasPermission: "view-payments",
+        notificationsCount: props.withdrawalRequestsUnreadCount,
       },
       {
         title: t("admin.menu.support"),

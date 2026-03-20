@@ -6,6 +6,11 @@
   >
     <div class="item__icon">
       <component :is="icon"></component>
+      <span
+        v-if="notificationsCount > 0"
+        class="item__badge">
+        {{ notificationsCount }}
+      </span>
     </div>
     <div class="item__title" :class="{ hide: !props.sideBarIsOpen }">
       {{ title }}
@@ -35,6 +40,10 @@ const props = defineProps({
   sideBarIsOpen: {
     type: Boolean,
     default: false,
+  },
+  notificationsCount: {
+    type: Number,
+    default: 0,
   },
 });
 
@@ -69,7 +78,24 @@ const handleClickMenuItem = (event: Event) => emit("click", props.to);
   }
 
   &__icon {
+    position: relative;
     padding-left: 20px;
+  }
+
+  &__badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--ui-sticker-danger);
+    color: #fff;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+    font-weight: 600;
   }
 
   &__title {
