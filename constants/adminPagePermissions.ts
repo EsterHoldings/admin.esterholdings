@@ -10,6 +10,7 @@ export const ADMIN_PAGE_PERMISSION_RULES: AdminPagePermissionRule[] = [
   { pattern: /^\/verifications(?:\/|$)/, permissions: ["view-verifications"], fallbackPath: "/verifications" },
   { pattern: /^\/clients(?:\/|$)/, permissions: ["view-clients"], fallbackPath: "/clients" },
   { pattern: /^\/accounts(?:\/|$)/, permissions: ["view-accounts"], fallbackPath: "/accounts" },
+  { pattern: /^\/withdrawal-requests(?:\/|$)/, permissions: ["view-payments"], fallbackPath: "/withdrawal-requests" },
   { pattern: /^\/payments(?:\/|$)/, permissions: ["view-payments"], fallbackPath: "/payments" },
   { pattern: /^\/referral(?:\/|$)/, permissions: ["view-referrals"], fallbackPath: "/referral" },
   { pattern: /^\/settings(?:\/|$)/, permissions: ["view-settings"], fallbackPath: "/settings" },

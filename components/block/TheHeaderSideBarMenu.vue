@@ -91,8 +91,8 @@ const menuItems = [
     displayIfHasPermission: "view-accounts",
   },
   {
-    title: t("admin.menu.payments"),
-    to: localePath("/payments"),
+    title: t("admin.menu.withdrawalRequests"),
+    to: localePath("/withdrawal-requests"),
     icon: UiIconProfile,
     displayIfHasPermission: "view-payments",
   },

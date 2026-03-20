@@ -37,6 +37,30 @@ export class PaymentsModule implements BasicModuleInterface {
     return await this.paymentsService.delete(id);
   }
 
+  async getWithdrawalRequests(params: object = {}): Promise<any> {
+    return await this.paymentsService.getWithdrawalRequests(params);
+  }
+
+  async getWithdrawalRequestsStats(params: object = {}): Promise<any> {
+    return await this.paymentsService.getWithdrawalRequestsStats(params);
+  }
+
+  async getWithdrawalRequestsMeta(params: object = {}): Promise<any> {
+    return await this.paymentsService.getWithdrawalRequestsMeta(params);
+  }
+
+  async getWithdrawalRequestById(id: any): Promise<any> {
+    return await this.paymentsService.getWithdrawalRequestById(id);
+  }
+
+  async updateWithdrawalRequest(id: any, data: object = {}): Promise<any> {
+    return await this.paymentsService.updateWithdrawalRequest(id, data);
+  }
+
+  async updateWithdrawalRequestStatus(id: any, data: object = {}): Promise<any> {
+    return await this.paymentsService.updateWithdrawalRequestStatus(id, data);
+  }
+
 
 }
 

@@ -1190,7 +1190,8 @@
       "support": "Support",
       "news": "News",
       "mail": "Mails",
-      "access": "Access"
+      "access": "Access",
+      "withdrawalRequests": "Withdrawal requests"
     },
     "access": {
       "components": {
@@ -1626,6 +1627,56 @@
     },
     "support": {
       "title": "Support"
+    },
+    "withdrawalRequests": {
+      "title": "Withdrawal requests",
+      "subtitle": "Moderate client payout requests, update statuses and edit payout data before manual processing.",
+      "searchPlaceholder": "Search by ID, client, comment or account",
+      "empty": "No withdrawal requests found.",
+      "fields": {
+        "account": "Account",
+        "paymentMethod": "Payment method",
+        "paymentDetail": "Payment details",
+        "amount": "Amount",
+        "createdAt": "Created at",
+        "clientComment": "Client comment",
+        "adminComment": "Admin comment"
+      },
+      "actions": {
+        "openClient": "Open client",
+        "edit": "Edit",
+        "cancelEdit": "Cancel",
+        "save": "Save",
+        "processing": "To processing",
+        "successful": "Successful",
+        "failed": "Failed",
+        "reject": "Reject"
+      },
+      "messages": {
+        "saved": "Withdrawal request updated.",
+        "statusUpdated": "Withdrawal request status updated.",
+        "loadError": "Failed to load withdrawal requests.",
+        "statusError": "Failed to update withdrawal request status.",
+        "saveError": "Failed to update withdrawal request."
+      },
+      "filters": {
+        "allStatuses": "All statuses"
+      },
+      "stats": {
+        "total": "Total"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "successful": "Successful",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      },
+      "validation": {
+        "account": "Choose an account.",
+        "paymentDetail": "Choose approved payment details.",
+        "amount": "Enter a valid amount."
+      }
     }
   },
   "support": {
