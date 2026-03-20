@@ -253,6 +253,15 @@
     tone: NotificationTone;
   };
 
+  const NOTIFICATIONS_POLL_MS = 10000;
+  const NOTIFICATIONS_REALTIME_RETRY_MS = 5000;
+  const NOTIFICATION_EVENT_NAMES = [
+    ".AdminNotificationCreated",
+    "AdminNotificationCreated",
+    ".App\\Events\\AdminNotificationCreated",
+    "App\\Events\\AdminNotificationCreated",
+  ];
+
   const props = withDefaults(
     defineProps<{
       breadcrumbs?: BreadcrumbItem[];
@@ -288,12 +297,16 @@
   const isMarkAllInProgress = ref(false);
   const notificationsLoaded = ref(false);
   const notifications = ref<AdminNotificationItem[]>([]);
+  const knownNotificationIds = ref<Set<string>>(new Set());
   const notificationsRef = ref<any>(null);
   const profileMenuIsOpen = ref(false);
   const profileMenuRef = ref(null);
   const profileContainerRef = ref(null);
   const activeNotificationsChannel = ref<any>(null);
   const currentNotificationsChannelName = ref("");
+  let notificationsSocketStateHandler: ((states: any) => void) | null = null;
+  let notificationsRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
+  let notificationsPollTimer: ReturnType<typeof setInterval> | null = null;
 
   const isThemeLight = computed(() => themeStore.currentTheme !== "dark");
   const canViewProfile = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-profile"));
@@ -447,6 +460,12 @@
     notifications.value.splice(idx, 1, notification);
   };
 
+  const rememberNotifications = (items: AdminNotificationItem[]) => {
+    const next = new Set(knownNotificationIds.value);
+    items.forEach(item => next.add(item.id));
+    knownNotificationIds.value = next;
+  };
+
   const setAllLocalRead = () => {
     notifications.value = notifications.value.map(item => ({
       ...item,
@@ -454,12 +473,13 @@
     }));
   };
 
-  const loadNotifications = async () => {
+  const loadNotifications = async (options: { showToastsForNew?: boolean } = {}): Promise<AdminNotificationItem[]> => {
     if (!hasAccessToken()) {
       notifications.value = [];
       notificationsLoaded.value = false;
       adminNotificationsStore.reset();
-      return;
+      knownNotificationIds.value = new Set();
+      return [];
     }
 
     isLoading.value = true;
@@ -467,15 +487,29 @@
       const response = await appCore.adminModules.notifications.get({ page: 1, perPage: 30 });
       const payload = response?.data?.data ?? {};
       const incomingItems = Array.isArray(payload?.data) ? payload.data : [];
-
-      notifications.value = incomingItems
+      const previousKnownIds = new Set(knownNotificationIds.value);
+      const normalizedItems = incomingItems
         .map(normalizeNotification)
         .filter((item: AdminNotificationItem | null): item is AdminNotificationItem => Boolean(item));
+      const newUnreadItems = normalizedItems.filter(item => !item.wasRead && !previousKnownIds.has(item.id));
+
+      notifications.value = normalizedItems;
+      rememberNotifications(normalizedItems);
 
       adminNotificationsStore.applySummary(payload);
       notificationsLoaded.value = true;
+
+      if (options.showToastsForNew) {
+        newUnreadItems
+          .slice()
+          .reverse()
+          .forEach(showNotificationToast);
+      }
+
+      return newUnreadItems;
     } catch {
       notificationsLoaded.value = false;
+      return [];
     } finally {
       isLoading.value = false;
     }
@@ -536,6 +570,19 @@
     }
   };
 
+  const markNotificationsByTypes = async (types: string[]) => {
+    const normalizedTypes = types.map(item => String(item ?? "").trim()).filter(Boolean);
+    if (normalizedTypes.length === 0) return;
+
+    const response = await appCore.adminModules.notifications.markReadByTypes(normalizedTypes);
+    const summary = response?.data?.data ?? {};
+    adminNotificationsStore.applySummary(summary);
+    useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
+      types: normalizedTypes,
+      summary,
+    });
+  };
+
   const showNotificationToast = (notification: AdminNotificationItem) => {
     const content =
       notification.message && notification.message !== notification.title
@@ -558,6 +605,39 @@
     }
 
     toast.info(content);
+  };
+
+  const reconnectNotificationsSocketTransport = () => {
+    const echoClient = resolveEchoClient();
+    const pusher = echoClient?.connector?.pusher;
+    const state = String(pusher?.connection?.state ?? "");
+    if (!pusher) return;
+
+    if (state === "disconnected" || state === "failed" || state === "unavailable") {
+      try {
+        pusher.connect();
+      } catch {
+        // no-op
+      }
+    }
+  };
+
+  const handleRealtimeNotification = async (payload: any) => {
+    const normalized = normalizeNotification(payload?.notification ?? null);
+    if (!normalized) return;
+
+    const wasKnown = knownNotificationIds.value.has(normalized.id);
+    upsertNotification(normalized, true);
+    rememberNotifications([normalized]);
+
+    if (!normalized.wasRead && !wasKnown) {
+      adminNotificationsStore.incrementForNotification(normalized.type);
+      showNotificationToast(normalized);
+    }
+
+    if (isWithdrawalRequestsRoute.value && normalized.type === "payments.withdrawal.created") {
+      await markNotificationRead(normalized.id, true);
+    }
   };
 
   const handleNotificationActionClick = async (notification: AdminNotificationItem, event?: MouseEvent) => {
@@ -588,23 +668,12 @@
     const echoClient = resolveEchoClient();
     if (!echoClient) return;
 
+    reconnectNotificationsSocketTransport();
     currentNotificationsChannelName.value = channelName;
     activeNotificationsChannel.value = echoClient.private(channelName);
-    activeNotificationsChannel.value.listen(".AdminNotificationCreated", async (payload: any) => {
-      const normalized = normalizeNotification(payload?.notification ?? null);
-      if (!normalized) return;
-
-      const previous = notifications.value.find(item => item.id === normalized.id) ?? null;
-      upsertNotification(normalized, true);
-
-      if (!normalized.wasRead && (!previous || previous.wasRead)) {
-        adminNotificationsStore.incrementForNotification(normalized.type);
-        showNotificationToast(normalized);
-      }
-
-      if (isWithdrawalRequestsRoute.value && normalized.type === "payments.withdrawal.created") {
-        await markNotificationRead(normalized.id, true);
-      }
+    NOTIFICATION_EVENT_NAMES.forEach(eventName => {
+      activeNotificationsChannel.value.stopListening(eventName, handleRealtimeNotification);
+      activeNotificationsChannel.value.listen(eventName, handleRealtimeNotification);
     });
   };
 
@@ -622,6 +691,88 @@
     } catch {
       // no-op
     }
+  };
+
+  const bindNotificationsSocketStateListener = () => {
+    if (notificationsSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (!connection || typeof connection.bind !== "function") return;
+
+    notificationsSocketStateHandler = (states: any) => {
+      const currentState = String(states?.current ?? connection?.state ?? "");
+      if (currentState === "connected") {
+        const adminId = String(adminAuthStore.user?.id ?? "").trim();
+        if (adminId !== "") {
+          subscribeToNotifications(adminId);
+        }
+        return;
+      }
+
+      if (currentState === "failed" || currentState === "unavailable" || currentState === "disconnected") {
+        reconnectNotificationsSocketTransport();
+      }
+    };
+
+    connection.bind("state_change", notificationsSocketStateHandler);
+  };
+
+  const unbindNotificationsSocketStateListener = () => {
+    if (!notificationsSocketStateHandler) return;
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (connection && typeof connection.unbind === "function") {
+      connection.unbind("state_change", notificationsSocketStateHandler);
+    }
+
+    notificationsSocketStateHandler = null;
+  };
+
+  const startNotificationsRealtimeRetry = () => {
+    if (notificationsRealtimeRetryTimer) return;
+
+    notificationsRealtimeRetryTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+
+      reconnectNotificationsSocketTransport();
+      const adminId = String(adminAuthStore.user?.id ?? "").trim();
+      if (adminId !== "") {
+        subscribeToNotifications(adminId);
+      }
+    }, NOTIFICATIONS_REALTIME_RETRY_MS);
+  };
+
+  const stopNotificationsRealtimeRetry = () => {
+    if (!notificationsRealtimeRetryTimer) return;
+
+    clearInterval(notificationsRealtimeRetryTimer);
+    notificationsRealtimeRetryTimer = null;
+  };
+
+  const startNotificationsPolling = () => {
+    if (notificationsPollTimer) return;
+
+    notificationsPollTimer = setInterval(async () => {
+      if (!hasAccessToken()) return;
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+
+      const newUnreadItems = await loadNotifications({ showToastsForNew: true });
+      if (
+        isWithdrawalRequestsRoute.value &&
+        newUnreadItems.some(item => item.type === "payments.withdrawal.created" && !item.wasRead)
+      ) {
+        await markNotificationsByTypes(["payments.withdrawal.created"]);
+      }
+    }, NOTIFICATIONS_POLL_MS);
+  };
+
+  const stopNotificationsPolling = () => {
+    if (!notificationsPollTimer) return;
+
+    clearInterval(notificationsPollTimer);
+    notificationsPollTimer = null;
   };
 
   const formatNotificationTime = (value: string | null): string => {
@@ -665,10 +816,14 @@
         unsubscribeFromNotifications();
         adminNotificationsStore.reset();
         notifications.value = [];
+        knownNotificationIds.value = new Set();
+        stopNotificationsPolling();
         return;
       }
 
       subscribeToNotifications(normalized);
+      startNotificationsRealtimeRetry();
+      startNotificationsPolling();
     }
   );
 
@@ -685,11 +840,15 @@
         return;
       }
 
+      await loadNotifications();
       await loadUnreadSummary();
       const adminId = String(adminAuthStore.user?.id ?? "").trim();
       if (adminId !== "") {
         subscribeToNotifications(adminId);
       }
+      bindNotificationsSocketStateListener();
+      startNotificationsRealtimeRetry();
+      startNotificationsPolling();
     })();
   });
 
@@ -697,6 +856,9 @@
     document.removeEventListener("click", handleClickOutside);
     useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedByTypes);
     unsubscribeFromNotifications();
+    unbindNotificationsSocketStateListener();
+    stopNotificationsRealtimeRetry();
+    stopNotificationsPolling();
   });
 </script>
 
