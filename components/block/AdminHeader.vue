@@ -92,6 +92,7 @@
                     </div>
                     <UiIconDelete
                       class="absolute top-2 right-2 sm:top-3 sm:right-3 opacity-50 hover:opacity-100"
+                      style="width: 14px; height: 14px"
                       @click="handleNotificationActionClick(notification, $event)" />
                   </div>
 
@@ -635,6 +636,11 @@
       showNotificationToast(normalized);
     }
 
+    if (isOpen.value) {
+      await markNotificationRead(normalized.id, true);
+      return;
+    }
+
     if (isWithdrawalRequestsRoute.value && normalized.type === "payments.withdrawal.created") {
       await markNotificationRead(normalized.id, true);
     }
@@ -759,6 +765,11 @@
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
 
       const newUnreadItems = await loadNotifications({ showToastsForNew: true });
+      if (isOpen.value && newUnreadItems.length > 0) {
+        await markAllRead();
+        return;
+      }
+
       if (
         isWithdrawalRequestsRoute.value &&
         newUnreadItems.some(item => item.type === "payments.withdrawal.created" && !item.wasRead)
@@ -792,8 +803,15 @@
   watch(
     () => isOpen.value,
     async opened => {
-      if (!opened || notificationsLoaded.value) return;
-      await loadNotifications();
+      if (!opened) return;
+
+      if (!notificationsLoaded.value) {
+        await loadNotifications();
+      }
+
+      if (unreadCount.value > 0) {
+        await markAllRead();
+      }
     }
   );
 
