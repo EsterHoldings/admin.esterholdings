@@ -4,7 +4,7 @@ export class PaymentsService {
   private useApi: any;
 
   constructor() {
-    this.useApi = new useApi(true);
+    this.useApi = new useApi();
   }
 
   async get(params: {}):Promise<any> {
