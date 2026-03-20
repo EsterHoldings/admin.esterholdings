@@ -262,6 +262,7 @@
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
   ];
+  const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
 
   const props = withDefaults(
     defineProps<{
@@ -408,6 +409,60 @@
     return { title, message };
   };
 
+  const buildSupportTicketCreatedNotification = (
+    raw: any,
+    payload: Record<string, any> | null
+  ): { title: string; message: string } => {
+    const clientName = String(payload?.client_name || payload?.client_email || "").trim();
+    const subject = String(payload?.subject || "").trim();
+    const preview = String(payload?.preview || raw?.message || "").trim();
+    const defaultTitle = String(raw?.title ?? "").trim() || "New support ticket";
+    const defaultMessage = String(raw?.message ?? "").trim();
+
+    const title = resolveText("cabinet.header.notificationTemplates.supportTicketCreated.title", defaultTitle);
+    const fallbackMessage =
+      defaultMessage !== ""
+        ? defaultMessage
+        : [clientName || "-", subject || "-", preview || "-"].filter(Boolean).join(" • ");
+    const message = resolveText(
+      "cabinet.header.notificationTemplates.supportTicketCreated.message",
+      fallbackMessage,
+      {
+        client: clientName || "-",
+        subject: subject || "-",
+        preview: preview || "-",
+      }
+    );
+
+    return { title, message };
+  };
+
+  const buildSupportMessageCreatedNotification = (
+    raw: any,
+    payload: Record<string, any> | null
+  ): { title: string; message: string } => {
+    const clientName = String(payload?.client_name || payload?.client_email || "").trim();
+    const preview = String(payload?.preview || raw?.message || "").trim();
+    const defaultTitle = String(raw?.title ?? "").trim() || "New client message";
+    const defaultMessage = String(raw?.message ?? "").trim();
+
+    const title = resolveText("cabinet.header.notificationTemplates.supportMessageCreated.title", defaultTitle);
+    const fallbackMessage = defaultMessage !== "" ? defaultMessage : [clientName || "-", preview || "-"].filter(Boolean).join(" • ");
+    const message = resolveText(
+      "cabinet.header.notificationTemplates.supportMessageCreated.message",
+      fallbackMessage,
+      {
+        client: clientName || "-",
+        preview: preview || "-",
+      }
+    );
+
+    return { title, message };
+  };
+
+  const shouldToastNotification = (notification: AdminNotificationItem): boolean =>
+    !SUPPORT_ADMIN_NOTIFICATION_TYPES.includes(String(notification.type ?? "").trim());
+
   const normalizeNotification = (raw: any): AdminNotificationItem | null => {
     const id = String(raw?.id ?? "").trim();
     if (id === "") return null;
@@ -422,6 +477,18 @@
 
     if (type === "payments.withdrawal.created") {
       const localized = buildWithdrawalCreatedNotification(raw, payload);
+      title = localized.title;
+      message = localized.message;
+    }
+
+    if (type === "support.ticket.created") {
+      const localized = buildSupportTicketCreatedNotification(raw, payload);
+      title = localized.title;
+      message = localized.message;
+    }
+
+    if (type === "support.message.created") {
+      const localized = buildSupportMessageCreatedNotification(raw, payload);
       title = localized.title;
       message = localized.message;
     }
@@ -504,6 +571,7 @@
         newUnreadItems
           .slice()
           .reverse()
+          .filter(shouldToastNotification)
           .forEach(showNotificationToast);
       }
 
@@ -633,7 +701,9 @@
 
     if (!normalized.wasRead && !wasKnown) {
       adminNotificationsStore.incrementForNotification(normalized.type);
-      showNotificationToast(normalized);
+      if (shouldToastNotification(normalized)) {
+        showNotificationToast(normalized);
+      }
     }
 
     if (isOpen.value) {

@@ -749,6 +749,14 @@
           "title": "Новая заявка на вывод",
           "message": "{client} • {amount} {currency} • счёт {account}"
         },
+        "supportTicketCreated": {
+          "title": "Новый тикет в поддержку",
+          "message": "{client} • {subject} • {preview}"
+        },
+        "supportMessageCreated": {
+          "title": "Новое сообщение клиента",
+          "message": "{client} • {preview}"
+        },
         "statuses": {
           "pending": "Ожидает",
           "processing": "В обработке",

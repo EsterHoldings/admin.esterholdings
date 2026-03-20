@@ -749,6 +749,14 @@
           "title": "New withdrawal request",
           "message": "{client} • {amount} {currency} • account {account}"
         },
+        "supportTicketCreated": {
+          "title": "New support ticket",
+          "message": "{client} • {subject} • {preview}"
+        },
+        "supportMessageCreated": {
+          "title": "New client message",
+          "message": "{client} • {preview}"
+        },
         "statuses": {
           "pending": "Pending",
           "processing": "Processing",

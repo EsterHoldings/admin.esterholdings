@@ -369,9 +369,8 @@
     );
   };
 
-  const handleSupportGlobalMessage = (payload?: any) => {
+  const handleSupportGlobalMessage = () => {
     handleSupportUnreadUpdated();
-    handleSupportMessageToast(payload);
   };
 
   const handleSupportGlobalRead = () => {
