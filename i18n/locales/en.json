@@ -1229,6 +1229,15 @@
       "withdrawalRequests": "Withdrawal requests"
     },
     "access": {
+      "index": {
+        "title": "Access controls",
+        "subtitle": "( Roles and Permissions )",
+        "tabs": {
+          "adminsDescription": "Manage admin accounts, assigned roles and internal access.",
+          "rolesDescription": "Configure reusable permission sets for the admin team.",
+          "permissionsDescription": "Enable or disable granular abilities used across admin pages."
+        }
+      },
       "components": {
         "admins-panel": {
           "title": "# Admins",
@@ -1241,8 +1250,10 @@
             "options": "Options"
           },
           "actions": {
-            "addNewAdmin": "Add new Admin"
-          }
+            "addNewAdmin": "Add new Admin",
+            "create": "New admin"
+          },
+          "empty": "No admins found."
         },
         "admins-panel-add-new": {
           "title": "Create new Admin",
@@ -1286,7 +1297,13 @@
           "columns": {
             "id": "ID",
             "name": "Name"
+          },
+          "status": {
+            "active": "Active",
+            "disabled": "Disabled"
           }
+          ,
+          "empty": "No permissions found."
         },
         "roles-panel": {
           "title": "# Roles",
@@ -1295,7 +1312,15 @@
           "columns": {
             "name": "Name",
             "permissions": "Permissions"
+          },
+          "actions": {
+            "create": "New role",
+            "delete": "Delete role",
+            "deleteConfirm": "Delete this role?"
           }
+          ,
+          "permissionsCount": "permissions",
+          "empty": "No roles found."
         },
         "roles-panel-add-new": {
           "labels": {
@@ -1326,10 +1351,6 @@
         "roles-panel-search": {
           "placeholder": "Search"
         }
-      },
-      "index": {
-        "title": "Access controls",
-        "subtitle": "( Roles and Permissions )"
       }
     },
     "accounts": {

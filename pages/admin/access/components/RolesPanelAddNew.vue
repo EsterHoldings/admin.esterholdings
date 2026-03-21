@@ -170,53 +170,47 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .roles-panel__add-new {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
   &__top {
-    height: 50px;
-
-    padding-left: 40px;
-    padding-right: 20px;
-
+    min-height: 56px;
+    padding: 12px 24px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-
-    border-bottom: 1px solid gainsboro;
+    border-bottom: 1px solid var(--color-stroke-ui-dark);
   }
 
   &__content {
-    height: calc(100vh - 120px);
+    flex: 1;
+    min-height: 0;
 
     &.without-top {
-      height: calc(100vh - 50px);
+      min-height: 100%;
     }
 
     &__fields {
-      padding: 40px;
+      padding: 24px;
+      display: grid;
+      gap: 18px;
 
       .ui-form-control {
-        margin-bottom: 20px;
-
-        &:last-child {
-          margin-right: 0;
-        }
+        margin-bottom: 0;
       }
     }
   }
 
   &__bottom {
-    height: 70px;
-
-    padding-left: 40px;
-    padding-right: 40px;
-
+    padding: 18px 24px 24px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    border-top: 1px solid var(--color-stroke-ui-dark);
 
-    border-top: 1px solid gainsboro;
-
-    .btn {
-      height: 40px;
+    &__save-btn {
+      width: 100%;
     }
   }
 }
