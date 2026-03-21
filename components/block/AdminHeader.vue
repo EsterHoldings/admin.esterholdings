@@ -262,8 +262,6 @@
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
   ];
-  const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
-
   const props = withDefaults(
     defineProps<{
       breadcrumbs?: BreadcrumbItem[];
@@ -460,8 +458,7 @@
     return { title, message };
   };
 
-  const shouldToastNotification = (notification: AdminNotificationItem): boolean =>
-    !SUPPORT_ADMIN_NOTIFICATION_TYPES.includes(String(notification.type ?? "").trim());
+  const shouldToastNotification = (_notification: AdminNotificationItem): boolean => true;
 
   const normalizeNotification = (raw: any): AdminNotificationItem | null => {
     const id = String(raw?.id ?? "").trim();

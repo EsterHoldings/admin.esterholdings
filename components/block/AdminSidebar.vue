@@ -108,10 +108,6 @@
         return;
       }
 
-      if (latestUnreadMessageId && latestUnreadMessageId !== lastUnreadPreviewMessageId.value) {
-        handleSupportMessageToast(latestUnreadMessage);
-      }
-
       lastUnreadPreviewMessageId.value = latestUnreadMessageId;
     } catch {}
   };
