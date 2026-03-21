@@ -5,6 +5,7 @@
         <UiTextH4>{{ t("admin.support.title") }}</UiTextH4>
 
         <UiButtonDefault
+          v-if="canCreateSupport"
           state="info"
           @click="handleClickCreateNewTicket">
           <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]" />
@@ -222,6 +223,7 @@
           v-if="tickets.length === 0"
           class="w-full h-[50vh] flex items-center justify-center">
           <UiButtonDefault
+            v-if="canCreateSupport"
             state="info"
             @click="handleClickCreateNewTicket">
             <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]" />
@@ -378,6 +380,7 @@
         v-if="currentTicketIdForChat"
         :ticket-id="currentTicketIdForChat"
         :currentUser="currentUser"
+        :can-reply="canUpdateSupport"
         @close="handleCloseChat"
         class="fixed inset-0 z-[12000]" />
     </div>
@@ -425,6 +428,7 @@
   import { useRouter } from "vue-router";
   import useEventBus from "~/composables/useEventBus";
   import { useLocalePath } from "~/.nuxt/imports";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
@@ -467,8 +471,15 @@
   const { openModal } = inject("modalControl") as { openModal: Function };
 
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
   const router = useRouter();
   const localePath = useLocalePath();
+  const canCreateSupport = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-support")
+  );
+  const canUpdateSupport = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-support")
+  );
 
   const isLoading = ref(false);
   const search = ref("");
@@ -1130,7 +1141,10 @@
   };
 
   const handleClickCreateNewTicket = async () => {
-    console.log("handleClickCreateNewTicket");
+    if (!canCreateSupport.value) {
+      return;
+    }
+
     openModal(TicketsCreateNew, {
       title: "Создать новую заявку",
     });

@@ -63,6 +63,7 @@
     <UiButtonDefault
       class="roles-panel__add-new__bottom__save-btn"
       state="secondary"
+      :disabled="!canCreateRoles"
       @click="handleSubmitForm"
       >{{
         t("admin.access.components.roles-panel-add-new.actions.createAndSave")
@@ -73,7 +74,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { inject, reactive } from "vue";
+import { computed, inject, reactive } from "vue";
 import { onMounted } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
@@ -84,8 +85,10 @@ import { validatorRoleForm } from "~/pages/admin/access/composables/RolesPabelAd
 import { formData } from "~/pages/admin/access/composables/RolesPabelAddNew";
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 const { t } = useI18n({ useScope: "global" });
+const adminAuthStore = useAdminAuthStore();
 
 const props = defineProps({
   title: {
@@ -97,6 +100,7 @@ const props = defineProps({
 let permissionsData = reactive([]);
 
 const app = useAppCore();
+const canCreateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-roles"));
 
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
@@ -133,6 +137,8 @@ const handleCloseMultiSelectPermissions = () =>
   validatorRoleForm?.doValidateField("permissions", formData.permissions);
 
 const handleSubmitForm = async () => {
+  if (!canCreateRoles.value) return;
+
   try {
     await app.roles.post(formData);
     closeModal();

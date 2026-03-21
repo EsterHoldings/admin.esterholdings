@@ -63,6 +63,7 @@
     <UiButtonDefault
       class="roles-panel__edit__bottom__save-btn"
       state="secondary"
+      :disabled="!canUpdateRoles"
       @click="handleSubmitForm"
     >
       {{
@@ -74,7 +75,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { reactive, inject, onMounted } from "vue";
+import { computed, reactive, inject, onMounted } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiMultiSelect from "~/components/ui/UiMultiSelect.vue";
@@ -84,6 +85,7 @@ import { validatorRoleForm } from "~/pages/admin/access/composables/RolesPanelEd
 import { formData } from "~/pages/admin/access/composables/RolesPanelEdit";
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 const { t } = useI18n({ useScope: "global" });
 const props = defineProps({
@@ -100,6 +102,8 @@ const props = defineProps({
 let permissionsData = reactive([]);
 
 const app = useAppCore();
+const adminAuthStore = useAdminAuthStore();
+const canUpdateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-roles"));
 
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
@@ -143,6 +147,8 @@ const handleOpenMultiSelectPermissions = () => {
 const handleCloseMultiSelectPermissions = () => validateThisField();
 
 const handleSubmitForm = async () => {
+  if (!canUpdateRoles.value) return;
+
   try {
     await app.roles.patch(props.id, formData);
     closeModal();

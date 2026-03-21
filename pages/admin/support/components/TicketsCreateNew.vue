@@ -47,6 +47,7 @@
     <UiButtonDefault
         class="accounts__edit__bottom__save-btn"
         state="secondary"
+        :disabled="isLoading || !canCreateSupport"
         @click="handleSubmitForm"
     >
       <span v-if="!isLoading">{{ 'Создать новую заявку' }}</span>
@@ -65,13 +66,14 @@ import UiTextH4 from "~/components/ui/UiTextH4.vue";
 
 import { validatorTicketForm, validateTicketForm } from "~/pages/admin/support/composables/validation";
 import {formData} from "~/pages/admin/support/composables";
-import {reactive, inject, onMounted, ref} from "vue";
+import {computed, reactive, inject, onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useToast} from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
 import UiTextarea from "~/components/ui/UiTextarea.vue";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 const isLoading = ref(false);
 const {t} = useI18n({useScope: "global"});
@@ -86,6 +88,10 @@ const toast = useToast();
 let accountTypes = reactive([]);
 
 const app = useAppCore();
+const adminAuthStore = useAdminAuthStore();
+const canCreateSupport = computed(
+  () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-support")
+);
 
 const {closeModal} = inject("modalControl") as { closeModal: Function };
 
@@ -101,10 +107,14 @@ const getAccountTypes = async () => {
 };
 
 const handleSubmitForm = async () => {
+  if (!canCreateSupport.value) {
+    return;
+  }
+
   validateTicketForm(async () => {
     try {
       isLoading.value = true;
-      await app.tickets.post(formData);
+      await app.adminModules.tickets.post(formData);
       closeModal();
       useEventBus.emit("loadDataForSupport");
       toast.success('Тикет успешно создан!');

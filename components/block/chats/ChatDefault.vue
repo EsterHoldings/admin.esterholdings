@@ -433,6 +433,7 @@
             ref="inputRef"
             v-model="draft"
             type="text"
+            :disabled="!props.canReply"
             @keydown.enter.prevent="send"
             class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             :placeholder="chatText.writeMessage" />
@@ -441,6 +442,7 @@
             ref="inputRef"
             v-model="draft"
             rows="1"
+            :disabled="!props.canReply"
             @keydown.enter.prevent="send"
             @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
@@ -454,7 +456,7 @@
               :title="chatText.addAttachment"
               aria-haspopup="menu"
               :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
-              :disabled="isSending"
+              :disabled="isSending || !props.canReply"
               @click="toggleAttachMenu">
               <svg
                 viewBox="0 0 24 24"
@@ -971,6 +973,7 @@
                   ref="inputRef"
                   v-model="draft"
                   type="text"
+                  :disabled="!props.canReply"
                   @keydown.enter.prevent="send"
                   class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   :placeholder="chatText.writeMessage" />
@@ -979,6 +982,7 @@
                   ref="inputRef"
                   v-model="draft"
                   rows="1"
+                  :disabled="!props.canReply"
                   @keydown.enter.prevent="send"
                   @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
@@ -992,7 +996,7 @@
                     :title="chatText.addAttachment"
                     aria-haspopup="menu"
                     :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
-                    :disabled="isSending"
+                    :disabled="isSending || !props.canReply"
                     @click="toggleAttachMenu">
                     <svg
                       viewBox="0 0 24 24"
@@ -1326,6 +1330,7 @@
       counterpartyOnline?: boolean | null;
       mobileControls?: boolean;
       mobilePanelExpanded?: boolean;
+      canReply?: boolean;
     }>(),
     {
       asBlock: false,
@@ -1333,6 +1338,7 @@
       counterpartyOnline: null,
       mobileControls: false,
       mobilePanelExpanded: false,
+      canReply: true,
     }
   );
   const emit = defineEmits<{
@@ -2002,6 +2008,7 @@
     );
   };
   const canSend = computed(() => {
+    if (!props.canReply) return false;
     if (isSending.value) return false;
 
     const hasBody = draft.value.trim().length > 0;

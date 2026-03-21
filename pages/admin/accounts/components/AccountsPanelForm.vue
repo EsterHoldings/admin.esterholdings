@@ -103,6 +103,7 @@
       <UiButtonDefault
         state="secondary"
         class="accounts-form-drawer__submit"
+        :disabled="!canSubmitAccounts || isMetaLoading || isRecordLoading"
         :isLoading="isSubmitting"
         @click="handleSubmit"
       >
@@ -128,6 +129,7 @@
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiFormControl from "~/components/ui/UiFormControl.vue";
   import UiSelect from "~/components/ui/UiSelect.vue";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   type Mode = "create" | "edit";
   type FieldKey = "user_id" | "account_type_id" | "leverage_id" | "currency" | "payment_type";
@@ -164,10 +166,14 @@
   const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
 
   const { closeModal } = inject("modalControl") as { closeModal: () => void };
 
   const isEditMode = computed(() => props.mode === "edit" && props.id !== "");
+  const canCreateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-accounts"));
+  const canUpdateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts"));
+  const canSubmitAccounts = computed(() => (isEditMode.value ? canUpdateAccounts.value : canCreateAccounts.value));
   const titleText = computed(() => {
     if (props.title) return props.title;
 
@@ -364,6 +370,10 @@
   };
 
   const handleSubmit = async () => {
+    if (!canSubmitAccounts.value || isSubmitting.value) {
+      return;
+    }
+
     if (!validateLocal()) {
       return;
     }
@@ -412,6 +422,10 @@
   };
 
   onMounted(async () => {
+    if (!canSubmitAccounts.value) {
+      return;
+    }
+
     if (isEditMode.value) {
       await loadAccount();
     }

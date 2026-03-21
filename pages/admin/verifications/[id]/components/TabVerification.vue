@@ -77,6 +77,7 @@
                   :enable-comment="true"
                   :comment="infoComment"
                   :status="infoStatus"
+                  :disabled="!canUpdateVerifications"
                   @update-status="handleVerificationProfile" />
               </div>
             </li>
@@ -125,6 +126,7 @@
                   :enable-comment="true"
                   :comment="documentsComment"
                   :status="documentsStatus"
+                  :disabled="!canUpdateVerifications"
                   @update-status="handleVerificationDocuments" />
               </div>
             </li>
@@ -173,6 +175,7 @@
           <div class="document__options">
             <VerificationActions
               :status="documentRequestData.state"
+              :disabled="!canUpdateVerifications"
               @update-status="handleVerificationDocument($event, documentRequestData.id)" />
           </div>
         </div>
@@ -215,7 +218,7 @@
 
 <script lang="ts" setup>
   import useAppCore from "~/composables/useAppCore";
-  import { onMounted, reactive, ref } from "vue";
+  import { computed, onMounted, reactive, ref } from "vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
 
@@ -228,6 +231,7 @@
   import UiTextH5 from "~/components/ui/UiTextH5.vue";
   import VerificationActions from "~/pages/admin/clients/[id]/components/VerificationActions.vue";
   import UiImage from "~/components/ui/UiImage.vue";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   interface VerificationSection {
     verification_status: string;
@@ -262,11 +266,15 @@
   });
 
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
   const isLoading = ref(false);
   const toast = useToast();
   let verificationRequestData = reactive<VerificationRequestDto>(initialData);
   let documentsListRequestData = reactive([]);
   const { t } = useI18n({ useScope: "global" });
+  const canUpdateVerifications = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-verifications")
+  );
 
   const infoStatus = ref("pending");
   const infoComment = ref("");
@@ -310,6 +318,10 @@
   };
 
   const handleVerificationDocuments = async (value: any) => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isLoading.value = true;
     await appCore.adminModules.verificationRequests.put(props.clientId, {
       type: "documents",
@@ -320,6 +332,10 @@
   };
 
   const handleVerificationDocument = async (value: any, docId: string = "") => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isLoading.value = true;
     await appCore.adminModules.verificationRequests.put(props.clientId, {
       docId: docId,
@@ -331,6 +347,10 @@
   };
 
   const handleVerificationProfile = async (value: any) => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isLoading.value = true;
     await appCore.adminModules.verificationRequests.put(props.clientId, {
       documentId: "",

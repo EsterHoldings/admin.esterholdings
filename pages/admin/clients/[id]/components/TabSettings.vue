@@ -14,6 +14,7 @@
         </UiTextSmall>
         <UiSwitchToggle
           :modelValue="fullSupportEnabled"
+          :disabled="!canUpdateSupportMode"
           @change="handleSupportModeToggle" />
         <UiTextSmall class="client-settings__mode-label">
           {{ resolveText("admin.clients.settings.supportMode.full", "Full chat support") }}
@@ -37,6 +38,7 @@
   import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
   import UiTextH5 from "~/components/ui/UiTextH5.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   interface UserData {
     support_mode?: string | null;
@@ -50,6 +52,7 @@
   const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -57,11 +60,14 @@
   };
 
   const supportModeUpdating = ref(false);
+  const canUpdateSupportMode = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-client-support-mode")
+  );
 
   const fullSupportEnabled = computed(() => String(props.userData?.support_mode ?? "simple") === "full");
 
   const handleSupportModeToggle = async (enabled: boolean) => {
-    if (supportModeUpdating.value) return;
+    if (supportModeUpdating.value || !canUpdateSupportMode.value) return;
 
     const nextMode = enabled ? "full" : "simple";
     const currentMode = String(props.userData?.support_mode ?? "simple");

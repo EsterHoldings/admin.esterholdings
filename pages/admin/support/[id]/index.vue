@@ -159,6 +159,7 @@
                     <div class="support-side__participants-popover-head">
                       <div class="support-side__participants-popover-title">{{ supportText.participantsDetails }}</div>
                       <button
+                        v-if="canManageSupportParticipants"
                         type="button"
                         class="support-side__participants-add-button"
                         :aria-expanded="isParticipantsAddPanelOpen ? 'true' : 'false'"
@@ -469,6 +470,7 @@
             :admin-chat="true"
             :ticket-id="id"
             :currentUser="currentUser"
+            :can-reply="canUpdateSupport"
             :counterparty-online="counterpartyOnline"
             :mobile-controls="isMobileViewport && isMobileFullscreenChat"
             :mobile-panel-expanded="isSideExpanded"
@@ -509,11 +511,12 @@
                 v-model="emailReplyDraft"
                 class="support-email__reply-input"
                 rows="4"
+                :disabled="!canUpdateSupport"
                 :placeholder="supportText.replyPlaceholder"></textarea>
               <button
                 type="submit"
                 class="support-email__reply-submit"
-                :disabled="isEmailReplySending || !emailReplyDraft.trim()">
+                :disabled="!canUpdateSupport || isEmailReplySending || !emailReplyDraft.trim()">
                 <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
                 <span v-else>{{ supportText.sendReply }}</span>
               </button>
@@ -639,6 +642,7 @@
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
   import { useRoute, useRouter } from "vue-router";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
   import ChatDefault from "~/components/block/chats/ChatDefault.vue";
   import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
   import UiIconChevronUp from "~/components/ui/UiIconChevronUp.vue";
@@ -650,6 +654,7 @@
 
   definePageMeta({ layout: "default", middleware: ["admin-middleware"] });
   const { t, locale } = useI18n({ useScope: "global" });
+  const adminAuthStore = useAdminAuthStore();
   const resolveText = (key: string, fallback: string): string => {
     const translated = t(key);
     return translated === key ? fallback : translated;
@@ -768,6 +773,12 @@
 
   const appCore = useAppCore();
   const toast = useToast();
+  const canUpdateSupport = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-support")
+  );
+  const canManageSupportParticipants = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("manage-support-participants")
+  );
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
@@ -1019,6 +1030,11 @@
     }));
   };
   const loadParticipantAdminCandidates = async () => {
+    if (!canManageSupportParticipants.value) {
+      participantsAdminCandidates.value = [];
+      return;
+    }
+
     participantsAdminLoading.value = true;
 
     try {
@@ -1061,12 +1077,20 @@
     }
   };
   const toggleParticipantsAddPanel = () => {
+    if (!canManageSupportParticipants.value) {
+      return;
+    }
+
     isParticipantsAddPanelOpen.value = !isParticipantsAddPanelOpen.value;
     if (isParticipantsAddPanelOpen.value) {
       void loadParticipantAdminCandidates();
     }
   };
   const handleParticipantsAdminSearchInput = () => {
+    if (!canManageSupportParticipants.value) {
+      return;
+    }
+
     if (participantsAdminSearchTimer) {
       clearTimeout(participantsAdminSearchTimer);
     }
@@ -1076,7 +1100,7 @@
     }, 220);
   };
   const addAdminParticipant = async (adminId: string) => {
-    if (!adminId || participantsAdminAddingId.value) return;
+    if (!canManageSupportParticipants.value || !adminId || participantsAdminAddingId.value) return;
 
     participantsAdminAddingId.value = adminId;
     try {
@@ -1839,7 +1863,7 @@
   };
 
   const sendEmailReply = async () => {
-    if (!isEmailTicket.value) return;
+    if (!isEmailTicket.value || !canUpdateSupport.value) return;
     const body = emailReplyDraft.value.trim();
     if (!body || isEmailReplySending.value) return;
 

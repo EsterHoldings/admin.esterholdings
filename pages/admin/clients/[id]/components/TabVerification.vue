@@ -129,6 +129,7 @@
                         :comment="infoComment"
                         :status="infoStatus"
                         :comment-open="isInfoCommentOpen"
+                        :disabled="!canUpdateVerifications"
                         @update-status="handleVerificationProfile"
                         @toggle-comment="toggleInfoComment" />
                     </div>
@@ -148,6 +149,7 @@
                             <UiButtonDefault
                               state="info--outline--small"
                               class="user-verification__left__comment-btn"
+                              :disabled="!canUpdateVerifications"
                               @click="submitInfoComment">
                               {{ t("admin.verifications.comment.save") }}
                             </UiButtonDefault>
@@ -283,6 +285,7 @@
                         :comment="documentsComment"
                         :status="documentsStatus"
                         :comment-open="isDocumentsCommentOpen"
+                        :disabled="!canUpdateVerifications"
                         @update-status="handleVerificationDocuments"
                         @toggle-comment="toggleDocumentsComment" />
                     </div>
@@ -302,6 +305,7 @@
                             <UiButtonDefault
                               state="info--outline--small"
                               class="user-verification__left__comment-btn"
+                              :disabled="!canUpdateVerifications"
                               @click="submitDocumentsComment">
                               {{ t("admin.verifications.comment.save") }}
                             </UiButtonDefault>
@@ -381,6 +385,7 @@
                 <div class="document__options">
                   <VerificationActions
                     :status="documentRequestData.state"
+                    :disabled="!canUpdateVerifications"
                     @update-status="handleVerificationDocument($event, documentRequestData.id)" />
                 </div>
               </div>
@@ -502,9 +507,11 @@
                     :enable-comment="true"
                     :comment="resolvePayoutCommentValue(paymentDetail)"
                     :comment-open="isPayoutCommentOpen(paymentDetail.id)"
+                    :disabled="!canUpdatePaymentDetails"
                     @toggle-comment="togglePayoutComment(paymentDetail)"
                     @update-status="handleVerificationPayoutDetail($event, paymentDetail.id)" />
                   <button
+                    v-if="canDeletePaymentDetails"
                     type="button"
                     class="payout-delete-btn"
                     :disabled="isPayoutDeleting(paymentDetail.id)"
@@ -669,6 +676,7 @@
   import UiTextarea from "~/components/ui/UiTextarea.vue";
   import VerificationActions from "~/pages/admin/clients/[id]/components/VerificationActions.vue";
   import UiImage from "~/components/ui/UiImage.vue";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   interface VerificationSection {
     verification_status: string;
@@ -757,6 +765,7 @@
   });
 
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
   const route = useRoute();
   const isLoading = ref(false);
   const isPayoutLoading = ref(false);
@@ -798,6 +807,21 @@
   const payoutDeleteLoadingMap = reactive<Record<string, boolean>>({});
   const payoutCommentOpenMap = reactive<Record<string, boolean>>({});
   const payoutCommentDraftMap = reactive<Record<string, string>>({});
+  const canUpdateVerifications = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-verifications")
+  );
+  const canUpdatePaymentDetails = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("update-client-payment-details") ||
+      adminAuthStore.hasPermission("update-clients")
+  );
+  const canDeletePaymentDetails = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("delete-client-payment-details") ||
+      adminAuthStore.hasPermission("delete-clients")
+  );
 
   const clearVerificationTabSwitchResetTimer = (): void => {
     if (verificationTabSwitchResetTimer === null) {
@@ -1103,6 +1127,10 @@
   };
 
   const togglePayoutComment = (paymentDetail: AdminPaymentDetailItem): void => {
+    if (!canUpdatePaymentDetails.value) {
+      return;
+    }
+
     const paymentDetailId = paymentDetail.id;
     const nextState = !isPayoutCommentOpen(paymentDetailId);
 
@@ -1213,6 +1241,10 @@
   };
 
   const handleVerificationPayoutDetail = async (value: any, paymentDetailId: string) => {
+    if (!canUpdatePaymentDetails.value) {
+      return;
+    }
+
     isPayoutLoading.value = true;
 
     try {
@@ -1235,6 +1267,10 @@
   };
 
   const submitPayoutComment = async (paymentDetailId: string): Promise<void> => {
+    if (!canUpdatePaymentDetails.value) {
+      return;
+    }
+
     const paymentDetail = payoutDetails.value.find(item => item.id === paymentDetailId);
     if (!paymentDetail) {
       return;
@@ -1250,7 +1286,7 @@
   };
 
   const handleDeletePayoutDetail = async (paymentDetailId: string): Promise<void> => {
-    if (isPayoutDeleting(paymentDetailId)) {
+    if (isPayoutDeleting(paymentDetailId) || !canDeletePaymentDetails.value) {
       return;
     }
 
@@ -1325,6 +1361,10 @@
   };
 
   const toggleInfoComment = () => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isInfoCommentOpen.value = !isInfoCommentOpen.value;
     if (isInfoCommentOpen.value) {
       infoCommentDraft.value = infoComment.value || "";
@@ -1336,6 +1376,10 @@
   };
 
   const submitInfoComment = async () => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isInfoCommentOpen.value = false;
     await handleVerificationProfile({ status: infoStatus.value, comment: infoCommentDraft.value || "" });
   };
@@ -1346,6 +1390,10 @@
   };
 
   const toggleDocumentsComment = () => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isDocumentsCommentOpen.value = !isDocumentsCommentOpen.value;
     if (isDocumentsCommentOpen.value) {
       documentsCommentDraft.value = documentsComment.value || "";
@@ -1357,6 +1405,10 @@
   };
 
   const submitDocumentsComment = async () => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isDocumentsCommentOpen.value = false;
     await handleVerificationDocuments({ status: documentsStatus.value, comment: documentsCommentDraft.value || "" });
   };
@@ -1367,6 +1419,10 @@
   };
 
   const handleVerificationDocuments = async (value: any) => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isLoading.value = true;
     await appCore.adminModules.verificationRequests.put(props.clientId, {
       type: "documents",
@@ -1377,6 +1433,10 @@
   };
 
   const handleVerificationDocument = async (value: any, docId: string = "") => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isLoading.value = true;
     await appCore.adminModules.verificationRequests.put(props.clientId, {
       docId: docId,
@@ -1388,6 +1448,10 @@
   };
 
   const handleVerificationProfile = async (value: any) => {
+    if (!canUpdateVerifications.value) {
+      return;
+    }
+
     isLoading.value = true;
     await appCore.adminModules.verificationRequests.put(props.clientId, {
       documentId: "",

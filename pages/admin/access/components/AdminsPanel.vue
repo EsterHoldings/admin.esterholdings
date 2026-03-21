@@ -1,7 +1,7 @@
 <template>
   <PanelDefault class="admins-panel" :title="t('admin.access.components.admins-panel.title')">
     <template #title-extra>
-      <UiButtonDefault class="add-btn" @click="handleClickAddRole"
+      <UiButtonDefault v-if="canCreateAdmins" class="add-btn" @click="handleClickAddRole"
         >+</UiButtonDefault
       >
     </template>
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, onMounted, reactive, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { debounce } from "~/utils/helper/debounce";
 import TableDefault from "~/components/block/tables/TableDefault.vue";
@@ -43,9 +43,11 @@ import AdminsPanelEdit from "~/pages/admin/access/components/AdminsPanelEdit.vue
 import PanelSearch from "~/pages/admin/access/components/PanelSearch.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import AdminsPanelAddNew from "~/pages/admin/access/components/AdminsPanelAddNew.vue";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 const { t } = useI18n({ useScope: "global" });
 const appCore = useAppCore();
+const adminAuthStore = useAdminAuthStore();
 
 const isLoading = ref(false);
 const isLoadingSearch = ref(false);
@@ -56,10 +58,14 @@ const searchFields = ref(["id", "nickname", "email"]);
 const searchFilter = ref("");
 
 const { openModal } = inject("modalControl") as { openModal: Function };
-const handleClickAddRole = () =>
+const canCreateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-admins"));
+const canUpdateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-admins"));
+const handleClickAddRole = () => {
+  if (!canCreateAdmins.value) return;
   openModal(AdminsPanelAddNew, { title: "Add new Admin" });
+};
 
-const adminsColumns = reactive([
+const adminsColumns = computed(() => [
   { title: t("admin.access.components.admins-panel.columns.id"), key: "id" },
   {
     title: t("admin.access.components.admins-panel.columns.nickname"),
@@ -77,10 +83,14 @@ const adminsColumns = reactive([
     title: t("admin.access.components.admins-panel.columns.createdAt"),
     key: "created_at",
   },
-  {
-    title: t("admin.access.components.admins-panel.columns.options"),
-    key: "options",
-  },
+  ...(canUpdateAdmins.value
+    ? [
+        {
+          title: t("admin.access.components.admins-panel.columns.options"),
+          key: "options",
+        },
+      ]
+    : []),
 ]);
 
 const adminsData = reactive([]);
@@ -120,14 +130,16 @@ const loadData = async (isFilterQuery = false) => {
         ? user.roles.map((role: any) => role?.name).filter(Boolean)
         : [];
 
-      user.options = [
-        {
-          isIcon: true,
-          is: UiIconEdit,
-          props: {},
-          events: { click: () => handleOpenClientPage(userId) },
-        },
-      ];
+      user.options = canUpdateAdmins.value
+        ? [
+            {
+              isIcon: true,
+              is: UiIconEdit,
+              props: {},
+              events: { click: () => handleOpenClientPage(userId) },
+            },
+          ]
+        : [];
     });
 
     adminsData.splice(0, adminsData.length, ...responseAdminsData);
@@ -140,8 +152,11 @@ const loadData = async (isFilterQuery = false) => {
 };
 
 const handleOpenClientPage = (id: string) => {
-  openModal(AdminsPanelAddNew, {
+  if (!canUpdateAdmins.value) return;
+
+  openModal(AdminsPanelEdit, {
     title: t("admin.access.components.admins-panel.actions.addNewAdmin"),
+    id,
   });
 };
 

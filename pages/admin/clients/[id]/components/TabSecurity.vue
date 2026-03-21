@@ -35,7 +35,7 @@
         >
           <UiButtonDefault
             state="danger--outline"
-            :disabled="isTwoFactorDisabling"
+            :disabled="!canManageClientSecurity || isTwoFactorDisabling"
             :isLoading="isTwoFactorDisabling"
             @click="handleDisableTwoFactor"
           >
@@ -60,6 +60,7 @@
           >
             <UiInput
               type="password"
+              :disabled="!canManageClientSecurity"
               :placeholder="resolveText('admin.clients.security.password.placeholders.newPassword', '*********')"
               :value="form.password"
               :isDirty="isPasswordDirty"
@@ -75,6 +76,7 @@
           >
             <UiInput
               type="password"
+              :disabled="!canManageClientSecurity"
               :placeholder="resolveText('admin.clients.security.password.placeholders.confirmation', '*********')"
               :value="form.password_confirmation"
               :isDirty="isConfirmationDirty"
@@ -95,14 +97,14 @@
 
             <UiSwitchToggle
               :modelValue="form.send_email"
-              :disabled="!hasEmail"
+              :disabled="!hasEmail || !canManageClientSecurity"
               @change="form.send_email = $event" />
           </div>
 
           <div class="client-security__actions">
             <UiButtonDefault
               state="info--outline"
-              :disabled="isSubmitting"
+              :disabled="!canManageClientSecurity || isSubmitting"
               @click="handleSubmit"
             >
               <UiIconSpinnerDefault v-if="isSubmitting" />
@@ -141,6 +143,7 @@
   import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
   import UiTextH5 from "~/components/ui/UiTextH5.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   interface UserData {
     email?: string | null;
@@ -155,6 +158,7 @@
   const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -174,6 +178,9 @@
 
   const hasEmail = computed(() => String(props.userData?.email ?? "").trim() !== "");
   const twoFactorEnabled = computed(() => Boolean(props.userData?.two_factor_enabled));
+  const canManageClientSecurity = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-clients")
+  );
   const userEmailDisplay = computed(() => {
     if (!hasEmail.value) {
       return resolveText("admin.clients.security.password.emailMissing", "Client email is missing.");
@@ -254,7 +261,7 @@
   };
 
   const handleDisableTwoFactor = async () => {
-    if (isTwoFactorDisabling.value || !twoFactorEnabled.value) {
+    if (!canManageClientSecurity.value || isTwoFactorDisabling.value || !twoFactorEnabled.value) {
       return;
     }
 
@@ -275,7 +282,7 @@
   };
 
   const handleSubmit = async () => {
-    if (isSubmitting.value) {
+    if (!canManageClientSecurity.value || isSubmitting.value) {
       return;
     }
 

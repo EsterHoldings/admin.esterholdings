@@ -52,6 +52,7 @@
   import { definePageMeta } from "~/.nuxt/imports";
   import { useI18n } from "vue-i18n";
   import { useRoute } from "vue-router";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
   import TabReferrals from "~/pages/admin/clients/[id]/components/TabReferrals.vue";
@@ -71,6 +72,7 @@
   const { t } = useI18n({ useScope: "global" });
   const route = useRoute();
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
 
   const clientId = ref(route.params.id as string);
 
@@ -107,12 +109,39 @@
     return value === key ? fallback : value;
   };
 
+  const canViewClientVerification = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("view-verifications") ||
+      adminAuthStore.hasPermission("update-verifications") ||
+      adminAuthStore.hasPermission("view-client-payment-details") ||
+      adminAuthStore.hasPermission("update-client-payment-details") ||
+      adminAuthStore.hasPermission("delete-client-payment-details")
+  );
+  const canViewClientReferrals = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-referrals")
+  );
+  const canManageClientSettings = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-client-support-mode")
+  );
+  const canManageClientSecurity = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-clients")
+  );
+
   const tabsList = computed(() => [
     { label: "KYC", component: TabKYC },
-    { label: resolveText("admin.clients.tabs.verification", "Verification"), component: TabVerification },
-    { label: resolveText("admin.clients.tabs.referrals", "Referrals"), component: TabReferrals },
-    { label: resolveText("admin.clients.tabs.settings", "Settings"), component: TabSettings },
-    { label: resolveText("admin.clients.tabs.security", "Security"), component: TabSecurity },
+    ...(canViewClientVerification.value
+      ? [{ label: resolveText("admin.clients.tabs.verification", "Verification"), component: TabVerification }]
+      : []),
+    ...(canViewClientReferrals.value
+      ? [{ label: resolveText("admin.clients.tabs.referrals", "Referrals"), component: TabReferrals }]
+      : []),
+    ...(canManageClientSettings.value
+      ? [{ label: resolveText("admin.clients.tabs.settings", "Settings"), component: TabSettings }]
+      : []),
+    ...(canManageClientSecurity.value
+      ? [{ label: resolveText("admin.clients.tabs.security", "Security"), component: TabSecurity }]
+      : []),
   ]);
 
   const activeTabIndex = ref(0);

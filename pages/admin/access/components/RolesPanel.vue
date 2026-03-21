@@ -2,6 +2,7 @@
   <PanelDefault class="roles-panel" :title="t('admin.access.components.roles-panel.title')">
     <template #title-extra>
       <UiButtonDefault
+          v-if="canCreateRoles"
           class="add-btn"
           @click="handleClickAddRole"
       >+
@@ -44,6 +45,7 @@ import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
 import {debounce} from "~/utils/helper/debounce";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 interface IPermissionItem {
   name: string;
@@ -51,6 +53,7 @@ interface IPermissionItem {
 
 const {t} = useI18n({useScope: "global"});
 const appCore = useAppCore();
+const adminAuthStore = useAdminAuthStore();
 
 const isLoading = ref(true);
 const isLoadingSearch = ref(false);
@@ -61,6 +64,9 @@ const searchFields = ref(["name"]);
 const searchFilter = ref("");
 
 const {openModal} = inject("modalControl") as { openModal: Function };
+const canCreateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-roles"));
+const canUpdateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-roles"));
+const canDeleteRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-roles"));
 
 // const rolesColumns = ref([
 //   { title: "Name", key: "name" },
@@ -74,18 +80,24 @@ const rolesColumns = computed(() => [
     title: t("admin.access.components.roles-panel.columns.permissions"),
     key: "permissions",
   },
-  {title: "", key: "options"},
+  ...(canUpdateRoles.value || canDeleteRoles.value ? [{title: "", key: "options"}] : []),
 ]);
 
 const rolesData = ref([]);
 
 const handleClickEditIcon = (id: string) =>
-    openModal(RolesPanelEdit, {
-      title: t("admin.access.components.roles-panel.editTitle"),
-      id,
-    });
+    canUpdateRoles.value
+      ? openModal(RolesPanelEdit, {
+          title: t("admin.access.components.roles-panel.editTitle"),
+          id,
+        })
+      : null;
 
 const handleClickDeleteIcon = async (id: string) => {
+  if (!canDeleteRoles.value) {
+    return;
+  }
+
   await appCore.roles.delete(id);
   await loadData();
 };
@@ -115,18 +127,26 @@ const loadData = async (isFilterQuery = false) => {
         ? role.permissions.map((permission: IPermissionItem) => permission?.name).filter(Boolean)
         : [],
       options: [
-        {
-          isIcon: true,
-          is: UiIconEdit,
-          props: {},
-          events: {click: () => handleClickEditIcon(role.id)},
-        },
-        {
-          isIcon: true,
-          is: UiIconDelete,
-          props: {},
-          events: {click: () => handleClickDeleteIcon(role.id)},
-        },
+        ...(canUpdateRoles.value
+          ? [
+              {
+                isIcon: true,
+                is: UiIconEdit,
+                props: {},
+                events: {click: () => handleClickEditIcon(role.id)},
+              },
+            ]
+          : []),
+        ...(canDeleteRoles.value
+          ? [
+              {
+                isIcon: true,
+                is: UiIconDelete,
+                props: {},
+                events: {click: () => handleClickDeleteIcon(role.id)},
+              },
+            ]
+          : []),
       ],
     }));
   } catch {
@@ -138,9 +158,11 @@ const loadData = async (isFilterQuery = false) => {
 };
 
 const handleClickAddRole = () =>
-    openModal(RolesPanelAddNew, {
-      title: t("admin.access.components.roles-panel.addTitle"),
-    });
+    canCreateRoles.value
+      ? openModal(RolesPanelAddNew, {
+          title: t("admin.access.components.roles-panel.addTitle"),
+        })
+      : null;
 
 const handleInputSearch = debounce(async (value: any) => {
   try {

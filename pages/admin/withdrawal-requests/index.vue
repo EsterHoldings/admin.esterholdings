@@ -153,55 +153,66 @@
             </div>
 
             <div class="withdrawal-request-card__actions">
-              <UiButtonDefault
-                v-if="canMoveToProcessing(requestItem.status)"
-                state="success--outline"
-                class="withdrawal-request-card__action-btn"
-                :disabled="updatingRequestId === requestItem.id"
-                @click="handleQuickStatusUpdate(requestItem, 'processing')"
+              <div
+                v-if="canManagePayments"
+                class="withdrawal-request-card__status-actions"
               >
-                {{ moveToProcessingText }}
-              </UiButtonDefault>
+                <button
+                  type="button"
+                  class="withdrawal-status-action withdrawal-status-action--processing"
+                  :class="{ 'is-active': isStatusActive(requestItem, 'processing') }"
+                  :disabled="isStatusDisabled(requestItem, 'processing')"
+                  :title="moveToProcessingText"
+                  @click="handleQuickStatusUpdate(requestItem, 'processing')"
+                >
+                  <UiIconUpdate :spinning="updatingRequestId === requestItem.id && isStatusActive(requestItem, 'processing')" />
+                </button>
 
-              <UiButtonDefault
-                v-if="canMarkSuccessful(requestItem.status)"
-                state="success"
-                class="withdrawal-request-card__action-btn"
-                :disabled="updatingRequestId === requestItem.id"
-                @click="handleQuickStatusUpdate(requestItem, 'successful')"
-              >
-                {{ markSuccessfulText }}
-              </UiButtonDefault>
+                <button
+                  type="button"
+                  class="withdrawal-status-action withdrawal-status-action--successful"
+                  :class="{ 'is-active': isStatusActive(requestItem, 'successful') }"
+                  :disabled="isStatusDisabled(requestItem, 'successful')"
+                  :title="markSuccessfulText"
+                  @click="handleQuickStatusUpdate(requestItem, 'successful')"
+                >
+                  <UiIconSuccessFull />
+                </button>
 
-              <UiButtonDefault
-                v-if="canMarkFailed(requestItem.status)"
-                state="warning"
-                class="withdrawal-request-card__action-btn"
-                :disabled="updatingRequestId === requestItem.id"
-                @click="handleQuickStatusUpdate(requestItem, 'failed')"
-              >
-                {{ markFailedText }}
-              </UiButtonDefault>
+                <button
+                  type="button"
+                  class="withdrawal-status-action withdrawal-status-action--failed"
+                  :class="{ 'is-active': isStatusActive(requestItem, 'failed') }"
+                  :disabled="isStatusDisabled(requestItem, 'failed')"
+                  :title="markFailedText"
+                  @click="handleQuickStatusUpdate(requestItem, 'failed')"
+                >
+                  <UiIconDangerFull />
+                </button>
 
-              <UiButtonDefault
-                v-if="canReject(requestItem.status)"
-                state="danger"
-                class="withdrawal-request-card__action-btn"
-                :disabled="updatingRequestId === requestItem.id"
-                @click="handleQuickStatusUpdate(requestItem, 'cancelled')"
-              >
-                {{ rejectText }}
-              </UiButtonDefault>
+                <button
+                  type="button"
+                  class="withdrawal-status-action withdrawal-status-action--cancelled"
+                  :class="{ 'is-active': isStatusActive(requestItem, 'cancelled') }"
+                  :disabled="isStatusDisabled(requestItem, 'cancelled')"
+                  :title="rejectText"
+                  @click="handleQuickStatusUpdate(requestItem, 'cancelled')"
+                >
+                  <UiIconDelete />
+                </button>
+              </div>
 
-              <UiButtonDefault
+              <button
                 v-if="canEditRequest(requestItem.status)"
-                state="info--outline"
-                class="withdrawal-request-card__action-btn"
+                type="button"
+                class="withdrawal-status-action withdrawal-status-action--edit"
                 :disabled="updatingRequestId === requestItem.id"
+                :title="editingRequestId === requestItem.id ? cancelEditText : editText"
                 @click="handleToggleEdit(requestItem)"
               >
-                {{ editingRequestId === requestItem.id ? cancelEditText : editText }}
-              </UiButtonDefault>
+                <UiIconEdit v-if="editingRequestId !== requestItem.id" />
+                <UiIconDelete v-else />
+              </button>
             </div>
 
             <div
@@ -304,6 +315,8 @@
   import UiSelect from "~/components/ui/UiSelect.vue";
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
+  import UiIconDelete from "~/components/ui/UiIconDelete.vue";
+  import UiIconEdit from "~/components/ui/UiIconEdit.vue";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -621,25 +634,40 @@
     await loadRequests();
   };
 
-  const canMoveToProcessing = (status: string): boolean =>
-    canManagePayments.value && ["pending", "cancelled", "failed", "processing"].includes(String(status).toLowerCase());
-
-  const canMarkSuccessful = (status: string): boolean =>
-    canManagePayments.value && ["pending", "processing", "failed"].includes(String(status).toLowerCase());
-
-  const canMarkFailed = (status: string): boolean =>
-    canManagePayments.value && ["pending", "processing", "failed"].includes(String(status).toLowerCase());
-
-  const canReject = (status: string): boolean =>
-    canManagePayments.value && ["pending", "processing", "failed", "cancelled"].includes(String(status).toLowerCase());
-
   const canEditRequest = (status: string): boolean =>
     canManagePayments.value && String(status).toLowerCase() !== "successful";
+
+  const isStatusActive = (
+    requestItem: WithdrawalRequestItem,
+    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+  ): boolean => String(requestItem.status).toLowerCase() === nextStatus;
+
+  const isStatusDisabled = (
+    requestItem: WithdrawalRequestItem,
+    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+  ): boolean => updatingRequestId.value === requestItem.id || isStatusActive(requestItem, nextStatus);
+
+  const buildStatusConfirmText = (
+    requestItem: WithdrawalRequestItem,
+    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+  ): string =>
+    `${resolveText("admin.withdrawalRequests.messages.confirmStatusChange", "Change request")} #${shortId(
+      requestItem.id
+    )} ${resolveText("admin.withdrawalRequests.messages.confirmStatusChangeTo", "to status")} "${statusText(nextStatus)}"?`;
 
   const handleQuickStatusUpdate = async (
     requestItem: WithdrawalRequestItem,
     nextStatus: "processing" | "successful" | "failed" | "cancelled"
   ): Promise<void> => {
+    if (!canManagePayments.value || isStatusDisabled(requestItem, nextStatus)) {
+      return;
+    }
+
+    const isConfirmed = window.confirm(buildStatusConfirmText(requestItem, nextStatus));
+    if (!isConfirmed) {
+      return;
+    }
+
     updatingRequestId.value = requestItem.id;
 
     try {
@@ -1004,11 +1032,66 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
   }
 
-  .withdrawal-request-card__action-btn {
-    min-width: 140px;
+  .withdrawal-request-card__status-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--color-stroke-ui-dark);
+    border: 1px solid var(--color-stroke-ui-light);
+  }
+
+  .withdrawal-status-action {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--ui-text-main);
+    transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .withdrawal-status-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .withdrawal-status-action svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .withdrawal-status-action:not(:disabled):hover {
+    background: var(--color-stroke-ui-light);
+  }
+
+  .withdrawal-status-action.is-active {
+    color: #fff;
+  }
+
+  .withdrawal-status-action--processing.is-active {
+    background: #3b82f6;
+  }
+
+  .withdrawal-status-action--successful.is-active {
+    background: #22c55e;
+  }
+
+  .withdrawal-status-action--failed.is-active,
+  .withdrawal-status-action--cancelled.is-active {
+    background: #ef4444;
+  }
+
+  .withdrawal-status-action--edit {
+    background: var(--color-stroke-ui-dark);
+    border: 1px solid var(--color-stroke-ui-light);
   }
 
   .withdrawal-request-card__edit {
@@ -1090,9 +1173,13 @@
       grid-template-columns: 1fr;
     }
 
-    .withdrawal-request-card__action-btn {
+    .withdrawal-request-card__status-actions {
       width: 100%;
-      min-width: 0;
+      justify-content: space-between;
+    }
+
+    .withdrawal-status-action--edit {
+      width: 100%;
     }
 
     .withdrawal-requests-page__toolbar-right {

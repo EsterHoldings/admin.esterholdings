@@ -6,6 +6,7 @@
         type="button"
         class="action-toggle action-toggle--comment"
         :class="{ active: props.commentOpen }"
+        :disabled="props.disabled"
         @click="toggleComment"
         title="Коментар"
         aria-label="Коментар"
@@ -17,6 +18,7 @@
           type="button"
           class="action-toggle"
           :class="{ active: props.status === 'rejected' }"
+          :disabled="props.disabled"
           @click="onReject"
           title="Відхилено"
           aria-label="Відхилено"
@@ -27,6 +29,7 @@
           type="button"
           class="action-toggle"
           :class="{ active: props.status === 'pending' }"
+          :disabled="props.disabled"
           @click="onPending"
           title="В очікуванні"
           aria-label="В очікуванні"
@@ -37,6 +40,7 @@
           type="button"
           class="action-toggle"
           :class="{ active: props.status === 'approved' }"
+          :disabled="props.disabled"
           @click="onApprove"
           title="Підтверджено"
           aria-label="Підтверджено"
@@ -70,18 +74,28 @@ const props = defineProps({
   commentOpen: {
     type: Boolean,
     default: false
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 });
 
 const emit = defineEmits(['updateStatus', 'toggleComment'] as const);
 
-function onReject(doc: any)   { emit('updateStatus', {status: 'rejected', comment: props.comment || ''}) }
+function onReject(doc: any)   { if (!props.disabled) emit('updateStatus', {status: 'rejected', comment: props.comment || ''}) }
 
-function onPending(doc: any)  { emit('updateStatus', {status: 'pending', comment: props.comment || ''}) }
+function onPending(doc: any)  { if (!props.disabled) emit('updateStatus', {status: 'pending', comment: props.comment || ''}) }
 
-function onApprove(doc: any)  { emit('updateStatus', {status: 'approved', comment: props.comment || ''}) }
+function onApprove(doc: any)  { if (!props.disabled) emit('updateStatus', {status: 'approved', comment: props.comment || ''}) }
 
-const toggleComment = () => emit('toggleComment');
+const toggleComment = () => {
+  if (props.disabled) {
+    return;
+  }
+
+  emit('toggleComment');
+};
 </script>
 
 <style lang="scss" scoped>
@@ -119,6 +133,11 @@ const toggleComment = () => emit('toggleComment');
   background: transparent;
   border: none;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.action-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .action-toggle svg {

@@ -28,9 +28,11 @@ import PaginationDefault from "~/components/block/paginations/PaginationDefault.
 import useAppCore from "~/composables/useAppCore";
 import { onMounted, reactive, ref } from "vue";
 import useEventBus from "~/composables/useEventBus";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 const { t } = useI18n({ useScope: "global" });
 const appCore = useAppCore();
+const adminAuthStore = useAdminAuthStore();
 
 const isLoading = ref(false);
 const isLoadingSearch = ref(false);
@@ -59,6 +61,9 @@ const permissionsColumns = computed(() => [
 ]);
 
 let permissionsData = reactive([]);
+const canUpdatePermissions = computed(
+  () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-permissions")
+);
 
 const loadData = async (isFilterQuery = false) => {
   const params = {
@@ -88,6 +93,7 @@ const loadData = async (isFilterQuery = false) => {
           is: UiSwitchToggle,
           props: {
             modelValue: permission.is_active,
+            disabled: !canUpdatePermissions.value,
           },
           events: { click: () => handleSwitchPermission(permission) },
         },
@@ -104,6 +110,10 @@ const loadData = async (isFilterQuery = false) => {
 };
 
 const handleSwitchPermission = async (permission: any) => {
+  if (!canUpdatePermissions.value) {
+    return;
+  }
+
   await appCore.permissions.patch(permission.id, {
     is_active: !permission.is_active,
   });

@@ -2,7 +2,7 @@
   <div class="switch__wrapper">
     <div
         class="switch"
-        :class="{ 'active': modelValue }"
+        :class="{ 'active': modelValue, 'is-disabled': disabled }"
         @click="toggle"
     >
       <div class="switch__thumb" :class="{ 'active': modelValue }"></div>
@@ -15,11 +15,16 @@ import { defineProps, defineEmits } from "vue";
 
 const props = defineProps<{
   modelValue: boolean;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits(["update:modelValue", "change"]);
 
 const toggle = () => {
+  if (props.disabled) {
+    return;
+  }
+
   const newValue = !props.modelValue;
   emit("update:modelValue", newValue);
   emit("change", newValue);
@@ -37,6 +42,11 @@ const toggle = () => {
   cursor: pointer;
   transition: background 0.3s ease-in-out;
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
 
   &.active {
     background: #4CAF50;
