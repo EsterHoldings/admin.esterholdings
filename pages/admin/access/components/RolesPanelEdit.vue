@@ -105,6 +105,7 @@ type PermissionItem = {
 };
 
 const permissionsData = ref<PermissionItem[]>([]);
+const selectedPermissionsData = ref<PermissionItem[]>([]);
 
 const app = useAppCore();
 const adminAuthStore = useAdminAuthStore();
@@ -120,11 +121,20 @@ const getRole = async () => {
       ? role.permissions
       : [];
 
+    selectedPermissionsData.value = selectedPermissions
+      .map((permission: any) => ({
+        id: String(permission?.id ?? ""),
+        name: String(permission?.name ?? ""),
+      }))
+      .filter((permission: PermissionItem) => permission.id && permission.name);
+
     formData.name = String(role?.name ?? "");
-    formData.permissions = selectedPermissions
+    formData.permissions = selectedPermissionsData.value
       .map((permission: any) => String(permission?.id ?? ""))
       .filter(Boolean);
+    syncPermissionsData();
   } catch {
+    selectedPermissionsData.value = [];
     formData.name = "";
     formData.permissions = [];
   }
@@ -132,12 +142,34 @@ const getRole = async () => {
 
 const getPermissions = async () => {
   try {
-    const response = await app.permissions.get();
+    const response = await app.permissions.get({ perPage: 1000 });
     const permissions = response?.data?.data?.data;
     permissionsData.value = Array.isArray(permissions) ? permissions : [];
+    syncPermissionsData();
   } catch {
     permissionsData.value = [];
   }
+};
+
+const syncPermissionsData = () => {
+  const permissionsMap = new Map<string, PermissionItem>();
+
+  for (const permission of permissionsData.value) {
+    if (permission?.id) {
+      permissionsMap.set(String(permission.id), {
+        id: String(permission.id),
+        name: String(permission.name ?? ""),
+      });
+    }
+  }
+
+  for (const permission of selectedPermissionsData.value) {
+    if (permission?.id && !permissionsMap.has(permission.id)) {
+      permissionsMap.set(permission.id, permission);
+    }
+  }
+
+  permissionsData.value = Array.from(permissionsMap.values());
 };
 
 const validateThisField = () => {

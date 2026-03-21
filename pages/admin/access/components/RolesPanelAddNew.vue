@@ -111,7 +111,7 @@ const { closeModal } = inject("modalControl") as { closeModal: Function };
 
 const getPermissions = async () => {
   try {
-    const response = await app.permissions.get();
+    const response = await app.permissions.get({ perPage: 1000 });
     const permissions = response?.data?.data?.data;
     permissionsData.value = Array.isArray(permissions) ? permissions : [];
   } catch {
