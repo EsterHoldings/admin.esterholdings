@@ -1,102 +1,184 @@
 <template>
-  <PanelDefault class="roles-panel" :title="t('admin.access.components.roles-panel.title')">
-    <template #title-extra>
-      <UiButtonDefault
+  <div class="access-entity-panel">
+    <div class="access-entity-panel__toolbar">
+      <div class="access-entity-panel__toolbar-left">
+        <UiInput
+          class="w-full"
+          :placeholder="t('admin.access.components.roles-panel-search.placeholder')"
+          :isLoading="isLoadingSearch"
+          :value="searchFilter"
+          @input="handleInputSearch"
+        >
+          <template #icon-left>
+            <UiIconSearch />
+          </template>
+        </UiInput>
+      </div>
+
+      <div class="access-entity-panel__toolbar-right">
+        <UiButtonDefault state="info--small" class="!w-[44px]" @click="handleClickRefresh">
+          <UiIconUpdate :spinning="isLoading || isLoadingSearch" />
+        </UiButtonDefault>
+
+        <UiButtonDefault
           v-if="canCreateRoles"
-          class="add-btn"
+          state="secondary"
+          class="shrink-0 whitespace-nowrap"
           @click="handleClickAddRole"
-      >+
-      </UiButtonDefault>
-    </template>
-    <RolesPanelSearch
-        @input="handleInputSearch"
-        :isLoading="isLoadingSearch"
-        :value="searchFilter"
-    />
-    <TableDefault
-        :columns="rolesColumns"
-        :data="rolesData"
-        :isLoading="isLoading"
-        :rowsPerPage="4"
-    />
+        >
+          {{ resolveText("admin.access.components.roles-panel.actions.create", "New role") }}
+        </UiButtonDefault>
+      </div>
+    </div>
+
+    <div v-if="isLoading && rolesData.length === 0" class="access-entity-panel__loading">
+      <UiIconSpinnerDefault />
+    </div>
+
+    <div v-else-if="rolesData.length === 0" class="access-entity-panel__empty">
+      {{ resolveText("admin.access.components.roles-panel.empty", "No roles found.") }}
+    </div>
+
+    <div v-else class="access-entity-list">
+      <article
+        v-for="role in rolesData"
+        :key="role.id"
+        class="access-entity-card"
+      >
+        <div class="access-entity-card__top">
+          <div>
+            <div class="access-entity-card__title">{{ role.name || "-" }}</div>
+            <div class="access-entity-card__subtitle">
+              {{ role.permissions.length }} {{ resolveText("admin.access.components.roles-panel.permissionsCount", "permissions") }}
+            </div>
+          </div>
+
+          <div class="access-entity-card__actions">
+            <button
+              v-if="canUpdateRoles"
+              type="button"
+              class="access-entity-action"
+              :title="resolveText('admin.access.components.roles-panel.editTitle', 'Edit role')"
+              @click="handleClickEditIcon(role.id)"
+            >
+              <UiIconEdit />
+            </button>
+
+            <button
+              v-if="canDeleteRoles"
+              type="button"
+              class="access-entity-action"
+              :title="resolveText('admin.access.components.roles-panel.actions.delete', 'Delete role')"
+              @click="handleClickDeleteIcon(role.id)"
+            >
+              <UiIconDelete />
+            </button>
+          </div>
+        </div>
+
+        <div class="access-entity-card__grid">
+          <div class="md:col-span-2">
+            <div class="access-entity-card__label">{{ t("admin.access.components.roles-panel.columns.permissions") }}</div>
+            <div v-if="role.permissions.length" class="access-entity-card__chips">
+              <span
+                v-for="permissionName in role.permissions"
+                :key="permissionName"
+                class="access-entity-chip"
+              >
+                {{ permissionName }}
+              </span>
+            </div>
+            <div v-else class="access-entity-card__value">
+              {{ emptyValueText }}
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
     <PaginationDefault
-        :isLoading="isLoading"
-        :perPage="perPage"
-        :page="page"
-        :totalRows="totalRows"
-        @perPageChange="handleChangePerPage"
-        @pageChange="handleChangePage"
+      :isLoading="isLoading"
+      :perPage="perPage"
+      :page="page"
+      :totalRows="totalRows"
+      @perPageChange="handleChangePerPage"
+      @pageChange="handleChangePage"
     />
-  </PanelDefault>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import {ref, inject, onMounted, onUnmounted, computed} from "vue";
-import {useI18n} from "vue-i18n";
-import TableDefault from "~/components/block/tables/TableDefault.vue";
-import UiIconEdit from "~/components/ui/UiIconEdit.vue";
-import UiIconDelete from "~/components/ui/UiIconDelete.vue";
-import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
-import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-import RolesPanelAddNew from "~/pages/admin/access/components/RolesPanelAddNew.vue";
-import RolesPanelEdit from "~/pages/admin/access/components/RolesPanelEdit.vue";
-import RolesPanelSearch from "~/pages/admin/access/components/RolesPanelSearch.vue";
+import { computed, inject, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
-import {debounce} from "~/utils/helper/debounce";
+import { debounce } from "~/utils/helper/debounce";
+
+import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import UiIconDelete from "~/components/ui/UiIconDelete.vue";
+import UiIconEdit from "~/components/ui/UiIconEdit.vue";
+import UiIconSearch from "~/components/ui/UiIconSearch.vue";
+import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
+import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
+import UiInput from "~/components/ui/UiInput.vue";
+import RolesPanelAddNew from "~/pages/admin/access/components/RolesPanelAddNew.vue";
+import RolesPanelEdit from "~/pages/admin/access/components/RolesPanelEdit.vue";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 interface IPermissionItem {
   name: string;
 }
 
-const {t} = useI18n({useScope: "global"});
+type RoleItem = {
+  id: string;
+  name: string;
+  permissions: string[];
+};
+
+const { t } = useI18n({ useScope: "global" });
 const appCore = useAppCore();
 const adminAuthStore = useAdminAuthStore();
 
+const resolveText = (key: string, fallback: string) => {
+  const value = t(key);
+  return value === key ? fallback : value;
+};
+
+const emptyValueText = "—";
 const isLoading = ref(true);
 const isLoadingSearch = ref(false);
-const perPage = ref(3);
+const perPage = ref(6);
 const page = ref(1);
 const totalRows = ref(0);
 const searchFields = ref(["name"]);
 const searchFilter = ref("");
+const rolesData = ref<RoleItem[]>([]);
 
-const {openModal} = inject("modalControl") as { openModal: Function };
+const { openModal } = inject("modalControl") as { openModal: (component: unknown, props?: Record<string, unknown>) => void };
 const canCreateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-roles"));
 const canUpdateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-roles"));
 const canDeleteRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-roles"));
 
-// const rolesColumns = ref([
-//   { title: "Name", key: "name" },
-//   { title: "Permissions", key: "permissions" },
-//   { title: "", key: "options" },
-// ]);
+const handleClickEditIcon = (id: string) => {
+  if (!canUpdateRoles.value) return;
 
-const rolesColumns = computed(() => [
-  {title: t("admin.access.components.roles-panel.columns.name"), key: "name"},
-  {
-    title: t("admin.access.components.roles-panel.columns.permissions"),
-    key: "permissions",
-  },
-  ...(canUpdateRoles.value || canDeleteRoles.value ? [{title: "", key: "options"}] : []),
-]);
-
-const rolesData = ref([]);
-
-const handleClickEditIcon = (id: string) =>
-    canUpdateRoles.value
-      ? openModal(RolesPanelEdit, {
-          title: t("admin.access.components.roles-panel.editTitle"),
-          id,
-        })
-      : null;
+  openModal(RolesPanelEdit, {
+    title: resolveText("admin.access.components.roles-panel.editTitle", "Edit Role"),
+    id,
+  });
+};
 
 const handleClickDeleteIcon = async (id: string) => {
   if (!canDeleteRoles.value) {
     return;
   }
+
+  const isConfirmed = window.confirm(
+    resolveText("admin.access.components.roles-panel.actions.deleteConfirm", "Delete this role?")
+  );
+  if (!isConfirmed) return;
 
   await appCore.roles.delete(id);
   await loadData();
@@ -119,36 +201,19 @@ const loadData = async (isFilterQuery = false) => {
     const payload = response?.data?.data ?? {};
 
     totalRows.value = Number(payload?.total ?? 0);
+    rolesData.value = Array.isArray(payload?.data)
+      ? payload.data.map((role: any) => ({
+          id: String(role?.id ?? ""),
+          name: String(role?.name ?? ""),
+          permissions: Array.isArray(role?.permissions)
+            ? role.permissions.map((permission: IPermissionItem) => permission?.name).filter(Boolean)
+            : [],
+        }))
+      : [];
 
-    const responseRolesData = Array.isArray(payload?.data) ? payload.data : [];
-    rolesData.value = responseRolesData.map((role: any) => ({
-      ...role,
-      permissions: Array.isArray(role?.permissions)
-        ? role.permissions.map((permission: IPermissionItem) => permission?.name).filter(Boolean)
-        : [],
-      options: [
-        ...(canUpdateRoles.value
-          ? [
-              {
-                isIcon: true,
-                is: UiIconEdit,
-                props: {},
-                events: {click: () => handleClickEditIcon(role.id)},
-              },
-            ]
-          : []),
-        ...(canDeleteRoles.value
-          ? [
-              {
-                isIcon: true,
-                is: UiIconDelete,
-                props: {},
-                events: {click: () => handleClickDeleteIcon(role.id)},
-              },
-            ]
-          : []),
-      ],
-    }));
+    if (isFilterQuery) {
+      page.value = 1;
+    }
   } catch {
     totalRows.value = 0;
     rolesData.value = [];
@@ -157,17 +222,22 @@ const loadData = async (isFilterQuery = false) => {
   }
 };
 
-const handleClickAddRole = () =>
-    canCreateRoles.value
-      ? openModal(RolesPanelAddNew, {
-          title: t("admin.access.components.roles-panel.addTitle"),
-        })
-      : null;
+const handleClickAddRole = () => {
+  if (!canCreateRoles.value) return;
 
-const handleInputSearch = debounce(async (value: any) => {
+  openModal(RolesPanelAddNew, {
+    title: resolveText("admin.access.components.roles-panel.addTitle", "Add new Role"),
+  });
+};
+
+const handleClickRefresh = async () => {
+  await loadData();
+};
+
+const handleInputSearch = debounce(async (value: unknown) => {
   try {
     isLoadingSearch.value = true;
-    searchFilter.value = value;
+    searchFilter.value = String(value ?? "");
     await loadData(true);
   } finally {
     isLoadingSearch.value = false;
@@ -189,33 +259,4 @@ onMounted(async () => {
   await loadData();
   useEventBus.on("loadDataForRoles", loadData);
 });
-
-onUnmounted(async () => {
-});
 </script>
-
-<style lang="scss" scoped>
-.roles-panel {
-  padding: 10px;
-}
-
-.add-btn {
-  background-color: var(--color-stroke-ui-dark);
-  height: 30px;
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.1s;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    opacity: 0.5;
-  }
-}
-</style>

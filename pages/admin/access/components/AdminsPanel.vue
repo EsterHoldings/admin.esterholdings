@@ -1,21 +1,99 @@
 <template>
-  <PanelDefault class="admins-panel" :title="t('admin.access.components.admins-panel.title')">
-    <template #title-extra>
-      <UiButtonDefault v-if="canCreateAdmins" class="add-btn" @click="handleClickAddRole"
-        >+</UiButtonDefault
+  <div class="access-entity-panel">
+    <div class="access-entity-panel__toolbar">
+      <div class="access-entity-panel__toolbar-left">
+        <UiInput
+          class="w-full"
+          :placeholder="t('admin.access.components.admins-panel-search.placeholder')"
+          :isLoading="isLoadingSearch"
+          :value="searchFilter"
+          @input="handleInputSearch"
+        >
+          <template #icon-left>
+            <UiIconSearch />
+          </template>
+        </UiInput>
+      </div>
+
+      <div class="access-entity-panel__toolbar-right">
+        <UiButtonDefault state="info--small" class="!w-[44px]" @click="handleClickRefresh">
+          <UiIconUpdate :spinning="isLoading || isLoadingSearch" />
+        </UiButtonDefault>
+
+        <UiButtonDefault
+          v-if="canCreateAdmins"
+          state="secondary"
+          class="shrink-0 whitespace-nowrap"
+          @click="handleClickAddRole"
+        >
+          {{ resolveText("admin.access.components.admins-panel.actions.create", "New admin") }}
+        </UiButtonDefault>
+      </div>
+    </div>
+
+    <div v-if="isLoading && adminsData.length === 0" class="access-entity-panel__loading">
+      <UiIconSpinnerDefault />
+    </div>
+
+    <div v-else-if="adminsData.length === 0" class="access-entity-panel__empty">
+      {{ resolveText("admin.access.components.admins-panel.empty", "No admins found.") }}
+    </div>
+
+    <div v-else class="access-entity-list">
+      <article
+        v-for="admin in adminsData"
+        :key="admin.id"
+        class="access-entity-card"
       >
-    </template>
-    <PanelSearch
-      @input="handleInputSearch"
-      :isLoading="isLoadingSearch"
-      :value="searchFilter"
-    />
-    <TableDefault
-      :columns="adminsColumns"
-      :data="adminsData"
-      :isLoading="isLoading"
-      :rowsPerPage="5"
-    />
+        <div class="access-entity-card__top">
+          <div>
+            <div class="access-entity-card__title">{{ admin.nickname || "-" }}</div>
+            <div class="access-entity-card__subtitle">{{ admin.email || "-" }}</div>
+          </div>
+
+          <div class="access-entity-card__actions">
+            <button
+              v-if="canUpdateAdmins"
+              type="button"
+              class="access-entity-action"
+              :title="resolveText('admin.access.components.admins-panel.actions.addNewAdmin', 'Edit admin')"
+              @click="handleOpenClientPage(admin.id)"
+            >
+              <UiIconEdit />
+            </button>
+          </div>
+        </div>
+
+        <div class="access-entity-card__grid">
+          <div>
+            <div class="access-entity-card__label">{{ t("admin.access.components.admins-panel.columns.id") }}</div>
+            <div class="access-entity-card__value">{{ admin.id }}</div>
+          </div>
+
+          <div>
+            <div class="access-entity-card__label">{{ t("admin.access.components.admins-panel.columns.roles") }}</div>
+            <div v-if="admin.roles.length" class="access-entity-card__chips">
+              <span
+                v-for="roleName in admin.roles"
+                :key="roleName"
+                class="access-entity-chip"
+              >
+                {{ roleName }}
+              </span>
+            </div>
+            <div v-else class="access-entity-card__value">
+              {{ emptyValueText }}
+            </div>
+          </div>
+
+          <div>
+            <div class="access-entity-card__label">{{ t("admin.access.components.admins-panel.columns.createdAt") }}</div>
+            <div class="access-entity-card__value">{{ admin.created_at || emptyValueText }}</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
     <PaginationDefault
       :isLoading="isLoading"
       :perPage="perPage"
@@ -24,76 +102,66 @@
       @perPageChange="handleChangePerPage"
       @pageChange="handleChangePage"
     />
-  </PanelDefault>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { debounce } from "~/utils/helper/debounce";
-import TableDefault from "~/components/block/tables/TableDefault.vue";
-import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
-import UiIconEdit from "~/components/ui/UiIconEdit.vue";
-import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-import AdminsPanelEdit from "~/pages/admin/access/components/AdminsPanelEdit.vue";
-import PanelSearch from "~/pages/admin/access/components/PanelSearch.vue";
+import { debounce } from "~/utils/helper/debounce";
+
+import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import UiIconEdit from "~/components/ui/UiIconEdit.vue";
+import UiIconSearch from "~/components/ui/UiIconSearch.vue";
+import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
+import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
+import UiInput from "~/components/ui/UiInput.vue";
 import AdminsPanelAddNew from "~/pages/admin/access/components/AdminsPanelAddNew.vue";
+import AdminsPanelEdit from "~/pages/admin/access/components/AdminsPanelEdit.vue";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
+
+type AdminItem = {
+  id: string;
+  nickname: string;
+  email: string;
+  roles: string[];
+  created_at: string;
+};
 
 const { t } = useI18n({ useScope: "global" });
 const appCore = useAppCore();
 const adminAuthStore = useAdminAuthStore();
 
+const resolveText = (key: string, fallback: string) => {
+  const value = t(key);
+  return value === key ? fallback : value;
+};
+
+const emptyValueText = "—";
 const isLoading = ref(false);
 const isLoadingSearch = ref(false);
-const perPage = ref(5);
+const perPage = ref(6);
 const page = ref(1);
 const totalRows = ref(0);
 const searchFields = ref(["id", "nickname", "email"]);
 const searchFilter = ref("");
+const adminsData = ref<AdminItem[]>([]);
 
-const { openModal } = inject("modalControl") as { openModal: Function };
+const { openModal } = inject("modalControl") as { openModal: (component: unknown, props?: Record<string, unknown>) => void };
 const canCreateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-admins"));
 const canUpdateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-admins"));
+
 const handleClickAddRole = () => {
   if (!canCreateAdmins.value) return;
-  openModal(AdminsPanelAddNew, { title: "Add new Admin" });
+
+  openModal(AdminsPanelAddNew, {
+    title: resolveText("admin.access.components.admins-panel-add-new.title", "Create new Admin"),
+  });
 };
-
-const adminsColumns = computed(() => [
-  { title: t("admin.access.components.admins-panel.columns.id"), key: "id" },
-  {
-    title: t("admin.access.components.admins-panel.columns.nickname"),
-    key: "nickname",
-  },
-  {
-    title: t("admin.access.components.admins-panel.columns.email"),
-    key: "email",
-  },
-  {
-    title: t("admin.access.components.admins-panel.columns.roles"),
-    key: "roles",
-  },
-  {
-    title: t("admin.access.components.admins-panel.columns.createdAt"),
-    key: "created_at",
-  },
-  ...(canUpdateAdmins.value
-    ? [
-        {
-          title: t("admin.access.components.admins-panel.columns.options"),
-          key: "options",
-        },
-      ]
-    : []),
-]);
-
-const adminsData = reactive([]);
 
 const loadData = async (isFilterQuery = false) => {
   const params = {
@@ -112,40 +180,22 @@ const loadData = async (isFilterQuery = false) => {
     const payload = response?.data?.data ?? {};
 
     totalRows.value = Number(payload?.total ?? 0);
+    adminsData.value = Array.isArray(payload?.data)
+      ? payload.data.map((admin: any) => ({
+          id: String(admin?.id ?? ""),
+          nickname: String(admin?.nickname ?? ""),
+          email: String(admin?.email ?? ""),
+          roles: Array.isArray(admin?.roles) ? admin.roles.map((role: any) => String(role?.name ?? "")).filter(Boolean) : [],
+          created_at: String(admin?.created_at ?? admin?.created_at_human ?? ""),
+        }))
+      : [];
 
-    const responseAdminsData = Array.isArray(payload?.data) ? payload.data : [];
-    responseAdminsData.forEach((user: any) => {
-      const userId = String(user?.id ?? "");
-
-      user.id = [
-        {
-          is: UiTextParagraph,
-          props: {},
-          events: { click: () => console.log(userId) },
-          slot: userId,
-        },
-      ];
-
-      user.roles = Array.isArray(user?.roles)
-        ? user.roles.map((role: any) => role?.name).filter(Boolean)
-        : [];
-
-      user.options = canUpdateAdmins.value
-        ? [
-            {
-              isIcon: true,
-              is: UiIconEdit,
-              props: {},
-              events: { click: () => handleOpenClientPage(userId) },
-            },
-          ]
-        : [];
-    });
-
-    adminsData.splice(0, adminsData.length, ...responseAdminsData);
+    if (isFilterQuery) {
+      page.value = 1;
+    }
   } catch {
     totalRows.value = 0;
-    adminsData.splice(0, adminsData.length);
+    adminsData.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -155,9 +205,13 @@ const handleOpenClientPage = (id: string) => {
   if (!canUpdateAdmins.value) return;
 
   openModal(AdminsPanelEdit, {
-    title: t("admin.access.components.admins-panel.actions.addNewAdmin"),
+    title: resolveText("admin.access.components.admins-panel-edit.title", "Edit Admin Roles"),
     id,
   });
+};
+
+const handleClickRefresh = async () => {
+  await loadData();
 };
 
 const handleChangePerPage = async (value: number) => {
@@ -171,10 +225,10 @@ const handleChangePage = async (value: number) => {
   await loadData();
 };
 
-const handleInputSearch = debounce(async (value: any) => {
+const handleInputSearch = debounce(async (value: unknown) => {
   try {
     isLoadingSearch.value = true;
-    searchFilter.value = value;
+    searchFilter.value = String(value ?? "");
     await loadData(true);
   } finally {
     isLoadingSearch.value = false;
@@ -187,43 +241,3 @@ onMounted(async () => {
   useEventBus.on("loadDataForAdmins", loadData);
 });
 </script>
-
-<style lang="scss" scoped>
-.admins-panel {
-  padding: 10px;
-}
-
-.panel-search {
-  border: none;
-  border-radius: 0;
-  margin-bottom: 0;
-
-  &__input {
-    border: none;
-
-    &.input {
-      padding: 0 !important;
-    }
-  }
-}
-
-.add-btn {
-  background-color: var(--color-stroke-ui-dark);
-  height: 30px;
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.1s;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    opacity: 0.5;
-  }
-}
-</style>
