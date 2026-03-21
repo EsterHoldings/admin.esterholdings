@@ -91,7 +91,7 @@
         title: t("admin.menu.withdrawalRequests"),
         to: localePath("/withdrawal-requests"),
         icon: UiIconProfile,
-        displayIfHasPermission: "view-payments",
+        displayIfHasPermission: "view-withdrawal-requests",
         notificationsCount: props.withdrawalRequestsUnreadCount,
       },
       {

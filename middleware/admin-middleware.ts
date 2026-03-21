@@ -3,7 +3,6 @@ import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
 import { ADMIN_ACCESS_TOKEN } from "~/constants/auth";
 import {
   canAccessAdminPath,
-  getAdminPagePermissionRule,
   resolveFirstAllowedAdminRoute,
 } from "~/constants/adminPagePermissions";
 
@@ -26,9 +25,6 @@ export default defineNuxtRouteMiddleware(async to => {
   if (!adminAuthStore.isAuthInitialized) {
     await adminAuthStore.initAuth();
   }
-
-  const matchedRule = getAdminPagePermissionRule(to.path || "/");
-  if (!matchedRule) return;
 
   const canAccess = canAccessAdminPath(to.path || "/", {
     hasPermission: permission => adminAuthStore.hasPermission(permission),
