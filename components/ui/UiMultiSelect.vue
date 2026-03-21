@@ -28,9 +28,9 @@
           <div
               class="multi-select__list__item"
               :class="{ 'is-select': isItemSelected(itemY.id) }"
-              v-for="itemY in data"
-              :key="itemY.id"
-              @click="handleSelectItem(itemY.id)"
+            v-for="itemY in normalizedData"
+            :key="itemY.id"
+            @click="handleSelectItem(itemY.id)"
           >
             {{ itemY.name }}
           </div>
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 
 interface IMultiSelectItem {
   id: string;
@@ -53,11 +53,11 @@ const emit = defineEmits(["update", "remove", "open", "close"]);
 const props = defineProps({
   selected: {
     type: Array<IMultiSelectItem>,
-    default: [],
+    default: () => [],
   },
   data: {
     type: Array<IMultiSelectItem>,
-    default: [],
+    default: () => [],
   },
   placeholder: {
     type: String,
@@ -71,16 +71,25 @@ const props = defineProps({
 
 const isListVisible = ref(false);
 const multiSelectRef = ref<HTMLElement | null>(null);
+const normalizedData = computed<IMultiSelectItem[]>(() =>
+  Array.isArray(props.data) ? props.data : []
+);
+const normalizedSelected = computed<string[]>(() =>
+  Array.isArray(props.selected) ? props.selected : []
+);
 const selectedDataComputed = computed(() => {
-  return props.data.filter(item => props.selected.includes(item.id));
+  return normalizedData.value.filter((item) =>
+    normalizedSelected.value.includes(item.id)
+  );
 });
 
-const isItemSelected = (id) => props.selected.includes(id);
-const handleSelectItem = (id: string) => emit("update", id)
+const isItemSelected = (id: string) => normalizedSelected.value.includes(id);
+const handleSelectItem = (id: string) => emit("update", id);
 
-const toggleList = () => (isListVisible.value = !isListVisible.value) ? emit('open') : emit('close')
+const toggleList = () =>
+  (isListVisible.value = !isListVisible.value) ? emit("open") : emit("close");
 
-const handleClickRemove = (id: string) => emit("remove", id)
+const handleClickRemove = (id: string) => emit("remove", id);
 
 </script>
 

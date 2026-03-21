@@ -74,7 +74,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { computed, inject, reactive } from "vue";
+import { computed, inject, ref } from "vue";
 import { onMounted } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
@@ -97,7 +97,12 @@ const props = defineProps({
   },
 });
 
-let permissionsData = reactive([]);
+type PermissionItem = {
+  id: string;
+  name: string;
+};
+
+const permissionsData = ref<PermissionItem[]>([]);
 
 const app = useAppCore();
 const canCreateRoles = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-roles"));
@@ -105,8 +110,13 @@ const canCreateRoles = computed(() => adminAuthStore.hasRole("super-admin") || a
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
 const getPermissions = async () => {
-  const response = await app.permissions.get();
-  permissionsData = response.data.data.data;
+  try {
+    const response = await app.permissions.get();
+    const permissions = response?.data?.data?.data;
+    permissionsData.value = Array.isArray(permissions) ? permissions : [];
+  } catch {
+    permissionsData.value = [];
+  }
 };
 
 const validateThisField = () => {

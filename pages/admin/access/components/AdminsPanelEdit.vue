@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, inject, onMounted } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiMultiSelect from "~/components/ui/UiMultiSelect.vue";
@@ -98,7 +98,12 @@ const props = defineProps({
   },
 });
 
-let rolesData = reactive([]);
+type RoleItem = {
+  id: string;
+  name: string;
+};
+
+const rolesData = ref<RoleItem[]>([]);
 
 const app = useAppCore();
 const adminAuthStore = useAdminAuthStore();
@@ -107,20 +112,33 @@ const canUpdateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || 
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
 const getAdmin = async () => {
-  const response = await app.admins.getById(props.id);
-  const selectedRoles = response.data.data.roles;
+  try {
+    const response = await app.admins.getById(props.id);
+    const admin = response?.data?.data ?? {};
+    const selectedRoles = Array.isArray(admin?.roles) ? admin.roles : [];
 
-  console.log("selectedRoles", selectedRoles);
-
-  formData.id = response.data.data.id;
-  formData.nickname = response.data.data.nickname;
-  formData.email = response.data.data.email;
-  formData.roles = selectedRoles.map((role) => role.id);
+    formData.id = String(admin?.id ?? "");
+    formData.nickname = String(admin?.nickname ?? "");
+    formData.email = String(admin?.email ?? "");
+    formData.roles = selectedRoles
+      .map((role: any) => String(role?.id ?? ""))
+      .filter(Boolean);
+  } catch {
+    formData.id = "";
+    formData.nickname = "";
+    formData.email = "";
+    formData.roles = [];
+  }
 };
 
 const getRoles = async () => {
-  const response = await app.roles.get({ perPage: 100 });
-  rolesData = response.data.data.data;
+  try {
+    const response = await app.roles.get({ perPage: 100 });
+    const roles = response?.data?.data?.data;
+    rolesData.value = Array.isArray(roles) ? roles : [];
+  } catch {
+    rolesData.value = [];
+  }
 };
 
 const validateThisField = () => {

@@ -139,11 +139,10 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { computed, reactive, inject, onMounted } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiMultiSelect from "~/components/ui/UiMultiSelect.vue";
-import UiTextH2 from "~/components/ui/UiTextH2.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import {
   validateAdminForm,
@@ -152,7 +151,6 @@ import {
 import { formData } from "~/pages/admin/access/composables/AdminsPanelAddNew";
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
-import UiTextH3 from "~/components/ui/UiTextH3.vue";
 import UiTextH4 from "~/components/ui/UiTextH4.vue";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
@@ -165,7 +163,12 @@ const props = defineProps({
   },
 });
 
-let rolesData = reactive([]);
+type RoleItem = {
+  id: string;
+  name: string;
+};
+
+const rolesData = ref<RoleItem[]>([]);
 
 const app = useAppCore();
 const canCreateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-admins"));
@@ -173,8 +176,13 @@ const canCreateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || 
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
 const getRoles = async () => {
-  const response = await app.roles.get({ perPage: 20 });
-  rolesData = response.data.data.data;
+  try {
+    const response = await app.roles.get({ perPage: 100 });
+    const roles = response?.data?.data?.data;
+    rolesData.value = Array.isArray(roles) ? roles : [];
+  } catch {
+    rolesData.value = [];
+  }
 };
 
 const validateThisField = () => {

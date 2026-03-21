@@ -75,7 +75,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
-import { computed, reactive, inject, onMounted } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiMultiSelect from "~/components/ui/UiMultiSelect.vue";
@@ -99,7 +99,12 @@ const props = defineProps({
   },
 });
 
-let permissionsData = reactive([]);
+type PermissionItem = {
+  id: string;
+  name: string;
+};
+
+const permissionsData = ref<PermissionItem[]>([]);
 
 const app = useAppCore();
 const adminAuthStore = useAdminAuthStore();
@@ -108,16 +113,31 @@ const canUpdateRoles = computed(() => adminAuthStore.hasRole("super-admin") || a
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
 const getRole = async () => {
-  const response = await app.roles.getById(props.id);
-  const selectedPermissions = response.data.data.permissions;
+  try {
+    const response = await app.roles.getById(props.id);
+    const role = response?.data?.data ?? {};
+    const selectedPermissions = Array.isArray(role?.permissions)
+      ? role.permissions
+      : [];
 
-  formData.name = response.data.data.name;
-  formData.permissions = selectedPermissions.map((permission) => permission.id);
+    formData.name = String(role?.name ?? "");
+    formData.permissions = selectedPermissions
+      .map((permission: any) => String(permission?.id ?? ""))
+      .filter(Boolean);
+  } catch {
+    formData.name = "";
+    formData.permissions = [];
+  }
 };
 
 const getPermissions = async () => {
-  const response = await app.permissions.get();
-  permissionsData = response.data.data.data;
+  try {
+    const response = await app.permissions.get();
+    const permissions = response?.data?.data?.data;
+    permissionsData.value = Array.isArray(permissions) ? permissions : [];
+  } catch {
+    permissionsData.value = [];
+  }
 };
 
 const validateThisField = () => {
