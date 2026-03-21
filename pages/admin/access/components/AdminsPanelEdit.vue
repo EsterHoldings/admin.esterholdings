@@ -75,6 +75,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n";
 import { computed, inject, onMounted, ref } from "vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
 import UiInput from "~/components/ui/UiInput.vue";
@@ -87,6 +88,7 @@ import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
+const { t } = useI18n({ useScope: "global" });
 const props = defineProps({
   title: {
     type: String,
