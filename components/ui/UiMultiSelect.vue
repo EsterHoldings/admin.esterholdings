@@ -24,15 +24,27 @@
         </div>
       </div>
       <div class="multi-select__list-wrapper" v-if="isListVisible">
+        <div class="multi-select__search">
+          <input
+            v-model.trim="searchQuery"
+            class="multi-select__search-input"
+            type="text"
+            :placeholder="searchPlaceholder"
+            @click.stop
+          />
+        </div>
         <div class="multi-select__list">
           <div
               class="multi-select__list__item"
               :class="{ 'is-select': isItemSelected(itemY.id) }"
-            v-for="itemY in normalizedData"
+            v-for="itemY in filteredData"
             :key="itemY.id"
             @click="handleSelectItem(itemY.id)"
           >
             {{ itemY.name }}
+          </div>
+          <div v-if="filteredData.length === 0" class="multi-select__list__empty">
+            Nothing found
           </div>
         </div>
       </div>
@@ -71,6 +83,8 @@ const props = defineProps({
 
 const isListVisible = ref(false);
 const multiSelectRef = ref<HTMLElement | null>(null);
+const searchQuery = ref("");
+const searchPlaceholder = "Search";
 const normalizedData = computed<IMultiSelectItem[]>(() =>
   Array.isArray(props.data) ? props.data : []
 );
@@ -82,12 +96,25 @@ const selectedDataComputed = computed(() => {
     normalizedSelected.value.includes(item.id)
   );
 });
+const filteredData = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+
+  if (!query) {
+    return normalizedData.value;
+  }
+
+  return normalizedData.value.filter((item) =>
+    String(item?.name ?? "").toLowerCase().includes(query)
+  );
+});
 
 const isItemSelected = (id: string) => normalizedSelected.value.includes(id);
 const handleSelectItem = (id: string) => emit("update", id);
 
 const toggleList = () =>
-  (isListVisible.value = !isListVisible.value) ? emit("open") : emit("close");
+  (isListVisible.value = !isListVisible.value)
+    ? emit("open")
+    : (searchQuery.value = "", emit("close"));
 
 const handleClickRemove = (id: string) => emit("remove", id);
 
@@ -173,9 +200,11 @@ const handleClickRemove = (id: string) => emit("remove", id);
     position: absolute;
     width: 100%;
     border: 1px solid var(--color-stroke-ui-dark);
-    overflow: scroll;
-    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: min(420px, 50vh);
     border-radius: 0 0 var(--ui-input--border-radius) var(--ui-input--border-radius);
+    background-color: var(--ui-background);
 
     &-wrapper {
       position: relative;
@@ -205,19 +234,50 @@ const handleClickRemove = (id: string) => emit("remove", id);
       &:last-child {
         margin-bottom: 0;
       }
+    }
 
-      //&:nth-child(odd) {
-      //  background-color: var(--ui-background);
-      //}
-      //
-      //&:nth-child(even) {
-      //  background-color: var(--color-stroke-ui-dark);
-      //}
+    &__empty {
+      background-color: var(--color-stroke-ui-dark);
+      min-height: 44px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-weight: 200;
+      font-size: 16px;
     }
   }
 
   &-wrapper {
     position: relative;
   }
+
+  &__search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    border-bottom: none;
+    border-radius: 0 0 0 0;
+    background-color: var(--ui-background);
+    z-index: 2;
+
+    &-input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--color-stroke-ui-dark);
+      border-radius: 10px;
+      padding: 0 12px;
+      background-color: var(--color-stroke-ui-dark);
+      color: var(--ui-text-main);
+      outline: none;
+    }
+  }
+}
+
+.multi-select__list-wrapper .multi-select__list {
+  top: 56px;
 }
 </style>
