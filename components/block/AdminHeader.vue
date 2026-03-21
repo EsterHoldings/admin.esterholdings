@@ -262,6 +262,7 @@
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
   ];
+  const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
   const props = withDefaults(
     defineProps<{
       breadcrumbs?: BreadcrumbItem[];
@@ -328,6 +329,7 @@
 
   const hasAccessToken = () => Boolean(String(adminAuthStore.accessToken ?? "").trim());
   const isWithdrawalRequestsRoute = computed(() => String(route.path ?? "").includes("/withdrawal-requests"));
+  const isSupportRoute = computed(() => String(route.path ?? "").includes("/support"));
 
   const handleClickNotifications = () => uiStore.toggleNotifications();
   const handleClickProfileMenu = () => {
@@ -604,6 +606,7 @@
     adminNotificationsStore.applySummary({
       unread_count: 0,
       unread_withdrawal_requests_count: 0,
+      unread_support_notifications_count: 0,
     });
 
     try {
@@ -647,6 +650,17 @@
       types: normalizedTypes,
       summary,
     });
+  };
+
+  const markCurrentSectionNotificationsSeen = async () => {
+    if (isWithdrawalRequestsRoute.value && adminNotificationsStore.unreadWithdrawalRequestsCount > 0) {
+      await markNotificationsByTypes(["payments.withdrawal.created"]);
+      return;
+    }
+
+    if (isSupportRoute.value && adminNotificationsStore.unreadSupportNotificationsCount > 0) {
+      await markNotificationsByTypes(SUPPORT_ADMIN_NOTIFICATION_TYPES);
+    }
   };
 
   const showNotificationToast = (notification: AdminNotificationItem) => {
@@ -709,6 +723,11 @@
     }
 
     if (isWithdrawalRequestsRoute.value && normalized.type === "payments.withdrawal.created") {
+      await markNotificationRead(normalized.id, true);
+      return;
+    }
+
+    if (isSupportRoute.value && SUPPORT_ADMIN_NOTIFICATION_TYPES.includes(normalized.type)) {
       await markNotificationRead(normalized.id, true);
     }
   };
@@ -842,6 +861,16 @@
         newUnreadItems.some(item => item.type === "payments.withdrawal.created" && !item.wasRead)
       ) {
         await markNotificationsByTypes(["payments.withdrawal.created"]);
+        return;
+      }
+
+      if (
+        isSupportRoute.value &&
+        newUnreadItems.some(
+          item => SUPPORT_ADMIN_NOTIFICATION_TYPES.includes(String(item.type ?? "").trim()) && !item.wasRead
+        )
+      ) {
+        await markNotificationsByTypes(SUPPORT_ADMIN_NOTIFICATION_TYPES);
       }
     }, NOTIFICATIONS_POLL_MS);
   };
@@ -879,6 +908,13 @@
       if (unreadCount.value > 0) {
         await markAllRead();
       }
+    }
+  );
+
+  watch(
+    () => route.path,
+    () => {
+      void markCurrentSectionNotificationsSeen();
     }
   );
 
@@ -927,6 +963,7 @@
 
       await loadNotifications();
       await loadUnreadSummary();
+      await markCurrentSectionNotificationsSeen();
       const adminId = String(adminAuthStore.user?.id ?? "").trim();
       if (adminId !== "") {
         subscribeToNotifications(adminId);

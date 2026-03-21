@@ -72,7 +72,11 @@ const props = defineProps({
   },
 });
 
-const menuItems = [
+const supportMenuUnreadCount = computed(() =>
+  Math.max(Number(props.supportUnreadCount ?? 0), Number(adminNotificationsStore.unreadSupportNotificationsCount ?? 0))
+);
+
+const menuItems = computed(() => [
   {
     title: t("admin.menu.dashboard"),
     to: localePath("/dashboard"),
@@ -109,7 +113,7 @@ const menuItems = [
     to: localePath("/support"),
     icon: UiIconSupport,
     displayIfHasPermission: "view-support",
-    notificationsCount: props.supportUnreadCount,
+    notificationsCount: supportMenuUnreadCount.value,
   },
   {
     title: t("admin.menu.referral"),
@@ -135,10 +139,10 @@ const menuItems = [
     icon: UiIconNews,
     displayIfHasPermission: "view-news",
   },
-];
+]);
 
 const menuList = computed(() => {
-  return menuItems.filter((x) => hasPermission(x.displayIfHasPermission));
+  return menuItems.value.filter((x) => hasPermission(x.displayIfHasPermission));
 });
 
 const showMenuSkeleton = computed(() => {

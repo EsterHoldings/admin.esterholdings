@@ -7,14 +7,17 @@ const normalizeCount = (value: unknown): number => {
 };
 
 export const ADMIN_WITHDRAWAL_NOTIFICATION_TYPES = ["payments.withdrawal.created"];
+export const ADMIN_SUPPORT_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
 
 export const useAdminNotificationsStore = defineStore("adminNotifications", () => {
   const unreadCount = ref(0);
   const unreadWithdrawalRequestsCount = ref(0);
+  const unreadSupportNotificationsCount = ref(0);
 
   const applySummary = (payload?: any) => {
     unreadCount.value = normalizeCount(payload?.unread_count);
     unreadWithdrawalRequestsCount.value = normalizeCount(payload?.unread_withdrawal_requests_count);
+    unreadSupportNotificationsCount.value = normalizeCount(payload?.unread_support_notifications_count);
   };
 
   const incrementForNotification = (type: string) => {
@@ -22,6 +25,10 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
 
     if (ADMIN_WITHDRAWAL_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
       unreadWithdrawalRequestsCount.value += 1;
+    }
+
+    if (ADMIN_SUPPORT_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
+      unreadSupportNotificationsCount.value += 1;
     }
   };
 
@@ -31,11 +38,16 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
     if (ADMIN_WITHDRAWAL_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
       unreadWithdrawalRequestsCount.value = Math.max(0, unreadWithdrawalRequestsCount.value - 1);
     }
+
+    if (ADMIN_SUPPORT_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
+      unreadSupportNotificationsCount.value = Math.max(0, unreadSupportNotificationsCount.value - 1);
+    }
   };
 
   const reset = () => {
     unreadCount.value = 0;
     unreadWithdrawalRequestsCount.value = 0;
+    unreadSupportNotificationsCount.value = 0;
   };
 
   return {
@@ -44,6 +56,7 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
     incrementForNotification,
     reset,
     unreadCount,
+    unreadSupportNotificationsCount,
     unreadWithdrawalRequestsCount,
   };
 });

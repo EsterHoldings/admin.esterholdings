@@ -20,7 +20,7 @@
 
     <div class="side-bar-cabinet__content">
       <AdminSidebarMenu
-        :supportUnreadCount="supportUnreadCount"
+        :supportUnreadCount="supportMenuUnreadCount"
         :withdrawalRequestsUnreadCount="adminNotificationsStore.unreadWithdrawalRequestsCount" />
     </div>
 
@@ -72,6 +72,9 @@
   const unreadSnapshotInitialized = ref(false);
   const canReadSupportUnread = computed(
     () => adminAuthStore.hasPermission("view-support-unread") || adminAuthStore.hasPermission("view-support")
+  );
+  const supportMenuUnreadCount = computed(() =>
+    Math.max(supportUnreadCount.value, adminNotificationsStore.unreadSupportNotificationsCount)
   );
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
