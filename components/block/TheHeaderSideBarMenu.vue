@@ -88,6 +88,14 @@ const menuItems = computed(() => [
     to: localePath("/verifications"),
     icon: UiIconCheck,
     displayIfHasPermission: "view-verifications",
+    notificationsCount: adminNotificationsStore.unreadVerificationRequestsCount,
+  },
+  {
+    title: t("admin.menu.withdrawalRequests"),
+    to: localePath("/withdrawal-requests"),
+    icon: UiIconProfile,
+    displayIfHasPermission: "view-payments",
+    notificationsCount: adminNotificationsStore.unreadWithdrawalRequestsCount,
   },
   {
     title: t("admin.menu.clients"),
@@ -100,13 +108,6 @@ const menuItems = computed(() => [
     to: localePath("/accounts"),
     icon: UiIconUser,
     displayIfHasPermission: "view-accounts",
-  },
-  {
-    title: t("admin.menu.withdrawalRequests"),
-    to: localePath("/withdrawal-requests"),
-    icon: UiIconProfile,
-    displayIfHasPermission: "view-payments",
-    notificationsCount: adminNotificationsStore.unreadWithdrawalRequestsCount,
   },
   {
     title: t("admin.menu.support"),

@@ -7,21 +7,28 @@ const normalizeCount = (value: unknown): number => {
 };
 
 export const ADMIN_WITHDRAWAL_NOTIFICATION_TYPES = ["payments.withdrawal.created"];
+export const ADMIN_VERIFICATION_NOTIFICATION_TYPES = ["verification.request.created"];
 export const ADMIN_SUPPORT_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
 
 export const useAdminNotificationsStore = defineStore("adminNotifications", () => {
   const unreadCount = ref(0);
+  const unreadVerificationRequestsCount = ref(0);
   const unreadWithdrawalRequestsCount = ref(0);
   const unreadSupportNotificationsCount = ref(0);
 
   const applySummary = (payload?: any) => {
     unreadCount.value = normalizeCount(payload?.unread_count);
+    unreadVerificationRequestsCount.value = normalizeCount(payload?.unread_verification_requests_count);
     unreadWithdrawalRequestsCount.value = normalizeCount(payload?.unread_withdrawal_requests_count);
     unreadSupportNotificationsCount.value = normalizeCount(payload?.unread_support_notifications_count);
   };
 
   const incrementForNotification = (type: string) => {
     unreadCount.value += 1;
+
+    if (ADMIN_VERIFICATION_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
+      unreadVerificationRequestsCount.value += 1;
+    }
 
     if (ADMIN_WITHDRAWAL_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
       unreadWithdrawalRequestsCount.value += 1;
@@ -35,6 +42,10 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
   const decrementForNotification = (type: string) => {
     unreadCount.value = Math.max(0, unreadCount.value - 1);
 
+    if (ADMIN_VERIFICATION_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
+      unreadVerificationRequestsCount.value = Math.max(0, unreadVerificationRequestsCount.value - 1);
+    }
+
     if (ADMIN_WITHDRAWAL_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
       unreadWithdrawalRequestsCount.value = Math.max(0, unreadWithdrawalRequestsCount.value - 1);
     }
@@ -46,6 +57,7 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
 
   const reset = () => {
     unreadCount.value = 0;
+    unreadVerificationRequestsCount.value = 0;
     unreadWithdrawalRequestsCount.value = 0;
     unreadSupportNotificationsCount.value = 0;
   };
@@ -56,6 +68,7 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
     incrementForNotification,
     reset,
     unreadCount,
+    unreadVerificationRequestsCount,
     unreadSupportNotificationsCount,
     unreadWithdrawalRequestsCount,
   };

@@ -262,6 +262,7 @@
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
   ];
+  const VERIFICATION_ADMIN_NOTIFICATION_TYPES = ["verification.request.created"];
   const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
   const props = withDefaults(
     defineProps<{
@@ -328,6 +329,7 @@
   };
 
   const hasAccessToken = () => Boolean(String(adminAuthStore.accessToken ?? "").trim());
+  const isVerificationsRoute = computed(() => String(route.path ?? "").includes("/verifications"));
   const isWithdrawalRequestsRoute = computed(() => String(route.path ?? "").includes("/withdrawal-requests"));
   const isSupportRoute = computed(() => String(route.path ?? "").includes("/support"));
 
@@ -371,10 +373,47 @@
 
   const resolveNotificationTone = (raw: any): NotificationTone => {
     const source = `${raw?.type ?? ""} ${raw?.title ?? ""} ${raw?.message ?? ""}`.toLowerCase();
+    if (source.includes("approved") || source.includes("successful")) return "success";
+    if (source.includes("pending") || source.includes("processing") || source.includes("warning")) return "warning";
+    if (source.includes("rejected") || source.includes("cancelled") || source.includes("error") || source.includes("danger") || source.includes("failed")) return "danger";
     if (source.includes("success")) return "success";
-    if (source.includes("warning")) return "warning";
-    if (source.includes("error") || source.includes("danger") || source.includes("failed")) return "danger";
     return "info";
+  };
+
+  const verificationStepText = (value: string, fallback = "-"): string => {
+    const normalized = String(value ?? "").trim().toLowerCase();
+    if (normalized === "") {
+      return fallback;
+    }
+
+    return resolveText(`cabinet.header.notificationTemplates.verificationSteps.${normalized}`, fallback);
+  };
+
+  const buildVerificationRequestNotification = (
+    raw: any,
+    payload: Record<string, any> | null
+  ): { title: string; message: string } => {
+    const clientName = String(payload?.client_name || payload?.client_email || "").trim();
+    const fallbackStepLabel = String(payload?.step_label || "").trim() || "-";
+    const step = verificationStepText(String(payload?.step || ""), fallbackStepLabel);
+    const defaultTitle = String(raw?.title ?? "").trim() || "New verification request";
+    const defaultMessage = String(raw?.message ?? "").trim();
+
+    const title = resolveText(
+      "cabinet.header.notificationTemplates.verificationRequestCreated.title",
+      defaultTitle
+    );
+    const fallbackMessage = defaultMessage !== "" ? defaultMessage : [clientName || "-", step].filter(Boolean).join(" • ");
+    const message = resolveText(
+      "cabinet.header.notificationTemplates.verificationRequestCreated.message",
+      fallbackMessage,
+      {
+        client: clientName || "-",
+        step,
+      }
+    );
+
+    return { title, message };
   };
 
   const buildWithdrawalCreatedNotification = (
@@ -476,6 +515,12 @@
 
     if (type === "payments.withdrawal.created") {
       const localized = buildWithdrawalCreatedNotification(raw, payload);
+      title = localized.title;
+      message = localized.message;
+    }
+
+    if (type === "verification.request.created") {
+      const localized = buildVerificationRequestNotification(raw, payload);
       title = localized.title;
       message = localized.message;
     }
@@ -605,6 +650,7 @@
     setAllLocalRead();
     adminNotificationsStore.applySummary({
       unread_count: 0,
+      unread_verification_requests_count: 0,
       unread_withdrawal_requests_count: 0,
       unread_support_notifications_count: 0,
     });
@@ -643,16 +689,29 @@
     const normalizedTypes = types.map(item => String(item ?? "").trim()).filter(Boolean);
     if (normalizedTypes.length === 0) return;
 
-    const response = await appCore.adminModules.notifications.markReadByTypes(normalizedTypes);
-    const summary = response?.data?.data ?? {};
-    adminNotificationsStore.applySummary(summary);
-    useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
-      types: normalizedTypes,
-      summary,
-    });
+    notifications.value = notifications.value.map(item =>
+      normalizedTypes.includes(item.type) ? { ...item, wasRead: true } : item
+    );
+
+    try {
+      const response = await appCore.adminModules.notifications.markReadByTypes(normalizedTypes);
+      const summary = response?.data?.data ?? {};
+      adminNotificationsStore.applySummary(summary);
+      useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
+        types: normalizedTypes,
+        summary,
+      });
+    } catch {
+      await loadNotifications();
+    }
   };
 
   const markCurrentSectionNotificationsSeen = async () => {
+    if (isVerificationsRoute.value && adminNotificationsStore.unreadVerificationRequestsCount > 0) {
+      await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES);
+      return;
+    }
+
     if (isWithdrawalRequestsRoute.value && adminNotificationsStore.unreadWithdrawalRequestsCount > 0) {
       await markNotificationsByTypes(["payments.withdrawal.created"]);
       return;
@@ -723,6 +782,11 @@
     }
 
     if (isWithdrawalRequestsRoute.value && normalized.type === "payments.withdrawal.created") {
+      await markNotificationRead(normalized.id, true);
+      return;
+    }
+
+    if (isVerificationsRoute.value && VERIFICATION_ADMIN_NOTIFICATION_TYPES.includes(normalized.type)) {
       await markNotificationRead(normalized.id, true);
       return;
     }
@@ -853,6 +917,16 @@
       const newUnreadItems = await loadNotifications({ showToastsForNew: true });
       if (isOpen.value && newUnreadItems.length > 0) {
         await markAllRead();
+        return;
+      }
+
+      if (
+        isVerificationsRoute.value &&
+        newUnreadItems.some(
+          item => VERIFICATION_ADMIN_NOTIFICATION_TYPES.includes(String(item.type ?? "").trim()) && !item.wasRead
+        )
+      ) {
+        await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES);
         return;
       }
 

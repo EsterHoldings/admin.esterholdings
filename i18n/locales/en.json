@@ -745,6 +745,10 @@
       "markAllRead": "Mark all read",
       "emptyNotifications": "You have no notifications yet",
       "notificationTemplates": {
+        "verificationRequestCreated": {
+          "title": "New verification request",
+          "message": "{client} • {step}"
+        },
         "withdrawalRequestCreated": {
           "title": "New withdrawal request",
           "message": "{client} • {amount} {currency} • account {account}"
@@ -757,8 +761,18 @@
           "title": "New client message",
           "message": "{client} • {preview}"
         },
+        "verificationSteps": {
+          "info": "Profile data",
+          "photo": "Profile photo",
+          "email": "Email",
+          "address": "Address",
+          "documents": "Documents",
+          "deposit": "First deposit"
+        },
         "statuses": {
           "pending": "Pending",
+          "approved": "Approved",
+          "rejected": "Rejected",
           "processing": "Processing",
           "successful": "Successful",
           "failed": "Failed",

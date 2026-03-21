@@ -47,10 +47,12 @@
   const props = withDefaults(
     defineProps<{
       supportUnreadCount?: number;
+      verificationRequestsUnreadCount?: number;
       withdrawalRequestsUnreadCount?: number;
     }>(),
     {
       supportUnreadCount: 0,
+      verificationRequestsUnreadCount: 0,
       withdrawalRequestsUnreadCount: 0,
     }
   );
@@ -83,6 +85,14 @@
         to: localePath("/verifications"),
         icon: UiIconCheck,
         displayIfHasPermission: "view-verifications",
+        notificationsCount: props.verificationRequestsUnreadCount,
+      },
+      {
+        title: t("admin.menu.withdrawalRequests"),
+        to: localePath("/withdrawal-requests"),
+        icon: UiIconProfile,
+        displayIfHasPermission: "view-payments",
+        notificationsCount: props.withdrawalRequestsUnreadCount,
       },
       {
         title: t("admin.menu.clients"),
@@ -95,13 +105,6 @@
         to: localePath("/accounts"),
         icon: UiIconUser,
         displayIfHasPermission: "view-accounts",
-      },
-      {
-        title: t("admin.menu.withdrawalRequests"),
-        to: localePath("/withdrawal-requests"),
-        icon: UiIconProfile,
-        displayIfHasPermission: "view-payments",
-        notificationsCount: props.withdrawalRequestsUnreadCount,
       },
       {
         title: t("admin.menu.support"),

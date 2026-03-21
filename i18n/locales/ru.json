@@ -745,6 +745,10 @@
       "markAllRead": "Отметить все прочитанными",
       "emptyNotifications": "У вас пока нет уведомлений",
       "notificationTemplates": {
+        "verificationRequestCreated": {
+          "title": "Новый запрос на верификацию",
+          "message": "{client} • {step}"
+        },
         "withdrawalRequestCreated": {
           "title": "Новая заявка на вывод",
           "message": "{client} • {amount} {currency} • счёт {account}"
@@ -757,8 +761,18 @@
           "title": "Новое сообщение клиента",
           "message": "{client} • {preview}"
         },
+        "verificationSteps": {
+          "info": "Данные профиля",
+          "photo": "Фото профиля",
+          "email": "Email",
+          "address": "Адрес",
+          "documents": "Документы",
+          "deposit": "Первый депозит"
+        },
         "statuses": {
           "pending": "Ожидает",
+          "approved": "Подтверждена",
+          "rejected": "Отклонена",
           "processing": "В обработке",
           "successful": "Успешно",
           "failed": "Ошибка",
