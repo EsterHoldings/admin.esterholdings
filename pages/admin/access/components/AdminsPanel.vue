@@ -53,13 +53,23 @@
 
           <div class="access-entity-card__actions">
             <button
-              v-if="canUpdateAdmins"
+              v-if="canManageAdminRoles"
               type="button"
               class="access-entity-action"
               :title="resolveText('admin.access.components.admins-panel.actions.addNewAdmin', 'Edit admin')"
               @click="handleOpenClientPage(admin.id)"
             >
               <UiIconEdit />
+            </button>
+
+            <button
+              v-if="canDeleteAdmins"
+              type="button"
+              class="access-entity-action"
+              :title="resolveText('admin.access.components.admins-panel.actions.delete', 'Delete admin')"
+              @click="handleDeleteAdmin(admin.id)"
+            >
+              <UiIconDelete />
             </button>
           </div>
         </div>
@@ -115,6 +125,7 @@ import { debounce } from "~/utils/helper/debounce";
 
 import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
+import UiIconDelete from "~/components/ui/UiIconDelete.vue";
 import UiIconEdit from "~/components/ui/UiIconEdit.vue";
 import UiIconSearch from "~/components/ui/UiIconSearch.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
@@ -153,7 +164,13 @@ const adminsData = ref<AdminItem[]>([]);
 
 const { openModal } = inject("modalControl") as { openModal: (component: unknown, props?: Record<string, unknown>) => void };
 const canCreateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-admins"));
-const canUpdateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-admins"));
+const canManageAdminRoles = computed(
+  () =>
+    adminAuthStore.hasRole("super-admin") ||
+    adminAuthStore.hasPermission("update-admins") ||
+    adminAuthStore.hasPermission("assign-admin-roles")
+);
+const canDeleteAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-admins"));
 
 const handleClickAddRole = () => {
   if (!canCreateAdmins.value) return;
@@ -202,12 +219,24 @@ const loadData = async (isFilterQuery = false) => {
 };
 
 const handleOpenClientPage = (id: string) => {
-  if (!canUpdateAdmins.value) return;
+  if (!canManageAdminRoles.value) return;
 
   openModal(AdminsPanelEdit, {
     title: resolveText("admin.access.components.admins-panel-edit.title", "Edit Admin Roles"),
     id,
   });
+};
+
+const handleDeleteAdmin = async (id: string) => {
+  if (!canDeleteAdmins.value) return;
+
+  const isConfirmed = window.confirm(
+    resolveText("admin.access.components.admins-panel.actions.deleteConfirm", "Delete this admin?")
+  );
+  if (!isConfirmed) return;
+
+  await appCore.admins.delete(id);
+  await loadData();
 };
 
 const handleClickRefresh = async () => {

@@ -109,7 +109,12 @@ const rolesData = ref<RoleItem[]>([]);
 
 const app = useAppCore();
 const adminAuthStore = useAdminAuthStore();
-const canUpdateAdmins = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-admins"));
+const canUpdateAdmins = computed(
+  () =>
+    adminAuthStore.hasRole("super-admin") ||
+    adminAuthStore.hasPermission("update-admins") ||
+    adminAuthStore.hasPermission("assign-admin-roles")
+);
 
 const { closeModal } = inject("modalControl") as { closeModal: Function };
 
