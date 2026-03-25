@@ -39,12 +39,24 @@ export class ClientsService {
     return await this.useApi.patch(`/admin/clients/${id}/support-mode`, data);
   }
 
+  async patchBlockState(id: any, data: object = {}) {
+    return await this.useApi.patch(`/admin/clients/${id}/block-state`, data);
+  }
+
   async updatePassword(id: any, data: object = {}) {
     return await this.useApi.post(`/admin/clients/${id}/password`, data);
   }
 
   async disableTwoFactor(id: any) {
     return await this.useApi.post(`/admin/clients/${id}/2fa/disable`);
+  }
+
+  async createImpersonationLink(id: any) {
+    return await this.useApi.post(`/admin/clients/${id}/impersonation-link`);
+  }
+
+  async getVisitHistory(id: any, params: object = {}) {
+    return await this.useApi.get(`/admin/clients/${id}/visit-history`, params);
   }
 
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {

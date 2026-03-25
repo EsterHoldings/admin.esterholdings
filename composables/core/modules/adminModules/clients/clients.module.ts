@@ -35,12 +35,24 @@ export class ClientsModule {
     return await this.clientsService.patchSupportMode(id, data);
   }
 
+  async patchBlockState(id: any, data: object = {}): Promise<any> {
+    return await this.clientsService.patchBlockState(id, data);
+  }
+
   async updatePassword(id: any, data: object = {}): Promise<any> {
     return await this.clientsService.updatePassword(id, data);
   }
 
   async disableTwoFactor(id: any): Promise<any> {
     return await this.clientsService.disableTwoFactor(id);
+  }
+
+  async createImpersonationLink(id: any): Promise<any> {
+    return await this.clientsService.createImpersonationLink(id);
+  }
+
+  async getVisitHistory(id: any, params: object = {}): Promise<any> {
+    return await this.clientsService.getVisitHistory(id, params);
   }
 
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
