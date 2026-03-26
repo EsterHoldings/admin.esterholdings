@@ -521,9 +521,9 @@
               </div>
 
               <div class="verification-client-request-card__focus">
-                <template v-if="currentRequestFocusItems.length">
+                <template v-if="requestFocusItems(requestItem).length">
                   <button
-                    v-for="item in currentRequestFocusItems"
+                    v-for="item in requestFocusItems(requestItem)"
                     :key="`${requestItem.id}:${item.id}`"
                     type="button"
                     class="verification-focus-link"
@@ -542,7 +542,7 @@
 
               <div class="verification-client-request-card__previews">
                 <span
-                  v-for="(preview, previewIndex) in currentRequestDocumentPreviews"
+                  v-for="(preview, previewIndex) in requestDocumentPreviews(requestItem)"
                   :key="`${requestItem.id}:doc-preview:${previewIndex}:${preview.src || preview.label}`"
                   class="verification-preview-chip"
                   :class="`is-${preview.type}`"
@@ -562,7 +562,7 @@
                 </span>
 
                 <span
-                  v-for="(preview, previewIndex) in currentRequestPayoutPreviews"
+                  v-for="(preview, previewIndex) in requestPayoutPreviews(requestItem)"
                   :key="`${requestItem.id}:payout-preview:${previewIndex}:${preview.src || preview.label}`"
                   class="verification-preview-chip"
                   :class="`is-${preview.type}`"
@@ -681,6 +681,9 @@ interface ClientVerificationRequestRow {
   user_id: string;
   state: VerificationStatus;
   request_state: RequestReviewState;
+  profile_review_required: boolean;
+  documents_review_count: number;
+  requisites_review_count: number;
   updated_at: string | null;
   updated_at_human: string | null;
 }
@@ -836,6 +839,9 @@ const normalizeClientRequests = (payload: any): ClientVerificationRequestRow[] =
     user_id: String(row?.user_id ?? ""),
     state: normalizeVerificationStatus(row?.state),
     request_state: normalizeRequestReviewState(row?.request_state),
+    profile_review_required: Boolean(row?.profile_review_required),
+    documents_review_count: Number(row?.documents_review_count ?? 0),
+    requisites_review_count: Number(row?.requisites_review_count ?? 0),
     updated_at: row?.updated_at ? String(row.updated_at) : null,
     updated_at_human: row?.updated_at_human ? String(row.updated_at_human) : null,
   }));
@@ -1164,25 +1170,36 @@ const sortedClientRequestRows = computed(() =>
   })
 );
 
-const hasPendingProfile = computed(() => infoStatus.value === "pending");
-const hasPendingDocuments = computed(
-  () => documentsStatus.value === "pending" || documentsListRequestData.value.some(document => document.state === "pending")
+const requestHasProfileToReview = (request: ClientVerificationRequestRow): boolean =>
+  request.profile_review_required;
+
+const requestHasDocumentsToReview = (request: ClientVerificationRequestRow): boolean =>
+  request.documents_review_count > 0;
+
+const requestHasPayoutToReview = (request: ClientVerificationRequestRow): boolean =>
+  request.requisites_review_count > 0;
+
+const activePendingRequest = computed(() =>
+  sortedClientRequestRows.value.find(request => request.request_state === "pending") ?? null
 );
-const hasPendingPayout = computed(() => payoutDetails.value.some(paymentDetail => paymentDetail.status === "pending"));
+
+const hasPendingProfile = computed(() => Boolean(activePendingRequest.value && requestHasProfileToReview(activePendingRequest.value)));
+const hasPendingDocuments = computed(() => Boolean(activePendingRequest.value && requestHasDocumentsToReview(activePendingRequest.value)));
+const hasPendingPayout = computed(() => Boolean(activePendingRequest.value && requestHasPayoutToReview(activePendingRequest.value)));
 const hasPendingRequests = computed(() => clientRequestRows.value.some(request => request.request_state === "pending"));
 
-const currentRequestFocusItems = computed<Array<{
+const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   id: VerificationSectionTarget;
   label: string;
   section: VerificationSectionTarget;
-}>>(() => {
+}> => {
   const items: Array<{
     id: VerificationSectionTarget;
     label: string;
     section: VerificationSectionTarget;
   }> = [];
 
-  if (hasPendingProfile.value) {
+  if (requestHasProfileToReview(request)) {
     items.push({
       id: "profile",
       label: "Check profile data",
@@ -1190,24 +1207,24 @@ const currentRequestFocusItems = computed<Array<{
     });
   }
 
-  if (hasPendingDocuments.value) {
+  if (requestHasDocumentsToReview(request)) {
     items.push({
       id: "documents",
-      label: `Check documents${documentsListRequestData.value.length ? ` (${documentsListRequestData.value.length})` : ""}`,
+      label: `Check documents${request.documents_review_count ? ` (${request.documents_review_count})` : ""}`,
       section: "documents",
     });
   }
 
-  if (hasPendingPayout.value) {
+  if (requestHasPayoutToReview(request)) {
     items.push({
       id: "payout",
-      label: `Check requisites${payoutDetails.value.length ? ` (${payoutDetails.value.length})` : ""}`,
+      label: `Check requisites${request.requisites_review_count ? ` (${request.requisites_review_count})` : ""}`,
       section: "payout",
     });
   }
 
   return items;
-});
+};
 
 const currentRequestDocumentPreviews = computed(() =>
   documentsListRequestData.value
@@ -1221,6 +1238,12 @@ const currentRequestPayoutPreviews = computed(() =>
     .map(paymentDetailDocumentPreviewMeta)
     .slice(0, 2)
 );
+
+const requestDocumentPreviews = (request: ClientVerificationRequestRow): VerificationPreviewMeta[] =>
+  requestHasDocumentsToReview(request) ? currentRequestDocumentPreviews.value : [];
+
+const requestPayoutPreviews = (request: ClientVerificationRequestRow): VerificationPreviewMeta[] =>
+  requestHasPayoutToReview(request) ? currentRequestPayoutPreviews.value : [];
 
 const verificationTabs = computed(() => [
   {

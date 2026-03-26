@@ -115,9 +115,9 @@
             </div>
 
             <div class="verification-request-row__focus">
-              <template v-if="reviewFocusItems(detailState(requestItem.user_id)).length">
+              <template v-if="requestFocusItems(requestItem).length">
                 <button
-                  v-for="item in reviewFocusItems(detailState(requestItem.user_id))"
+                  v-for="item in requestFocusItems(requestItem)"
                   :key="`${requestItem.id}:${item.id}`"
                   type="button"
                   class="verification-focus-link"
@@ -296,6 +296,9 @@ interface VerificationRequestItem {
   user_id: string;
   state: VerificationStatus;
   request_state: RequestReviewState;
+  profile_review_required: boolean;
+  documents_review_count: number;
+  requisites_review_count: number;
   request_viewed_at: string | null;
   request_reviewed_at: string | null;
   updated_at: string | null;
@@ -749,6 +752,9 @@ const loadList = async (): Promise<void> => {
       user_id: String(row?.user_id ?? ""),
       state: normalizeVerificationStatus(row?.state),
       request_state: normalizeRequestReviewState(row?.request_state),
+      profile_review_required: Boolean(row?.profile_review_required),
+      documents_review_count: Number(row?.documents_review_count ?? 0),
+      requisites_review_count: Number(row?.requisites_review_count ?? 0),
       request_viewed_at: row?.request_viewed_at ? String(row.request_viewed_at) : null,
       request_reviewed_at: row?.request_reviewed_at ? String(row.request_reviewed_at) : null,
       updated_at: row?.updated_at ? String(row.updated_at) : null,
@@ -913,26 +919,21 @@ const handleRequestReviewUpdate = async (
   }
 };
 
-const hasPendingProfile = (state: DetailState): boolean =>
-  state.verification.info.verification_status === "pending";
+const requestHasProfileToReview = (requestItem: VerificationRequestItem): boolean =>
+  requestItem.profile_review_required;
 
-const hasPendingDocuments = (state: DetailState): boolean =>
-  state.verification.documents.verification_status === "pending"
-  || state.documents.some(document => document.state === "pending");
+const requestHasDocumentsToReview = (requestItem: VerificationRequestItem): boolean =>
+  requestItem.documents_review_count > 0;
 
-const hasPendingRequisites = (state: DetailState): boolean =>
-  state.paymentDetails.some(paymentDetail => paymentDetail.status === "pending");
+const requestHasRequisitesToReview = (requestItem: VerificationRequestItem): boolean =>
+  requestItem.requisites_review_count > 0;
 
-const reviewFocusItems = (state: DetailState): Array<{
+const requestFocusItems = (requestItem: VerificationRequestItem): Array<{
   id: VerificationSectionTarget;
   label: string;
   tab: "client" | "payout";
   section: VerificationSectionTarget;
 }> => {
-  if (!state.loaded && state.isLoading) {
-    return [];
-  }
-
   const items: Array<{
     id: VerificationSectionTarget;
     label: string;
@@ -940,7 +941,7 @@ const reviewFocusItems = (state: DetailState): Array<{
     section: VerificationSectionTarget;
   }> = [];
 
-  if (hasPendingProfile(state)) {
+  if (requestHasProfileToReview(requestItem)) {
     items.push({
       id: "profile",
       label: "Check profile data",
@@ -949,19 +950,19 @@ const reviewFocusItems = (state: DetailState): Array<{
     });
   }
 
-  if (hasPendingDocuments(state)) {
+  if (requestHasDocumentsToReview(requestItem)) {
     items.push({
       id: "documents",
-      label: `Check documents${state.documents.length ? ` (${state.documents.length})` : ""}`,
+      label: `Check documents${requestItem.documents_review_count ? ` (${requestItem.documents_review_count})` : ""}`,
       tab: "client",
       section: "documents",
     });
   }
 
-  if (hasPendingRequisites(state)) {
+  if (requestHasRequisitesToReview(requestItem)) {
     items.push({
       id: "payout",
-      label: `Check requisites${state.paymentDetails.length ? ` (${state.paymentDetails.length})` : ""}`,
+      label: `Check requisites${requestItem.requisites_review_count ? ` (${requestItem.requisites_review_count})` : ""}`,
       tab: "payout",
       section: "payout",
     });
@@ -1041,8 +1042,7 @@ const paymentMethodName = (payment: PaymentRow | null): string => {
 const resolvePrimaryReviewTarget = (
   requestItem: VerificationRequestItem
 ): { tab: "client" | "payout"; section: VerificationSectionTarget | null } => {
-  const state = detailState(requestItem.user_id);
-  const firstFocusItem = reviewFocusItems(state)[0];
+  const firstFocusItem = requestFocusItems(requestItem)[0];
   if (firstFocusItem) {
     return {
       tab: firstFocusItem.tab,
@@ -1050,7 +1050,9 @@ const resolvePrimaryReviewTarget = (
     };
   }
 
-  const shouldOpenPayout = hasPendingRequisites(state) && !hasPendingProfile(state) && !hasPendingDocuments(state);
+  const shouldOpenPayout = requestHasRequisitesToReview(requestItem)
+    && !requestHasProfileToReview(requestItem)
+    && !requestHasDocumentsToReview(requestItem);
 
   return {
     tab: shouldOpenPayout ? "payout" : "client",
