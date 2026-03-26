@@ -13,33 +13,6 @@
           Обновить
         </UiButtonDefault>
       </div>
-
-      <div class="admin-dashboard__filters">
-        <div class="admin-dashboard__filter">
-          <span class="admin-dashboard__filter-label">От</span>
-          <UiInput type="date" :value="filters.date_from" @input="value => (filters.date_from = value)" />
-        </div>
-        <div class="admin-dashboard__filter">
-          <span class="admin-dashboard__filter-label">До</span>
-          <UiInput type="date" :value="filters.date_to" @input="value => (filters.date_to = value)" />
-        </div>
-        <div class="admin-dashboard__filter">
-          <span class="admin-dashboard__filter-label">Шаг</span>
-          <UiSelect :data="bucketOptions" :value="filters.bucket" without-no-select @change="value => (filters.bucket = value || 'day')" />
-        </div>
-        <div class="admin-dashboard__filter">
-          <span class="admin-dashboard__filter-label">Устройство</span>
-          <UiSelect :data="deviceOptions" :value="filters.device_type" @change="value => (filters.device_type = value || '')" />
-        </div>
-        <div class="admin-dashboard__filter">
-          <span class="admin-dashboard__filter-label">Браузер</span>
-          <UiSelect :data="browserOptions" :value="filters.browser" @change="value => (filters.browser = value || '')" />
-        </div>
-        <div class="admin-dashboard__filter">
-          <span class="admin-dashboard__filter-label">OS</span>
-          <UiSelect :data="osOptions" :value="filters.os" @change="value => (filters.os = value || '')" />
-        </div>
-      </div>
     </div>
 
     <div class="admin-dashboard__grid admin-dashboard__grid--priority">
@@ -91,32 +64,134 @@
       <PanelDefault class="dashboard-panel-card min-w-0">
         <div class="dashboard-chart-card">
           <div class="dashboard-chart-card__header">
-            <UiTextH5 class="text-[var(--ui-text-main)]">Регистрации клиентов</UiTextH5>
-            <UiTextSmall class="text-[var(--ui-text-secondary)]">Новые пользователи по выбранному периоду</UiTextSmall>
+            <div>
+              <UiTextH5 class="text-[var(--ui-text-main)]">Регистрации клиентов</UiTextH5>
+              <UiTextSmall class="text-[var(--ui-text-secondary)]">Новые пользователи по выбранному периоду</UiTextSmall>
+            </div>
+            <div class="dashboard-chart-card__presets">
+              <button
+                v-for="preset in metricRangePresets"
+                :key="`registrations-${preset.id}`"
+                type="button"
+                class="dashboard-preset-button"
+                :class="{ 'dashboard-preset-button--active': registrationsFilters.preset === preset.id }"
+                @click="applyDashboardPreset('registrations', preset.id)"
+              >
+                {{ preset.label }}
+              </button>
+            </div>
           </div>
-          <AdminMetricChart :categories="registrationLabels" :series="registrationSeries" :height="280" />
+
+          <div class="dashboard-chart-card__filters">
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">От</span>
+              <UiInput type="date" :value="toDateInputValue(registrationsFilters.date_from)" @input="value => updateDashboardFilter('registrations', 'date_from', value)" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">До</span>
+              <UiInput type="date" :value="toDateInputValue(registrationsFilters.date_to)" @input="value => updateDashboardFilter('registrations', 'date_to', value)" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">Шаг</span>
+              <UiSelect :data="bucketOptions" :value="registrationsFilters.bucket" without-no-select @change="value => updateDashboardFilter('registrations', 'bucket', value || 'day')" />
+            </div>
+          </div>
+
+          <AdminMetricChart :categories="registrationLabels" :series="registrationSeries" :height="320" />
         </div>
       </PanelDefault>
 
       <PanelDefault class="dashboard-panel-card min-w-0">
         <div class="dashboard-chart-card">
           <div class="dashboard-chart-card__header">
-            <UiTextH5 class="text-[var(--ui-text-main)]">Рост прибыли</UiTextH5>
-            <UiTextSmall class="text-[var(--ui-text-secondary)]">Net cashflow: успешные депозиты минус выводы</UiTextSmall>
+            <div>
+              <UiTextH5 class="text-[var(--ui-text-main)]">Рост прибыли</UiTextH5>
+              <UiTextSmall class="text-[var(--ui-text-secondary)]">Net cashflow: успешные депозиты минус выводы</UiTextSmall>
+            </div>
+            <div class="dashboard-chart-card__presets">
+              <button
+                v-for="preset in metricRangePresets"
+                :key="`profit-${preset.id}`"
+                type="button"
+                class="dashboard-preset-button"
+                :class="{ 'dashboard-preset-button--active': profitFilters.preset === preset.id }"
+                @click="applyDashboardPreset('profit', preset.id)"
+              >
+                {{ preset.label }}
+              </button>
+            </div>
           </div>
-          <AdminMetricChart :categories="profitLabels" :series="profitSeries" suffix="$" :height="280" />
+
+          <div class="dashboard-chart-card__filters">
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">От</span>
+              <UiInput type="date" :value="toDateInputValue(profitFilters.date_from)" @input="value => updateDashboardFilter('profit', 'date_from', value)" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">До</span>
+              <UiInput type="date" :value="toDateInputValue(profitFilters.date_to)" @input="value => updateDashboardFilter('profit', 'date_to', value)" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">Шаг</span>
+              <UiSelect :data="bucketOptions" :value="profitFilters.bucket" without-no-select @change="value => updateDashboardFilter('profit', 'bucket', value || 'day')" />
+            </div>
+          </div>
+
+          <AdminMetricChart :categories="profitLabels" :series="profitSeries" suffix="$" :height="320" />
         </div>
       </PanelDefault>
 
       <PanelDefault class="dashboard-panel-card min-w-0">
         <div class="dashboard-chart-card">
           <div class="dashboard-chart-card__header">
-            <UiTextH5 class="text-[var(--ui-text-main)]">Клиенты онлайн</UiTextH5>
-            <UiTextSmall class="text-[var(--ui-text-secondary)]">
-              Сейчас онлайн: {{ onlineSummary.currently_online_users ?? 0 }} · всего часов: {{ formatHours(onlineSummary.total_online_hours ?? 0) }}
-            </UiTextSmall>
+            <div>
+              <UiTextH5 class="text-[var(--ui-text-main)]">Клиенты онлайн</UiTextH5>
+              <UiTextSmall class="text-[var(--ui-text-secondary)]">
+                Сейчас онлайн: {{ onlineSummary.currently_online_users ?? 0 }} · всего часов: {{ formatHours(onlineSummary.total_online_hours ?? 0) }}
+              </UiTextSmall>
+            </div>
+            <div class="dashboard-chart-card__presets">
+              <button
+                v-for="preset in metricRangePresets"
+                :key="`online-${preset.id}`"
+                type="button"
+                class="dashboard-preset-button"
+                :class="{ 'dashboard-preset-button--active': onlineFilters.preset === preset.id }"
+                @click="applyDashboardPreset('online', preset.id)"
+              >
+                {{ preset.label }}
+              </button>
+            </div>
           </div>
-          <AdminMetricChart :categories="onlineLabels" :series="onlineSeries" suffix="h" :height="280" />
+
+          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">От</span>
+              <UiInput type="date" :value="toDateInputValue(onlineFilters.date_from)" @input="value => updateDashboardFilter('online', 'date_from', value)" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">До</span>
+              <UiInput type="date" :value="toDateInputValue(onlineFilters.date_to)" @input="value => updateDashboardFilter('online', 'date_to', value)" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">Шаг</span>
+              <UiSelect :data="bucketOptions" :value="onlineFilters.bucket" without-no-select @change="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">Устройство</span>
+              <UiSelect :data="deviceOptions" :value="onlineFilters.device_type" @change="value => updateDashboardFilter('online', 'device_type', value || '')" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">Браузер</span>
+              <UiSelect :data="browserOptions" :value="onlineFilters.browser" @change="value => updateDashboardFilter('online', 'browser', value || '')" />
+            </div>
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">OS</span>
+              <UiSelect :data="osOptions" :value="onlineFilters.os" @change="value => updateDashboardFilter('online', 'os', value || '')" />
+            </div>
+          </div>
+
+          <AdminMetricChart :categories="onlineLabels" :series="onlineSeries" suffix="h" :height="320" />
         </div>
       </PanelDefault>
     </div>
@@ -131,7 +206,7 @@
               v-for="user in topOnlineClients"
               :key="user.user_id"
               class="dashboard-row-link flex items-center justify-between rounded-xl bg-[var(--color-stroke-ui-dark)] px-3 py-2"
-              @click="handleNavigate(`/clients/${user.user_id}?tab=1`)"
+              @click="handleNavigate(`/clients/${user.user_id}`)"
             >
               <div>
                 <UiTextSmall class="text-[var(--ui-text-main)]">{{ user.name }}</UiTextSmall>
@@ -227,6 +302,51 @@ definePageMeta({
   middleware: ["admin-middleware"],
 });
 
+type Bucket = "day" | "hour";
+type MetricPreset = {
+  id: string;
+  label: string;
+  amount: number;
+  unit: "hours" | "days" | "weeks" | "months" | "years";
+  bucket: Bucket;
+};
+type ChartFilters = {
+  preset: string;
+  date_from: string;
+  date_to: string;
+  bucket: Bucket;
+};
+type OnlineChartFilters = ChartFilters & {
+  device_type: string;
+  browser: string;
+  os: string;
+};
+
+const metricRangePresets: MetricPreset[] = [
+  { id: "1h", label: "1ч", amount: 1, unit: "hours", bucket: "hour" },
+  { id: "2h", label: "2ч", amount: 2, unit: "hours", bucket: "hour" },
+  { id: "3h", label: "3ч", amount: 3, unit: "hours", bucket: "hour" },
+  { id: "5h", label: "5ч", amount: 5, unit: "hours", bucket: "hour" },
+  { id: "10h", label: "10ч", amount: 10, unit: "hours", bucket: "hour" },
+  { id: "15h", label: "15ч", amount: 15, unit: "hours", bucket: "hour" },
+  { id: "20h", label: "20ч", amount: 20, unit: "hours", bucket: "hour" },
+  { id: "1d", label: "1д", amount: 1, unit: "days", bucket: "hour" },
+  { id: "2d", label: "2д", amount: 2, unit: "days", bucket: "hour" },
+  { id: "3d", label: "3д", amount: 3, unit: "days", bucket: "hour" },
+  { id: "5d", label: "5д", amount: 5, unit: "days", bucket: "day" },
+  { id: "1w", label: "1н", amount: 1, unit: "weeks", bucket: "day" },
+  { id: "2w", label: "2н", amount: 2, unit: "weeks", bucket: "day" },
+  { id: "3w", label: "3н", amount: 3, unit: "weeks", bucket: "day" },
+  { id: "4w", label: "4н", amount: 4, unit: "weeks", bucket: "day" },
+  { id: "1m", label: "1м", amount: 1, unit: "months", bucket: "day" },
+  { id: "2m", label: "2м", amount: 2, unit: "months", bucket: "day" },
+  { id: "3m", label: "3м", amount: 3, unit: "months", bucket: "day" },
+  { id: "6m", label: "6м", amount: 6, unit: "months", bucket: "day" },
+  { id: "1y", label: "1г", amount: 1, unit: "years", bucket: "day" },
+  { id: "2y", label: "2г", amount: 2, unit: "years", bucket: "day" },
+  { id: "3y", label: "3г", amount: 3, unit: "years", bucket: "day" },
+];
+
 const { t } = useI18n({ useScope: "global" });
 const adminAuthStore = useAdminAuthStore();
 const appCore = useAppCore();
@@ -237,22 +357,52 @@ const canAccessPath = (path: string) =>
     hasRole: role => adminAuthStore.hasRole(role),
   });
 
-const today = new Date().toISOString().slice(0, 10);
-const monthAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString().slice(0, 10);
+const bucketOptions = [
+  { id: "day", value: "day", text: "По дням" },
+  { id: "hour", value: "hour", text: "По часам" },
+];
 
-const filters = reactive({
-  date_from: monthAgo,
-  date_to: today,
-  bucket: "day",
+const resolvePreset = (presetId: string) => metricRangePresets.find(preset => preset.id === presetId) ?? metricRangePresets[16];
+
+const shiftDate = (date: Date, preset: MetricPreset) => {
+  const shifted = new Date(date);
+
+  if (preset.unit === "hours") shifted.setHours(shifted.getHours() - preset.amount);
+  if (preset.unit === "days") shifted.setDate(shifted.getDate() - preset.amount);
+  if (preset.unit === "weeks") shifted.setDate(shifted.getDate() - preset.amount * 7);
+  if (preset.unit === "months") shifted.setMonth(shifted.getMonth() - preset.amount);
+  if (preset.unit === "years") shifted.setFullYear(shifted.getFullYear() - preset.amount);
+
+  return shifted;
+};
+
+const toIsoRange = (presetId: string) => {
+  const preset = resolvePreset(presetId);
+  const now = new Date();
+  const from = shiftDate(now, preset);
+
+  return {
+    preset: preset.id,
+    date_from: from.toISOString(),
+    date_to: now.toISOString(),
+    bucket: preset.bucket,
+  };
+};
+
+const createChartFilters = (presetId: string): ChartFilters => ({
+  ...toIsoRange(presetId),
+});
+
+const createOnlineChartFilters = (presetId: string): OnlineChartFilters => ({
+  ...toIsoRange(presetId),
   device_type: "",
   browser: "",
   os: "",
 });
 
-const bucketOptions = [
-  { id: "day", value: "day", text: "По дням" },
-  { id: "hour", value: "hour", text: "По часам" },
-];
+const registrationsFilters = reactive<ChartFilters>(createChartFilters("1m"));
+const profitFilters = reactive<ChartFilters>(createChartFilters("3m"));
+const onlineFilters = reactive<OnlineChartFilters>(createOnlineChartFilters("1w"));
 
 const isLoading = ref(false);
 const dashboard = ref<any>(null);
@@ -262,17 +412,60 @@ const loadDashboard = async () => {
 
   try {
     const response = await appCore.adminModules.dashboard.getSummary({
-      ...filters,
-      device_type: filters.device_type || undefined,
-      browser: filters.browser || undefined,
-      os: filters.os || undefined,
-      top_limit: 10,
+      registrations_date_from: registrationsFilters.date_from,
+      registrations_date_to: registrationsFilters.date_to,
+      registrations_bucket: registrationsFilters.bucket,
+      profit_date_from: profitFilters.date_from,
+      profit_date_to: profitFilters.date_to,
+      profit_bucket: profitFilters.bucket,
+      online_date_from: onlineFilters.date_from,
+      online_date_to: onlineFilters.date_to,
+      online_bucket: onlineFilters.bucket,
+      online_device_type: onlineFilters.device_type || undefined,
+      online_browser: onlineFilters.browser || undefined,
+      online_os: onlineFilters.os || undefined,
+      online_top_limit: 10,
     });
 
     dashboard.value = response?.data?.data ?? null;
   } finally {
     isLoading.value = false;
   }
+};
+
+const setPresetFilters = (target: ChartFilters | OnlineChartFilters, presetId: string) => {
+  Object.assign(target, toIsoRange(presetId));
+};
+
+const applyDashboardPreset = async (section: "registrations" | "profit" | "online", presetId: string) => {
+  if (section === "registrations") setPresetFilters(registrationsFilters, presetId);
+  if (section === "profit") setPresetFilters(profitFilters, presetId);
+  if (section === "online") setPresetFilters(onlineFilters, presetId);
+
+  await loadDashboard();
+};
+
+const updateDashboardFilter = (
+  section: "registrations" | "profit" | "online",
+  key: string,
+  value: string
+) => {
+  const target = section === "registrations" ? registrationsFilters : section === "profit" ? profitFilters : onlineFilters;
+  (target as Record<string, string>)[key] = value;
+  target.preset = "custom";
+};
+
+const toDateInputValue = (value?: string) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 };
 
 const deviceOptions = computed(() =>
@@ -446,12 +639,6 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-.admin-dashboard__filters {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
 .admin-dashboard__filter {
   display: flex;
   flex-direction: column;
@@ -474,9 +661,9 @@ onMounted(async () => {
 }
 
 .admin-dashboard__charts {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .admin-dashboard__panels {
@@ -486,14 +673,50 @@ onMounted(async () => {
 }
 
 .dashboard-chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 16px;
 }
 
 .dashboard-chart-card__header {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.dashboard-chart-card__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dashboard-chart-card__filters {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.dashboard-preset-button {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-stroke-ui-dark);
+  color: var(--ui-text-secondary);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.dashboard-preset-button:hover {
+  border-color: rgba(113, 158, 223, 0.45);
+  color: var(--ui-text-main);
+}
+
+.dashboard-preset-button--active {
+  background: rgba(113, 158, 223, 0.16);
+  border-color: rgba(113, 158, 223, 0.65);
+  color: #fff;
 }
 
 .stat-card-link {

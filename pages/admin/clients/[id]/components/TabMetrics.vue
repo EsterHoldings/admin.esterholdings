@@ -1,29 +1,42 @@
 <template>
   <div class="client-metrics">
+    <div class="client-metrics__presets">
+      <button
+        v-for="preset in metricRangePresets"
+        :key="preset.id"
+        type="button"
+        class="client-metrics__preset-button"
+        :class="{ 'client-metrics__preset-button--active': filters.preset === preset.id }"
+        @click="applyPreset(preset.id)"
+      >
+        {{ preset.label }}
+      </button>
+    </div>
+
     <div class="client-metrics__filters">
       <div class="client-metrics__filter">
         <span class="client-metrics__filter-label">От</span>
-        <UiInput type="date" :value="filters.date_from" @input="value => (filters.date_from = value)" />
+        <UiInput type="date" :value="toDateInputValue(filters.date_from)" @input="value => updateFilter('date_from', value)" />
       </div>
       <div class="client-metrics__filter">
         <span class="client-metrics__filter-label">До</span>
-        <UiInput type="date" :value="filters.date_to" @input="value => (filters.date_to = value)" />
+        <UiInput type="date" :value="toDateInputValue(filters.date_to)" @input="value => updateFilter('date_to', value)" />
       </div>
       <div class="client-metrics__filter">
         <span class="client-metrics__filter-label">Шаг</span>
-        <UiSelect :data="bucketOptions" :value="filters.bucket" without-no-select @change="value => (filters.bucket = value || 'day')" />
+        <UiSelect :data="bucketOptions" :value="filters.bucket" without-no-select @change="value => updateFilter('bucket', value || 'day')" />
       </div>
       <div class="client-metrics__filter">
         <span class="client-metrics__filter-label">Устройство</span>
-        <UiSelect :data="deviceOptions" :value="filters.device_type" @change="value => (filters.device_type = value || '')" />
+        <UiSelect :data="deviceOptions" :value="filters.device_type" @change="value => updateFilter('device_type', value || '')" />
       </div>
       <div class="client-metrics__filter">
         <span class="client-metrics__filter-label">Браузер</span>
-        <UiSelect :data="browserOptions" :value="filters.browser" @change="value => (filters.browser = value || '')" />
+        <UiSelect :data="browserOptions" :value="filters.browser" @change="value => updateFilter('browser', value || '')" />
       </div>
       <div class="client-metrics__filter">
         <span class="client-metrics__filter-label">OS</span>
-        <UiSelect :data="osOptions" :value="filters.os" @change="value => (filters.os = value || '')" />
+        <UiSelect :data="osOptions" :value="filters.os" @change="value => updateFilter('os', value || '')" />
       </div>
       <UiButtonDefault state="info" :is-loading="isLoading" @click="loadMetrics">Обновить</UiButtonDefault>
     </div>
@@ -149,13 +162,69 @@ const appCore = useAppCore();
 const isLoading = ref(false);
 const metrics = ref<any>(null);
 
-const today = new Date().toISOString().slice(0, 10);
-const monthAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString().slice(0, 10);
+type Bucket = "day" | "hour";
+type MetricPreset = {
+  id: string;
+  label: string;
+  amount: number;
+  unit: "hours" | "days" | "weeks" | "months" | "years";
+  bucket: Bucket;
+};
+
+const metricRangePresets: MetricPreset[] = [
+  { id: "1h", label: "1ч", amount: 1, unit: "hours", bucket: "hour" },
+  { id: "2h", label: "2ч", amount: 2, unit: "hours", bucket: "hour" },
+  { id: "3h", label: "3ч", amount: 3, unit: "hours", bucket: "hour" },
+  { id: "5h", label: "5ч", amount: 5, unit: "hours", bucket: "hour" },
+  { id: "10h", label: "10ч", amount: 10, unit: "hours", bucket: "hour" },
+  { id: "15h", label: "15ч", amount: 15, unit: "hours", bucket: "hour" },
+  { id: "20h", label: "20ч", amount: 20, unit: "hours", bucket: "hour" },
+  { id: "1d", label: "1д", amount: 1, unit: "days", bucket: "hour" },
+  { id: "2d", label: "2д", amount: 2, unit: "days", bucket: "hour" },
+  { id: "3d", label: "3д", amount: 3, unit: "days", bucket: "hour" },
+  { id: "5d", label: "5д", amount: 5, unit: "days", bucket: "day" },
+  { id: "1w", label: "1н", amount: 1, unit: "weeks", bucket: "day" },
+  { id: "2w", label: "2н", amount: 2, unit: "weeks", bucket: "day" },
+  { id: "3w", label: "3н", amount: 3, unit: "weeks", bucket: "day" },
+  { id: "4w", label: "4н", amount: 4, unit: "weeks", bucket: "day" },
+  { id: "1m", label: "1м", amount: 1, unit: "months", bucket: "day" },
+  { id: "2m", label: "2м", amount: 2, unit: "months", bucket: "day" },
+  { id: "3m", label: "3м", amount: 3, unit: "months", bucket: "day" },
+  { id: "6m", label: "6м", amount: 6, unit: "months", bucket: "day" },
+  { id: "1y", label: "1г", amount: 1, unit: "years", bucket: "day" },
+  { id: "2y", label: "2г", amount: 2, unit: "years", bucket: "day" },
+  { id: "3y", label: "3г", amount: 3, unit: "years", bucket: "day" },
+];
+
+const resolvePreset = (presetId: string) => metricRangePresets.find(preset => preset.id === presetId) ?? metricRangePresets[15];
+
+const shiftDate = (date: Date, preset: MetricPreset) => {
+  const shifted = new Date(date);
+
+  if (preset.unit === "hours") shifted.setHours(shifted.getHours() - preset.amount);
+  if (preset.unit === "days") shifted.setDate(shifted.getDate() - preset.amount);
+  if (preset.unit === "weeks") shifted.setDate(shifted.getDate() - preset.amount * 7);
+  if (preset.unit === "months") shifted.setMonth(shifted.getMonth() - preset.amount);
+  if (preset.unit === "years") shifted.setFullYear(shifted.getFullYear() - preset.amount);
+
+  return shifted;
+};
+
+const toPresetRange = (presetId: string) => {
+  const preset = resolvePreset(presetId);
+  const now = new Date();
+  const from = shiftDate(now, preset);
+
+  return {
+    preset: preset.id,
+    date_from: from.toISOString(),
+    date_to: now.toISOString(),
+    bucket: preset.bucket,
+  };
+};
 
 const filters = reactive({
-  date_from: monthAgo,
-  date_to: today,
-  bucket: "day",
+  ...toPresetRange("1m"),
   device_type: "",
   browser: "",
   os: "",
@@ -210,6 +279,29 @@ const loadMetrics = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const applyPreset = async (presetId: string) => {
+  Object.assign(filters, toPresetRange(presetId));
+  await loadMetrics();
+};
+
+const updateFilter = (key: string, value: string) => {
+  (filters as Record<string, string>)[key] = value;
+  filters.preset = "custom";
+};
+
+const toDateInputValue = (value?: string) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 };
 
 const summaryCards = computed(() => {
@@ -319,6 +411,34 @@ watch(
   gap: 16px;
 }
 
+.client-metrics__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.client-metrics__preset-button {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-stroke-ui-dark);
+  color: var(--ui-text-secondary);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.client-metrics__preset-button:hover {
+  border-color: rgba(113, 158, 223, 0.45);
+  color: var(--ui-text-main);
+}
+
+.client-metrics__preset-button--active {
+  background: rgba(113, 158, 223, 0.16);
+  border-color: rgba(113, 158, 223, 0.65);
+  color: #fff;
+}
+
 .client-metrics__filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -352,7 +472,7 @@ watch(
 
 .client-metrics__main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
