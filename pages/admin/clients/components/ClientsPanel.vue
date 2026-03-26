@@ -1,36 +1,16 @@
 <template>
   <div class="flex w-full flex-col gap-3 text-[var(--ui-text-main)]">
     <div class="clients-stats-grid">
-      <template
+      <button
         v-for="card in metricCards"
-        :key="card.id">
-        <template v-if="card.kind === 'is-deposits-summary'">
-          <button
-            v-for="segment in card.segments"
-            :key="`${card.id}-${segment.id}`"
-            type="button"
-            class="clients-stat-card is-deposit-segment"
-            :class="{ 'is-active': segment.isActive }"
-            @click="handleMetricSegmentClick(card.id, segment.id)">
-            <div class="clients-stat-card__deposits-label">{{ segment.label }}</div>
-            <div
-              class="clients-stat-card__deposits-value"
-              :class="`size-${segment.size}`">
-              {{ segment.value }}
-            </div>
-          </button>
-        </template>
-
-        <button
-          v-else
-          type="button"
-          class="clients-stat-card"
-          :class="[card.kind, { 'is-active': card.isActive }]"
-          @click="handleMetricCardClick(card.id)">
-          <div class="clients-stat-card__label">{{ card.label }}</div>
-          <div class="clients-stat-card__value">{{ card.value }}</div>
-        </button>
-      </template>
+        :key="card.id"
+        type="button"
+        class="clients-stat-card"
+        :class="[card.kind, { 'is-active': card.isActive }]"
+        @click="handleMetricCardClick(card.id)">
+        <div class="clients-stat-card__label">{{ card.label }}</div>
+        <div class="clients-stat-card__value">{{ card.value }}</div>
+      </button>
     </div>
 
     <PageStructureContent :plain="viewMode !== 'table'">
@@ -413,12 +393,6 @@
       week: number;
       month: number;
     };
-    deposits_sum: {
-      today: number;
-      week: number;
-      month: number;
-      year: number;
-    };
   }
 
   interface SelectOption {
@@ -485,7 +459,6 @@
     | "has_photo"
     | "two_factor_enabled"
     | "created_period"
-    | "deposit_period"
     | "birthdate_from"
     | "birthdate_to"
     | "created_at_from"
@@ -503,7 +476,6 @@
     | "has_photo"
     | "two_factor_enabled"
     | "created_period"
-    | "deposit_period"
     | "id"
     | "email"
     | "first_name"
@@ -557,7 +529,6 @@
     has_photo: "",
     two_factor_enabled: "",
     created_period: "",
-    deposit_period: "",
     birthdate_from: "",
     birthdate_to: "",
     created_at_from: "",
@@ -576,7 +547,6 @@
     "has_photo",
     "two_factor_enabled",
     "created_period",
-    "deposit_period",
     "id",
     "email",
     "first_name",
@@ -629,7 +599,6 @@
     has_photo: "",
     two_factor_enabled: "",
     created_period: "",
-    deposit_period: "",
     id: "",
     email: "",
     first_name: "",
@@ -784,12 +753,6 @@
       week: 0,
       month: 0,
     },
-    deposits_sum: {
-      today: 0,
-      week: 0,
-      month: 0,
-      year: 0,
-    },
   });
 
   const appliedFilters = ref<ClientFilters>(createEmptyFilters());
@@ -924,13 +887,6 @@
     { id: "month", value: "month", text: resolveText("admin.clients.filters.values.month", "Month") },
   ]);
 
-  const depositPeriodOptions = computed(() => [
-    { id: "today", value: "today", text: resolveText("admin.clients.filters.values.today", "Today") },
-    { id: "week", value: "week", text: resolveText("admin.clients.filters.values.week", "Week") },
-    { id: "month", value: "month", text: resolveText("admin.clients.filters.values.month", "Month") },
-    { id: "year", value: "year", text: resolveText("admin.clients.filters.values.year", "Year") },
-  ]);
-
   const getFilterOptions = (key: SelectFilterKey): SelectOption[] => {
     const query = filterSearchQueries.value[key] ?? "";
 
@@ -940,7 +896,6 @@
       has_photo: hasPhotoOptions.value,
       two_factor_enabled: twoFactorOptions.value,
       created_period: createdPeriodOptions.value,
-      deposit_period: depositPeriodOptions.value,
     };
 
     if ((DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key)) {
@@ -977,11 +932,6 @@
       key: "created_period",
       label: resolveText("admin.clients.filters.fields.created_period", "Created period"),
       options: getFilterOptions("created_period"),
-    },
-    {
-      key: "deposit_period",
-      label: resolveText("admin.clients.filters.fields.deposit_period", "Deposit period"),
-      options: getFilterOptions("deposit_period"),
     },
   ]);
 
@@ -1034,7 +984,6 @@
     has_photo: resolveText("admin.clients.filters.fields.has_photo", "Photo"),
     two_factor_enabled: resolveText("admin.clients.filters.fields.two_factor_enabled", "2FA"),
     created_period: resolveText("admin.clients.filters.fields.created_period", "Created period"),
-    deposit_period: resolveText("admin.clients.filters.fields.deposit_period", "Deposit period"),
     birthdate_from: resolveText("admin.clients.filters.fields.birthdate_from", "Birthdate from"),
     birthdate_to: resolveText("admin.clients.filters.fields.birthdate_to", "Birthdate to"),
     created_at_from: resolveText("admin.clients.filters.fields.created_at_from", "Created from"),
@@ -1182,41 +1131,6 @@
       label: resolveText("admin.clients.stats.newMonth", "New clients this month"),
       value: formatCount(statsData.value.new_clients.month),
       isActive: appliedFilters.value.created_period === "month",
-    },
-    {
-      id: "deposits_summary",
-      kind: "is-deposits-summary",
-      label: resolveText("admin.clients.stats.depositsSummary", "Deposits summary"),
-      segments: [
-        {
-          id: "today",
-          label: resolveText("admin.clients.stats.depositsToday", "Today"),
-          value: formatMoney(statsData.value.deposits_sum.today),
-          size: "xl",
-          isActive: appliedFilters.value.deposit_period === "today",
-        },
-        {
-          id: "week",
-          label: resolveText("admin.clients.stats.depositsWeek", "Week"),
-          value: formatMoney(statsData.value.deposits_sum.week),
-          size: "lg",
-          isActive: appliedFilters.value.deposit_period === "week",
-        },
-        {
-          id: "month",
-          label: resolveText("admin.clients.stats.depositsMonth", "Month"),
-          value: formatMoney(statsData.value.deposits_sum.month),
-          size: "md",
-          isActive: appliedFilters.value.deposit_period === "month",
-        },
-        {
-          id: "year",
-          label: resolveText("admin.clients.stats.depositsYear", "Year"),
-          value: formatMoney(statsData.value.deposits_sum.year),
-          size: "sm",
-          isActive: appliedFilters.value.deposit_period === "year",
-        },
-      ],
     },
   ]);
 
@@ -1423,12 +1337,6 @@
           today: Number(payload?.new_clients?.today ?? 0),
           week: Number(payload?.new_clients?.week ?? 0),
           month: Number(payload?.new_clients?.month ?? 0),
-        },
-        deposits_sum: {
-          today: Number(payload?.deposits_sum?.today ?? 0),
-          week: Number(payload?.deposits_sum?.week ?? 0),
-          month: Number(payload?.deposits_sum?.month ?? 0),
-          year: Number(payload?.deposits_sum?.year ?? 0),
         },
       };
     } catch {
@@ -1725,15 +1633,6 @@
       nextFilters.created_at_to = "";
     }
 
-    appliedFilters.value = nextFilters;
-    draftFilters.value = cloneFilters(nextFilters);
-    await loadData({ resetPage: true });
-    await syncStateToUrl();
-  };
-
-  const handleMetricSegmentClick = async (_cardId: string, segmentId: string) => {
-    const nextFilters = cloneFilters(appliedFilters.value);
-    nextFilters.deposit_period = nextFilters.deposit_period === segmentId ? "" : segmentId;
     appliedFilters.value = nextFilters;
     draftFilters.value = cloneFilters(nextFilters);
     await loadData({ resetPage: true });
@@ -2039,15 +1938,6 @@
     return Number(value || 0).toLocaleString(locale.value || undefined);
   };
 
-  const formatMoney = (value: number) => {
-    const numericValue = Number(value || 0);
-
-    return `$ ${numericValue.toLocaleString(locale.value || undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
-
   watch(viewMode, mode => {
     if (typeof window === "undefined") return;
     localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
@@ -2190,12 +2080,6 @@
       var(--ui-background-card);
   }
 
-  .clients-stat-card.is-deposit-segment {
-    background:
-      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
-      var(--ui-background-card);
-  }
-
   .clients-stat-card__label {
     font-size: 12px;
     color: var(--ui-text-secondary);
@@ -2207,38 +2091,6 @@
     line-height: 28px;
     font-weight: 700;
     color: var(--ui-text-main);
-  }
-
-  .clients-stat-card__deposits-label {
-    font-size: 11px;
-    color: var(--ui-text-secondary);
-  }
-
-  .clients-stat-card__deposits-value {
-    color: var(--ui-text-main);
-    line-height: 1.1;
-    margin-top: 2px;
-    white-space: nowrap;
-  }
-
-  .clients-stat-card__deposits-value.size-xl {
-    font-size: clamp(20px, 2.4vw, 28px);
-    font-weight: 800;
-  }
-
-  .clients-stat-card__deposits-value.size-lg {
-    font-size: clamp(18px, 2vw, 24px);
-    font-weight: 700;
-  }
-
-  .clients-stat-card__deposits-value.size-md {
-    font-size: clamp(16px, 1.8vw, 20px);
-    font-weight: 700;
-  }
-
-  .clients-stat-card__deposits-value.size-sm {
-    font-size: clamp(14px, 1.5vw, 18px);
-    font-weight: 600;
   }
 
   .clients-filters-popover {

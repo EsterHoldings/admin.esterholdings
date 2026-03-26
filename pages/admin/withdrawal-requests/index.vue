@@ -10,14 +10,17 @@
     <template #content>
       <div class="withdrawal-requests-page">
         <div class="withdrawal-requests-page__stats">
-          <div
+          <button
             v-for="card in statCards"
             :key="card.id"
             class="withdrawal-stat-card"
+            :class="[card.cardClass, { 'is-active': card.isActive }]"
+            type="button"
+            @click="handleStatCardClick(card.status)"
           >
             <div class="withdrawal-stat-card__label">{{ card.label }}</div>
             <div class="withdrawal-stat-card__value">{{ card.value }}</div>
-          </div>
+          </button>
         </div>
 
         <div class="withdrawal-requests-page__toolbar">
@@ -35,18 +38,24 @@
           </div>
 
           <div class="withdrawal-requests-page__toolbar-right">
-            <UiSelect
-              class="min-w-[180px]"
-              :without-no-select="true"
-              :value="statusFilter"
-              :data="statusOptions"
-              @change="handleStatusFilterChange"
-            />
-
             <UiButtonDefault state="info--small" class="!w-[44px]" @click="refreshAll">
               <UiIconUpdate :spinning="isLoading || isStatsLoading" />
             </UiButtonDefault>
           </div>
+        </div>
+
+        <div
+          v-if="statusFilter"
+          class="withdrawal-requests-page__active-filter"
+        >
+          <span>{{ statusFilterNoteText }}: {{ statusText(statusFilter) }}</span>
+          <button
+            type="button"
+            class="withdrawal-requests-page__active-filter-reset"
+            @click="handleStatCardClick('')"
+          >
+            {{ resetFilterText }}
+          </button>
         </div>
 
         <div
@@ -150,6 +159,66 @@
             >
               <div class="withdrawal-request-card__label">{{ adminCommentText }}</div>
               <div class="withdrawal-request-card__comment-body">{{ requestItem.admin_comment }}</div>
+            </div>
+
+            <div
+              v-if="hasPaymentDetailData(requestItem)"
+              class="withdrawal-request-card__details-panel"
+            >
+              <div class="withdrawal-request-card__details-header">
+                <div>
+                  <div class="withdrawal-request-card__label">{{ paymentDetailText }}</div>
+                  <div class="withdrawal-request-card__details-title">
+                    {{ requestItem.payment_detail_name || requestItem.payment_detail?.name || "-" }}
+                  </div>
+                </div>
+
+                <span
+                  v-if="requestItem.payment_detail?.status"
+                  class="withdrawal-request-card__status"
+                  :class="statusClass(requestItem.payment_detail.status)"
+                >
+                  {{ statusText(requestItem.payment_detail.status) }}
+                </span>
+              </div>
+
+              <div
+                v-if="paymentDetailEntries(requestItem).length"
+                class="withdrawal-request-card__details-grid"
+              >
+                <div
+                  v-for="entry in paymentDetailEntries(requestItem)"
+                  :key="entry.key"
+                  class="withdrawal-request-card__details-item"
+                >
+                  <div class="withdrawal-request-card__details-key">{{ entry.label }}</div>
+                  <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
+                </div>
+              </div>
+
+              <div
+                v-if="requestItem.payment_detail?.documents?.length"
+                class="withdrawal-request-card__details-documents"
+              >
+                <div class="withdrawal-request-card__details-key">{{ documentsText }}</div>
+                <div class="withdrawal-request-card__details-document-list">
+                  <span
+                    v-for="document in requestItem.payment_detail.documents"
+                    :key="`${requestItem.id}-${document.path}`"
+                    class="withdrawal-request-card__details-document"
+                  >
+                    {{ document.name || document.path }}
+                  </span>
+                </div>
+              </div>
+
+              <div
+                v-if="requestItem.payment_detail?.comment"
+                class="withdrawal-request-card__details-note"
+              >
+                <div class="withdrawal-request-card__details-key">{{ requisitesCommentText }}</div>
+                <div class="withdrawal-request-card__comment-body">{{ requestItem.payment_detail.comment }}</div>
+              </div>
             </div>
 
             <div class="withdrawal-request-card__actions">
@@ -338,6 +407,7 @@
     account_currency: string;
     payment_detail_id: string;
     payment_detail_name: string;
+    payment_detail_status: string;
     payment_system_name: string;
     amount: number;
     currency: string;
@@ -345,6 +415,22 @@
     comment: string;
     admin_comment: string;
     created_at: string;
+    payment_detail: {
+      id: string;
+      name: string;
+      status: string;
+      payment_system_id: string;
+      payment_system_name: string;
+      data: Record<string, unknown>;
+      comment: string;
+      documents: Array<{
+        name: string;
+        path: string;
+        mime_type: string;
+        size: number | null;
+        uploaded_at: string | null;
+      }>;
+    };
   };
 
   const { t } = useI18n({ useScope: "global" });
@@ -416,6 +502,12 @@
   const clientCommentText = computed(() =>
     resolveText("admin.withdrawalRequests.fields.clientComment", "Client comment")
   );
+  const documentsText = computed(() =>
+    resolveText("admin.withdrawalRequests.fields.documents", "Documents")
+  );
+  const requisitesCommentText = computed(() =>
+    resolveText("admin.withdrawalRequests.fields.requisitesComment", "Requisites comment")
+  );
   const adminCommentText = computed(() =>
     resolveText("admin.withdrawalRequests.fields.adminComment", "Admin comment")
   );
@@ -437,6 +529,12 @@
     resolveText("admin.withdrawalRequests.actions.failed", "Failed")
   );
   const rejectText = computed(() => resolveText("admin.withdrawalRequests.actions.reject", "Reject"));
+  const statusFilterNoteText = computed(() =>
+    resolveText("admin.withdrawalRequests.filters.currentStatus", "Status filter")
+  );
+  const resetFilterText = computed(() =>
+    resolveText("admin.withdrawalRequests.filters.reset", "Reset")
+  );
   const savedText = computed(() =>
     resolveText("admin.withdrawalRequests.messages.saved", "Withdrawal request updated.")
   );
@@ -451,22 +549,55 @@
       adminAuthStore.hasPermission("update-payments")
   );
 
-  const statusOptions = computed(() => [
-    { id: "", value: "", text: resolveText("admin.withdrawalRequests.filters.allStatuses", "All statuses") },
-    { id: "pending", value: "pending", text: statusText("pending") },
-    { id: "processing", value: "processing", text: statusText("processing") },
-    { id: "successful", value: "successful", text: statusText("successful") },
-    { id: "failed", value: "failed", text: statusText("failed") },
-    { id: "cancelled", value: "cancelled", text: statusText("cancelled") },
-  ]);
-
   const statCards = computed(() => [
-    { id: "total", label: resolveText("admin.withdrawalRequests.stats.total", "Total"), value: stats.total },
-    { id: "pending", label: statusText("pending"), value: stats.pending },
-    { id: "processing", label: statusText("processing"), value: stats.processing },
-    { id: "successful", label: statusText("successful"), value: stats.successful },
-    { id: "failed", label: statusText("failed"), value: stats.failed },
-    { id: "cancelled", label: statusText("cancelled"), value: stats.cancelled },
+    {
+      id: "total",
+      status: "",
+      label: resolveText("admin.withdrawalRequests.stats.total", "Total"),
+      value: stats.total,
+      cardClass: "is-total",
+      isActive: statusFilter.value === "",
+    },
+    {
+      id: "pending",
+      status: "pending",
+      label: statusText("pending"),
+      value: stats.pending,
+      cardClass: "is-pending",
+      isActive: statusFilter.value === "pending",
+    },
+    {
+      id: "processing",
+      status: "processing",
+      label: statusText("processing"),
+      value: stats.processing,
+      cardClass: "is-processing",
+      isActive: statusFilter.value === "processing",
+    },
+    {
+      id: "successful",
+      status: "successful",
+      label: statusText("successful"),
+      value: stats.successful,
+      cardClass: "is-success",
+      isActive: statusFilter.value === "successful",
+    },
+    {
+      id: "failed",
+      status: "failed",
+      label: statusText("failed"),
+      value: stats.failed,
+      cardClass: "is-failed",
+      isActive: statusFilter.value === "failed",
+    },
+    {
+      id: "cancelled",
+      status: "cancelled",
+      label: statusText("cancelled"),
+      value: stats.cancelled,
+      cardClass: "is-cancelled",
+      isActive: statusFilter.value === "cancelled",
+    },
   ]);
 
   const extractRows = (response: any): any[] => {
@@ -541,6 +672,57 @@
     }
   };
 
+  const normalizePaymentDetailLabel = (key: string): string => {
+    return String(key ?? "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b\w/g, letter => letter.toUpperCase());
+  };
+
+  const formatPaymentDetailValue = (value: unknown): string => {
+    if (Array.isArray(value)) {
+      return value.map(item => formatPaymentDetailValue(item)).filter(Boolean).join(", ");
+    }
+
+    if (value && typeof value === "object") {
+      return Object.entries(value as Record<string, unknown>)
+        .map(([nestedKey, nestedValue]) => `${normalizePaymentDetailLabel(nestedKey)}: ${formatPaymentDetailValue(nestedValue)}`)
+        .join(" · ");
+    }
+
+    if (typeof value === "boolean") {
+      return value ? "Yes" : "No";
+    }
+
+    return String(value ?? "").trim();
+  };
+
+  const paymentDetailEntries = (
+    requestItem: WithdrawalRequestItem
+  ): Array<{ key: string; label: string; value: string }> => {
+    const detail = requestItem.payment_detail;
+    if (!detail || !detail.data || typeof detail.data !== "object") {
+      return [];
+    }
+
+    return Object.entries(detail.data)
+      .map(([key, value]) => ({
+        key,
+        label: normalizePaymentDetailLabel(key),
+        value: formatPaymentDetailValue(value),
+      }))
+      .filter(entry => entry.value !== "");
+  };
+
+  const hasPaymentDetailData = (requestItem: WithdrawalRequestItem): boolean => {
+    return (
+      paymentDetailEntries(requestItem).length > 0 ||
+      Boolean(requestItem.payment_detail?.comment) ||
+      Boolean(requestItem.payment_detail?.documents?.length)
+    );
+  };
+
   const normalizeRequest = (row: any): WithdrawalRequestItem => ({
     id: String(row?.id ?? ""),
     user_id: String(row?.user_id ?? ""),
@@ -553,6 +735,7 @@
     account_currency: String(row?.account_currency ?? ""),
     payment_detail_id: String(row?.payment_detail_id ?? ""),
     payment_detail_name: String(row?.payment_detail_name ?? ""),
+    payment_detail_status: String(row?.payment_detail_status ?? ""),
     payment_system_name: String(row?.payment_system_name ?? ""),
     amount: Number(row?.amount ?? 0),
     currency: String(row?.currency ?? ""),
@@ -560,6 +743,24 @@
     comment: String(row?.comment ?? ""),
     admin_comment: String(row?.admin_comment ?? ""),
     created_at: String(row?.created_at ?? ""),
+    payment_detail: {
+      id: String(row?.payment_detail?.id ?? ""),
+      name: String(row?.payment_detail?.name ?? ""),
+      status: String(row?.payment_detail?.status ?? ""),
+      payment_system_id: String(row?.payment_detail?.payment_system_id ?? ""),
+      payment_system_name: String(row?.payment_detail?.payment_system_name ?? ""),
+      data: row?.payment_detail?.data && typeof row.payment_detail.data === "object" ? row.payment_detail.data : {},
+      comment: String(row?.payment_detail?.comment ?? ""),
+      documents: Array.isArray(row?.payment_detail?.documents)
+        ? row.payment_detail.documents.map((document: any) => ({
+            name: String(document?.name ?? ""),
+            path: String(document?.path ?? ""),
+            mime_type: String(document?.mime_type ?? ""),
+            size: document?.size == null ? null : Number(document.size),
+            uploaded_at: document?.uploaded_at == null ? null : String(document.uploaded_at),
+          }))
+        : [],
+    },
   });
 
   const resetEditErrors = (): void => {
@@ -629,7 +830,7 @@
     await loadRequests();
   };
 
-  const handleStatusFilterChange = async (value: string | null): Promise<void> => {
+  const handleStatCardClick = async (value: string): Promise<void> => {
     statusFilter.value = String(value ?? "");
     await loadRequests();
   };
@@ -832,21 +1033,66 @@
   .withdrawal-requests-page {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
     color: var(--ui-text-main);
   }
 
   .withdrawal-requests-page__stats {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
   }
 
   .withdrawal-stat-card {
+    appearance: none;
+    text-align: left;
+    cursor: pointer;
     border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 14px;
+    border-radius: 16px;
     background: var(--ui-background-panel);
-    padding: 14px;
+    padding: 14px 16px;
+    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .withdrawal-stat-card:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 34%, transparent);
+  }
+
+  .withdrawal-stat-card.is-total {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--ui-primary-main) 8%, transparent) 0%, transparent 72%),
+      var(--ui-background-panel);
+  }
+
+  .withdrawal-stat-card.is-pending {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, #f59e0b 10%, transparent) 0%, transparent 72%),
+      var(--ui-background-panel);
+  }
+
+  .withdrawal-stat-card.is-processing {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, #3b82f6 10%, transparent) 0%, transparent 72%),
+      var(--ui-background-panel);
+  }
+
+  .withdrawal-stat-card.is-success {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, #22c55e 10%, transparent) 0%, transparent 72%),
+      var(--ui-background-panel);
+  }
+
+  .withdrawal-stat-card.is-failed,
+  .withdrawal-stat-card.is-cancelled {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, #ef4444 10%, transparent) 0%, transparent 72%),
+      var(--ui-background-panel);
+  }
+
+  .withdrawal-stat-card.is-active {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 58%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 32%, transparent);
   }
 
   .withdrawal-stat-card__label {
@@ -856,14 +1102,15 @@
 
   .withdrawal-stat-card__value {
     margin-top: 6px;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
   }
 
   .withdrawal-requests-page__toolbar {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   .withdrawal-requests-page__toolbar-left,
@@ -879,6 +1126,35 @@
 
   .withdrawal-requests-page__toolbar-right {
     justify-content: flex-end;
+  }
+
+  .withdrawal-requests-page__active-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 24%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ui-primary-main) 8%, transparent);
+    color: var(--ui-text-secondary);
+  }
+
+  .withdrawal-requests-page__active-filter-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    background: var(--color-stroke-ui-dark);
+    color: var(--ui-text-main);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .withdrawal-requests-page__active-filter-reset:hover {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 36%, transparent);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
   }
 
   .withdrawal-requests-page__error,
@@ -902,17 +1178,19 @@
   .withdrawal-requests-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
 
   .withdrawal-request-card {
     border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 16px;
-    background: var(--ui-background-panel);
-    padding: 16px;
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--ui-background-card) 82%, transparent) 0%, transparent 100%),
+      var(--ui-background-panel);
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
 
   .withdrawal-request-card__top {
@@ -925,8 +1203,9 @@
   .withdrawal-request-card__id-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
   }
 
   .withdrawal-request-card__id {
@@ -941,10 +1220,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 28px;
+    min-height: 26px;
     padding: 0 10px;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
   }
 
@@ -970,8 +1249,9 @@
   }
 
   .withdrawal-request-card__owner-name {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
+    line-height: 1.2;
   }
 
   .withdrawal-request-card__owner-meta {
@@ -988,15 +1268,23 @@
   }
 
   .withdrawal-request-card__amount {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
     white-space: nowrap;
+    line-height: 1;
   }
 
   .withdrawal-request-card__grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .withdrawal-request-card__cell {
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 82%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ui-background) 74%, transparent);
   }
 
   .withdrawal-request-card__label {
@@ -1013,9 +1301,10 @@
   }
 
   .withdrawal-request-card__comment {
-    padding: 12px;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--ui-background) 84%, transparent);
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
+    background: color-mix(in srgb, var(--ui-background) 82%, transparent);
   }
 
   .withdrawal-request-card__comment--admin {
@@ -1028,9 +1317,90 @@
     white-space: pre-wrap;
   }
 
+  .withdrawal-request-card__details-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 78%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--ui-background) 78%, transparent);
+  }
+
+  .withdrawal-request-card__details-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .withdrawal-request-card__details-title {
+    color: var(--ui-text-main);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .withdrawal-request-card__details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .withdrawal-request-card__details-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ui-background-panel) 65%, transparent);
+  }
+
+  .withdrawal-request-card__details-key {
+    font-size: 11px;
+    color: var(--ui-text-secondary);
+    line-height: 1.3;
+  }
+
+  .withdrawal-request-card__details-value {
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .withdrawal-request-card__details-documents,
+  .withdrawal-request-card__details-note {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .withdrawal-request-card__details-document-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .withdrawal-request-card__details-document {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+    color: var(--ui-text-main);
+    font-size: 12px;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
   .withdrawal-request-card__actions {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
     gap: 10px;
     align-items: center;
   }
@@ -1038,9 +1408,9 @@
   .withdrawal-request-card__status-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     padding: 4px;
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--color-stroke-ui-dark);
     border: 1px solid var(--color-stroke-ui-light);
   }
@@ -1049,13 +1419,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--ui-text-main);
-    transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
   }
 
   .withdrawal-status-action:disabled {
@@ -1064,34 +1434,50 @@
   }
 
   .withdrawal-status-action svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .withdrawal-status-action :deep(svg path),
+  .withdrawal-status-action :deep(svg g),
+  .withdrawal-status-action :deep(svg rect),
+  .withdrawal-status-action :deep(svg circle) {
+    fill: currentColor !important;
+    stroke: currentColor !important;
   }
 
   .withdrawal-status-action:not(:disabled):hover {
-    background: var(--color-stroke-ui-light);
+    transform: translateY(-1px);
   }
 
-  .withdrawal-status-action.is-active {
-    color: #fff;
-  }
-
+  .withdrawal-status-action--processing:not(:disabled):hover,
   .withdrawal-status-action--processing.is-active {
-    background: #3b82f6;
+    background: color-mix(in srgb, #3b82f6 22%, transparent);
+    border-color: color-mix(in srgb, #3b82f6 40%, transparent);
   }
 
+  .withdrawal-status-action--successful:not(:disabled):hover,
   .withdrawal-status-action--successful.is-active {
-    background: #22c55e;
+    background: color-mix(in srgb, #22c55e 22%, transparent);
+    border-color: color-mix(in srgb, #22c55e 40%, transparent);
   }
 
+  .withdrawal-status-action--failed:not(:disabled):hover,
   .withdrawal-status-action--failed.is-active,
+  .withdrawal-status-action--cancelled:not(:disabled):hover,
   .withdrawal-status-action--cancelled.is-active {
-    background: #ef4444;
+    background: color-mix(in srgb, #ef4444 22%, transparent);
+    border-color: color-mix(in srgb, #ef4444 40%, transparent);
   }
 
   .withdrawal-status-action--edit {
-    background: var(--color-stroke-ui-dark);
+    background: color-mix(in srgb, var(--color-stroke-ui-dark) 84%, transparent);
     border: 1px solid var(--color-stroke-ui-light);
+  }
+
+  .withdrawal-status-action--edit:not(:disabled):hover {
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 28%, transparent);
   }
 
   .withdrawal-request-card__edit {
@@ -1144,22 +1530,21 @@
   }
 
   @media (min-width: 1024px) {
-    .withdrawal-requests-page__stats {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-
     .withdrawal-requests-page__toolbar {
-      flex-direction: row;
       align-items: center;
-      justify-content: space-between;
     }
 
     .withdrawal-requests-page__toolbar-left {
-      max-width: 460px;
+      max-width: 520px;
     }
   }
 
   @media (max-width: 767px) {
+    .withdrawal-requests-page__toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
     .withdrawal-request-card__top {
       flex-direction: column;
     }
@@ -1187,7 +1572,6 @@
       justify-content: stretch;
     }
 
-    .withdrawal-requests-page__toolbar-right :deep(.select),
     .withdrawal-requests-page__toolbar-right :deep(.button-default) {
       width: 100%;
     }

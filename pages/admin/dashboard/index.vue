@@ -5,7 +5,7 @@
         <div>
           <UiTextH4 class="admin-dashboard__title text-[var(--ui-text-main)]">{{ t("admin.dashboard.title") }}</UiTextH4>
           <UiTextParagraph class="text-[var(--ui-text-secondary)]">
-            Реальные метрики клиентов, регистраций, online-активности и cashflow.
+            Реальные метрики клиентов, регистраций и online-активности.
           </UiTextParagraph>
         </div>
 
@@ -212,32 +212,6 @@
           </div>
         </div>
       </PanelDefault>
-
-      <PanelDefault class="dashboard-panel-card min-w-0">
-        <div class="flex flex-col gap-3 p-4">
-          <UiTextH5 class="text-[var(--ui-text-main)]">{{ t("admin.dashboard.recentPayments") }}</UiTextH5>
-          <div class="space-y-2">
-            <div
-              v-for="payment in recentPayments"
-              :key="payment.id"
-              class="dashboard-row-link flex items-center justify-between rounded-xl bg-[var(--color-stroke-ui-dark)] px-3 py-2"
-              @click="handleNavigate('/payments')"
-            >
-              <div>
-                <UiTextSmall class="text-[var(--ui-text-main)]">
-                  {{ formatCurrency(payment.amount, payment.currency) }}
-                </UiTextSmall>
-                <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                  {{ payment.account }} · {{ payment.method || "Unknown method" }}
-                </UiTextSmall>
-              </div>
-              <UiBadge :state="payment.status === 'successful' ? 'success' : 'warning'" outline class="!px-3">
-                {{ payment.status }}
-              </UiBadge>
-            </div>
-          </div>
-        </div>
-      </PanelDefault>
     </div>
   </div>
 </template>
@@ -259,9 +233,6 @@ import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 import UiIconClients from "~/components/ui/UiIconClients.vue";
-import UiIconPayment from "~/components/ui/UiIconPayment.vue";
-import UiIconWithdraw from "~/components/ui/UiIconWithdraw.vue";
-import UiIconSetting from "~/components/ui/UiIconSetting.vue";
 import UiIconWarningFull from "~/components/ui/UiIconWarningFull.vue";
 import useAppCore from "~/composables/useAppCore";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -457,27 +428,31 @@ const osOptions = computed(() =>
 );
 
 const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(Number(value ?? 0));
-const formatCurrency = (value: number, currency = "USD") =>
-  `${new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(value ?? 0))} ${currency}`;
 const formatPercent = (value: number) => `${value > 0 ? "+" : ""}${Number(value ?? 0).toFixed(2)}% vs prev period`;
 const formatHours = (value: number) => `${Number(value ?? 0).toFixed(2)} ч`;
+const registrationsTotal = computed(() =>
+  (dashboard.value?.charts?.registrations?.points ?? []).reduce(
+    (sum: number, point: any) => sum + Number(point?.value ?? 0),
+    0
+  )
+);
 
 const priorityCards = computed(
   () =>
     [
       {
-        id: "processing_transactions",
-        label: "Transactions in processing",
-        value: formatNumber(dashboard.value?.priority?.processing_transactions ?? 0),
-        icon: UiIconPayment,
-        to: "/payments",
+        id: "online_now",
+        label: "Online now",
+        value: formatNumber(dashboard.value?.online?.summary?.currently_online_users ?? 0),
+        icon: UiIconClients,
+        to: "/clients",
       },
       {
-        id: "processing_requisites",
-        label: "Requisites in processing",
-        value: formatNumber(dashboard.value?.priority?.processing_requisites ?? 0),
-        icon: UiIconSetting,
-        to: "/payments",
+        id: "registrations_range",
+        label: "Registrations in range",
+        value: formatNumber(registrationsTotal.value),
+        icon: UiIconClients,
+        to: "/clients",
       },
       {
         id: "processing_verifications",
@@ -499,22 +474,6 @@ const statCards = computed(
         delta: formatPercent(dashboard.value?.overview?.users?.delta_percent ?? 0),
         icon: UiIconClients,
         to: "/clients",
-      },
-      {
-        id: "deposits",
-        label: t("admin.dashboard.deposits"),
-        value: formatCurrency(dashboard.value?.overview?.deposits?.value ?? 0),
-        delta: formatPercent(dashboard.value?.overview?.deposits?.delta_percent ?? 0),
-        icon: UiIconPayment,
-        to: "/payments",
-      },
-      {
-        id: "withdrawals",
-        label: t("admin.dashboard.withdrawals"),
-        value: formatCurrency(dashboard.value?.overview?.withdrawals?.value ?? 0),
-        delta: formatPercent(dashboard.value?.overview?.withdrawals?.delta_percent ?? 0),
-        icon: UiIconWithdraw,
-        to: "/payments",
       },
     ].filter(card => canAccessPath(card.to))
 );
@@ -625,7 +584,6 @@ const handleOnlineRangeSelected = async ({ startKey, endKey }: { startKey: strin
 const onlineSummary = computed(() => dashboard.value?.online?.summary ?? {});
 const topOnlineClients = computed(() => dashboard.value?.online?.top_clients ?? []);
 const recentUsers = computed(() => dashboard.value?.recent?.users ?? []);
-const recentPayments = computed(() => dashboard.value?.recent?.payments ?? []);
 
 const handleNavigate = (to?: string) => {
   if (!to) return;
@@ -696,7 +654,7 @@ onMounted(async () => {
 
 .admin-dashboard__panels {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
 }
 
@@ -798,12 +756,6 @@ onMounted(async () => {
 :deep(.admin-chart-tooltip__empty) {
   color: #93a0c8;
   margin-top: 8px;
-}
-
-@media (max-width: 1200px) {
-  .admin-dashboard__panels {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 900px) {
