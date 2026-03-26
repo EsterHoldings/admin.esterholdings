@@ -10,7 +10,7 @@
     </template>
 
     <template #content>
-      <PageStructureContent>
+      <PageStructureContent plain>
         <template #content>
           <VerificationsPanel ref="panelRef" @loading="isLoading = $event" />
         </template>

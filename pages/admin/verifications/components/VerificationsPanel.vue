@@ -1167,18 +1167,27 @@ defineExpose({
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 13px 15px;
-  border-radius: 14px;
-  border: 1px solid var(--color-stroke-ui-light);
-  background: rgba(8, 18, 66, 0.62);
   color: var(--ui-text-main);
+}
+
+.verification-queue-page__active-filter {
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .verification-queue-page__active-filter button {
   color: var(--ui-primary-main);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .verification-queue-page__state {
+  padding: 13px 15px;
+  border-radius: 14px;
+  border: 1px solid var(--color-stroke-ui-light);
+  background: rgba(8, 18, 66, 0.62);
   justify-content: center;
 }
 
