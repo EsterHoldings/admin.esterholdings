@@ -55,6 +55,10 @@ export class ClientsModule {
     return await this.clientsService.getVisitHistory(id, params);
   }
 
+  async getMetrics(id: any, params: object = {}): Promise<any> {
+    return await this.clientsService.getMetrics(id, params);
+  }
+
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
     return await this.clientsService.deletePaymentDetail(id, paymentDetailId);
   }

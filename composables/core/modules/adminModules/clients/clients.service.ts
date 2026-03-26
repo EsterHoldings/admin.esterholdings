@@ -59,6 +59,10 @@ export class ClientsService {
     return await this.useApi.get(`/admin/clients/${id}/visit-history`, params);
   }
 
+  async getMetrics(id: any, params: object = {}) {
+    return await this.useApi.get(`/admin/clients/${id}/metrics`, params);
+  }
+
   async deletePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
     return await this.useApi.delete(`/admin/clients/${id}/payment-details/${paymentDetailId}`);
   }

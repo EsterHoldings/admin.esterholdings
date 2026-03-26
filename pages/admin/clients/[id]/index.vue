@@ -56,6 +56,7 @@
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
+  import TabMetrics from "~/pages/admin/clients/[id]/components/TabMetrics.vue";
   import TabReferrals from "~/pages/admin/clients/[id]/components/TabReferrals.vue";
   import TabSecurity from "~/pages/admin/clients/[id]/components/TabSecurity.vue";
   import TabSettings from "~/pages/admin/clients/[id]/components/TabSettings.vue";
@@ -133,6 +134,7 @@
 
   const tabsList = computed(() => [
     { label: "KYC", component: TabKYC },
+    { label: "Метрики", component: TabMetrics },
     ...(canViewClientVerification.value
       ? [{ label: resolveText("admin.clients.tabs.verification", "Verification"), component: TabVerification }]
       : []),

@@ -29,6 +29,7 @@ import AdminAuth2faModule from "~/composables/core/modules/adminModules/auth2fa/
 import AdminAuthModule from "~/composables/core/modules/adminModules/auth/adminAuth.module";
 import AdminAccountsModule from "~/composables/core/modules/adminModules/accounts/accounts.module";
 import AdminClientsModule from "~/composables/core/modules/adminModules/clients/clients.module";
+import AdminDashboardModule from "~/composables/core/modules/adminModules/dashboard/dashboard.module";
 import AdminDocumentsModule from "~/composables/core/modules/adminModules/documents/documents.module";
 import AdminNotificationsModule from "~/composables/core/modules/adminModules/notifications/notifications.module";
 import AdminVerificationRequests from "~/composables/core/modules/adminModules/verificationRequests/verificationRequests.module";
@@ -67,6 +68,7 @@ export interface ICoreModules {
     auth2fa: AdminAuth2faModule;
     accounts: AdminAccountsModule;
     clients: AdminClientsModule;
+    dashboard: AdminDashboardModule;
     documents: AdminDocumentsModule;
     notifications: AdminNotificationsModule;
     verificationRequests: AdminVerificationRequests;
@@ -108,6 +110,7 @@ export const useAppCore = (): ICoreModules => {
       auth2fa: new AdminAuth2faModule(),
       accounts: new AdminAccountsModule(),
       clients: new AdminClientsModule(),
+      dashboard: new AdminDashboardModule(),
       documents: new AdminDocumentsModule(),
       notifications: new AdminNotificationsModule(),
       verificationRequests: new AdminVerificationRequests(),
