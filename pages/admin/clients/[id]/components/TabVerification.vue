@@ -213,14 +213,21 @@
             <button
               type="button"
               class="verification-document-card__preview"
+              :class="`is-${documentPreviewMeta(documentRequestData).type}`"
               @click="handleClientDocumentImage(documentRequestData.document_data.full_url)"
             >
               <img
-                v-if="documentRequestData.document_data.full_url"
-                :src="documentRequestData.document_data.full_url"
+                v-if="documentPreviewMeta(documentRequestData).type === 'image' && documentPreviewMeta(documentRequestData).src"
+                :src="documentPreviewMeta(documentRequestData).src"
                 :alt="documentRequestData.document_data.number || 'Document preview'"
               />
-              <span v-else>DOC</span>
+              <span
+                v-else
+                class="verification-file-badge"
+                :class="`is-${documentPreviewMeta(documentRequestData).type}`"
+              >
+                {{ documentPreviewMeta(documentRequestData).label }}
+              </span>
             </button>
 
             <div class="verification-document-card__meta">
@@ -426,15 +433,22 @@
                 :key="paymentDetail.id + ':' + paymentDetailDocument.path + ':' + documentIndex"
                 type="button"
                 class="verification-payout-card__document"
+                :class="`is-${paymentDetailDocumentPreviewMeta(paymentDetailDocument).type}`"
                 :disabled="isPayoutDocumentLoading(paymentDetail.id, documentIndex)"
                 @click="handleOpenPayoutDocument(paymentDetail.id, documentIndex)"
               >
                 <img
-                  v-if="resolvePayoutDocumentPreviewSrc(paymentDetailDocument)"
-                  :src="resolvePayoutDocumentPreviewSrc(paymentDetailDocument)"
-                  :alt="`Скриншот #${documentIndex + 1}`"
+                  v-if="paymentDetailDocumentPreviewMeta(paymentDetailDocument).type === 'image' && paymentDetailDocumentPreviewMeta(paymentDetailDocument).src"
+                  :src="paymentDetailDocumentPreviewMeta(paymentDetailDocument).src"
+                  :alt="paymentDetailDocument.name || `Document #${documentIndex + 1}`"
                 />
-                <span v-else>DOC</span>
+                <span
+                  v-else
+                  class="verification-file-badge"
+                  :class="`is-${paymentDetailDocumentPreviewMeta(paymentDetailDocument).type}`"
+                >
+                  {{ paymentDetailDocumentPreviewMeta(paymentDetailDocument).label }}
+                </span>
               </button>
             </div>
           </article>
@@ -443,8 +457,8 @@
     </template>
 
     <template v-else>
-      <section class="verification-card">
-        <div class="verification-card__header">
+      <section class="verification-requests-pane">
+        <div class="verification-requests-pane__header">
           <div class="verification-card__title-group">
             <UiIconDocuments />
             <div>
@@ -529,28 +543,42 @@
               <div class="verification-client-request-card__previews">
                 <span
                   v-for="(preview, previewIndex) in currentRequestDocumentPreviews"
-                  :key="`${requestItem.id}:doc-preview:${previewIndex}`"
+                  :key="`${requestItem.id}:doc-preview:${previewIndex}:${preview.src || preview.label}`"
                   class="verification-preview-chip"
+                  :class="`is-${preview.type}`"
                 >
                   <img
-                    v-if="preview"
-                    :src="preview"
+                    v-if="preview.type === 'image' && preview.src"
+                    :src="preview.src"
                     alt="Document preview"
                   />
-                  <span v-else>DOC</span>
+                  <span
+                    v-else
+                    class="verification-file-badge"
+                    :class="`is-${preview.type}`"
+                  >
+                    {{ preview.label }}
+                  </span>
                 </span>
 
                 <span
                   v-for="(preview, previewIndex) in currentRequestPayoutPreviews"
-                  :key="`${requestItem.id}:payout-preview:${previewIndex}`"
+                  :key="`${requestItem.id}:payout-preview:${previewIndex}:${preview.src || preview.label}`"
                   class="verification-preview-chip"
+                  :class="`is-${preview.type}`"
                 >
                   <img
-                    v-if="preview"
-                    :src="preview"
+                    v-if="preview.type === 'image' && preview.src"
+                    :src="preview.src"
                     alt="Requisite preview"
                   />
-                  <span v-else>DOC</span>
+                  <span
+                    v-else
+                    class="verification-file-badge"
+                    :class="`is-${preview.type}`"
+                  >
+                    {{ preview.label }}
+                  </span>
                 </span>
               </div>
             </div>
@@ -655,6 +683,14 @@ interface ClientVerificationRequestRow {
   request_state: RequestReviewState;
   updated_at: string | null;
   updated_at_human: string | null;
+}
+
+type VerificationPreviewKind = "image" | "pdf" | "text" | "file";
+
+interface VerificationPreviewMeta {
+  type: VerificationPreviewKind;
+  src: string;
+  label: string;
 }
 
 const initialData: VerificationRequestDto = {
@@ -903,6 +939,81 @@ const isPayoutDocumentLoading = (paymentDetailId: string, documentIndex: number)
 
 const isAbsoluteHttpUrl = (value: string): boolean => /^https?:\/\//i.test(value);
 
+const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "avif"];
+const textExtensions = ["txt", "text", "md", "csv", "json", "xml", "log"];
+
+const extractFileExtension = (value: string): string => {
+  const normalized = String(value || "").split("?")[0].split("#")[0].trim().toLowerCase();
+  const segments = normalized.split(".");
+
+  return segments.length > 1 ? segments.pop() || "" : "";
+};
+
+const resolvePreviewKind = (source: {
+  src?: string;
+  path?: string;
+  mimeType?: string;
+  name?: string;
+}): VerificationPreviewKind => {
+  const mimeType = String(source.mimeType || "").trim().toLowerCase();
+
+  if (mimeType.startsWith("image/")) {
+    return "image";
+  }
+
+  if (mimeType.includes("pdf")) {
+    return "pdf";
+  }
+
+  if (mimeType.startsWith("text/") || mimeType.includes("json") || mimeType.includes("xml")) {
+    return "text";
+  }
+
+  const extension = extractFileExtension(source.src || source.path || source.name || "");
+
+  if (imageExtensions.includes(extension)) {
+    return "image";
+  }
+
+  if (extension === "pdf") {
+    return "pdf";
+  }
+
+  if (textExtensions.includes(extension)) {
+    return "text";
+  }
+
+  return "file";
+};
+
+const resolvePreviewLabel = (kind: VerificationPreviewKind): string => {
+  switch (kind) {
+    case "pdf":
+      return "PDF";
+    case "text":
+      return "TXT";
+    case "file":
+      return "FILE";
+    default:
+      return "IMG";
+  }
+};
+
+const buildPreviewMeta = (source: {
+  src?: string;
+  path?: string;
+  mimeType?: string;
+  name?: string;
+}): VerificationPreviewMeta => {
+  const type = resolvePreviewKind(source);
+
+  return {
+    type,
+    src: type === "image" ? String(source.src || source.path || "").trim() : "",
+    label: resolvePreviewLabel(type),
+  };
+};
+
 const resolvePayoutDocumentPreviewSrc = (document: AdminPaymentDetailDocument): string => {
   if (document.previewUrl) {
     return document.previewUrl;
@@ -910,6 +1021,20 @@ const resolvePayoutDocumentPreviewSrc = (document: AdminPaymentDetailDocument): 
 
   return isAbsoluteHttpUrl(document.path) ? document.path : "";
 };
+
+const documentPreviewMeta = (document: VerificationDocumentItem): VerificationPreviewMeta =>
+  buildPreviewMeta({
+    src: document.document_data.full_url,
+    name: document.name || document.document_data.number,
+  });
+
+const paymentDetailDocumentPreviewMeta = (document: AdminPaymentDetailDocument): VerificationPreviewMeta =>
+  buildPreviewMeta({
+    src: resolvePayoutDocumentPreviewSrc(document),
+    path: document.path,
+    mimeType: document.mimeType,
+    name: document.name,
+  });
 
 const loadVerificationData = async () => {
   isLoading.value = true;
@@ -1086,16 +1211,14 @@ const currentRequestFocusItems = computed<Array<{
 
 const currentRequestDocumentPreviews = computed(() =>
   documentsListRequestData.value
-    .map(document => String(document.document_data.full_url || "").trim())
-    .filter(Boolean)
+    .map(documentPreviewMeta)
     .slice(0, 2)
 );
 
 const currentRequestPayoutPreviews = computed(() =>
   payoutDetails.value
     .flatMap(paymentDetail => paymentDetail.documents)
-    .map(resolvePayoutDocumentPreviewSrc)
-    .filter(Boolean)
+    .map(paymentDetailDocumentPreviewMeta)
     .slice(0, 2)
 );
 
@@ -1706,6 +1829,20 @@ onBeforeUnmount(() => {
   gap: 14px;
 }
 
+.verification-requests-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.verification-requests-pane__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+}
+
 .verification-card {
   display: flex;
   flex-direction: column;
@@ -2005,6 +2142,44 @@ onBeforeUnmount(() => {
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--ui-text-secondary);
   font-size: 0.64rem;
+}
+
+.verification-document-card__preview.is-pdf,
+.verification-payout-card__document.is-pdf,
+.verification-preview-chip.is-pdf {
+  border-color: rgba(220, 38, 38, 0.18);
+}
+
+.verification-document-card__preview.is-text,
+.verification-payout-card__document.is-text,
+.verification-preview-chip.is-text {
+  border-color: rgba(73, 108, 222, 0.2);
+}
+
+.verification-file-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 0 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--ui-text-main);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+}
+
+.verification-file-badge.is-pdf {
+  color: #ff8b8b;
+}
+
+.verification-file-badge.is-text {
+  color: #8db5ff;
+}
+
+.verification-file-badge.is-file {
+  color: var(--ui-text-secondary);
 }
 
 .verification-payout-card__document img,

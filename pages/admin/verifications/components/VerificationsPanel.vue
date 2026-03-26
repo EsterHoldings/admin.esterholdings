@@ -164,15 +164,22 @@
             >
               <span
                 v-for="(preview, previewIndex) in documentPreviews(detailState(requestItem.user_id))"
-                :key="`${requestItem.id}:doc:${previewIndex}`"
+                :key="`${requestItem.id}:doc:${previewIndex}:${preview.src || preview.label}`"
                 class="verification-summary-card__preview"
+                :class="`is-${preview.type}`"
               >
                 <img
-                  v-if="preview"
-                  :src="preview"
+                  v-if="preview.type === 'image' && preview.src"
+                  :src="preview.src"
                   alt="Document preview"
                 />
-                <span v-else>DOC</span>
+                <span
+                  v-else
+                  class="verification-summary-card__preview-file"
+                  :class="`is-${preview.type}`"
+                >
+                  {{ preview.label }}
+                </span>
               </span>
             </div>
           </div>
@@ -191,15 +198,22 @@
             >
               <span
                 v-for="(preview, previewIndex) in requisitePreviews(detailState(requestItem.user_id))"
-                :key="`${requestItem.id}:requisite:${previewIndex}`"
+                :key="`${requestItem.id}:requisite:${previewIndex}:${preview.src || preview.label}`"
                 class="verification-summary-card__preview"
+                :class="`is-${preview.type}`"
               >
                 <img
-                  v-if="preview"
-                  :src="preview"
+                  v-if="preview.type === 'image' && preview.src"
+                  :src="preview.src"
                   alt="Requisite preview"
                 />
-                <span v-else>DOC</span>
+                <span
+                  v-else
+                  class="verification-summary-card__preview-file"
+                  :class="`is-${preview.type}`"
+                >
+                  {{ preview.label }}
+                </span>
               </span>
             </div>
           </div>
@@ -363,6 +377,14 @@ interface PaymentRow {
   legacy_payment_system_name: string;
 }
 
+type VerificationPreviewKind = "image" | "pdf" | "text" | "file";
+
+interface VerificationPreviewMeta {
+  type: VerificationPreviewKind;
+  src: string;
+  label: string;
+}
+
 interface DetailState {
   isLoading: boolean;
   loaded: boolean;
@@ -426,6 +448,81 @@ const createEmptyDetailState = (): DetailState => ({
   paymentDetails: [],
   firstDeposit: null,
 });
+
+const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "avif"];
+const textExtensions = ["txt", "text", "md", "csv", "json", "xml", "log"];
+
+const extractFileExtension = (value: string): string => {
+  const normalized = String(value || "").split("?")[0].split("#")[0].trim().toLowerCase();
+  const segments = normalized.split(".");
+
+  return segments.length > 1 ? segments.pop() || "" : "";
+};
+
+const resolvePreviewKind = (source: {
+  src?: string;
+  path?: string;
+  mimeType?: string;
+  name?: string;
+}): VerificationPreviewKind => {
+  const mimeType = String(source.mimeType || "").trim().toLowerCase();
+
+  if (mimeType.startsWith("image/")) {
+    return "image";
+  }
+
+  if (mimeType.includes("pdf")) {
+    return "pdf";
+  }
+
+  if (mimeType.startsWith("text/") || mimeType.includes("json") || mimeType.includes("xml")) {
+    return "text";
+  }
+
+  const extension = extractFileExtension(source.src || source.path || source.name || "");
+
+  if (imageExtensions.includes(extension)) {
+    return "image";
+  }
+
+  if (extension === "pdf") {
+    return "pdf";
+  }
+
+  if (textExtensions.includes(extension)) {
+    return "text";
+  }
+
+  return "file";
+};
+
+const resolvePreviewLabel = (kind: VerificationPreviewKind): string => {
+  switch (kind) {
+    case "pdf":
+      return "PDF";
+    case "text":
+      return "TXT";
+    case "file":
+      return "FILE";
+    default:
+      return "IMG";
+  }
+};
+
+const buildPreviewMeta = (source: {
+  src?: string;
+  path?: string;
+  mimeType?: string;
+  name?: string;
+}): VerificationPreviewMeta => {
+  const type = resolvePreviewKind(source);
+
+  return {
+    type,
+    src: type === "image" ? String(source.src || source.path || "").trim() : "",
+    label: resolvePreviewLabel(type),
+  };
+};
 
 const sortOptions = [
   { id: "updated_desc", value: "updated_desc", text: "Newest first" },
@@ -905,20 +1002,27 @@ const firstPaymentSummary = (state: DetailState): string => {
   return state.firstDeposit ? "Recorded" : "No deposit";
 };
 
-const documentPreviews = (state: DetailState): string[] =>
+const documentPreviews = (state: DetailState): VerificationPreviewMeta[] =>
   state.documents
-    .map(document => String(document.document_data.full_url || "").trim())
-    .filter(Boolean)
+    .map(document =>
+      buildPreviewMeta({
+        src: document.document_data.full_url,
+        name: document.name || document.document_data.number,
+      })
+    )
     .slice(0, 2);
 
-const resolvePaymentDetailPreview = (document: PaymentDetailDocument): string =>
-  String(document.preview_url || document.previewUrl || "").trim();
+const resolvePaymentDetailPreview = (document: PaymentDetailDocument): VerificationPreviewMeta =>
+  buildPreviewMeta({
+    src: String(document.preview_url || document.previewUrl || "").trim(),
+    path: document.path,
+    name: document.name,
+  });
 
-const requisitePreviews = (state: DetailState): string[] =>
+const requisitePreviews = (state: DetailState): VerificationPreviewMeta[] =>
   state.paymentDetails
     .flatMap(paymentDetail => paymentDetail.documents)
     .map(resolvePaymentDetailPreview)
-    .filter(Boolean)
     .slice(0, 2);
 
 const paymentMethodName = (payment: PaymentRow | null): string => {
@@ -1297,10 +1401,44 @@ defineExpose({
   color: var(--ui-text-secondary);
 }
 
+.verification-summary-card__preview.is-pdf {
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.verification-summary-card__preview.is-text {
+  border-color: rgba(73, 108, 222, 0.22);
+}
+
 .verification-summary-card__preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.verification-summary-card__preview-file {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 0 4px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--ui-text-main);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+}
+
+.verification-summary-card__preview-file.is-pdf {
+  color: #ff8b8b;
+}
+
+.verification-summary-card__preview-file.is-text {
+  color: #8db5ff;
+}
+
+.verification-summary-card__preview-file.is-file {
+  color: var(--ui-text-secondary);
 }
 
 .verification-request-row__actions {
