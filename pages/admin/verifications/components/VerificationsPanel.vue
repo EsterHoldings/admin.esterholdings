@@ -39,7 +39,7 @@
           </template>
         </UiSelect>
 
-        <UiButtonDefault state="info--small" class="!w-[44px]" @click="handleRefreshAll">
+        <UiButtonDefault state="info--small" class="!w-[42px]" @click="handleRefreshAll">
           <UiIconUpdate :spinning="isLoading" />
         </UiButtonDefault>
       </div>
@@ -76,434 +76,95 @@
 
     <div
       v-else
-      class="verification-review-list"
+      class="verification-request-grid"
     >
-      <article
+      <button
         v-for="requestItem in requestItems"
         :key="requestItem.id"
-        class="verification-review-card"
+        type="button"
+        class="verification-request-tile"
+        :class="{ 'is-source-hidden': isModalOpen && activeRequestId === requestItem.id }"
+        :style="cardTransitionStyle(requestItem.id)"
+        @click="openRequestModal(requestItem)"
       >
-        <div
-          class="verification-review-card__hero"
-          @click="openClientVerification(requestItem.user_id)"
-        >
-          <div class="verification-review-card__identity">
+        <div class="verification-request-tile__head">
+          <div class="verification-request-tile__identity">
             <UiImageCircle
               :src="requestItem.user.photo_url || ''"
-              :two-chars="requestItem.user.initials || 'AA'"
+              :two-chars="displayClientInitials(requestItem)"
             />
 
-            <div class="verification-review-card__identity-meta">
-              <div class="verification-review-card__identity-name">
+            <div class="verification-request-tile__identity-meta">
+              <div class="verification-request-tile__name">
                 {{ displayClientName(requestItem) }}
               </div>
-              <div class="verification-review-card__identity-subtitle">
+              <div class="verification-request-tile__subtitle">
                 <span>{{ requestItem.user.email || "-" }}</span>
-                <span v-if="detailState(requestItem.user_id).user?.phone">· {{ detailState(requestItem.user_id).user?.phone }}</span>
                 <span>· #{{ shortId(requestItem.id) }}</span>
               </div>
-              <div class="verification-review-card__identity-badges">
-                <span class="verification-badge verification-badge--overall" :class="statusClass(requestItem.state)">
-                  {{ overallStatusText(requestItem.state) }}
-                </span>
-                <span class="verification-badge verification-badge--request" :class="requestStateClass(requestItem.request_state)">
-                  {{ requestStateText(requestItem.request_state) }}
-                </span>
-                <span class="verification-badge verification-badge--muted">
-                  Updated {{ requestItem.updated_at_human || "-" }}
-                </span>
-              </div>
             </div>
           </div>
 
-          <div class="verification-review-card__hero-side">
-            <div class="verification-review-card__request-actions" @click.stop>
-              <button
-                type="button"
-                class="verification-request-action verification-request-action--viewed"
-                :class="{ 'is-active': requestItem.request_state === 'viewed' }"
-                @click="handleRequestReviewUpdate(requestItem, 'viewed')"
-              >
-                <UiIconEye />
-                <span>Viewed</span>
-              </button>
-              <button
-                type="button"
-                class="verification-request-action verification-request-action--approved"
-                :class="{ 'is-active': requestItem.request_state === 'approved' }"
-                @click="handleRequestReviewUpdate(requestItem, 'approved')"
-              >
-                <UiIconSuccess />
-                <span>Confirmed</span>
-              </button>
-              <button
-                type="button"
-                class="verification-request-action verification-request-action--rejected"
-                :class="{ 'is-active': requestItem.request_state === 'rejected' }"
-                @click="handleRequestReviewUpdate(requestItem, 'rejected')"
-              >
-                <UiIconFailed />
-                <span>Cancelled</span>
-              </button>
-            </div>
-
-            <button
-              type="button"
-              class="verification-review-card__open-btn"
-              @click.stop="openClientVerification(requestItem.user_id)"
+          <div class="verification-request-tile__badges">
+            <span
+              class="verification-badge verification-badge--request"
+              :class="requestStateClass(requestItem.request_state)"
             >
-              <span>Open client</span>
-              <UiIconArrowRightShort />
-            </button>
+              {{ requestStateText(requestItem.request_state) }}
+            </span>
+            <span
+              class="verification-badge verification-badge--overall"
+              :class="statusClass(requestItem.state)"
+            >
+              {{ overallStatusText(requestItem.state) }}
+            </span>
           </div>
         </div>
 
-        <div class="verification-review-card__body">
-          <div
-            v-if="detailState(requestItem.user_id).isLoading"
-            class="verification-review-card__detail-loading"
-          >
-            <UiIconSpinnerDefault />
+        <div class="verification-request-tile__facts">
+          <div class="verification-mini-fact">
+            <span class="verification-mini-fact__label">Profile</span>
+            <span
+              class="verification-mini-fact__value verification-mini-fact__value--status"
+              :class="statusClass(detailState(requestItem.user_id).verification.info.verification_status)"
+            >
+              {{ statusText(detailState(requestItem.user_id).verification.info.verification_status) }}
+            </span>
           </div>
 
-          <div
-            v-else-if="detailState(requestItem.user_id).error"
-            class="verification-review-card__detail-error"
-          >
-            <span>{{ detailState(requestItem.user_id).error }}</span>
-            <button type="button" @click="loadRequestDetailBundle(requestItem, true)">Retry</button>
+          <div class="verification-mini-fact">
+            <span class="verification-mini-fact__label">Documents</span>
+            <span class="verification-mini-fact__value">
+              {{ documentsSummary(detailState(requestItem.user_id)) }}
+            </span>
           </div>
 
-          <template v-else>
-            <div class="verification-review-card__top-grid">
-              <section class="verification-section verification-section--profile">
-                <div class="verification-section__header">
-                  <div class="verification-section__title-wrap">
-                    <UiIconProfile />
-                    <span>Client profile</span>
-                  </div>
-                  <VerificationActions
-                    :status="detailState(requestItem.user_id).verification.info.verification_status"
-                    :disabled="isUpdating(requestItem.id)"
-                    @update-status="handleVerificationStepUpdate(requestItem, 'info', $event)"
-                  />
-                </div>
+          <div class="verification-mini-fact">
+            <span class="verification-mini-fact__label">Requisites</span>
+            <span class="verification-mini-fact__value">
+              {{ requisitesSummary(detailState(requestItem.user_id)) }}
+            </span>
+          </div>
 
-                <div class="verification-data-grid">
-                  <div class="verification-data-grid__item">
-                    <span class="verification-data-grid__key">Full name</span>
-                    <span class="verification-data-grid__value">{{ fullClientName(detailState(requestItem.user_id).user) }}</span>
-                  </div>
-                  <div class="verification-data-grid__item">
-                    <span class="verification-data-grid__key">Birthdate</span>
-                    <span class="verification-data-grid__value">{{ detailState(requestItem.user_id).user?.birthdate || "-" }}</span>
-                  </div>
-                  <div class="verification-data-grid__item">
-                    <span class="verification-data-grid__key">Phone</span>
-                    <span class="verification-data-grid__value">{{ detailState(requestItem.user_id).user?.phone || "-" }}</span>
-                  </div>
-                  <div class="verification-data-grid__item">
-                    <span class="verification-data-grid__key">Email</span>
-                    <span class="verification-data-grid__value">{{ detailState(requestItem.user_id).user?.email || "-" }}</span>
-                  </div>
-                  <div class="verification-data-grid__item verification-data-grid__item--wide">
-                    <span class="verification-data-grid__key">Address</span>
-                    <span class="verification-data-grid__value">{{ formatAddress(detailState(requestItem.user_id).user) }}</span>
-                  </div>
-                </div>
-
-                <div
-                  v-if="detailState(requestItem.user_id).verification.info.comment"
-                  class="verification-section__note"
-                >
-                  {{ detailState(requestItem.user_id).verification.info.comment }}
-                </div>
-              </section>
-
-              <section class="verification-section verification-section--address">
-                <div class="verification-section__header">
-                  <div class="verification-section__title-wrap">
-                    <UiIconInfo />
-                    <span>Address verification</span>
-                  </div>
-                  <VerificationActions
-                    :status="detailState(requestItem.user_id).verification.address.verification_status"
-                    :disabled="isUpdating(requestItem.id)"
-                    @update-status="handleVerificationStepUpdate(requestItem, 'address', $event)"
-                  />
-                </div>
-
-                <div class="verification-section__status-line">
-                  <span class="verification-badge" :class="statusClass(detailState(requestItem.user_id).verification.address.verification_status)">
-                    {{ statusText(detailState(requestItem.user_id).verification.address.verification_status) }}
-                  </span>
-                  <span class="verification-section__status-line-text">Address data linked to the client profile.</span>
-                </div>
-
-                <div
-                  v-if="detailState(requestItem.user_id).verification.address.comment"
-                  class="verification-section__note"
-                >
-                  {{ detailState(requestItem.user_id).verification.address.comment }}
-                </div>
-              </section>
-            </div>
-
-            <div class="verification-review-card__verification-grid">
-              <section
-                v-for="section in verificationStatusCards(requestItem)"
-                :key="section.key"
-                class="verification-section verification-section--compact"
-              >
-                <div class="verification-section__header">
-                  <div class="verification-section__title-wrap">
-                    <component :is="section.icon" />
-                    <span>{{ section.label }}</span>
-                  </div>
-                  <VerificationActions
-                    :status="section.status"
-                    :disabled="section.readonly || isUpdating(requestItem.id)"
-                    @update-status="handleVerificationStepUpdate(requestItem, section.key, $event)"
-                  />
-                </div>
-
-                <div class="verification-section__status-line">
-                  <span class="verification-badge" :class="statusClass(section.status)">
-                    {{ statusText(section.status) }}
-                  </span>
-                </div>
-
-                <div
-                  v-if="section.comment"
-                  class="verification-section__note"
-                >
-                  {{ section.comment }}
-                </div>
-              </section>
-            </div>
-
-            <section class="verification-section verification-section--documents">
-              <div class="verification-section__header">
-                <div class="verification-section__title-wrap">
-                  <UiIconDocuments />
-                  <span>Documents verification</span>
-                </div>
-                <VerificationActions
-                  :status="detailState(requestItem.user_id).verification.documents.verification_status"
-                  :disabled="isUpdating(requestItem.id)"
-                  @update-status="handleVerificationStepUpdate(requestItem, 'documents', $event)"
-                />
-              </div>
-
-              <div
-                v-if="detailState(requestItem.user_id).documents.length === 0"
-                class="verification-section__empty"
-              >
-                No uploaded documents.
-              </div>
-
-              <div
-                v-else
-                class="verification-documents-grid"
-              >
-                <article
-                  v-for="document in detailState(requestItem.user_id).documents"
-                  :key="document.id"
-                  class="verification-document-card"
-                >
-                  <button
-                    type="button"
-                    class="verification-document-card__preview"
-                    @click.stop="openVerificationDocument(document)"
-                  >
-                    <img
-                      v-if="document.document_data.full_url"
-                      :src="document.document_data.full_url"
-                      :alt="document.name || document.document_data.number || 'Document preview'"
-                    />
-                    <span v-else>DOC</span>
-                  </button>
-
-                  <div class="verification-document-card__content">
-                    <div class="verification-document-card__title">{{ document.name || document.document_data.number || "Document" }}</div>
-                    <div class="verification-document-card__meta">
-                      <span>#{{ document.document_data.number || document.id }}</span>
-                      <span>{{ formatDateTime(document.updated_at) }}</span>
-                    </div>
-                    <div
-                      v-if="document.comment"
-                      class="verification-document-card__comment"
-                    >
-                      {{ document.comment }}
-                    </div>
-                  </div>
-
-                  <div class="verification-document-card__actions">
-                    <VerificationActions
-                      :status="document.state"
-                      :disabled="isUpdating(requestItem.id)"
-                      @update-status="handleSingleDocumentUpdate(requestItem, document.id, $event)"
-                    />
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section class="verification-section verification-section--accounts">
-              <div class="verification-section__header">
-                <div class="verification-section__title-wrap">
-                  <UiIconCardCheck />
-                  <span>Client accounts</span>
-                </div>
-                <span class="verification-section__count">{{ detailState(requestItem.user_id).accounts.length }}</span>
-              </div>
-
-              <div
-                v-if="detailState(requestItem.user_id).accounts.length === 0"
-                class="verification-section__empty"
-              >
-                No trading accounts found.
-              </div>
-
-              <div
-                v-else
-                class="verification-accounts-grid"
-              >
-                <div
-                  v-for="account in detailState(requestItem.user_id).accounts"
-                  :key="account.id"
-                  class="verification-account-card"
-                >
-                  <div class="verification-account-card__row">
-                    <span class="verification-account-card__number">{{ account.number || "-" }}</span>
-                    <span class="verification-badge verification-badge--muted">{{ formatMoney(account.balance, account.currency || 'USD') }}</span>
-                  </div>
-                  <div class="verification-account-card__meta">
-                    <span>{{ account.type_name || "-" }}</span>
-                    <span>·</span>
-                    <span>{{ account.leverage_display || "-" }}</span>
-                    <span v-if="account.payment_type">· {{ account.payment_type }}</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="verification-section verification-section--payouts">
-              <div class="verification-section__header">
-                <div class="verification-section__title-wrap">
-                  <UiIconPaymentDetail />
-                  <span>Payout requisites</span>
-                </div>
-                <span class="verification-section__count">{{ detailState(requestItem.user_id).paymentDetails.length }}</span>
-              </div>
-
-              <div
-                v-if="detailState(requestItem.user_id).paymentDetails.length === 0"
-                class="verification-section__empty"
-              >
-                No payout requisites attached.
-              </div>
-
-              <div
-                v-else
-                class="verification-payout-grid"
-              >
-                <article
-                  v-for="paymentDetail in detailState(requestItem.user_id).paymentDetails"
-                  :key="paymentDetail.id"
-                  class="verification-payout-card"
-                >
-                  <div class="verification-payout-card__header">
-                    <div>
-                      <div class="verification-payout-card__title">{{ paymentDetail.name || "Payout detail" }}</div>
-                      <div class="verification-payout-card__subtitle">
-                        {{ paymentDetail.payment_system_name || "-" }}
-                        <span v-if="paymentDetail.updated_at">· {{ formatDateTime(paymentDetail.updated_at) }}</span>
-                      </div>
-                    </div>
-                    <VerificationActions
-                      :status="paymentDetail.status"
-                      :disabled="isUpdating(requestItem.id)"
-                      @update-status="handlePaymentDetailUpdate(requestItem, paymentDetail.id, $event)"
-                    />
-                  </div>
-
-                  <div
-                    v-if="paymentDetailEntries(paymentDetail).length"
-                    class="verification-data-grid verification-data-grid--compact"
-                  >
-                    <div
-                      v-for="entry in paymentDetailEntries(paymentDetail)"
-                      :key="`${paymentDetail.id}:${entry.key}`"
-                      class="verification-data-grid__item"
-                    >
-                      <span class="verification-data-grid__key">{{ entry.label }}</span>
-                      <span class="verification-data-grid__value">{{ entry.value }}</span>
-                    </div>
-                  </div>
-
-                  <div
-                    v-if="paymentDetail.admin_comment"
-                    class="verification-section__note"
-                  >
-                    {{ paymentDetail.admin_comment }}
-                  </div>
-
-                  <div
-                    v-if="paymentDetail.documents.length"
-                    class="verification-payout-card__documents"
-                  >
-                    <button
-                      v-for="(document, documentIndex) in paymentDetail.documents"
-                      :key="`${paymentDetail.id}:${document.path}:${documentIndex}`"
-                      type="button"
-                      class="verification-payout-card__document"
-                      @click.stop="openPaymentDetailDocument(paymentDetail, document)"
-                    >
-                      <img
-                        v-if="resolvePaymentDocumentPreview(document)"
-                        :src="resolvePaymentDocumentPreview(document)"
-                        :alt="document.name || `Document ${documentIndex + 1}`"
-                      />
-                      <span v-else>DOC</span>
-                    </button>
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            <section class="verification-section verification-section--history">
-              <div class="verification-section__header">
-                <div class="verification-section__title-wrap">
-                  <UiIconClock />
-                  <span>Verification history</span>
-                </div>
-              </div>
-
-              <div
-                v-if="detailState(requestItem.user_id).verification.history.length === 0"
-                class="verification-section__empty"
-              >
-                No verification history yet.
-              </div>
-
-              <div
-                v-else
-                class="verification-history"
-              >
-                <div
-                  v-for="historyRow in detailState(requestItem.user_id).verification.history"
-                  :key="historyRow.id"
-                  class="verification-history__item"
-                >
-                  <span class="verification-badge" :class="statusClass(historyRow.status)">{{ historyRow.name }}</span>
-                  <span class="verification-history__time">{{ historyRow.date }}</span>
-                </div>
-              </div>
-            </section>
-          </template>
+          <div class="verification-mini-fact">
+            <span class="verification-mini-fact__label">First payment</span>
+            <span
+              class="verification-mini-fact__value verification-mini-fact__value--status"
+              :class="detailState(requestItem.user_id).firstDeposit ? 'is-approved' : 'is-pending'"
+            >
+              {{ firstPaymentSummary(detailState(requestItem.user_id)) }}
+            </span>
+          </div>
         </div>
-      </article>
+
+        <div class="verification-request-tile__footer">
+          <span>Updated {{ requestItem.updated_at_human || "-" }}</span>
+          <span class="verification-request-tile__open">
+            Review
+            <UiIconArrowRightShort />
+          </span>
+        </div>
+      </button>
     </div>
 
     <PaginationDefault
@@ -514,11 +175,379 @@
       @perPageChange="handleChangePerPage"
       @pageChange="handleChangePage"
     />
+
+    <Teleport to="body">
+      <Transition name="verification-modal-fade">
+        <div
+          v-if="isModalOpen && activeRequestItem"
+          class="verification-modal-layer"
+          @click="closeRequestModal"
+        >
+          <div class="verification-modal-shell">
+            <article
+              class="verification-modal"
+              :style="modalTransitionStyle"
+              @click.stop
+            >
+              <header class="verification-modal__header">
+                <div class="verification-modal__identity">
+                  <UiImageCircle
+                    :src="activeRequestItem.user.photo_url || ''"
+                    :two-chars="displayClientInitials(activeRequestItem)"
+                  />
+
+                  <div class="verification-modal__identity-meta">
+                    <div class="verification-modal__title">
+                      {{ displayClientName(activeRequestItem) }}
+                    </div>
+                    <div class="verification-modal__subtitle">
+                      <span>{{ activeRequestItem.user.email || "-" }}</span>
+                      <span>· #{{ shortId(activeRequestItem.id) }}</span>
+                      <span>· Updated {{ activeRequestItem.updated_at_human || "-" }}</span>
+                    </div>
+                    <div class="verification-modal__badges">
+                      <span
+                        class="verification-badge verification-badge--request"
+                        :class="requestStateClass(activeRequestItem.request_state)"
+                      >
+                        {{ requestStateText(activeRequestItem.request_state) }}
+                      </span>
+                      <span
+                        class="verification-badge verification-badge--overall"
+                        :class="statusClass(activeRequestItem.state)"
+                      >
+                        {{ overallStatusText(activeRequestItem.state) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="verification-modal__header-actions">
+                  <div class="verification-request-actions">
+                    <button
+                      type="button"
+                      class="verification-request-action verification-request-action--viewed"
+                      :class="{ 'is-active': activeRequestItem.request_state === 'viewed' }"
+                      @click="handleRequestReviewUpdate(activeRequestItem, 'viewed')"
+                    >
+                      <UiIconEye />
+                      <span>Viewed</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="verification-request-action verification-request-action--approved"
+                      :class="{ 'is-active': activeRequestItem.request_state === 'approved' }"
+                      @click="handleRequestReviewUpdate(activeRequestItem, 'approved')"
+                    >
+                      <UiIconSuccess />
+                      <span>Confirm request</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="verification-request-action verification-request-action--rejected"
+                      :class="{ 'is-active': activeRequestItem.request_state === 'rejected' }"
+                      @click="handleRequestReviewUpdate(activeRequestItem, 'rejected')"
+                    >
+                      <UiIconFailed />
+                      <span>Cancel request</span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="verification-modal__close"
+                    @click="closeRequestModal"
+                  >
+                    <span>Close</span>
+                    <span aria-hidden="true">x</span>
+                  </button>
+                </div>
+              </header>
+
+              <div class="verification-modal__body">
+                <div
+                  v-if="activeDetailState?.isLoading"
+                  class="verification-modal__state"
+                >
+                  <UiIconSpinnerDefault />
+                </div>
+
+                <div
+                  v-else-if="activeDetailState?.error"
+                  class="verification-modal__state verification-modal__state--error"
+                >
+                  <span>{{ activeDetailState.error }}</span>
+                  <button type="button" @click="loadRequestDetailBundle(activeRequestItem, true)">Retry</button>
+                </div>
+
+                <template v-else-if="activeDetailState">
+                  <div class="verification-modal__top-grid">
+                    <section class="verification-section">
+                      <div class="verification-section__header">
+                        <div class="verification-section__title-wrap">
+                          <UiIconProfile />
+                          <span>Profile</span>
+                        </div>
+                        <VerificationActions
+                          :status="activeDetailState.verification.info.verification_status"
+                          :disabled="isUpdating(activeRequestItem.id)"
+                          @update-status="handleVerificationStepUpdate(activeRequestItem, 'info', $event)"
+                        />
+                      </div>
+
+                      <div class="verification-data-grid">
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Full name</span>
+                          <span class="verification-data-grid__value">{{ fullClientName(activeDetailState.user) }}</span>
+                        </div>
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Birthdate</span>
+                          <span class="verification-data-grid__value">{{ activeDetailState.user?.birthdate || "-" }}</span>
+                        </div>
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Phone</span>
+                          <span class="verification-data-grid__value">{{ activeDetailState.user?.phone || "-" }}</span>
+                        </div>
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Email</span>
+                          <span class="verification-data-grid__value">{{ activeDetailState.user?.email || "-" }}</span>
+                        </div>
+                        <div class="verification-data-grid__item verification-data-grid__item--wide">
+                          <span class="verification-data-grid__key">Address</span>
+                          <span class="verification-data-grid__value">{{ formatAddress(activeDetailState.user) }}</span>
+                        </div>
+                      </div>
+
+                      <div
+                        v-if="activeDetailState.verification.info.comment"
+                        class="verification-section__note"
+                      >
+                        {{ activeDetailState.verification.info.comment }}
+                      </div>
+                    </section>
+
+                    <section class="verification-section">
+                      <div class="verification-section__header">
+                        <div class="verification-section__title-wrap">
+                          <UiIconPaymentDetail />
+                          <span>First payment</span>
+                        </div>
+                        <span
+                          class="verification-badge"
+                          :class="activeDetailState.firstDeposit ? 'is-approved' : 'is-pending'"
+                        >
+                          {{ activeDetailState.firstDeposit ? "Recorded" : "No deposit" }}
+                        </span>
+                      </div>
+
+                      <div
+                        v-if="activeDetailState.firstDeposit"
+                        class="verification-data-grid"
+                      >
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Amount</span>
+                          <span class="verification-data-grid__value">
+                            {{ formatMoney(activeDetailState.firstDeposit.amount, activeDetailState.firstDeposit.currency || "USD") }}
+                          </span>
+                        </div>
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Method</span>
+                          <span class="verification-data-grid__value">{{ paymentMethodName(activeDetailState.firstDeposit) }}</span>
+                        </div>
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Status</span>
+                          <span class="verification-data-grid__value">{{ paymentStatusText(activeDetailState.firstDeposit.status) }}</span>
+                        </div>
+                        <div class="verification-data-grid__item">
+                          <span class="verification-data-grid__key">Created at</span>
+                          <span class="verification-data-grid__value">{{ formatDateTime(activeDetailState.firstDeposit.created_at) }}</span>
+                        </div>
+                      </div>
+
+                      <div
+                        v-else
+                        class="verification-section__empty"
+                      >
+                        The client has no deposit transactions yet.
+                      </div>
+                    </section>
+                  </div>
+
+                  <section class="verification-section">
+                    <div class="verification-section__header">
+                      <div class="verification-section__title-wrap">
+                        <UiIconDocuments />
+                        <span>Documents</span>
+                      </div>
+                      <VerificationActions
+                        :status="activeDetailState.verification.documents.verification_status"
+                        :disabled="isUpdating(activeRequestItem.id)"
+                        @update-status="handleVerificationStepUpdate(activeRequestItem, 'documents', $event)"
+                      />
+                    </div>
+
+                    <div
+                      v-if="activeDetailState.documents.length === 0"
+                      class="verification-section__empty"
+                    >
+                      No uploaded documents.
+                    </div>
+
+                    <div
+                      v-else
+                      class="verification-documents-grid"
+                    >
+                      <article
+                        v-for="document in activeDetailState.documents"
+                        :key="document.id"
+                        class="verification-document-card"
+                      >
+                        <button
+                          type="button"
+                          class="verification-document-card__preview"
+                          @click.stop="openVerificationDocument(document)"
+                        >
+                          <img
+                            v-if="document.document_data.full_url"
+                            :src="document.document_data.full_url"
+                            :alt="document.name || document.document_data.number || 'Document preview'"
+                          />
+                          <span v-else>DOC</span>
+                        </button>
+
+                        <div class="verification-document-card__content">
+                          <div class="verification-document-card__title">
+                            {{ document.name || document.document_data.number || "Document" }}
+                          </div>
+                          <div class="verification-document-card__meta">
+                            <span>#{{ document.document_data.number || document.id }}</span>
+                            <span>{{ formatDateTime(document.updated_at) }}</span>
+                          </div>
+                          <div
+                            v-if="document.comment"
+                            class="verification-document-card__comment"
+                          >
+                            {{ document.comment }}
+                          </div>
+                        </div>
+
+                        <VerificationActions
+                          :status="document.state"
+                          :disabled="isUpdating(activeRequestItem.id)"
+                          @update-status="handleSingleDocumentUpdate(activeRequestItem, document.id, $event)"
+                        />
+                      </article>
+                    </div>
+                  </section>
+
+                  <section class="verification-section">
+                    <div class="verification-section__header">
+                      <div class="verification-section__title-wrap">
+                        <UiIconPaymentDetail />
+                        <span>Requisites</span>
+                      </div>
+                      <span class="verification-section__count">
+                        {{ activeDetailState.paymentDetails.length }}
+                      </span>
+                    </div>
+
+                    <div
+                      v-if="activeDetailState.paymentDetails.length === 0"
+                      class="verification-section__empty"
+                    >
+                      No payout requisites attached.
+                    </div>
+
+                    <div
+                      v-else
+                      class="verification-payout-grid"
+                    >
+                      <article
+                        v-for="paymentDetail in activeDetailState.paymentDetails"
+                        :key="paymentDetail.id"
+                        class="verification-payout-card"
+                      >
+                        <div class="verification-payout-card__header">
+                          <div>
+                            <div class="verification-payout-card__title">{{ paymentDetail.name || "Payout detail" }}</div>
+                            <div class="verification-payout-card__subtitle">
+                              {{ paymentDetail.payment_system_name || "-" }}
+                              <span v-if="paymentDetail.updated_at">· {{ formatDateTime(paymentDetail.updated_at) }}</span>
+                            </div>
+                          </div>
+                          <VerificationActions
+                            :status="paymentDetail.status"
+                            :disabled="isUpdating(activeRequestItem.id)"
+                            @update-status="handlePaymentDetailUpdate(activeRequestItem, paymentDetail.id, $event)"
+                          />
+                        </div>
+
+                        <div
+                          v-if="paymentDetailEntries(paymentDetail).length"
+                          class="verification-data-grid verification-data-grid--compact"
+                        >
+                          <div
+                            v-for="entry in paymentDetailEntries(paymentDetail)"
+                            :key="`${paymentDetail.id}:${entry.key}`"
+                            class="verification-data-grid__item"
+                          >
+                            <span class="verification-data-grid__key">{{ entry.label }}</span>
+                            <span class="verification-data-grid__value">{{ entry.value }}</span>
+                          </div>
+                        </div>
+
+                        <div
+                          v-if="paymentDetail.admin_comment"
+                          class="verification-section__note"
+                        >
+                          {{ paymentDetail.admin_comment }}
+                        </div>
+
+                        <div
+                          v-if="paymentDetail.documents.length"
+                          class="verification-payout-card__documents"
+                        >
+                          <button
+                            v-for="(document, documentIndex) in paymentDetail.documents"
+                            :key="`${paymentDetail.id}:${document.path}:${documentIndex}`"
+                            type="button"
+                            class="verification-payout-card__document"
+                            @click.stop="openPaymentDetailDocument(paymentDetail, document)"
+                          >
+                            <img
+                              v-if="resolvePaymentDocumentPreview(document)"
+                              :src="resolvePaymentDocumentPreview(document)"
+                              :alt="document.name || `Document ${documentIndex + 1}`"
+                            />
+                            <span v-else>DOC</span>
+                          </button>
+                        </div>
+                      </article>
+                    </div>
+                  </section>
+                </template>
+              </div>
+
+              <footer class="verification-modal__footer">
+                <button
+                  type="button"
+                  class="verification-modal__link"
+                  @click="openClientVerification(activeRequestItem.user_id)"
+                >
+                  Open client verification
+                  <UiIconArrowRightShort />
+                </button>
+              </footer>
+            </article>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { navigateTo } from "nuxt/app";
 import { useToast } from "vue-toastification";
 
@@ -526,30 +555,24 @@ import useAppCore from "~/composables/useAppCore";
 import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiIconArrowRightShort from "~/components/ui/UiIconArrowRightShort.vue";
-import UiIconCardCheck from "~/components/ui/UiIconCardCheck.vue";
-import UiIconClock from "~/components/ui/UiIconClock.vue";
 import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
 import UiIconEye from "~/components/ui/UiIconEye.vue";
 import UiIconFailed from "~/components/ui/UiIconFailed.vue";
-import UiIconInfo from "~/components/ui/UiIconInfo.vue";
-import UiIconImage from "~/components/ui/UiIconImage.vue";
-import UiIconLetter from "~/components/ui/UiIconLetter.vue";
 import UiIconPaymentDetail from "~/components/ui/UiIconPaymentDetail.vue";
 import UiIconProfile from "~/components/ui/UiIconProfile.vue";
 import UiIconSearch from "~/components/ui/UiIconSearch.vue";
+import UiIconSortBy from "~/components/ui/UiIconSortBy.vue";
 import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 import UiIconSuccess from "~/components/ui/UiIconSuccess.vue";
 import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-import UiIconWarning from "~/components/ui/UiIconWarning.vue";
-import UiIconSortBy from "~/components/ui/UiIconSortBy.vue";
 import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
 import VerificationActions from "~/pages/admin/clients/[id]/components/VerificationActions.vue";
 
 type RequestReviewState = "pending" | "viewed" | "approved" | "rejected";
-type VerificationStepKey = "info" | "address" | "email" | "photo" | "documents" | "deposit";
 type VerificationStatus = "pending" | "approved" | "rejected";
+type VerificationStepKey = "info" | "documents";
 
 interface VerificationRequestItem {
   id: string;
@@ -575,21 +598,9 @@ interface VerificationSectionData {
   comment: string;
 }
 
-interface VerificationHistoryRow {
-  id: string;
-  name: string;
-  date: string;
-  status: VerificationStatus;
-}
-
 interface VerificationPayloadData {
   info: VerificationSectionData;
-  address: VerificationSectionData;
-  email: VerificationSectionData;
-  photo: VerificationSectionData;
   documents: VerificationSectionData;
-  deposit: VerificationSectionData;
-  history: VerificationHistoryRow[];
 }
 
 interface ClientPayload {
@@ -621,16 +632,6 @@ interface VerificationDocumentRow {
   };
 }
 
-interface AccountRow {
-  id: string;
-  number: string;
-  balance: number;
-  currency: string;
-  payment_type: string;
-  type_name: string;
-  leverage_display: string;
-}
-
 interface PaymentDetailDocument {
   name: string;
   path: string;
@@ -649,6 +650,18 @@ interface PaymentDetailRow {
   documents: PaymentDetailDocument[];
 }
 
+interface PaymentRow {
+  id: string;
+  type: string;
+  status: string;
+  amount: number;
+  currency: string;
+  created_at: string;
+  payment_gateway: string;
+  payment_system_name: string;
+  legacy_payment_system_name: string;
+}
+
 interface DetailState {
   isLoading: boolean;
   loaded: boolean;
@@ -656,8 +669,8 @@ interface DetailState {
   user: ClientPayload | null;
   verification: VerificationPayloadData;
   documents: VerificationDocumentRow[];
-  accounts: AccountRow[];
   paymentDetails: PaymentDetailRow[];
+  firstDeposit: PaymentRow | null;
 }
 
 const emit = defineEmits<{
@@ -678,6 +691,8 @@ const searchFilter = ref("");
 const requestStateFilter = ref<"all" | RequestReviewState>("pending");
 const sortKey = ref("updated_desc");
 const requestItems = ref<VerificationRequestItem[]>([]);
+const activeRequestId = ref<string | null>(null);
+const isModalOpen = ref(false);
 const summary = reactive<Record<string, number>>({
   all: 0,
   pending: 0,
@@ -688,7 +703,7 @@ const summary = reactive<Record<string, number>>({
 const detailStates = reactive<Record<string, DetailState>>({});
 const updatingState = reactive<Record<string, boolean>>({});
 
-let searchTimer: number | undefined;
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const createDefaultVerificationSection = (): VerificationSectionData => ({
   verification_status: "pending",
@@ -697,12 +712,7 @@ const createDefaultVerificationSection = (): VerificationSectionData => ({
 
 const createDefaultVerificationPayload = (): VerificationPayloadData => ({
   info: createDefaultVerificationSection(),
-  address: createDefaultVerificationSection(),
-  email: createDefaultVerificationSection(),
-  photo: createDefaultVerificationSection(),
   documents: createDefaultVerificationSection(),
-  deposit: createDefaultVerificationSection(),
-  history: [],
 });
 
 const createEmptyDetailState = (): DetailState => ({
@@ -712,8 +722,8 @@ const createEmptyDetailState = (): DetailState => ({
   user: null,
   verification: createDefaultVerificationPayload(),
   documents: [],
-  accounts: [],
   paymentDetails: [],
+  firstDeposit: null,
 });
 
 const sortOptions = [
@@ -731,6 +741,23 @@ const statCards = computed(() => [
   { id: "approved", filter: "approved" as const, label: "Confirmed", value: formatCount(summary.approved) },
   { id: "rejected", filter: "rejected" as const, label: "Cancelled", value: formatCount(summary.rejected) },
 ]);
+
+const activeRequestItem = computed<VerificationRequestItem | null>(() =>
+  requestItems.value.find(item => item.id === activeRequestId.value) ?? null
+);
+
+const activeDetailState = computed<DetailState | null>(() =>
+  activeRequestItem.value ? detailState(activeRequestItem.value.user_id) : null
+);
+
+const cardTransitionStyle = (requestId: string): Record<string, string> | undefined =>
+  activeRequestId.value === requestId
+    ? { viewTransitionName: "verification-request-card-active" }
+    : undefined;
+
+const modalTransitionStyle = computed<Record<string, string> | undefined>(() =>
+  activeRequestId.value ? { viewTransitionName: "verification-request-card-active" } : undefined
+);
 
 const normalizeVerificationStatus = (value: unknown): VerificationStatus => {
   const normalized = String(value ?? "").trim().toLowerCase();
@@ -768,12 +795,28 @@ const displayClientName = (requestItem: VerificationRequestItem): string => {
   return fullName || String(requestItem.user.email ?? "").trim() || requestItem.user_id;
 };
 
+const displayClientInitials = (requestItem: VerificationRequestItem): string => {
+  const explicit = String(requestItem.user.initials ?? "").trim();
+  if (explicit) {
+    return explicit;
+  }
+
+  const name = displayClientName(requestItem);
+  const parts = name.split(/\s+/).filter(Boolean);
+  const initials = parts.slice(0, 2).map(item => item.charAt(0).toUpperCase()).join("");
+
+  return initials || "AA";
+};
+
 const fullClientName = (user: ClientPayload | null): string => {
   if (!user) {
     return "-";
   }
 
-  const parts = [user.first_name, user.last_name, user.mid_name].map(value => String(value || "").trim()).filter(Boolean);
+  const parts = [user.first_name, user.last_name, user.mid_name]
+    .map(value => String(value || "").trim())
+    .filter(Boolean);
+
   return parts.length ? parts.join(" ") : "-";
 };
 
@@ -844,7 +887,7 @@ const overallStatusText = (status: VerificationStatus): string => {
     case "approved":
       return "Overall approved";
     case "rejected":
-      return "Requires attention";
+      return "Needs attention";
     default:
       return "In review";
   }
@@ -865,30 +908,31 @@ const requestStateText = (state: "all" | RequestReviewState): string => {
   }
 };
 
+const paymentStatusText = (status: string): string => {
+  const normalized = String(status || "").trim().toLowerCase();
+  if (normalized === "approved" || normalized === "success" || normalized === "completed") {
+    return "Approved";
+  }
+  if (normalized === "rejected" || normalized === "failed" || normalized === "cancelled") {
+    return "Rejected";
+  }
+
+  return "Pending";
+};
+
 const statusClass = (status: VerificationStatus): string => `is-${normalizeVerificationStatus(status)}`;
 const requestStateClass = (state: RequestReviewState): string => `is-${normalizeRequestReviewState(state)}`;
 
-const normalizeVerificationPayload = (payload: any): VerificationPayloadData => {
-  const normalized = createDefaultVerificationPayload();
-
-  (["info", "address", "email", "photo", "documents", "deposit"] as VerificationStepKey[]).forEach(step => {
-    normalized[step] = {
-      verification_status: normalizeVerificationStatus(payload?.[step]?.verification_status),
-      comment: String(payload?.[step]?.comment ?? ""),
-    };
-  });
-
-  normalized.history = Array.isArray(payload?.history)
-    ? payload.history.map((row: any) => ({
-        id: String(row?.id ?? Math.random()),
-        name: String(row?.name ?? ""),
-        date: String(row?.date ?? ""),
-        status: normalizeVerificationStatus(row?.status),
-      }))
-    : [];
-
-  return normalized;
-};
+const normalizeVerificationPayload = (payload: any): VerificationPayloadData => ({
+  info: {
+    verification_status: normalizeVerificationStatus(payload?.info?.verification_status),
+    comment: String(payload?.info?.comment ?? ""),
+  },
+  documents: {
+    verification_status: normalizeVerificationStatus(payload?.documents?.verification_status),
+    comment: String(payload?.documents?.comment ?? ""),
+  },
+});
 
 const normalizeUserPayload = (payload: any): ClientPayload => ({
   id: String(payload?.id ?? ""),
@@ -922,19 +966,6 @@ const normalizeVerificationDocuments = (payload: any): VerificationDocumentRow[]
       }))
     : [];
 
-const normalizeAccounts = (payload: any): AccountRow[] =>
-  Array.isArray(payload)
-    ? payload.map((row: any) => ({
-        id: String(row?.id ?? ""),
-        number: String(row?.number ?? ""),
-        balance: Number(row?.balance ?? 0),
-        currency: String(row?.currency ?? "USD"),
-        payment_type: String(row?.payment_type ?? ""),
-        type_name: String(row?.type_name ?? ""),
-        leverage_display: String(row?.leverage_display ?? ""),
-      }))
-    : [];
-
 const normalizePaymentDetails = (payload: any): PaymentDetailRow[] =>
   Array.isArray(payload)
     ? payload.map((row: any) => ({
@@ -953,6 +984,21 @@ const normalizePaymentDetails = (payload: any): PaymentDetailRow[] =>
               previewUrl: String(document?.previewUrl ?? ""),
             }))
           : [],
+      }))
+    : [];
+
+const normalizePayments = (payload: any): PaymentRow[] =>
+  Array.isArray(payload)
+    ? payload.map((row: any) => ({
+        id: String(row?.id ?? ""),
+        type: String(row?.type ?? ""),
+        status: String(row?.status ?? ""),
+        amount: Number(row?.amount ?? 0),
+        currency: String(row?.currency ?? "USD"),
+        created_at: String(row?.created_at ?? ""),
+        payment_gateway: String(row?.payment_gateway ?? ""),
+        payment_system_name: String(row?.payment_system_name ?? ""),
+        legacy_payment_system_name: String(row?.legacy_payment_system_name ?? ""),
       }))
     : [];
 
@@ -977,7 +1023,10 @@ const formatPaymentValue = (value: unknown): string => {
   }
 
   if (value && typeof value === "object") {
-    return Object.values(value as Record<string, unknown>).map(item => formatPaymentValue(item)).filter(Boolean).join(", ");
+    return Object.values(value as Record<string, unknown>)
+      .map(item => formatPaymentValue(item))
+      .filter(Boolean)
+      .join(", ");
   }
 
   return String(value ?? "").trim();
@@ -1046,7 +1095,7 @@ const loadList = async (): Promise<void> => {
       rejected: Number(payload?.summary?.rejected ?? 0),
     });
 
-    await Promise.all(requestItems.value.map(item => loadRequestDetailBundle(item)));
+    void Promise.allSettled(requestItems.value.map(item => loadRequestDetailBundle(item)));
   } catch (error: any) {
     totalRows.value = 0;
     requestItems.value = [];
@@ -1066,18 +1115,19 @@ const loadRequestDetailBundle = async (requestItem: VerificationRequestItem, for
   state.isLoading = true;
   state.error = "";
 
-  const [clientResult, verificationResult, documentsResult, accountsResult, paymentDetailsResult] = await Promise.allSettled([
+  const [clientResult, verificationResult, documentsResult, paymentDetailsResult, paymentsResult] = await Promise.allSettled([
     appCore.adminModules.clients.getById(requestItem.user_id),
     appCore.adminModules.verificationRequests.get(requestItem.user_id),
     appCore.adminModules.documents.get({ clientId: requestItem.user_id }),
-    appCore.adminModules.accounts.get({
-      page: 1,
-      perPage: 50,
-      orderBy: "created_at",
-      orderDirection: "desc",
-      ["filters[user_id]"]: requestItem.user_id,
-    }),
     appCore.adminModules.clients.getPaymentDetails(requestItem.user_id),
+    appCore.payments.get({
+      page: 1,
+      perPage: 1,
+      orderBy: "created_at",
+      orderDirection: "asc",
+      ["filters[user_id]"]: requestItem.user_id,
+      ["filters[type]"]: "deposit",
+    }),
   ]);
 
   try {
@@ -1096,15 +1146,16 @@ const loadRequestDetailBundle = async (requestItem: VerificationRequestItem, for
       state.documents = normalizeVerificationDocuments(documentsResult.value?.data?.data ?? []);
     }
 
-    if (accountsResult.status === "fulfilled") {
-      state.accounts = normalizeAccounts(accountsResult.value?.data?.data?.data ?? []);
-    }
-
     if (paymentDetailsResult.status === "fulfilled") {
       state.paymentDetails = normalizePaymentDetails(paymentDetailsResult.value?.data?.data ?? []);
     }
 
-    const firstRejected = [clientResult, verificationResult, documentsResult, accountsResult, paymentDetailsResult]
+    if (paymentsResult.status === "fulfilled") {
+      const paymentRows = normalizePayments(paymentsResult.value?.data?.data?.data ?? []);
+      state.firstDeposit = paymentRows[0] ?? null;
+    }
+
+    const firstRejected = [clientResult, verificationResult, documentsResult, paymentDetailsResult, paymentsResult]
       .find(result => result.status === "rejected") as PromiseRejectedResult | undefined;
 
     if (firstRejected) {
@@ -1122,13 +1173,30 @@ const handleInputSearch = (value: string): void => {
 };
 
 watch(searchInput, value => {
-  clearTimeout(searchTimer);
-  searchTimer = window.setTimeout(async () => {
+  if (searchTimer) {
+    clearTimeout(searchTimer);
+  }
+
+  searchTimer = setTimeout(async () => {
     searchFilter.value = value.trim();
     page.value = 1;
     await loadList();
   }, 350);
 });
+
+watch(isModalOpen, value => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  document.body.style.overflow = value ? "hidden" : "";
+});
+
+const handleKeydown = (event: KeyboardEvent): void => {
+  if (event.key === "Escape" && isModalOpen.value) {
+    void closeRequestModal();
+  }
+};
 
 const handleRequestStateFilter = async (value: "all" | RequestReviewState): Promise<void> => {
   requestStateFilter.value = value;
@@ -1158,6 +1226,54 @@ const handleRefreshAll = async (): Promise<void> => {
     detailStates[key].loaded = false;
   });
   await loadList();
+};
+
+const runWithViewTransition = async (callback: () => void | Promise<void>): Promise<void> => {
+  if (typeof document === "undefined") {
+    await callback();
+    return;
+  }
+
+  const startViewTransition = (document as Document & {
+    startViewTransition?: (update: () => void | Promise<void>) => { finished?: Promise<void> };
+  }).startViewTransition;
+
+  if (typeof startViewTransition !== "function") {
+    await callback();
+    return;
+  }
+
+  const transition = startViewTransition(() => callback());
+  if (transition?.finished) {
+    try {
+      await transition.finished;
+    } catch {
+      return;
+    }
+  }
+};
+
+const openRequestModal = async (requestItem: VerificationRequestItem): Promise<void> => {
+  await runWithViewTransition(async () => {
+    activeRequestId.value = requestItem.id;
+    isModalOpen.value = true;
+    await nextTick();
+  });
+
+  void loadRequestDetailBundle(requestItem, true);
+};
+
+const closeRequestModal = async (): Promise<void> => {
+  if (!activeRequestId.value) {
+    return;
+  }
+
+  await runWithViewTransition(async () => {
+    isModalOpen.value = false;
+    await nextTick();
+  });
+
+  activeRequestId.value = null;
 };
 
 const handleRequestReviewUpdate = async (requestItem: VerificationRequestItem, nextState: RequestReviewState): Promise<void> => {
@@ -1243,12 +1359,57 @@ const handlePaymentDetailUpdate = async (
     });
 
     toast.success("Payout requisite updated.");
-    await loadRequestDetailBundle(requestItem, true);
+    await Promise.all([loadList(), loadRequestDetailBundle(requestItem, true)]);
   } catch (error: any) {
     toast.error(error?.response?.data?.message || "Failed to update payout requisite.");
   } finally {
     delete updatingState[requestItem.id];
   }
+};
+
+const documentsSummary = (state: DetailState): string => {
+  if (!state.loaded && state.isLoading) {
+    return "Loading";
+  }
+
+  if (state.documents.length === 0) {
+    return "No docs";
+  }
+
+  return `${state.documents.length} doc${state.documents.length > 1 ? "s" : ""}`;
+};
+
+const requisitesSummary = (state: DetailState): string => {
+  if (!state.loaded && state.isLoading) {
+    return "Loading";
+  }
+
+  if (state.paymentDetails.length === 0) {
+    return "No requisites";
+  }
+
+  return `${state.paymentDetails.length} item${state.paymentDetails.length > 1 ? "s" : ""}`;
+};
+
+const firstPaymentSummary = (state: DetailState): string => {
+  if (!state.loaded && state.isLoading) {
+    return "Checking";
+  }
+
+  return state.firstDeposit ? "Recorded" : "No deposit";
+};
+
+const paymentMethodName = (payment: PaymentRow | null): string => {
+  if (!payment) {
+    return "-";
+  }
+
+  return (
+    String(payment.legacy_payment_system_name || "").trim()
+    || String(payment.payment_system_name || "").trim()
+    || String(payment.payment_gateway || "").trim()
+    || "Deposit"
+  );
 };
 
 const openClientVerification = (userId: string): void => {
@@ -1267,7 +1428,7 @@ const openVerificationDocument = (document: VerificationDocumentRow): void => {
 const resolvePaymentDocumentPreview = (document: PaymentDetailDocument): string =>
   String(document.preview_url || document.previewUrl || "").trim();
 
-const openPaymentDetailDocument = async (paymentDetail: PaymentDetailRow, document: PaymentDetailDocument): Promise<void> => {
+const openPaymentDetailDocument = async (_paymentDetail: PaymentDetailRow, document: PaymentDetailDocument): Promise<void> => {
   const preview = resolvePaymentDocumentPreview(document);
   if (preview) {
     window.open(preview, "_blank", "noopener,noreferrer");
@@ -1294,45 +1455,27 @@ const openPaymentDetailDocument = async (paymentDetail: PaymentDetailRow, docume
   }
 };
 
-const verificationStatusCards = (requestItem: VerificationRequestItem): Array<{
-  key: VerificationStepKey;
-  label: string;
-  status: VerificationStatus;
-  comment: string;
-  readonly: boolean;
-  icon: any;
-}> => {
-  const state = detailState(requestItem.user_id).verification;
+onMounted(() => {
+  void loadList();
 
-  return [
-    {
-      key: "email",
-      label: "Email verification",
-      status: state.email.verification_status,
-      comment: state.email.comment,
-      readonly: false,
-      icon: UiIconLetter,
-    },
-    {
-      key: "photo",
-      label: "Profile photo",
-      status: state.photo.verification_status,
-      comment: state.photo.comment,
-      readonly: false,
-      icon: UiIconImage,
-    },
-    {
-      key: "deposit",
-      label: "First deposit",
-      status: state.deposit.verification_status,
-      comment: state.deposit.comment,
-      readonly: false,
-      icon: UiIconPaymentDetail,
-    },
-  ];
-};
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", handleKeydown);
+  }
+});
 
-onMounted(loadList);
+onBeforeUnmount(() => {
+  if (searchTimer) {
+    clearTimeout(searchTimer);
+  }
+
+  if (typeof window !== "undefined") {
+    window.removeEventListener("keydown", handleKeydown);
+  }
+
+  if (typeof document !== "undefined") {
+    document.body.style.overflow = "";
+  }
+});
 
 defineExpose({
   reload: handleRefreshAll,
@@ -1348,20 +1491,19 @@ defineExpose({
 
 .verification-review-page__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px;
 }
 
 .verification-stat-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-height: 92px;
-  padding: 16px 18px;
+  gap: 6px;
+  min-height: 82px;
+  padding: 14px 16px;
   border-radius: 16px;
-  border: 1px solid rgba(73, 108, 222, 0.22);
-  background:
-    linear-gradient(180deg, rgba(11, 23, 82, 0.92), rgba(8, 18, 66, 0.96));
+  border: 1px solid rgba(73, 108, 222, 0.18);
+  background: linear-gradient(180deg, rgba(10, 21, 74, 0.9), rgba(7, 17, 62, 0.96));
   color: var(--ui-text-main);
   text-align: left;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -1369,21 +1511,21 @@ defineExpose({
 
 .verification-stat-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(73, 108, 222, 0.38);
+  border-color: rgba(73, 108, 222, 0.34);
 }
 
 .verification-stat-card.is-active {
-  border-color: rgba(73, 108, 222, 0.75);
-  box-shadow: 0 0 0 1px rgba(73, 108, 222, 0.35);
+  border-color: rgba(73, 108, 222, 0.7);
+  box-shadow: 0 0 0 1px rgba(73, 108, 222, 0.24);
 }
 
 .verification-stat-card__label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--ui-text-secondary);
 }
 
 .verification-stat-card__value {
-  font-size: 1.85rem;
+  font-size: 1.55rem;
   line-height: 1;
   font-weight: 700;
 }
@@ -1405,7 +1547,7 @@ defineExpose({
 }
 
 .verification-review-page__sort {
-  min-width: 240px;
+  min-width: 220px;
 }
 
 .verification-review-page__active-filter,
@@ -1416,111 +1558,300 @@ defineExpose({
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 13px 15px;
   border-radius: 14px;
   border: 1px solid var(--color-stroke-ui-light);
-  background: rgba(7, 17, 66, 0.6);
+  background: rgba(8, 18, 66, 0.62);
   color: var(--ui-text-main);
 }
 
-.verification-review-page__active-filter button,
-.verification-review-card__detail-error button {
+.verification-review-page__active-filter button {
   color: var(--ui-primary-main);
 }
 
-.verification-review-list {
+.verification-request-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.verification-request-tile {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-}
-
-.verification-review-card {
-  border-radius: 22px;
-  border: 1px solid rgba(74, 108, 222, 0.2);
+  gap: 14px;
+  min-height: 188px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(73, 108, 222, 0.18);
   background:
-    radial-gradient(circle at top right, rgba(41, 75, 196, 0.18), transparent 28%),
-    linear-gradient(180deg, rgba(7, 18, 71, 0.98), rgba(5, 14, 57, 0.98));
-  overflow: hidden;
+    radial-gradient(circle at top right, rgba(41, 75, 196, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(9, 20, 73, 0.96), rgba(6, 16, 59, 0.98));
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.verification-review-card__hero {
+.verification-request-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(73, 108, 222, 0.36);
+  box-shadow: 0 16px 40px rgba(3, 9, 34, 0.26);
+}
+
+.verification-request-tile.is-source-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.verification-request-tile__head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 20px 22px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 12px;
 }
 
-.verification-review-card__identity {
+.verification-request-tile__identity {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
 }
 
-.verification-review-card__identity-meta {
+.verification-request-tile__identity-meta {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   min-width: 0;
 }
 
-.verification-review-card__identity-name {
-  font-size: 1.2rem;
+.verification-request-tile__name {
+  font-size: 1rem;
   font-weight: 700;
   color: var(--ui-text-main);
 }
 
-.verification-review-card__identity-subtitle,
-.verification-review-card__identity-badges {
+.verification-request-tile__subtitle {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  font-size: 0.86rem;
+  gap: 6px;
+  font-size: 0.8rem;
   color: var(--ui-text-secondary);
 }
 
-.verification-review-card__hero-side {
+.verification-request-tile__badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.verification-request-tile__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.verification-mini-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.verification-mini-fact__label {
+  font-size: 0.74rem;
+  color: var(--ui-text-secondary);
+}
+
+.verification-mini-fact__value {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ui-text-main);
+}
+
+.verification-mini-fact__value--status.is-approved {
+  color: var(--ui-sticker-success);
+}
+
+.verification-mini-fact__value--status.is-rejected {
+  color: var(--ui-sticker-danger);
+}
+
+.verification-mini-fact__value--status.is-pending {
+  color: #e9ae00;
+}
+
+.verification-request-tile__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--ui-text-secondary);
+}
+
+.verification-request-tile__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ui-primary-main);
+  font-weight: 600;
+}
+
+.verification-request-tile__open svg {
+  width: 14px;
+  height: 14px;
+}
+
+.verification-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ui-text-main);
+}
+
+.verification-badge.is-approved {
+  background: rgba(22, 163, 74, 0.16);
+  border-color: rgba(22, 163, 74, 0.28);
+}
+
+.verification-badge.is-rejected {
+  background: rgba(220, 38, 38, 0.16);
+  border-color: rgba(220, 38, 38, 0.28);
+}
+
+.verification-badge.is-pending {
+  background: rgba(233, 174, 0, 0.14);
+  border-color: rgba(233, 174, 0, 0.24);
+}
+
+.verification-badge.is-viewed {
+  background: rgba(73, 108, 222, 0.14);
+  border-color: rgba(73, 108, 222, 0.24);
+}
+
+.verification-modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: rgba(3, 7, 27, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.verification-modal-shell {
+  width: min(1120px, 100%);
+  max-height: calc(100vh - 56px);
+}
+
+.verification-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 56px);
+  border-radius: 24px;
+  border: 1px solid rgba(73, 108, 222, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(41, 75, 196, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(10, 21, 74, 0.99), rgba(6, 16, 58, 0.99));
+  box-shadow: 0 36px 90px rgba(2, 8, 31, 0.42);
+  overflow: hidden;
+}
+
+.verification-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.verification-modal__identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.verification-modal__identity-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.verification-modal__title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--ui-text-main);
+}
+
+.verification-modal__subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--ui-text-secondary);
+}
+
+.verification-modal__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.verification-modal__header-actions {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
 }
 
-.verification-review-card__request-actions {
+.verification-request-actions {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 8px;
 }
 
 .verification-request-action {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 36px;
+  height: 34px;
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--ui-text-main);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .verification-request-action svg {
-  height: 14px;
   width: 14px;
+  height: 14px;
 }
 
 .verification-request-action:hover,
 .verification-request-action.is-active {
-  border-color: rgba(73, 108, 222, 0.45);
+  border-color: rgba(73, 108, 222, 0.4);
 }
 
 .verification-request-action--viewed.is-active {
-  background: rgba(233, 174, 0, 0.16);
+  background: rgba(73, 108, 222, 0.16);
 }
 
 .verification-request-action--approved.is-active {
@@ -1531,66 +1862,65 @@ defineExpose({
   background: rgba(220, 38, 38, 0.18);
 }
 
-.verification-review-card__open-btn {
+.verification-modal__close {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: var(--ui-primary-main);
-  font-size: 0.9rem;
+  gap: 10px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ui-text-main);
+  font-size: 0.82rem;
   font-weight: 600;
 }
 
-.verification-review-card__open-btn svg {
-  width: 16px;
-  height: 16px;
+.verification-modal__body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 18px 20px;
 }
 
-.verification-review-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 20px 22px 22px;
-}
-
-.verification-review-card__detail-loading,
-.verification-review-card__detail-error {
+.verification-modal__state {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 160px;
-  border-radius: 16px;
-  border: 1px dashed rgba(255, 255, 255, 0.14);
-  background: rgba(4, 12, 46, 0.5);
+  min-height: 240px;
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--ui-text-secondary);
 }
 
-.verification-review-card__detail-error {
+.verification-modal__state--error {
   flex-direction: column;
   gap: 12px;
 }
 
-.verification-review-card__top-grid,
-.verification-review-card__verification-grid {
+.verification-modal__state--error button {
+  color: var(--ui-primary-main);
+}
+
+.verification-modal__top-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   gap: 14px;
-}
-
-.verification-review-card__top-grid {
-  grid-template-columns: minmax(320px, 1.3fr) minmax(260px, 0.9fr);
-}
-
-.verification-review-card__verification-grid {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-bottom: 14px;
 }
 
 .verification-section {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 18px;
+  padding: 16px;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.verification-section + .verification-section {
+  margin-top: 14px;
 }
 
 .verification-section__header {
@@ -1603,103 +1933,43 @@ defineExpose({
 .verification-section__title-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: var(--ui-text-main);
+  gap: 8px;
+  font-size: 0.95rem;
   font-weight: 700;
+  color: var(--ui-text-main);
 }
 
-.verification-section__title-wrap :deep(svg) {
-  width: 16px;
-  height: 16px;
+.verification-section__title-wrap svg {
+  width: 14px;
+  height: 14px;
 }
 
 .verification-section__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 28px;
   height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(73, 108, 222, 0.15);
+  background: rgba(73, 108, 222, 0.12);
   color: var(--ui-text-main);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
-.verification-section__status-line {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.verification-section__status-line-text,
-.verification-document-card__meta,
-.verification-account-card__meta,
-.verification-payout-card__subtitle,
-.verification-history__time {
-  color: var(--ui-text-secondary);
-  font-size: 0.85rem;
-}
-
+.verification-section__empty,
 .verification-section__note {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.035);
-  color: var(--ui-text-main);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-.verification-section__empty {
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--ui-text-secondary);
-}
-
-.verification-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 28px;
-  padding: 0 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-.verification-badge.is-approved {
-  background: rgba(22, 163, 74, 0.16);
-  color: #86efac;
-}
-
-.verification-badge.is-rejected {
-  background: rgba(220, 38, 38, 0.16);
-  color: #fca5a5;
-}
-
-.verification-badge.is-pending,
-.verification-badge.is-viewed {
-  background: rgba(233, 174, 0, 0.16);
-  color: #fcd34d;
-}
-
-.verification-badge--muted {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--ui-text-secondary);
-}
-
-.verification-badge--overall {
-  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .verification-data-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .verification-data-grid--compact {
@@ -1709,10 +1979,10 @@ defineExpose({
 .verification-data-grid__item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px;
+  gap: 4px;
+  padding: 10px 12px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .verification-data-grid__item--wide {
@@ -1720,103 +1990,93 @@ defineExpose({
 }
 
 .verification-data-grid__key {
+  font-size: 0.74rem;
   color: var(--ui-text-secondary);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .verification-data-grid__value {
+  font-size: 0.86rem;
+  font-weight: 600;
   color: var(--ui-text-main);
-  font-size: 0.94rem;
-  line-height: 1.45;
   word-break: break-word;
 }
 
-.verification-documents-grid,
-.verification-payout-grid {
-  display: grid;
-  gap: 14px;
-}
-
 .verification-documents-grid {
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-.verification-document-card,
-.verification-payout-card,
-.verification-account-card {
-  display: flex;
-  flex-direction: column;
   gap: 12px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .verification-document-card {
-  flex-direction: row;
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .verification-document-card__preview {
-  flex: 0 0 108px;
-  height: 108px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ui-text-secondary);
+  width: 84px;
+  height: 84px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ui-text-main);
+  font-weight: 700;
 }
 
-.verification-document-card__preview img,
-.verification-payout-card__document img {
+.verification-document-card__preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 .verification-document-card__content {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
 }
 
-.verification-document-card__title,
-.verification-payout-card__title,
-.verification-account-card__number {
-  font-size: 1rem;
+.verification-document-card__title {
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--ui-text-main);
 }
 
+.verification-document-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--ui-text-secondary);
+}
+
 .verification-document-card__comment {
-  color: var(--ui-text-main);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--ui-text-secondary);
 }
 
-.verification-document-card__actions {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: flex-start;
-}
-
-.verification-accounts-grid {
+.verification-payout-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 12px;
 }
 
-.verification-account-card__row {
+.verification-payout-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .verification-payout-card__header {
@@ -1826,47 +2086,146 @@ defineExpose({
   gap: 12px;
 }
 
+.verification-payout-card__title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ui-text-main);
+}
+
+.verification-payout-card__subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--ui-text-secondary);
+}
+
 .verification-payout-card__documents {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .verification-payout-card__document {
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--ui-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ui-text-main);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
-.verification-history {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.verification-payout-card__document img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.verification-history__item {
+.verification-modal__footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  justify-content: flex-end;
+  padding: 14px 20px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-@media (max-width: 1200px) {
-  .verification-review-card__top-grid {
+.verification-modal__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ui-primary-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.verification-modal__link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.verification-modal-fade-enter-active,
+.verification-modal-fade-leave-active {
+  transition: opacity 0.24s ease;
+}
+
+.verification-modal-fade-enter-from,
+.verification-modal-fade-leave-to {
+  opacity: 0;
+}
+
+.verification-review-page :deep(.doc-actions) {
+  width: auto;
+}
+
+.verification-review-page :deep(.doc-actions__row) {
+  gap: 6px;
+}
+
+.verification-review-page :deep(.action-group) {
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.verification-review-page :deep(.action-toggle) {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--ui-text-main);
+}
+
+.verification-review-page :deep(.action-toggle svg) {
+  width: 13px;
+  height: 13px;
+}
+
+.verification-review-page :deep(.action-toggle.active) {
+  color: var(--ui-text-main);
+}
+
+.verification-review-page :deep(.action-toggle.active[title="Відхилено"]) {
+  background: rgba(220, 38, 38, 0.18);
+}
+
+.verification-review-page :deep(.action-toggle.active[title="В очікуванні"]) {
+  background: rgba(233, 174, 0, 0.16);
+}
+
+.verification-review-page :deep(.action-toggle.active[title="Підтверджено"]) {
+  background: rgba(22, 163, 74, 0.18);
+}
+
+.verification-review-page :deep(.action-toggle:not(.active):hover) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 1100px) {
+  .verification-modal__header {
+    flex-direction: column;
+  }
+
+  .verification-modal__header-actions {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .verification-request-actions {
+    justify-content: flex-start;
+  }
+
+  .verification-modal__top-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 900px) {
   .verification-review-page__toolbar {
     flex-direction: column;
     align-items: stretch;
@@ -1877,34 +2236,53 @@ defineExpose({
   }
 
   .verification-review-page__sort {
-    flex: 1 1 auto;
     min-width: 0;
+    flex: 1 1 auto;
   }
 
-  .verification-review-card__hero {
+  .verification-request-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .verification-modal-layer {
+    padding: 14px;
+  }
+
+  .verification-modal {
+    max-height: calc(100vh - 28px);
+  }
+}
+
+@media (max-width: 720px) {
+  .verification-request-tile__head,
+  .verification-request-tile__footer,
+  .verification-payout-card__header,
+  .verification-section__header {
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .verification-review-card__hero-side {
-    width: 100%;
-    align-items: stretch;
+  .verification-request-tile__badges {
+    align-items: flex-start;
   }
 
-  .verification-review-card__request-actions {
-    justify-content: flex-start;
-  }
-
-  .verification-data-grid {
+  .verification-request-tile__facts,
+  .verification-data-grid,
+  .verification-documents-grid,
+  .verification-payout-grid {
     grid-template-columns: 1fr;
   }
 
   .verification-document-card {
-    flex-direction: column;
+    grid-template-columns: 72px minmax(0, 1fr);
   }
 
-  .verification-document-card__preview {
-    width: 100%;
-    flex-basis: auto;
+  .verification-document-card :deep(.doc-actions) {
+    grid-column: 1 / -1;
+  }
+
+  .verification-modal__footer {
+    justify-content: flex-start;
   }
 }
 </style>
