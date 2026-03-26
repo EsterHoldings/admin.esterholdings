@@ -312,21 +312,36 @@
             </div>
           </div>
 
-          <UiButtonDefault
-            state="info--small"
-            class="verification-card__refresh"
-            @click="handleRefreshActiveTab"
-          >
-            <UiIconUpdate v-if="!isPayoutLoading" />
-            <UiIconSpinnerDefault v-else />
-          </UiButtonDefault>
+          <div class="flex items-center gap-2 flex-wrap justify-end">
+            <div class="flex items-center gap-2 rounded-full border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-light)]/20 px-2 py-1">
+              <button
+                v-for="option in payoutArchivedFilterOptions"
+                :key="option.value"
+                type="button"
+                class="rounded-full px-3 py-1 text-xs font-semibold transition-colors"
+                :class="option.value === payoutArchivedFilter ? 'bg-[var(--ui-primary)] text-white' : 'text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-main)]'"
+                @click="setPayoutArchivedFilter(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            </div>
+
+            <UiButtonDefault
+              state="info--small"
+              class="verification-card__refresh"
+              @click="handleRefreshActiveTab"
+            >
+              <UiIconUpdate v-if="!isPayoutLoading" />
+              <UiIconSpinnerDefault v-else />
+            </UiButtonDefault>
+          </div>
         </div>
 
         <div
           v-if="payoutDetails.length === 0 && !isPayoutLoading"
           class="verification-card__empty"
         >
-          Реквизитов для выплат пока нет.
+          {{ payoutArchivedFilter === "archived" ? "Архивных реквизитов пока нет." : "Реквизитов для выплат пока нет." }}
         </div>
 
         <div
@@ -348,6 +363,7 @@
               </div>
 
               <VerificationActions
+                v-if="!paymentDetail.isArchived"
                 :enable-comment="true"
                 :comment="resolvePayoutCommentValue(paymentDetail)"
                 :comment-open="isPayoutCommentOpen(paymentDetail.id)"
@@ -356,6 +372,14 @@
                 @toggle-comment="togglePayoutComment(paymentDetail)"
                 @update-status="handleVerificationPayoutDetail($event, paymentDetail.id)"
               />
+
+              <UiButtonDefault
+                v-if="canUpdatePaymentDetails"
+                state="info--outline--small"
+                @click="paymentDetail.isArchived ? handleRestorePayoutDetail(paymentDetail.id) : handleArchivePayoutDetail(paymentDetail.id)"
+              >
+                {{ paymentDetail.isArchived ? "Restore" : "Archive" }}
+              </UiButtonDefault>
             </div>
 
             <div class="verification-payout-card__body">
@@ -661,6 +685,8 @@ interface AdminPaymentDetailItem {
   status: AdminPaymentDetailStatus;
   paymentSystemName: string;
   updatedAt: string;
+  deletedAt: string;
+  isArchived: boolean;
   adminComment: string;
   data: Record<string, unknown>;
   documents: AdminPaymentDetailDocument[];
@@ -729,6 +755,7 @@ const isLoading = ref(false);
 const isPayoutLoading = ref(false);
 const isRequestsLoading = ref(false);
 const activeVerificationTab = ref<VerificationTab>("client");
+const payoutArchivedFilter = ref<"active" | "archived" | "all">("active");
 
 const verificationRequestData = reactive<VerificationRequestDto>({ ...initialData });
 const documentsListRequestData = ref<VerificationDocumentItem[]>([]);
@@ -1112,7 +1139,9 @@ const loadPayoutVerificationData = async () => {
   isPayoutLoading.value = true;
 
   try {
-    const response = await appCore.adminModules.clients.getPaymentDetails(props.clientId);
+    const response = await appCore.adminModules.clients.getPaymentDetails(props.clientId, {
+      archived: payoutArchivedFilter.value,
+    });
     const rawRows = Array.isArray(response?.data?.data) ? response.data.data : [];
 
     payoutDetails.value = rawRows.map((row: any) => ({
@@ -1121,6 +1150,8 @@ const loadPayoutVerificationData = async () => {
       status: normalizePaymentStatus(row.status),
       paymentSystemName: String(row?.payment_system?.name ?? row?.paymentSystem?.name ?? ""),
       updatedAt: String(row.updated_at ?? ""),
+      deletedAt: String(row.deleted_at ?? ""),
+      isArchived: Boolean(row.is_archived ?? row.deleted_at),
       adminComment: String(row.admin_comment ?? ""),
       data: row?.data && typeof row.data === "object" ? row.data : {},
       documents: normalizePayoutDocuments(row.documents),
@@ -1514,6 +1545,49 @@ const handleVerificationPayoutDetail = async (value: any, paymentDetailId: strin
     });
     toast.success("Payment details status updated!");
     payoutCommentOpenMap[paymentDetailId] = false;
+    await loadPayoutVerificationData();
+    await loadClientVerificationRequests();
+  } finally {
+    isPayoutLoading.value = false;
+  }
+};
+
+const setPayoutArchivedFilter = async (value: "active" | "archived" | "all") => {
+  if (payoutArchivedFilter.value === value) {
+    return;
+  }
+
+  payoutArchivedFilter.value = value;
+  await loadPayoutVerificationData();
+};
+
+const handleArchivePayoutDetail = async (paymentDetailId: string) => {
+  if (!canUpdatePaymentDetails.value) {
+    return;
+  }
+
+  isPayoutLoading.value = true;
+
+  try {
+    await appCore.adminModules.clients.deletePaymentDetail(props.clientId, paymentDetailId);
+    toast.success("Payment detail archived!");
+    await loadPayoutVerificationData();
+    await loadClientVerificationRequests();
+  } finally {
+    isPayoutLoading.value = false;
+  }
+};
+
+const handleRestorePayoutDetail = async (paymentDetailId: string) => {
+  if (!canUpdatePaymentDetails.value) {
+    return;
+  }
+
+  isPayoutLoading.value = true;
+
+  try {
+    await appCore.adminModules.clients.restorePaymentDetail(props.clientId, paymentDetailId);
+    toast.success("Payment detail restored!");
     await loadPayoutVerificationData();
     await loadClientVerificationRequests();
   } finally {
@@ -2378,3 +2452,8 @@ onBeforeUnmount(() => {
   }
 }
 </style>
+const payoutArchivedFilterOptions = [
+  { value: "active" as const, label: "Active" },
+  { value: "archived" as const, label: "Archived" },
+  { value: "all" as const, label: "All" },
+];

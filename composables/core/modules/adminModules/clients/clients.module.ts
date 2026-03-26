@@ -63,6 +63,10 @@ export class ClientsModule {
     return await this.clientsService.deletePaymentDetail(id, paymentDetailId);
   }
 
+  async restorePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
+    return await this.clientsService.restorePaymentDetail(id, paymentDetailId);
+  }
+
   async post(data: any): Promise<any> {
     return await this.clientsService.post(data);
   }

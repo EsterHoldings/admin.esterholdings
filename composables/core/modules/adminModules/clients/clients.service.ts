@@ -67,6 +67,10 @@ export class ClientsService {
     return await this.useApi.delete(`/admin/clients/${id}/payment-details/${paymentDetailId}`);
   }
 
+  async restorePaymentDetail(id: any, paymentDetailId: any): Promise<any> {
+    return await this.useApi.post(`/admin/clients/${id}/payment-details/${paymentDetailId}/restore`);
+  }
+
   async post(data: object = {}): Promise<any> {
     return await this.useApi.post("/admin/clients", data);
   }
