@@ -105,46 +105,6 @@
         <div class="dashboard-chart-card">
           <div class="dashboard-chart-card__header">
             <div>
-              <UiTextH5 class="text-[var(--ui-text-main)]">Рост прибыли</UiTextH5>
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">Net cashflow: успешные депозиты минус выводы</UiTextSmall>
-            </div>
-            <div class="dashboard-chart-card__presets">
-              <button
-                v-for="preset in metricRangePresets"
-                :key="`profit-${preset.id}`"
-                type="button"
-                class="dashboard-preset-button"
-                :class="{ 'dashboard-preset-button--active': profitFilters.preset === preset.id }"
-                @click="applyDashboardPreset('profit', preset.id)"
-              >
-                {{ preset.label }}
-              </button>
-            </div>
-          </div>
-
-          <div class="dashboard-chart-card__filters">
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">От</span>
-              <UiInput type="date" :value="toDateInputValue(profitFilters.date_from)" @input="value => updateDashboardFilter('profit', 'date_from', value)" />
-            </div>
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">До</span>
-              <UiInput type="date" :value="toDateInputValue(profitFilters.date_to)" @input="value => updateDashboardFilter('profit', 'date_to', value)" />
-            </div>
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">Шаг</span>
-              <UiSelect :data="bucketOptions" :value="profitFilters.bucket" without-no-select @change="value => updateDashboardFilter('profit', 'bucket', value || 'day')" />
-            </div>
-          </div>
-
-          <AdminMetricChart :categories="profitLabels" :series="profitSeries" suffix="$" :height="320" />
-        </div>
-      </PanelDefault>
-
-      <PanelDefault class="dashboard-panel-card min-w-0">
-        <div class="dashboard-chart-card">
-          <div class="dashboard-chart-card__header">
-            <div>
               <UiTextH5 class="text-[var(--ui-text-main)]">Клиенты онлайн</UiTextH5>
               <UiTextSmall class="text-[var(--ui-text-secondary)]">
                 Сейчас онлайн: {{ onlineSummary.currently_online_users ?? 0 }} · всего часов: {{ formatHours(onlineSummary.total_online_hours ?? 0) }}
@@ -191,7 +151,16 @@
             </div>
           </div>
 
-          <AdminMetricChart :categories="onlineLabels" :series="onlineSeries" suffix="h" :height="320" />
+          <AdminMetricChart
+            :categories="onlineLabels"
+            :category-keys="onlineCategoryKeys"
+            :series="onlineSeries"
+            :y-axes="onlineAxes"
+            :height="360"
+            enable-zoom
+            :tooltip-formatter="formatOnlineTooltip"
+            @range-selected="handleOnlineRangeSelected"
+          />
         </div>
       </PanelDefault>
     </div>
@@ -401,7 +370,6 @@ const createOnlineChartFilters = (presetId: string): OnlineChartFilters => ({
 });
 
 const registrationsFilters = reactive<ChartFilters>(createChartFilters("1m"));
-const profitFilters = reactive<ChartFilters>(createChartFilters("3m"));
 const onlineFilters = reactive<OnlineChartFilters>(createOnlineChartFilters("1w"));
 
 const isLoading = ref(false);
@@ -415,9 +383,6 @@ const loadDashboard = async () => {
       registrations_date_from: registrationsFilters.date_from,
       registrations_date_to: registrationsFilters.date_to,
       registrations_bucket: registrationsFilters.bucket,
-      profit_date_from: profitFilters.date_from,
-      profit_date_to: profitFilters.date_to,
-      profit_bucket: profitFilters.bucket,
       online_date_from: onlineFilters.date_from,
       online_date_to: onlineFilters.date_to,
       online_bucket: onlineFilters.bucket,
@@ -437,20 +402,19 @@ const setPresetFilters = (target: ChartFilters | OnlineChartFilters, presetId: s
   Object.assign(target, toIsoRange(presetId));
 };
 
-const applyDashboardPreset = async (section: "registrations" | "profit" | "online", presetId: string) => {
+const applyDashboardPreset = async (section: "registrations" | "online", presetId: string) => {
   if (section === "registrations") setPresetFilters(registrationsFilters, presetId);
-  if (section === "profit") setPresetFilters(profitFilters, presetId);
   if (section === "online") setPresetFilters(onlineFilters, presetId);
 
   await loadDashboard();
 };
 
 const updateDashboardFilter = (
-  section: "registrations" | "profit" | "online",
+  section: "registrations" | "online",
   key: string,
   value: string
 ) => {
-  const target = section === "registrations" ? registrationsFilters : section === "profit" ? profitFilters : onlineFilters;
+  const target = section === "registrations" ? registrationsFilters : onlineFilters;
   (target as Record<string, string>)[key] = value;
   target.preset = "custom";
 };
@@ -566,24 +530,8 @@ const registrationSeries = computed(() => [
   },
 ]);
 
-const profitLabels = computed(() => (dashboard.value?.charts?.profit_growth?.points ?? []).map((point: any) => point.label));
-const profitSeries = computed(() => [
-  {
-    name: "Cumulative profit",
-    data: (dashboard.value?.charts?.profit_growth?.points ?? []).map((point: any) => Number(point.cumulative ?? 0)),
-    color: "#7ec97e",
-    area: true,
-    type: "line" as const,
-  },
-  {
-    name: "Net period",
-    data: (dashboard.value?.charts?.profit_growth?.points ?? []).map((point: any) => Number(point.net ?? 0)),
-    color: "#f0b75e",
-    type: "bar" as const,
-  },
-]);
-
 const onlineLabels = computed(() => (dashboard.value?.charts?.online?.points ?? []).map((point: any) => point.label));
+const onlineCategoryKeys = computed(() => (dashboard.value?.charts?.online?.points ?? []).map((point: any) => point.key));
 const onlineSeries = computed(() => [
   {
     name: "Online hours",
@@ -591,8 +539,88 @@ const onlineSeries = computed(() => [
     color: "#8d7cf2",
     area: true,
     type: "line" as const,
+    yAxisIndex: 0,
+    suffix: " ч",
+  },
+  {
+    name: "Clients online",
+    data: (dashboard.value?.charts?.online?.points ?? []).map((point: any) => Number(point.users_count ?? 0)),
+    color: "#719edf",
+    type: "bar" as const,
+    yAxisIndex: 1,
+    suffix: " чел.",
   },
 ]);
+const onlineAxes = [
+  { name: "Часы", suffix: " ч", position: "left" as const },
+  { name: "Клиенты", suffix: " чел.", position: "right" as const },
+];
+
+const formatOnlineTooltip = ({ dataIndex, category }: { dataIndex: number; category: string }) => {
+  const point = (dashboard.value?.charts?.online?.points ?? [])[dataIndex];
+  if (!point) {
+    return category;
+  }
+
+  const users = Array.isArray(point.users) ? point.users : [];
+  const usersHtml = users.length > 0
+    ? users
+        .map((user: any) => {
+          const hours = Number(user.total_online_hours ?? 0).toFixed(2);
+          const label = user.name || user.email || user.user_id;
+
+          return `
+            <div class="admin-chart-tooltip__user-row">
+              <a class="admin-chart-tooltip__user-link" href="/admin/clients/${user.user_id}">
+                ${label}
+              </a>
+              <span>${hours} ч · ${Number(user.sessions_count ?? 0)} сесс.</span>
+            </div>
+          `;
+        })
+        .join("")
+    : '<div class="admin-chart-tooltip__empty">Нет клиентов в этом bucket</div>';
+
+  return `
+    <div class="admin-chart-tooltip admin-chart-tooltip--online">
+      <div class="admin-chart-tooltip__title">${category}</div>
+      <div class="admin-chart-tooltip__row">
+        <span>Всего часов</span>
+        <strong>${Number(((point.value ?? 0) / 3600)).toFixed(2)} ч</strong>
+      </div>
+      <div class="admin-chart-tooltip__row">
+        <span>Уникальные клиенты</span>
+        <strong>${Number(point.users_count ?? 0)}</strong>
+      </div>
+      <div class="admin-chart-tooltip__row">
+        <span>Сессии</span>
+        <strong>${Number(point.sessions_count ?? 0)}</strong>
+      </div>
+      <div class="admin-chart-tooltip__users">${usersHtml}</div>
+    </div>
+  `;
+};
+
+const handleOnlineRangeSelected = async ({ startKey, endKey }: { startKey: string; endKey: string }) => {
+  if (!startKey || !endKey) {
+    return;
+  }
+
+  const endDate = new Date(endKey);
+  if (!Number.isNaN(endDate.getTime())) {
+    if (onlineFilters.bucket === "hour") {
+      endDate.setHours(endDate.getHours() + 1, 0, 0, -1);
+    } else {
+      endDate.setDate(endDate.getDate() + 1);
+      endDate.setHours(0, 0, 0, -1);
+    }
+  }
+
+  onlineFilters.date_from = startKey;
+  onlineFilters.date_to = Number.isNaN(endDate.getTime()) ? endKey : endDate.toISOString();
+  onlineFilters.preset = "custom";
+  await loadDashboard();
+};
 
 const onlineSummary = computed(() => dashboard.value?.online?.summary ?? {});
 const topOnlineClients = computed(() => dashboard.value?.online?.top_clients ?? []);
@@ -735,6 +763,41 @@ onMounted(async () => {
 
 .dashboard-empty-state {
   color: var(--ui-text-secondary);
+}
+
+:deep(.admin-chart-tooltip--online) {
+  min-width: 280px;
+}
+
+:deep(.admin-chart-tooltip__users) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+:deep(.admin-chart-tooltip__user-row) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #d8dff4;
+}
+
+:deep(.admin-chart-tooltip__user-link) {
+  color: #9ec1ff;
+  text-decoration: none;
+}
+
+:deep(.admin-chart-tooltip__user-link:hover) {
+  text-decoration: underline;
+}
+
+:deep(.admin-chart-tooltip__empty) {
+  color: #93a0c8;
+  margin-top: 8px;
 }
 
 @media (max-width: 1200px) {
