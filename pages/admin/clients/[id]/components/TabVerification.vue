@@ -21,7 +21,11 @@
 
   <div class="verification-pane">
     <template v-if="activeVerificationTab === 'client'">
-      <section class="verification-card">
+      <section
+        ref="profileSectionRef"
+        class="verification-card"
+        :class="{ 'verification-card--highlighted': highlightedSection === 'profile' }"
+      >
         <div class="verification-card__header">
           <div class="verification-card__title-group">
             <UiIconProfile />
@@ -133,7 +137,11 @@
         </transition>
       </section>
 
-      <section class="verification-card">
+      <section
+        ref="documentsSectionRef"
+        class="verification-card"
+        :class="{ 'verification-card--highlighted': highlightedSection === 'documents' }"
+      >
         <div class="verification-card__header">
           <div class="verification-card__title-group">
             <UiIconDocuments />
@@ -233,7 +241,11 @@
         </div>
       </section>
 
-      <section class="verification-card">
+      <section
+        ref="payoutSectionRef"
+        class="verification-card"
+        :class="{ 'verification-card--highlighted': highlightedSection === 'payout' }"
+      >
         <div class="verification-card__header">
           <div class="verification-card__title-group">
             <UiIconPaymentDetail />
@@ -339,17 +351,37 @@
               />
             </div>
 
-            <div
-              v-if="paymentDetailEntries(paymentDetail).length"
-              class="verification-grid verification-grid--compact"
-            >
+            <div class="verification-payout-card__body">
               <div
-                v-for="entry in paymentDetailEntries(paymentDetail)"
-                :key="`${paymentDetail.id}:${entry.key}`"
-                class="verification-grid__item"
+                v-if="paymentDetailPrimaryEntries(paymentDetail).length"
+                class="verification-payout-card__main"
               >
-                <span class="verification-grid__label">{{ entry.label }}</span>
-                <span class="verification-grid__value">{{ entry.value }}</span>
+                <div
+                  v-for="entry in paymentDetailPrimaryEntries(paymentDetail)"
+                  :key="`${paymentDetail.id}:field:${entry.key}`"
+                  class="verification-payout-card__field"
+                >
+                  <span class="verification-payout-card__field-label">{{ entry.label }}</span>
+                  <span class="verification-payout-card__field-value">{{ entry.value }}</span>
+                </div>
+              </div>
+
+              <div
+                v-if="paymentDetailLegacyEntries(paymentDetail).length"
+                class="verification-payout-card__legacy"
+              >
+                <div class="verification-payout-card__legacy-title">Legacy</div>
+
+                <div class="verification-payout-card__legacy-list">
+                  <div
+                    v-for="entry in paymentDetailLegacyEntries(paymentDetail)"
+                    :key="`${paymentDetail.id}:legacy:${entry.key}`"
+                    class="verification-payout-card__legacy-row"
+                  >
+                    <span class="verification-payout-card__legacy-label">{{ entry.label }}</span>
+                    <span class="verification-payout-card__legacy-value">{{ entry.value }}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -388,6 +420,7 @@
               v-if="paymentDetail.documents.length > 0"
               class="verification-payout-card__documents"
             >
+              <span class="verification-payout-card__documents-label">Documents</span>
               <button
                 v-for="(paymentDetailDocument, documentIndex) in paymentDetail.documents"
                 :key="paymentDetail.id + ':' + paymentDetailDocument.path + ':' + documentIndex"
@@ -475,13 +508,15 @@
 
               <div class="verification-client-request-card__focus">
                 <template v-if="currentRequestFocusItems.length">
-                  <span
+                  <button
                     v-for="item in currentRequestFocusItems"
-                    :key="`${requestItem.id}:${item}`"
-                    class="verification-focus-chip"
+                    :key="`${requestItem.id}:${item.id}`"
+                    type="button"
+                    class="verification-focus-link"
+                    @click="navigateToVerificationSection(item.section)"
                   >
-                    {{ item }}
-                  </span>
+                    {{ item.label }}
+                  </button>
                 </template>
                 <span
                   v-else
@@ -533,7 +568,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
@@ -553,6 +588,7 @@ import VerificationActions from "~/pages/admin/clients/[id]/components/Verificat
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 type VerificationTab = "client" | "payout" | "requests";
+type VerificationSectionTarget = "profile" | "documents" | "payout";
 type VerificationStatus = "approved" | "pending" | "rejected";
 type RequestReviewState = "pending" | "viewed" | "approved" | "rejected";
 type AdminPaymentDetailStatus = "approved" | "pending" | "rejected";
@@ -657,6 +693,10 @@ const payoutDetails = ref<AdminPaymentDetailItem[]>([]);
 const firstDeposit = ref<PaymentRow | null>(null);
 const clientRequestRows = ref<ClientVerificationRequestRow[]>([]);
 const requestUpdatingState = reactive<Record<string, boolean>>({});
+const highlightedSection = ref<VerificationSectionTarget | null>(null);
+const profileSectionRef = ref<HTMLElement | null>(null);
+const documentsSectionRef = ref<HTMLElement | null>(null);
+const payoutSectionRef = ref<HTMLElement | null>(null);
 
 const infoStatus = ref<VerificationStatus>("pending");
 const infoComment = ref("");
@@ -674,6 +714,7 @@ const seenTabs = reactive<Record<VerificationTab, boolean>>({
   payout: false,
   requests: false,
 });
+let highlightTimer: ReturnType<typeof setTimeout> | null = null;
 
 const canUpdateVerifications = computed(
   () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-verifications")
@@ -778,6 +819,16 @@ const parseVerificationTabFromRoute = (value: unknown): VerificationTab => {
   return "client";
 };
 
+const parseVerificationSection = (value: unknown): VerificationSectionTarget | null => {
+  const normalized = String(value || "").toLowerCase();
+
+  if (normalized === "profile" || normalized === "documents" || normalized === "payout") {
+    return normalized;
+  }
+
+  return null;
+};
+
 const parseVerificationTabFromLocation = (): VerificationTab => {
   if (typeof window === "undefined") {
     return parseVerificationTabFromRoute(route.query.verificationTab);
@@ -787,7 +838,7 @@ const parseVerificationTabFromLocation = (): VerificationTab => {
   return parseVerificationTabFromRoute(fromUrl);
 };
 
-const syncVerificationTabInLocation = (tab: VerificationTab): void => {
+const syncVerificationLocation = (tab: VerificationTab, section: VerificationSectionTarget | null = null): void => {
   if (typeof window === "undefined") {
     return;
   }
@@ -797,6 +848,12 @@ const syncVerificationTabInLocation = (tab: VerificationTab): void => {
     url.searchParams.delete("verificationTab");
   } else {
     url.searchParams.set("verificationTab", tab);
+  }
+
+  if (section === null) {
+    url.searchParams.delete("verificationSection");
+  } else {
+    url.searchParams.set("verificationSection", section);
   }
 
   window.history.replaceState(window.history.state, "", url.toString());
@@ -989,19 +1046,39 @@ const hasPendingDocuments = computed(
 const hasPendingPayout = computed(() => payoutDetails.value.some(paymentDetail => paymentDetail.status === "pending"));
 const hasPendingRequests = computed(() => clientRequestRows.value.some(request => request.request_state === "pending"));
 
-const currentRequestFocusItems = computed(() => {
-  const items: string[] = [];
+const currentRequestFocusItems = computed<Array<{
+  id: VerificationSectionTarget;
+  label: string;
+  section: VerificationSectionTarget;
+}>>(() => {
+  const items: Array<{
+    id: VerificationSectionTarget;
+    label: string;
+    section: VerificationSectionTarget;
+  }> = [];
 
   if (hasPendingProfile.value) {
-    items.push("Profile");
+    items.push({
+      id: "profile",
+      label: "Check profile data",
+      section: "profile",
+    });
   }
 
   if (hasPendingDocuments.value) {
-    items.push(`Documents${documentsListRequestData.value.length ? ` (${documentsListRequestData.value.length})` : ""}`);
+    items.push({
+      id: "documents",
+      label: `Check documents${documentsListRequestData.value.length ? ` (${documentsListRequestData.value.length})` : ""}`,
+      section: "documents",
+    });
   }
 
   if (hasPendingPayout.value) {
-    items.push(`Requisites${payoutDetails.value.length ? ` (${payoutDetails.value.length})` : ""}`);
+    items.push({
+      id: "payout",
+      label: `Check requisites${payoutDetails.value.length ? ` (${payoutDetails.value.length})` : ""}`,
+      section: "payout",
+    });
   }
 
   return items;
@@ -1052,13 +1129,57 @@ const markTabSeen = (tab: VerificationTab): void => {
   seenTabs[tab] = true;
 };
 
+const resolveSectionElement = (section: VerificationSectionTarget): HTMLElement | null => {
+  switch (section) {
+    case "profile":
+      return profileSectionRef.value;
+    case "documents":
+      return documentsSectionRef.value;
+    case "payout":
+      return payoutSectionRef.value;
+  }
+};
+
+const focusVerificationSection = (section: VerificationSectionTarget): void => {
+  if (highlightTimer) {
+    clearTimeout(highlightTimer);
+    highlightTimer = null;
+  }
+
+  highlightedSection.value = section;
+  resolveSectionElement(section)?.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+
+  highlightTimer = setTimeout(() => {
+    if (highlightedSection.value === section) {
+      highlightedSection.value = null;
+    }
+  }, 2200);
+};
+
+const navigateToVerificationSection = async (section: VerificationSectionTarget): Promise<void> => {
+  const targetTab: VerificationTab = section === "payout" ? "payout" : "client";
+
+  if (activeVerificationTab.value !== targetTab) {
+    activeVerificationTab.value = targetTab;
+  }
+
+  syncVerificationLocation(targetTab, section);
+
+  await nextTick();
+  markTabSeen(targetTab);
+  focusVerificationSection(section);
+};
+
 const setVerificationTab = (tab: VerificationTab) => {
   if (activeVerificationTab.value === tab) {
     return;
   }
 
   activeVerificationTab.value = tab;
-  syncVerificationTabInLocation(tab);
+  syncVerificationLocation(tab, null);
 
   void nextTick(() => {
     markTabSeen(tab);
@@ -1325,14 +1446,62 @@ const handleRequestReviewUpdate = async (
 
 const isRequestUpdating = (requestId: string): boolean => Boolean(requestUpdatingState[requestId]);
 
-const paymentDetailEntries = (paymentDetail: AdminPaymentDetailItem): Array<{ key: string; label: string; value: string }> =>
-  Object.entries(paymentDetail.data || {})
+const paymentDetailPrimaryEntries = (paymentDetail: AdminPaymentDetailItem): Array<{ key: string; label: string; value: string }> => {
+  const fieldsPayload = paymentDetail.data?.fields;
+  const source = fieldsPayload && typeof fieldsPayload === "object" && !Array.isArray(fieldsPayload)
+    ? fieldsPayload as Record<string, unknown>
+    : Object.fromEntries(
+        Object.entries(paymentDetail.data || {}).filter(([key]) => !["fields", "legacy"].includes(key))
+      );
+
+  return Object.entries(source)
     .map(([key, rawValue]) => ({
       key,
       label: normalizePaymentLabel(key),
       value: formatPaymentValue(rawValue),
     }))
     .filter(entry => entry.value !== "");
+};
+
+const paymentDetailLegacyEntries = (paymentDetail: AdminPaymentDetailItem): Array<{ key: string; label: string; value: string }> => {
+  const legacy = paymentDetail.data?.legacy;
+  if (!legacy || typeof legacy !== "object" || Array.isArray(legacy)) {
+    return [];
+  }
+
+  const legacyPayload = legacy as Record<string, unknown>;
+  const rows: Array<{ key: string; label: string; value: string }> = [];
+  const paysystem = legacyPayload.paysystem && typeof legacyPayload.paysystem === "object" && !Array.isArray(legacyPayload.paysystem)
+    ? legacyPayload.paysystem as Record<string, unknown>
+    : null;
+
+  const systemName = formatPaymentValue(paysystem?.name);
+  if (systemName) {
+    rows.push({ key: "paysystem", label: "System", value: systemName });
+  }
+
+  const legacyType = formatPaymentValue(legacyPayload.type);
+  if (legacyType) {
+    rows.push({ key: "type", label: "Type", value: legacyType });
+  }
+
+  const legacyStatus = formatPaymentValue(legacyPayload.status);
+  if (legacyStatus) {
+    rows.push({ key: "status", label: "Legacy status", value: legacyStatus });
+  }
+
+  const legacyId = formatPaymentValue(legacyPayload.old_requisite_id);
+  if (legacyId) {
+    rows.push({ key: "old_requisite_id", label: "Legacy ID", value: legacyId });
+  }
+
+  const legacyComment = formatPaymentValue(legacyPayload.comment);
+  if (legacyComment) {
+    rows.push({ key: "comment", label: "Legacy comment", value: legacyComment });
+  }
+
+  return rows;
+};
 
 const normalizePaymentLabel = (value: string): string =>
   value
@@ -1442,6 +1611,20 @@ watch(
   }
 );
 
+watch(
+  () => route.query.verificationSection,
+  nextValue => {
+    const nextSection = parseVerificationSection(nextValue);
+    if (!nextSection) {
+      return;
+    }
+
+    void nextTick(() => {
+      focusVerificationSection(nextSection);
+    });
+  }
+);
+
 onMounted(async () => {
   activeVerificationTab.value = parseVerificationTabFromLocation();
 
@@ -1449,6 +1632,17 @@ onMounted(async () => {
 
   await nextTick();
   markTabSeen(activeVerificationTab.value);
+
+  const initialSection = parseVerificationSection(route.query.verificationSection);
+  if (initialSection) {
+    focusVerificationSection(initialSection);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (highlightTimer) {
+    clearTimeout(highlightTimer);
+  }
 });
 </script>
 
@@ -1520,6 +1714,12 @@ onMounted(async () => {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.28s ease, box-shadow 0.28s ease;
+}
+
+.verification-card--highlighted {
+  border-color: rgba(73, 108, 222, 0.46);
+  box-shadow: 0 0 0 1px rgba(73, 108, 222, 0.16), 0 18px 44px rgba(6, 18, 63, 0.18);
 }
 
 .verification-card__header {
@@ -1636,13 +1836,22 @@ onMounted(async () => {
 }
 
 .verification-document-card,
-.verification-payout-card,
 .verification-client-request-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.verification-payout-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1705,11 +1914,82 @@ onMounted(async () => {
   min-width: 0;
 }
 
+.verification-payout-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.95fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.verification-payout-card__main {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.verification-payout-card__field,
+.verification-payout-card__legacy {
+  min-height: 78px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.verification-payout-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.verification-payout-card__field-label,
+.verification-payout-card__legacy-label,
+.verification-payout-card__documents-label {
+  font-size: 0.72rem;
+  color: var(--ui-text-secondary);
+}
+
+.verification-payout-card__field-value,
+.verification-payout-card__legacy-value {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--ui-text-main);
+  word-break: break-word;
+}
+
+.verification-payout-card__legacy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.verification-payout-card__legacy-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ui-text-main);
+}
+
+.verification-payout-card__legacy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.verification-payout-card__legacy-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .verification-payout-card__documents,
 .verification-client-request-card__previews {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.verification-payout-card__documents {
+  align-items: center;
 }
 
 .verification-payout-card__document,
@@ -1780,6 +2060,26 @@ onMounted(async () => {
   font-weight: 600;
 }
 
+.verification-focus-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(233, 174, 0, 0.12);
+  border: 1px solid rgba(233, 174, 0, 0.24);
+  color: #f1c24d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.verification-focus-link:hover {
+  transform: translateY(-1px);
+  background: rgba(233, 174, 0, 0.18);
+  border-color: rgba(233, 174, 0, 0.34);
+}
+
 .verification-client-request-card__title-wrap {
   display: flex;
   align-items: center;
@@ -1822,7 +2122,6 @@ onMounted(async () => {
 
 @media (max-width: 860px) {
   .verification-card__header,
-  .verification-payout-card__header,
   .verification-client-request-card,
   .verification-document-card {
     grid-template-columns: 1fr;
@@ -1835,6 +2134,12 @@ onMounted(async () => {
   .verification-client-request-card > :deep(.request-review-actions) {
     align-self: flex-start;
   }
+
+  .verification-payout-card__header,
+  .verification-payout-card__body {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 680px) {
@@ -1845,6 +2150,10 @@ onMounted(async () => {
 
   .verification-grid__item--wide {
     grid-column: span 1;
+  }
+
+  .verification-payout-card__main {
+    grid-template-columns: 1fr;
   }
 }
 </style>

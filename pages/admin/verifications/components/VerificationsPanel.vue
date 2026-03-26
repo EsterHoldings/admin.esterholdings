@@ -116,13 +116,15 @@
 
             <div class="verification-request-row__focus">
               <template v-if="reviewFocusItems(detailState(requestItem.user_id)).length">
-                <span
+                <button
                   v-for="item in reviewFocusItems(detailState(requestItem.user_id))"
-                  :key="`${requestItem.id}:${item}`"
-                  class="verification-focus-chip"
+                  :key="`${requestItem.id}:${item.id}`"
+                  type="button"
+                  class="verification-focus-link"
+                  @click.stop="openClientVerification(requestItem, item.tab, item.section)"
                 >
-                  {{ item }}
-                </span>
+                  {{ item.label }}
+                </button>
               </template>
               <span
                 v-else
@@ -371,6 +373,8 @@ interface DetailState {
   paymentDetails: PaymentDetailRow[];
   firstDeposit: PaymentRow | null;
 }
+
+type VerificationSectionTarget = "profile" | "documents" | "payout";
 
 const emit = defineEmits<{
   (e: "loading", value: boolean): void;
@@ -822,23 +826,48 @@ const hasPendingDocuments = (state: DetailState): boolean =>
 const hasPendingRequisites = (state: DetailState): boolean =>
   state.paymentDetails.some(paymentDetail => paymentDetail.status === "pending");
 
-const reviewFocusItems = (state: DetailState): string[] => {
+const reviewFocusItems = (state: DetailState): Array<{
+  id: VerificationSectionTarget;
+  label: string;
+  tab: "client" | "payout";
+  section: VerificationSectionTarget;
+}> => {
   if (!state.loaded && state.isLoading) {
-    return ["Loading"];
+    return [];
   }
 
-  const items: string[] = [];
+  const items: Array<{
+    id: VerificationSectionTarget;
+    label: string;
+    tab: "client" | "payout";
+    section: VerificationSectionTarget;
+  }> = [];
 
   if (hasPendingProfile(state)) {
-    items.push("Profile");
+    items.push({
+      id: "profile",
+      label: "Check profile data",
+      tab: "client",
+      section: "profile",
+    });
   }
 
   if (hasPendingDocuments(state)) {
-    items.push(`Documents${state.documents.length ? ` (${state.documents.length})` : ""}`);
+    items.push({
+      id: "documents",
+      label: `Check documents${state.documents.length ? ` (${state.documents.length})` : ""}`,
+      tab: "client",
+      section: "documents",
+    });
   }
 
   if (hasPendingRequisites(state)) {
-    items.push(`Requisites${state.paymentDetails.length ? ` (${state.paymentDetails.length})` : ""}`);
+    items.push({
+      id: "payout",
+      label: `Check requisites${state.paymentDetails.length ? ` (${state.paymentDetails.length})` : ""}`,
+      tab: "payout",
+      section: "payout",
+    });
   }
 
   return items;
@@ -905,15 +934,44 @@ const paymentMethodName = (payment: PaymentRow | null): string => {
   );
 };
 
-const resolveTargetVerificationTab = (requestItem: VerificationRequestItem): "client" | "payout" => {
+const resolvePrimaryReviewTarget = (
+  requestItem: VerificationRequestItem
+): { tab: "client" | "payout"; section: VerificationSectionTarget | null } => {
   const state = detailState(requestItem.user_id);
+  const firstFocusItem = reviewFocusItems(state)[0];
+  if (firstFocusItem) {
+    return {
+      tab: firstFocusItem.tab,
+      section: firstFocusItem.section,
+    };
+  }
+
   const shouldOpenPayout = hasPendingRequisites(state) && !hasPendingProfile(state) && !hasPendingDocuments(state);
 
-  return shouldOpenPayout ? "payout" : "client";
+  return {
+    tab: shouldOpenPayout ? "payout" : "client",
+    section: shouldOpenPayout ? "payout" : null,
+  };
 };
 
-const openClientVerification = (requestItem: VerificationRequestItem): void => {
-  navigateTo(localePath(`/clients/${requestItem.user_id}?tab=2&verificationTab=${resolveTargetVerificationTab(requestItem)}`));
+const openClientVerification = (
+  requestItem: VerificationRequestItem,
+  tab?: "client" | "payout",
+  section?: VerificationSectionTarget | null,
+): void => {
+  const primaryTarget = resolvePrimaryReviewTarget(requestItem);
+  const targetTab = tab ?? primaryTarget.tab;
+  const targetSection = section ?? primaryTarget.section;
+  const query = new URLSearchParams({
+    tab: "2",
+    verificationTab: targetTab,
+  });
+
+  if (targetSection) {
+    query.set("verificationSection", targetSection);
+  }
+
+  navigateTo(localePath(`/clients/${requestItem.user_id}?${query.toString()}`));
 };
 
 onMounted(() => {
@@ -1104,17 +1162,24 @@ defineExpose({
   color: var(--ui-text-secondary);
 }
 
-.verification-focus-chip {
+.verification-focus-link {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  padding: 0 9px;
+  min-height: 26px;
+  padding: 0 10px;
   border-radius: 999px;
-  background: rgba(233, 174, 0, 0.14);
-  border: 1px solid rgba(233, 174, 0, 0.22);
+  background: rgba(233, 174, 0, 0.12);
+  border: 1px solid rgba(233, 174, 0, 0.24);
   color: #f1c24d;
   font-size: 0.75rem;
   font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.verification-focus-link:hover {
+  transform: translateY(-1px);
+  background: rgba(233, 174, 0, 0.18);
+  border-color: rgba(233, 174, 0, 0.34);
 }
 
 .verification-request-badge {
