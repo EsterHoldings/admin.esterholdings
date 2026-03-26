@@ -602,6 +602,7 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
+import useEventBus from "~/composables/useEventBus";
 import VerificationRequestStateActions from "~/components/block/verification/VerificationRequestStateActions.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
 import UiFormControl from "~/components/ui/UiFormControl.vue";
@@ -614,6 +615,7 @@ import UiTextH5 from "~/components/ui/UiTextH5.vue";
 import UiTextarea from "~/components/ui/UiTextarea.vue";
 import VerificationActions from "~/pages/admin/clients/[id]/components/VerificationActions.vue";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
+import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
 type VerificationTab = "client" | "payout" | "requests";
 type VerificationSectionTarget = "profile" | "documents" | "payout";
@@ -717,9 +719,11 @@ const props = defineProps({
 
 const appCore = useAppCore();
 const adminAuthStore = useAdminAuthStore();
+const adminNotificationsStore = useAdminNotificationsStore();
 const route = useRoute();
 const toast = useToast();
 const { t } = useI18n({ useScope: "global" });
+const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
 
 const isLoading = ref(false);
 const isPayoutLoading = ref(false);
@@ -1732,6 +1736,24 @@ const handleClientDocumentImage = (url: string) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+const markVerificationNotificationsSeen = async () => {
+  if (adminNotificationsStore.unreadVerificationRequestsCount <= 0) {
+    return;
+  }
+
+  try {
+    const response = await appCore.adminModules.notifications.markReadByTypes(["verification.request.created"]);
+    const summaryPayload = response?.data?.data ?? {};
+    adminNotificationsStore.applySummary(summaryPayload);
+    useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
+      types: ["verification.request.created"],
+      summary: summaryPayload,
+    });
+  } catch {
+    // no-op
+  }
+};
+
 watch(infoComment, nextValue => {
   if (!isInfoCommentOpen.value) {
     infoCommentDraft.value = nextValue || "";
@@ -1775,6 +1797,7 @@ onMounted(async () => {
   activeVerificationTab.value = parseVerificationTabFromLocation();
 
   await Promise.all([loadVerificationData(), loadPayoutVerificationData(), loadClientVerificationRequests()]);
+  await markVerificationNotificationsSeen();
 
   await nextTick();
   markTabSeen(activeVerificationTab.value);

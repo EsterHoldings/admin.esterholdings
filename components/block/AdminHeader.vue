@@ -262,7 +262,6 @@
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
   ];
-  const VERIFICATION_ADMIN_NOTIFICATION_TYPES = ["verification.request.created"];
   const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
   const props = withDefaults(
     defineProps<{
@@ -309,6 +308,7 @@
   let notificationsSocketStateHandler: ((states: any) => void) | null = null;
   let notificationsRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
   let notificationsPollTimer: ReturnType<typeof setInterval> | null = null;
+  let notificationsResumeListenersAttached = false;
 
   const isThemeLight = computed(() => themeStore.currentTheme !== "dark");
   const canViewProfile = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-profile"));
@@ -329,7 +329,6 @@
   };
 
   const hasAccessToken = () => Boolean(String(adminAuthStore.accessToken ?? "").trim());
-  const isVerificationsRoute = computed(() => String(route.path ?? "").includes("/verifications"));
   const isWithdrawalRequestsRoute = computed(() => String(route.path ?? "").includes("/withdrawal-requests"));
   const isSupportRoute = computed(() => String(route.path ?? "").includes("/support"));
 
@@ -707,11 +706,6 @@
   };
 
   const markCurrentSectionNotificationsSeen = async () => {
-    if (isVerificationsRoute.value && adminNotificationsStore.unreadVerificationRequestsCount > 0) {
-      await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES);
-      return;
-    }
-
     if (isWithdrawalRequestsRoute.value && adminNotificationsStore.unreadWithdrawalRequestsCount > 0) {
       await markNotificationsByTypes(["payments.withdrawal.created"]);
       return;
@@ -782,11 +776,6 @@
     }
 
     if (isWithdrawalRequestsRoute.value && normalized.type === "payments.withdrawal.created") {
-      await markNotificationRead(normalized.id, true);
-      return;
-    }
-
-    if (isVerificationsRoute.value && VERIFICATION_ADMIN_NOTIFICATION_TYPES.includes(normalized.type)) {
       await markNotificationRead(normalized.id, true);
       return;
     }
@@ -921,16 +910,6 @@
       }
 
       if (
-        isVerificationsRoute.value &&
-        newUnreadItems.some(
-          item => VERIFICATION_ADMIN_NOTIFICATION_TYPES.includes(String(item.type ?? "").trim()) && !item.wasRead
-        )
-      ) {
-        await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES);
-        return;
-      }
-
-      if (
         isWithdrawalRequestsRoute.value &&
         newUnreadItems.some(item => item.type === "payments.withdrawal.created" && !item.wasRead)
       ) {
@@ -1003,6 +982,55 @@
     adminNotificationsStore.applySummary(payload?.summary ?? {});
   };
 
+  const syncNotificationsState = async (showToastsForNew = false) => {
+    if (!hasAccessToken()) {
+      return;
+    }
+
+    await Promise.all([
+      loadNotifications({ showToastsForNew }),
+      loadUnreadSummary(),
+    ]);
+
+    if (isOpen.value && unreadCount.value > 0) {
+      await markAllRead();
+    }
+  };
+
+  const handleNotificationsResume = () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+      return;
+    }
+
+    reconnectNotificationsSocketTransport();
+    const adminId = String(adminAuthStore.user?.id ?? "").trim();
+    if (adminId !== "") {
+      subscribeToNotifications(adminId);
+    }
+
+    void syncNotificationsState(true);
+  };
+
+  const attachNotificationsResumeListeners = () => {
+    if (notificationsResumeListenersAttached || typeof window === "undefined" || typeof document === "undefined") {
+      return;
+    }
+
+    window.addEventListener("focus", handleNotificationsResume);
+    document.addEventListener("visibilitychange", handleNotificationsResume);
+    notificationsResumeListenersAttached = true;
+  };
+
+  const detachNotificationsResumeListeners = () => {
+    if (!notificationsResumeListenersAttached || typeof window === "undefined" || typeof document === "undefined") {
+      return;
+    }
+
+    window.removeEventListener("focus", handleNotificationsResume);
+    document.removeEventListener("visibilitychange", handleNotificationsResume);
+    notificationsResumeListenersAttached = false;
+  };
+
   watch(
     () => adminAuthStore.user?.id,
     userId => {
@@ -1025,6 +1053,7 @@
   onMounted(() => {
     document.addEventListener("click", handleClickOutside);
     useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedByTypes);
+    attachNotificationsResumeListeners();
 
     void (async () => {
       if (!hasAccessToken()) return;
@@ -1051,6 +1080,7 @@
   onUnmounted(() => {
     document.removeEventListener("click", handleClickOutside);
     useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedByTypes);
+    detachNotificationsResumeListeners();
     unsubscribeFromNotifications();
     unbindNotificationsSocketStateListener();
     stopNotificationsRealtimeRetry();

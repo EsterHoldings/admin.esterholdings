@@ -274,6 +274,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue"
 import { useToast } from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
+import useEventBus from "~/composables/useEventBus";
 import VerificationRequestStateActions from "~/components/block/verification/VerificationRequestStateActions.vue";
 import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
@@ -287,6 +288,7 @@ import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
 import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
+import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
 type RequestReviewState = "pending" | "viewed" | "approved" | "rejected";
 type VerificationStatus = "pending" | "approved" | "rejected";
@@ -408,6 +410,8 @@ const emit = defineEmits<{
 const appCore = useAppCore();
 const localePath = useLocalePath();
 const toast = useToast();
+const adminNotificationsStore = useAdminNotificationsStore();
+const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
 
 const page = ref(1);
 const perPage = ref(5);
@@ -896,6 +900,7 @@ const handleRefreshAll = async (): Promise<void> => {
   });
 
   await loadList();
+  await markVerificationNotificationsSeen();
 };
 
 const handleRequestReviewUpdate = async (
@@ -1080,8 +1085,29 @@ const openClientVerification = (
   navigateTo(localePath(`/clients/${requestItem.user_id}?${query.toString()}`));
 };
 
+const markVerificationNotificationsSeen = async () => {
+  if (adminNotificationsStore.unreadVerificationRequestsCount <= 0) {
+    return;
+  }
+
+  try {
+    const response = await appCore.adminModules.notifications.markReadByTypes(["verification.request.created"]);
+    const summaryPayload = response?.data?.data ?? {};
+    adminNotificationsStore.applySummary(summaryPayload);
+    useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
+      types: ["verification.request.created"],
+      summary: summaryPayload,
+    });
+  } catch {
+    // no-op
+  }
+};
+
 onMounted(() => {
-  void loadList();
+  void (async () => {
+    await loadList();
+    await markVerificationNotificationsSeen();
+  })();
 });
 
 onBeforeUnmount(() => {

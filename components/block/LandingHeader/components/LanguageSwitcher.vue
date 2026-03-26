@@ -19,7 +19,7 @@
           :key="code"
           @click="switchLanguage(code)"
           :class="{ active: locale === code }">
-          <span class="flag">{{ getFlag(code) }}</span>
+          <span class="flag" :class="{ 'flag--monochrome': code === 'ru' }">{{ getFlag(code) }}</span>
           <span class="label">{{ label.toUpperCase() }}</span>
         </li>
       </ul>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+  import { ref, onMounted, onBeforeUnmount } from "vue";
   import { useI18n } from "vue-i18n";
   import UiIconGlobe from "~/components/ui/UiIconGlobe.vue";
 
@@ -64,7 +64,7 @@
       case "en":
         return "🇬🇧";
       case "ru":
-        return "?";
+        return "🇷🇺";
       case "de":
         return "🇩🇪";
       case "es":
@@ -156,6 +156,10 @@
         font-size: 16px;
         padding: 0 10px 0 0;
         color: var(--ui-text-main);
+      }
+
+      .flag--monochrome {
+        filter: grayscale(1) saturate(0) brightness(1.05);
       }
 
       .label {
