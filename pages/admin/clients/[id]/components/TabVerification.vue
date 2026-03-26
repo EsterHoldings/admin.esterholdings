@@ -523,7 +523,10 @@
             v-for="requestItem in sortedClientRequestRows"
             :key="requestItem.id"
             class="verification-client-request-card"
-            :class="{ 'is-pending-row': requestItem.request_state === 'pending' }"
+            :class="{
+              'is-pending-row': requestItem.request_state === 'pending',
+              'is-unread-notification': hasUnreadVerificationSignal(requestItem.user_id),
+            }"
           >
             <div class="verification-client-request-card__body">
               <div class="verification-client-request-card__top">
@@ -551,6 +554,7 @@
                     :key="`${requestItem.id}:${item.id}`"
                     type="button"
                     class="verification-focus-link"
+                    :class="{ 'is-unread': hasUnreadVerificationSignal(requestItem.user_id, item.section) }"
                     @click="navigateToVerificationSection(item.section)"
                   >
                     {{ item.label }}
@@ -724,6 +728,12 @@ interface VerificationPreviewMeta {
   label: string;
 }
 
+interface AdminVerificationUnreadNotification {
+  id: string;
+  userId: string;
+  section: VerificationSectionTarget;
+}
+
 const initialData: VerificationRequestDto = {
   info: { verification_status: "pending", comment: "" },
   email: { verification_status: "pending", comment: "" },
@@ -749,7 +759,9 @@ const adminNotificationsStore = useAdminNotificationsStore();
 const route = useRoute();
 const toast = useToast();
 const { t } = useI18n({ useScope: "global" });
-const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
+const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
+const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
+const VERIFICATION_NOTIFICATION_TYPE = "verification.request.created";
 
 const isLoading = ref(false);
 const isPayoutLoading = ref(false);
@@ -779,6 +791,7 @@ const documentsCommentDraft = ref("");
 const payoutDocumentLoadingMap = reactive<Record<string, boolean>>({});
 const payoutCommentOpenMap = reactive<Record<string, boolean>>({});
 const payoutCommentDraftMap = reactive<Record<string, string>>({});
+const unreadVerificationNotifications = ref<AdminVerificationUnreadNotification[]>([]);
 const seenTabs = reactive<Record<VerificationTab, boolean>>({
   client: false,
   payout: false,
@@ -900,6 +913,80 @@ const parseVerificationSection = (value: unknown): VerificationSectionTarget | n
   }
 
   return null;
+};
+
+const mapNotificationStepToSection = (value: unknown): VerificationSectionTarget => {
+  const normalized = String(value ?? "").trim().toLowerCase();
+
+  if (normalized === "documents") {
+    return "documents";
+  }
+
+  if (normalized === "payout") {
+    return "payout";
+  }
+
+  return "profile";
+};
+
+const normalizeUnreadVerificationNotification = (raw: any): AdminVerificationUnreadNotification | null => {
+  const id = String(raw?.id ?? "").trim();
+  const type = String(raw?.type ?? "").trim();
+  const payload = raw?.payload && typeof raw.payload === "object" ? raw.payload : null;
+  const userId = String(payload?.user_id ?? "").trim();
+  const readAt = raw?.read_at ? String(raw.read_at).trim() : "";
+  const isUnread = raw?.is_unread ?? readAt === "";
+
+  if (id === "" || type !== VERIFICATION_NOTIFICATION_TYPE || userId === "" || !isUnread) {
+    return null;
+  }
+
+  return {
+    id,
+    userId,
+    section: mapNotificationStepToSection(payload?.step),
+  };
+};
+
+const upsertUnreadVerificationNotification = (notification: AdminVerificationUnreadNotification): void => {
+  const index = unreadVerificationNotifications.value.findIndex(item => item.id === notification.id);
+  if (index === -1) {
+    unreadVerificationNotifications.value.unshift(notification);
+    return;
+  }
+
+  unreadVerificationNotifications.value.splice(index, 1, notification);
+};
+
+const removeUnreadVerificationNotifications = (ids: string[]): void => {
+  if (ids.length === 0) {
+    return;
+  }
+
+  const idSet = new Set(ids);
+  unreadVerificationNotifications.value = unreadVerificationNotifications.value.filter(item => !idSet.has(item.id));
+};
+
+const hasUnreadVerificationSignal = (userId: string, section?: VerificationSectionTarget): boolean =>
+  unreadVerificationNotifications.value.some(item =>
+    item.userId === userId && (section === undefined || item.section === section)
+  );
+
+const loadUnreadVerificationNotifications = async (): Promise<void> => {
+  try {
+    const response = await appCore.adminModules.notifications.get({
+      page: 1,
+      perPage: 100,
+    });
+
+    const rows = Array.isArray(response?.data?.data?.data) ? response.data.data.data : [];
+    unreadVerificationNotifications.value = rows
+      .map(normalizeUnreadVerificationNotification)
+      .filter((item: AdminVerificationUnreadNotification | null): item is AdminVerificationUnreadNotification => Boolean(item))
+      .filter(item => item.userId === props.clientId);
+  } catch {
+    unreadVerificationNotifications.value = [];
+  }
 };
 
 const parseVerificationTabFromLocation = (): VerificationTab => {
@@ -1222,6 +1309,10 @@ const hasPendingProfile = computed(() => Boolean(activePendingRequest.value && r
 const hasPendingDocuments = computed(() => Boolean(activePendingRequest.value && requestHasDocumentsToReview(activePendingRequest.value)));
 const hasPendingPayout = computed(() => Boolean(activePendingRequest.value && requestHasPayoutToReview(activePendingRequest.value)));
 const hasPendingRequests = computed(() => clientRequestRows.value.some(request => request.request_state === "pending"));
+const hasUnreadProfileSignals = computed(() => hasUnreadVerificationSignal(props.clientId, "profile"));
+const hasUnreadDocumentsSignals = computed(() => hasUnreadVerificationSignal(props.clientId, "documents"));
+const hasUnreadPayoutSignals = computed(() => hasUnreadVerificationSignal(props.clientId, "payout"));
+const hasUnreadRequestSignals = computed(() => hasUnreadVerificationSignal(props.clientId));
 
 const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   id: VerificationSectionTarget;
@@ -1284,17 +1375,17 @@ const verificationTabs = computed(() => [
   {
     id: "client" as const,
     label: "Общая верификация",
-    needsAttention: hasPendingProfile.value || hasPendingDocuments.value,
+    needsAttention: hasPendingProfile.value || hasPendingDocuments.value || hasUnreadProfileSignals.value || hasUnreadDocumentsSignals.value,
   },
   {
     id: "payout" as const,
     label: "Реквизиты",
-    needsAttention: hasPendingPayout.value,
+    needsAttention: hasPendingPayout.value || hasUnreadPayoutSignals.value,
   },
   {
     id: "requests" as const,
     label: "Запросы",
-    needsAttention: hasPendingRequests.value,
+    needsAttention: hasPendingRequests.value || hasUnreadRequestSignals.value,
   },
 ]);
 
@@ -1340,6 +1431,38 @@ const focusVerificationSection = (section: VerificationSectionTarget): void => {
   }, 2200);
 };
 
+const markRelevantVerificationNotificationsSeen = async (section: VerificationSectionTarget): Promise<void> => {
+  const targetIds = unreadVerificationNotifications.value
+    .filter(item => item.userId === props.clientId && item.section === section)
+    .map(item => item.id);
+
+  if (targetIds.length === 0) {
+    return;
+  }
+
+  let latestSummary: Record<string, unknown> | null = null;
+
+  for (const notificationId of targetIds) {
+    try {
+      const response = await appCore.adminModules.notifications.markRead(notificationId);
+      latestSummary = response?.data?.data ?? latestSummary;
+    } catch {
+      // no-op
+    }
+  }
+
+  removeUnreadVerificationNotifications(targetIds);
+
+  if (latestSummary) {
+    adminNotificationsStore.applySummary(latestSummary);
+  }
+
+  useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_EVENT, {
+    ids: targetIds,
+    summary: latestSummary ?? undefined,
+  });
+};
+
 const navigateToVerificationSection = async (section: VerificationSectionTarget): Promise<void> => {
   const targetTab: VerificationTab = section === "payout" ? "payout" : "client";
 
@@ -1352,6 +1475,7 @@ const navigateToVerificationSection = async (section: VerificationSectionTarget)
   await nextTick();
   markTabSeen(targetTab);
   focusVerificationSection(section);
+  await markRelevantVerificationNotificationsSeen(section);
 };
 
 const setVerificationTab = (tab: VerificationTab) => {
@@ -1364,6 +1488,9 @@ const setVerificationTab = (tab: VerificationTab) => {
 
   void nextTick(() => {
     markTabSeen(tab);
+    if (tab === "payout") {
+      void markRelevantVerificationNotificationsSeen("payout");
+    }
   });
 };
 
@@ -1810,22 +1937,39 @@ const handleClientDocumentImage = (url: string) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
-const markVerificationNotificationsSeen = async () => {
-  if (adminNotificationsStore.unreadVerificationRequestsCount <= 0) {
+const handleAdminNotificationReceived = (payload?: { notification?: any }): void => {
+  const notification = normalizeUnreadVerificationNotification(payload?.notification ?? null);
+  if (!notification || notification.userId !== props.clientId) {
     return;
   }
 
-  try {
-    const response = await appCore.adminModules.notifications.markReadByTypes(["verification.request.created"]);
-    const summaryPayload = response?.data?.data ?? {};
-    adminNotificationsStore.applySummary(summaryPayload);
-    useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
-      types: ["verification.request.created"],
-      summary: summaryPayload,
+  upsertUnreadVerificationNotification(notification);
+
+  if (notification.section === "payout") {
+    void Promise.all([loadPayoutVerificationData(), loadClientVerificationRequests()]).then(async () => {
+      if (activeVerificationTab.value === "payout") {
+        await nextTick();
+        await markRelevantVerificationNotificationsSeen("payout");
+      }
     });
-  } catch {
-    // no-op
+
+    return;
   }
+
+  void Promise.all([loadVerificationData(), loadClientVerificationRequests()]).then(async () => {
+    if (activeVerificationTab.value === "client") {
+      await nextTick();
+      await markRelevantVerificationNotificationsSeen(notification.section);
+    }
+  });
+};
+
+const handleMarkedNotifications = (payload?: { ids?: string[] }): void => {
+  const ids = Array.isArray(payload?.ids)
+    ? payload.ids.map(item => String(item ?? "").trim()).filter(Boolean)
+    : [];
+
+  removeUnreadVerificationNotifications(ids);
 };
 
 watch(infoComment, nextValue => {
@@ -1861,8 +2005,9 @@ watch(
       return;
     }
 
-    void nextTick(() => {
+    void nextTick(async () => {
       focusVerificationSection(nextSection);
+      await markRelevantVerificationNotificationsSeen(nextSection);
     });
   }
 );
@@ -1870,8 +2015,15 @@ watch(
 onMounted(async () => {
   activeVerificationTab.value = parseVerificationTabFromLocation();
 
-  await Promise.all([loadVerificationData(), loadPayoutVerificationData(), loadClientVerificationRequests()]);
-  await markVerificationNotificationsSeen();
+  useEventBus.on(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
+  useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
+
+  await Promise.all([
+    loadVerificationData(),
+    loadPayoutVerificationData(),
+    loadClientVerificationRequests(),
+    loadUnreadVerificationNotifications(),
+  ]);
 
   await nextTick();
   markTabSeen(activeVerificationTab.value);
@@ -1879,6 +2031,9 @@ onMounted(async () => {
   const initialSection = parseVerificationSection(route.query.verificationSection);
   if (initialSection) {
     focusVerificationSection(initialSection);
+    await markRelevantVerificationNotificationsSeen(initialSection);
+  } else if (activeVerificationTab.value === "payout") {
+    await markRelevantVerificationNotificationsSeen("payout");
   }
 });
 
@@ -1886,6 +2041,9 @@ onBeforeUnmount(() => {
   if (highlightTimer) {
     clearTimeout(highlightTimer);
   }
+
+  useEventBus.off(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
+  useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
 });
 </script>
 
@@ -2102,6 +2260,10 @@ onBeforeUnmount(() => {
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  transition:
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    background-color 0.28s ease;
 }
 
 .verification-payout-card {
@@ -2375,6 +2537,12 @@ onBeforeUnmount(() => {
   border-color: rgba(233, 174, 0, 0.34);
 }
 
+.verification-focus-link.is-unread {
+  background: rgba(87, 132, 255, 0.14);
+  border-color: rgba(87, 132, 255, 0.32);
+  color: #b7cbff;
+}
+
 .verification-client-request-card__title-wrap {
   display: flex;
   align-items: center;
@@ -2395,6 +2563,11 @@ onBeforeUnmount(() => {
 
 .verification-client-request-card.is-pending-row {
   border-color: rgba(233, 174, 0, 0.24);
+}
+
+.verification-client-request-card.is-unread-notification {
+  border-color: rgba(87, 132, 255, 0.38);
+  box-shadow: 0 0 0 1px rgba(87, 132, 255, 0.16), 0 10px 28px rgba(16, 38, 120, 0.12);
 }
 
 .comment-expand-enter-active,

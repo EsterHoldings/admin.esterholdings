@@ -82,7 +82,10 @@
         v-for="requestItem in requestItems"
         :key="requestItem.id"
         class="verification-request-row"
-        :class="{ 'is-pending-row': requestItem.request_state === 'pending' }"
+        :class="{
+          'is-pending-row': requestItem.request_state === 'pending',
+          'is-unread-notification': hasUnreadVerificationSignal(requestItem.user_id),
+        }"
         @click="openClientVerification(requestItem)"
       >
         <div class="verification-request-row__identity">
@@ -121,6 +124,7 @@
                   :key="`${requestItem.id}:${item.id}`"
                   type="button"
                   class="verification-focus-link"
+                  :class="{ 'is-unread': hasUnreadVerificationSignal(requestItem.user_id, item.section) }"
                   @click.stop="openClientVerification(requestItem, item.tab, item.section)"
                 >
                   {{ item.label }}
@@ -288,7 +292,6 @@ import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
 import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
-import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
 type RequestReviewState = "pending" | "viewed" | "approved" | "rejected";
 type VerificationStatus = "pending" | "approved" | "rejected";
@@ -390,6 +393,12 @@ interface VerificationPreviewMeta {
   label: string;
 }
 
+interface AdminVerificationUnreadNotification {
+  id: string;
+  userId: string;
+  section: VerificationSectionTarget;
+}
+
 interface DetailState {
   isLoading: boolean;
   loaded: boolean;
@@ -410,8 +419,9 @@ const emit = defineEmits<{
 const appCore = useAppCore();
 const localePath = useLocalePath();
 const toast = useToast();
-const adminNotificationsStore = useAdminNotificationsStore();
-const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
+const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
+const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
+const VERIFICATION_NOTIFICATION_TYPE = "verification.request.created";
 
 const page = ref(1);
 const perPage = ref(5);
@@ -432,6 +442,7 @@ const summary = reactive<Record<string, number>>({
 });
 const detailStates = reactive<Record<string, DetailState>>({});
 const updatingState = reactive<Record<string, boolean>>({});
+const unreadVerificationNotifications = ref<AdminVerificationUnreadNotification[]>([]);
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -571,6 +582,81 @@ const detailState = (userId: string): DetailState => {
   }
 
   return detailStates[userId];
+};
+
+const mapNotificationStepToSection = (value: unknown): VerificationSectionTarget => {
+  const normalized = String(value ?? "").trim().toLowerCase();
+
+  if (normalized === "documents") {
+    return "documents";
+  }
+
+  if (normalized === "payout") {
+    return "payout";
+  }
+
+  return "profile";
+};
+
+const normalizeUnreadVerificationNotification = (raw: any): AdminVerificationUnreadNotification | null => {
+  const id = String(raw?.id ?? "").trim();
+  const type = String(raw?.type ?? "").trim();
+  const payload = raw?.payload && typeof raw.payload === "object" ? raw.payload : null;
+  const userId = String(payload?.user_id ?? "").trim();
+  const readAt = raw?.read_at ? String(raw.read_at).trim() : "";
+  const isUnread = raw?.is_unread ?? readAt === "";
+
+  if (id === "" || type !== VERIFICATION_NOTIFICATION_TYPE || userId === "" || !isUnread) {
+    return null;
+  }
+
+  return {
+    id,
+    userId,
+    section: mapNotificationStepToSection(payload?.step),
+  };
+};
+
+const upsertUnreadVerificationNotification = (notification: AdminVerificationUnreadNotification): void => {
+  const index = unreadVerificationNotifications.value.findIndex(item => item.id === notification.id);
+  if (index === -1) {
+    unreadVerificationNotifications.value.unshift(notification);
+    return;
+  }
+
+  unreadVerificationNotifications.value.splice(index, 1, notification);
+};
+
+const removeUnreadVerificationNotifications = (notificationIds: string[]): void => {
+  if (notificationIds.length === 0) {
+    return;
+  }
+
+  const idSet = new Set(notificationIds);
+  unreadVerificationNotifications.value = unreadVerificationNotifications.value.filter(item => !idSet.has(item.id));
+};
+
+const hasUnreadVerificationSignal = (
+  userId: string,
+  section?: VerificationSectionTarget,
+): boolean => unreadVerificationNotifications.value.some(item =>
+  item.userId === userId && (section === undefined || item.section === section)
+);
+
+const loadUnreadVerificationNotifications = async (): Promise<void> => {
+  try {
+    const response = await appCore.adminModules.notifications.get({
+      page: 1,
+      perPage: 100,
+    });
+
+    const rows = Array.isArray(response?.data?.data?.data) ? response.data.data.data : [];
+    unreadVerificationNotifications.value = rows
+      .map(normalizeUnreadVerificationNotification)
+      .filter((item: AdminVerificationUnreadNotification | null): item is AdminVerificationUnreadNotification => Boolean(item));
+  } catch {
+    unreadVerificationNotifications.value = [];
+  }
 };
 
 const isUpdating = (requestId: string): boolean => Boolean(updatingState[requestId]);
@@ -899,8 +985,7 @@ const handleRefreshAll = async (): Promise<void> => {
     detailStates[key].loaded = false;
   });
 
-  await loadList();
-  await markVerificationNotificationsSeen();
+  await Promise.all([loadList(), loadUnreadVerificationNotifications()]);
 };
 
 const handleRequestReviewUpdate = async (
@@ -1085,35 +1170,38 @@ const openClientVerification = (
   navigateTo(localePath(`/clients/${requestItem.user_id}?${query.toString()}`));
 };
 
-const markVerificationNotificationsSeen = async () => {
-  if (adminNotificationsStore.unreadVerificationRequestsCount <= 0) {
+const handleAdminNotificationReceived = (payload?: { notification?: any }): void => {
+  const notification = normalizeUnreadVerificationNotification(payload?.notification ?? null);
+  if (!notification) {
     return;
   }
 
-  try {
-    const response = await appCore.adminModules.notifications.markReadByTypes(["verification.request.created"]);
-    const summaryPayload = response?.data?.data ?? {};
-    adminNotificationsStore.applySummary(summaryPayload);
-    useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
-      types: ["verification.request.created"],
-      summary: summaryPayload,
-    });
-  } catch {
-    // no-op
-  }
+  upsertUnreadVerificationNotification(notification);
+  void loadList();
+};
+
+const handleMarkedNotifications = (payload?: { ids?: string[] }): void => {
+  const ids = Array.isArray(payload?.ids)
+    ? payload.ids.map(item => String(item ?? "").trim()).filter(Boolean)
+    : [];
+
+  removeUnreadVerificationNotifications(ids);
 };
 
 onMounted(() => {
-  void (async () => {
-    await loadList();
-    await markVerificationNotificationsSeen();
-  })();
+  useEventBus.on(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
+  useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
+
+  void Promise.all([loadList(), loadUnreadVerificationNotifications()]);
 });
 
 onBeforeUnmount(() => {
   if (searchTimer) {
     clearTimeout(searchTimer);
   }
+
+  useEventBus.off(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
+  useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
 });
 
 defineExpose({
@@ -1244,7 +1332,8 @@ defineExpose({
   transition:
     transform 0.18s ease,
     border-color 0.18s ease,
-    box-shadow 0.18s ease;
+    box-shadow 0.18s ease,
+    background-color 0.28s ease;
 }
 
 .verification-request-row:hover {
@@ -1255,6 +1344,11 @@ defineExpose({
 
 .verification-request-row.is-pending-row {
   border-color: rgba(233, 174, 0, 0.24);
+}
+
+.verification-request-row.is-unread-notification {
+  border-color: rgba(87, 132, 255, 0.42);
+  box-shadow: 0 0 0 1px rgba(87, 132, 255, 0.18), 0 14px 36px rgba(16, 38, 120, 0.16);
 }
 
 .verification-request-row__identity {
@@ -1321,6 +1415,12 @@ defineExpose({
   transform: translateY(-1px);
   background: rgba(233, 174, 0, 0.18);
   border-color: rgba(233, 174, 0, 0.34);
+}
+
+.verification-focus-link.is-unread {
+  background: rgba(87, 132, 255, 0.14);
+  border-color: rgba(87, 132, 255, 0.32);
+  color: #b7cbff;
 }
 
 .verification-request-badge {

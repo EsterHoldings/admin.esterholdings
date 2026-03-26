@@ -256,6 +256,8 @@
 
   const NOTIFICATIONS_POLL_MS = 10000;
   const NOTIFICATIONS_REALTIME_RETRY_MS = 5000;
+  const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
+  const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
   const NOTIFICATION_EVENT_NAMES = [
     ".AdminNotificationCreated",
     "AdminNotificationCreated",
@@ -618,6 +620,10 @@
           .forEach(showNotificationToast);
       }
 
+      newUnreadItems.forEach(item => {
+        useEventBus.emit(ADMIN_NOTIFICATION_RECEIVED_EVENT, { notification: item });
+      });
+
       return newUnreadItems;
     } catch {
       notificationsLoaded.value = false;
@@ -768,6 +774,8 @@
       if (shouldToastNotification(normalized)) {
         showNotificationToast(normalized);
       }
+
+      useEventBus.emit(ADMIN_NOTIFICATION_RECEIVED_EVENT, { notification: normalized });
     }
 
     if (isOpen.value) {
@@ -982,6 +990,21 @@
     adminNotificationsStore.applySummary(payload?.summary ?? {});
   };
 
+  const handleMarkedNotifications = (payload?: { ids?: string[]; summary?: Record<string, unknown> }) => {
+    const ids = Array.isArray(payload?.ids)
+      ? payload.ids.map(item => String(item ?? "").trim()).filter(Boolean)
+      : [];
+
+    if (ids.length > 0) {
+      const idSet = new Set(ids);
+      notifications.value = notifications.value.map(item =>
+        idSet.has(item.id) ? { ...item, wasRead: true } : item
+      );
+    }
+
+    adminNotificationsStore.applySummary(payload?.summary ?? {});
+  };
+
   const syncNotificationsState = async (showToastsForNew = false) => {
     if (!hasAccessToken()) {
       return;
@@ -1053,6 +1076,7 @@
   onMounted(() => {
     document.addEventListener("click", handleClickOutside);
     useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedByTypes);
+    useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
     attachNotificationsResumeListeners();
 
     void (async () => {
@@ -1080,6 +1104,7 @@
   onUnmounted(() => {
     document.removeEventListener("click", handleClickOutside);
     useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedByTypes);
+    useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
     detachNotificationsResumeListeners();
     unsubscribeFromNotifications();
     unbindNotificationsSocketStateListener();
