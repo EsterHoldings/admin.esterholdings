@@ -1,104 +1,112 @@
 <template>
   <div class="admin-profile-security">
-    <PanelDefault class="admin-profile-security__panel">
-      <div class="admin-profile-security__panel-header">
-        <div>
-          <UiTextH5 class="admin-profile-security__panel-title">
-            {{ resolveText("admin.profile.security.sections.password", "Password") }}
-          </UiTextH5>
-          <UiTextSmall class="admin-profile-security__panel-subtitle">
-            {{
-              resolveText(
-                "admin.profile.security.descriptions.password",
-                "Change the current password for this administrator account."
-              )
-            }}
-          </UiTextSmall>
-        </div>
-      </div>
-
-      <div class="admin-profile-security__form-grid">
-        <UiFormControl
-          :label="resolveText('admin.profile.security.fields.currentPassword', 'Current password')"
-          :errors="passwordErrors.oldPassword">
-          <UiInput
-            type="password"
-            :value="passwordForm.oldPassword"
-            :placeholder="resolveText('admin.profile.security.fields.currentPassword', 'Current password')"
-            @input="value => updatePasswordField('oldPassword', value)" />
-        </UiFormControl>
-
-        <UiFormControl
-          :label="resolveText('admin.profile.security.fields.newPassword', 'New password')"
-          :errors="passwordErrors.newPassword">
-          <UiInput
-            type="password"
-            :value="passwordForm.newPassword"
-            :placeholder="resolveText('admin.profile.security.fields.newPassword', 'New password')"
-            @input="value => updatePasswordField('newPassword', value)" />
-        </UiFormControl>
-
-        <UiFormControl
-          :label="resolveText('admin.profile.security.fields.confirmPassword', 'Confirm password')"
-          :errors="passwordErrors.newPasswordConfirmation">
-          <UiInput
-            type="password"
-            :value="passwordForm.newPasswordConfirmation"
-            :placeholder="resolveText('admin.profile.security.fields.confirmPassword', 'Confirm password')"
-            @input="value => updatePasswordField('newPasswordConfirmation', value)" />
-        </UiFormControl>
-      </div>
-
-      <div class="admin-profile-security__actions">
-        <UiButtonDefault
-          state="primary"
-          :isLoading="isUpdatingPassword"
-          @click="updatePassword">
-          {{ resolveText("admin.profile.actions.updatePassword", "Update password") }}
-        </UiButtonDefault>
-      </div>
-    </PanelDefault>
-
-    <PanelDefault class="admin-profile-security__panel">
-      <div class="admin-profile-security__panel-header">
-        <div>
-          <UiTextH5 class="admin-profile-security__panel-title">
-            {{ resolveText("admin.profile.security.sections.recovery", "Password recovery") }}
-          </UiTextH5>
-          <UiTextSmall class="admin-profile-security__panel-subtitle">
-            {{
-              resolveText(
-                "admin.profile.security.descriptions.recovery",
-                "Generate a new password automatically and send it to the administrator email."
-              )
-            }}
-          </UiTextSmall>
-        </div>
-      </div>
-
-      <div class="admin-profile-security__recovery-card">
-        <div class="admin-profile-security__recovery-meta">
-          <div class="admin-profile-security__recovery-email">
-            {{ props.profileData?.email || "—" }}
+    <div class="admin-profile-security__top-grid">
+      <PanelDefault class="admin-profile-security__panel admin-profile-security__panel--password">
+        <div class="admin-profile-security__panel-header">
+          <div>
+            <UiTextH5 class="admin-profile-security__panel-title">
+              {{ resolveText("admin.profile.security.sections.password", "Password") }}
+            </UiTextH5>
+            <UiTextSmall class="admin-profile-security__panel-subtitle">
+              {{
+                resolveText(
+                  "admin.profile.security.descriptions.password",
+                  "Change the current password for this administrator account."
+                )
+              }}
+            </UiTextSmall>
           </div>
-          <UiTextSmall class="admin-profile-security__panel-subtitle">
-            {{
-              resolveText(
-                "admin.profile.security.descriptions.recoveryNote",
-                "The current password will be replaced immediately after the email is sent."
-              )
-            }}
-          </UiTextSmall>
         </div>
 
-        <UiButtonDefault
-          state="warning"
-          :isLoading="isSendingGeneratedPassword"
-          @click="sendGeneratedPassword">
-          {{ resolveText("admin.profile.actions.sendGeneratedPassword", "Generate and send password") }}
-        </UiButtonDefault>
-      </div>
-    </PanelDefault>
+        <div class="admin-profile-security__form-grid">
+          <div class="admin-profile-security__field-card">
+            <UiFormControl
+              :label="resolveText('admin.profile.security.fields.currentPassword', 'Current password')"
+              :errors="passwordErrors.oldPassword">
+              <UiInput
+                type="password"
+                :value="passwordForm.oldPassword"
+                :placeholder="resolveText('admin.profile.security.fields.currentPassword', 'Current password')"
+                @input="value => updatePasswordField('oldPassword', value)" />
+            </UiFormControl>
+          </div>
+
+          <div class="admin-profile-security__field-card">
+            <UiFormControl
+              :label="resolveText('admin.profile.security.fields.newPassword', 'New password')"
+              :errors="passwordErrors.newPassword">
+              <UiInput
+                type="password"
+                :value="passwordForm.newPassword"
+                :placeholder="resolveText('admin.profile.security.fields.newPassword', 'New password')"
+                @input="value => updatePasswordField('newPassword', value)" />
+            </UiFormControl>
+          </div>
+
+          <div class="admin-profile-security__field-card">
+            <UiFormControl
+              :label="resolveText('admin.profile.security.fields.confirmPassword', 'Confirm password')"
+              :errors="passwordErrors.newPasswordConfirmation">
+              <UiInput
+                type="password"
+                :value="passwordForm.newPasswordConfirmation"
+                :placeholder="resolveText('admin.profile.security.fields.confirmPassword', 'Confirm password')"
+                @input="value => updatePasswordField('newPasswordConfirmation', value)" />
+            </UiFormControl>
+          </div>
+        </div>
+
+        <div class="admin-profile-security__actions">
+          <UiButtonDefault
+            state="primary"
+            :isLoading="isUpdatingPassword"
+            @click="updatePassword">
+            {{ resolveText("admin.profile.actions.updatePassword", "Update password") }}
+          </UiButtonDefault>
+        </div>
+      </PanelDefault>
+
+      <PanelDefault class="admin-profile-security__panel admin-profile-security__panel--recovery">
+        <div class="admin-profile-security__panel-header">
+          <div>
+            <UiTextH5 class="admin-profile-security__panel-title">
+              {{ resolveText("admin.profile.security.sections.recovery", "Password recovery") }}
+            </UiTextH5>
+            <UiTextSmall class="admin-profile-security__panel-subtitle">
+              {{
+                resolveText(
+                  "admin.profile.security.descriptions.recovery",
+                  "Generate a new password automatically and send it to the administrator email."
+                )
+              }}
+            </UiTextSmall>
+          </div>
+        </div>
+
+        <div class="admin-profile-security__recovery-card">
+          <div class="admin-profile-security__recovery-meta">
+            <div class="admin-profile-security__recovery-email">
+              {{ props.profileData?.email || "—" }}
+            </div>
+            <UiTextSmall class="admin-profile-security__panel-subtitle">
+              {{
+                resolveText(
+                  "admin.profile.security.descriptions.recoveryNote",
+                  "The current password will be replaced immediately after the email is sent."
+                )
+              }}
+            </UiTextSmall>
+          </div>
+
+          <UiButtonDefault
+            state="warning"
+            :isLoading="isSendingGeneratedPassword"
+            @click="sendGeneratedPassword">
+            {{ resolveText("admin.profile.actions.sendGeneratedPassword", "Generate and send password") }}
+          </UiButtonDefault>
+        </div>
+      </PanelDefault>
+    </div>
 
     <PanelDefault class="admin-profile-security__panel">
       <div class="admin-profile-security__panel-header">
@@ -427,15 +435,31 @@
 
 <style scoped lang="scss">
   .admin-profile-security {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .admin-profile-security__top-grid {
     display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
     gap: 20px;
   }
 
   .admin-profile-security__panel {
-    padding: 20px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)), rgba(7, 18, 53, 0.26);
+  }
+
+  .admin-profile-security__panel--recovery {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top right, rgba(255, 173, 66, 0.12), transparent 38%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
   }
 
   .admin-profile-security__panel-header {
@@ -457,7 +481,29 @@
   .admin-profile-security__form-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: 14px;
+  }
+
+  .admin-profile-security__field-card {
+    padding: 14px 14px 10px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .admin-profile-security__field-card:hover {
+    border-color: rgba(113, 158, 223, 0.18);
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .admin-profile-security__field-card :deep(.ui-form-control__label) {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ui-text-secondary);
   }
 
   .admin-profile-security__actions {
@@ -466,14 +512,16 @@
   }
 
   .admin-profile-security__recovery-card {
+    flex: 1;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     gap: 16px;
-    padding: 18px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 20px;
+    border-radius: 22px;
+    background: rgba(7, 18, 53, 0.38);
+    border: 1px solid rgba(255, 173, 66, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .admin-profile-security__recovery-meta {
@@ -484,14 +532,14 @@
 
   .admin-profile-security__recovery-email {
     color: var(--ui-text-main);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
   }
 
   .admin-profile-security__two-factor {
     display: grid;
-    grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1fr);
-    gap: 20px;
+    grid-template-columns: minmax(280px, 0.86fr) minmax(0, 1fr);
+    gap: 22px;
     align-items: stretch;
   }
 
@@ -503,26 +551,32 @@
   .admin-profile-security__qr-card,
   .admin-profile-security__qr-placeholder,
   .admin-profile-security__qr-loading {
-    min-height: 240px;
-    border-radius: 18px;
-    border: 1px dashed rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
+    min-height: 280px;
+    border-radius: 22px;
+    border: 1px dashed rgba(113, 158, 223, 0.2);
+    background:
+      radial-gradient(circle at top left, rgba(113, 158, 223, 0.14), transparent 34%), rgba(255, 255, 255, 0.03);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px;
+    padding: 18px;
     text-align: center;
   }
 
   .admin-profile-security__qr-card :deep(svg) {
-    width: min(100%, 220px);
+    width: min(100%, 228px);
     height: auto;
   }
 
   .admin-profile-security__two-factor-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .admin-profile-security__two-factor-actions {
@@ -531,7 +585,13 @@
     gap: 12px;
   }
 
+  .admin-profile-security__actions :deep(button),
+  .admin-profile-security__two-factor-actions :deep(button) {
+    min-width: 220px;
+  }
+
   @media (max-width: 1024px) {
+    .admin-profile-security__top-grid,
     .admin-profile-security__form-grid {
       grid-template-columns: 1fr;
     }
@@ -550,13 +610,15 @@
 
     .admin-profile-security__actions,
     .admin-profile-security__two-factor-actions {
-      justify-content: stretch;
+      flex-direction: column;
+      align-items: stretch;
     }
 
     .admin-profile-security__actions :deep(button),
     .admin-profile-security__recovery-card :deep(button),
     .admin-profile-security__two-factor-actions :deep(button) {
       width: 100%;
+      min-width: 0;
     }
   }
 </style>

@@ -1,26 +1,40 @@
 <template>
   <div class="admin-profile-general">
     <PanelDefault class="admin-profile-general__photo-panel">
-      <div class="admin-profile-general__panel-header">
-        <div>
-          <UiTextH5 class="admin-profile-general__panel-title">
-            {{ resolveText("admin.profile.general.sections.photo", "Profile photo") }}
-          </UiTextH5>
-          <UiTextSmall class="admin-profile-general__panel-subtitle">
-            {{ resolveText("admin.profile.general.hints.fileSupport", "Upload JPG, JPEG or PNG up to 5 MB.") }}
-          </UiTextSmall>
+      <div class="admin-profile-general__photo-hero">
+        <div class="admin-profile-general__panel-header">
+          <div>
+            <UiTextH5 class="admin-profile-general__panel-title">
+              {{ resolveText("admin.profile.general.sections.photo", "Profile photo") }}
+            </UiTextH5>
+            <UiTextSmall class="admin-profile-general__panel-subtitle">
+              {{ resolveText("admin.profile.general.hints.fileSupport", "Upload JPG, JPEG or PNG up to 5 MB.") }}
+            </UiTextSmall>
+          </div>
+
+          <UiBadge
+            :state="props.profileData?.is_online ? 'success' : 'warning'"
+            outline
+            class="!px-3">
+            {{
+              props.profileData?.is_online
+                ? resolveText("admin.profile.status.online", "Online")
+                : resolveText("admin.profile.status.offline", "Offline")
+            }}
+          </UiBadge>
         </div>
 
-        <UiBadge
-          :state="props.profileData?.is_online ? 'success' : 'warning'"
-          outline
-          class="!px-3">
-          {{
-            props.profileData?.is_online
-              ? resolveText("admin.profile.status.online", "Online")
-              : resolveText("admin.profile.status.offline", "Offline")
-          }}
-        </UiBadge>
+        <div class="admin-profile-general__photo-chips">
+          <div class="admin-profile-general__photo-chip">
+            <span>{{ resolveText("admin.profile.general.sections.history", "Photo history") }}</span>
+            <strong>{{ photoHistory.length }}</strong>
+          </div>
+
+          <div class="admin-profile-general__photo-chip">
+            <span>{{ resolveText("admin.profile.general.fields.email", "Email") }}</span>
+            <strong>{{ props.profileData?.email || "—" }}</strong>
+          </div>
+        </div>
       </div>
 
       <div class="admin-profile-general__photo-main">
@@ -89,73 +103,75 @@
           :style="{ width: `${uploadProgress}%` }" />
       </div>
 
-      <div class="admin-profile-general__history-header">
-        <UiTextH5 class="admin-profile-general__panel-title">
-          {{ resolveText("admin.profile.general.sections.history", "Photo history") }}
-        </UiTextH5>
-        <UiTextSmall class="admin-profile-general__panel-subtitle">
-          {{
-            resolveText(
-              "admin.profile.general.hints.photoHistory",
-              "Reuse any previously uploaded image or remove it from history."
-            )
-          }}
-        </UiTextSmall>
-      </div>
+      <div class="admin-profile-general__history-shell">
+        <div class="admin-profile-general__history-header">
+          <UiTextH5 class="admin-profile-general__panel-title">
+            {{ resolveText("admin.profile.general.sections.history", "Photo history") }}
+          </UiTextH5>
+          <UiTextSmall class="admin-profile-general__panel-subtitle">
+            {{
+              resolveText(
+                "admin.profile.general.hints.photoHistory",
+                "Reuse any previously uploaded image or remove it from history."
+              )
+            }}
+          </UiTextSmall>
+        </div>
 
-      <div
-        v-if="photoHistory.length === 0"
-        class="admin-profile-general__empty-state">
-        {{ resolveText("admin.profile.general.empty.photoHistory", "No uploaded photos yet.") }}
-      </div>
-
-      <div
-        v-else
-        class="admin-profile-general__history-grid">
         <div
-          v-for="photo in photoHistory"
-          :key="photo.id"
-          class="admin-profile-general__history-card">
-          <UiImage
-            v-if="photo.photo_url"
-            class="admin-profile-general__history-image"
-            :src="photo.photo_url" />
-          <div
-            v-else
-            class="admin-profile-general__history-placeholder">
-            {{ props.profileData?.initials || "AD" }}
-          </div>
+          v-if="photoHistory.length === 0"
+          class="admin-profile-general__empty-state">
+          {{ resolveText("admin.profile.general.empty.photoHistory", "No uploaded photos yet.") }}
+        </div>
 
-          <div class="admin-profile-general__history-card-body">
-            <div class="admin-profile-general__history-card-top">
-              <UiBadge
-                v-if="photo.is_current"
-                state="success"
-                outline
-                class="!px-3">
-                {{ resolveText("admin.profile.general.labels.currentPhoto", "Current") }}
-              </UiBadge>
-              <UiTextSmall class="admin-profile-general__history-date">
-                {{ formatDateTime(photo.created_at) }}
-              </UiTextSmall>
+        <div
+          v-else
+          class="admin-profile-general__history-grid">
+          <div
+            v-for="photo in photoHistory"
+            :key="photo.id"
+            class="admin-profile-general__history-card">
+            <UiImage
+              v-if="photo.photo_url"
+              class="admin-profile-general__history-image"
+              :src="photo.photo_url" />
+            <div
+              v-else
+              class="admin-profile-general__history-placeholder">
+              {{ props.profileData?.initials || "AD" }}
             </div>
 
-            <div class="admin-profile-general__history-card-actions">
-              <UiButtonDefault
-                state="info--outline--small"
-                :disabled="photo.is_current || busyPhotoId === photo.id"
-                :isLoading="busyPhotoId === photo.id && busyPhotoAction === 'select'"
-                @click="selectPhoto(photo.id)">
-                {{ resolveText("admin.profile.actions.selectPhoto", "Use photo") }}
-              </UiButtonDefault>
+            <div class="admin-profile-general__history-card-body">
+              <div class="admin-profile-general__history-card-top">
+                <UiBadge
+                  v-if="photo.is_current"
+                  state="success"
+                  outline
+                  class="!px-3">
+                  {{ resolveText("admin.profile.general.labels.currentPhoto", "Current") }}
+                </UiBadge>
+                <UiTextSmall class="admin-profile-general__history-date">
+                  {{ formatDateTime(photo.created_at) }}
+                </UiTextSmall>
+              </div>
 
-              <UiButtonDefault
-                state="danger--outline--small"
-                :disabled="busyPhotoId === photo.id"
-                :isLoading="busyPhotoId === photo.id && busyPhotoAction === 'delete'"
-                @click="deletePhoto(photo.id)">
-                {{ resolveText("admin.profile.actions.deletePhoto", "Delete") }}
-              </UiButtonDefault>
+              <div class="admin-profile-general__history-card-actions">
+                <UiButtonDefault
+                  state="info--outline--small"
+                  :disabled="photo.is_current || busyPhotoId === photo.id"
+                  :isLoading="busyPhotoId === photo.id && busyPhotoAction === 'select'"
+                  @click="selectPhoto(photo.id)">
+                  {{ resolveText("admin.profile.actions.selectPhoto", "Use photo") }}
+                </UiButtonDefault>
+
+                <UiButtonDefault
+                  state="danger--outline--small"
+                  :disabled="busyPhotoId === photo.id"
+                  :isLoading="busyPhotoId === photo.id && busyPhotoAction === 'delete'"
+                  @click="deletePhoto(photo.id)">
+                  {{ resolveText("admin.profile.actions.deletePhoto", "Delete") }}
+                </UiButtonDefault>
+              </div>
             </div>
           </div>
         </div>
@@ -180,17 +196,20 @@
       </div>
 
       <div class="admin-profile-general__form-grid">
-        <UiFormControl
+        <div
           v-for="field in formFields"
           :key="field.key"
-          :label="field.label"
-          :errors="formErrors[field.key] ?? []">
-          <UiInput
-            :type="field.type"
-            :value="formData[field.key]"
-            :placeholder="field.placeholder"
-            @input="value => updateField(field.key, value)" />
-        </UiFormControl>
+          class="admin-profile-general__field-card">
+          <UiFormControl
+            :label="field.label"
+            :errors="formErrors[field.key] ?? []">
+            <UiInput
+              :type="field.type"
+              :value="formData[field.key]"
+              :placeholder="field.placeholder"
+              @input="value => updateField(field.key, value)" />
+          </UiFormControl>
+        </div>
       </div>
 
       <div class="admin-profile-general__form-actions">
@@ -601,16 +620,31 @@
 <style scoped lang="scss">
   .admin-profile-general {
     display: grid;
-    grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.3fr);
-    gap: 20px;
+    grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.35fr);
+    gap: 22px;
   }
 
   .admin-profile-general__photo-panel,
   .admin-profile-general__details-panel {
-    padding: 20px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+  }
+
+  .admin-profile-general__photo-panel {
+    position: sticky;
+    top: 20px;
+    align-self: start;
+    background:
+      radial-gradient(circle at top left, rgba(113, 158, 223, 0.16), transparent 38%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  }
+
+  .admin-profile-general__photo-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
   .admin-profile-general__panel-header,
@@ -630,23 +664,59 @@
     line-height: 1.5;
   }
 
+  .admin-profile-general__photo-chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .admin-profile-general__photo-chip {
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(7, 18, 53, 0.42);
+    border: 1px solid rgba(113, 158, 223, 0.16);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .admin-profile-general__photo-chip span {
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .admin-profile-general__photo-chip strong {
+    color: var(--ui-text-main);
+    font-size: 14px;
+    word-break: break-word;
+  }
+
   .admin-profile-general__photo-main {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
+    padding: 18px;
+    border-radius: 24px;
+    background: rgba(6, 15, 40, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .admin-profile-general__avatar,
   .admin-profile-general__avatar-image,
   .admin-profile-general__avatar-placeholder {
-    width: 124px;
-    height: 124px;
-    border-radius: 20px;
+    width: 136px;
+    height: 136px;
+    border-radius: 26px;
   }
 
   .admin-profile-general__avatar-image,
   .admin-profile-general__history-image {
     object-fit: cover;
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
   }
 
   .admin-profile-general__avatar-placeholder,
@@ -654,9 +724,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(50, 110, 255, 0.18), rgba(113, 158, 223, 0.32));
+    background: linear-gradient(135deg, rgba(50, 110, 255, 0.24), rgba(113, 158, 223, 0.42));
     color: var(--ui-text-main);
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 700;
   }
 
@@ -669,8 +739,9 @@
 
   .admin-profile-general__photo-name {
     color: var(--ui-text-main);
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 700;
+    line-height: 1.15;
   }
 
   .admin-profile-general__photo-email,
@@ -685,11 +756,16 @@
     gap: 12px;
   }
 
+  .admin-profile-general__photo-actions :deep(button) {
+    min-width: 170px;
+  }
+
   .admin-profile-general__selected-file {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     color: var(--ui-text-secondary);
+    padding: 0 2px;
   }
 
   .admin-profile-general__upload-progress {
@@ -705,13 +781,22 @@
     background: linear-gradient(90deg, rgba(113, 158, 223, 0.7), rgba(113, 223, 173, 0.85));
   }
 
+  .admin-profile-general__history-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(113, 158, 223, 0.12);
+  }
+
   .admin-profile-general__empty-state {
-    min-height: 120px;
+    min-height: 132px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px dashed rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.025);
     color: var(--ui-text-secondary);
     text-align: center;
   }
@@ -727,16 +812,26 @@
     flex-direction: column;
     gap: 12px;
     padding: 12px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.06);
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .admin-profile-general__history-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(113, 158, 223, 0.22);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .admin-profile-general__history-image,
   .admin-profile-general__history-placeholder {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 14px;
+    border-radius: 16px;
   }
 
   .admin-profile-general__history-card-body {
@@ -761,24 +856,60 @@
     gap: 8px;
   }
 
+  .admin-profile-general__details-panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)), rgba(7, 18, 53, 0.28);
+  }
+
   .admin-profile-general__form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
+    gap: 14px;
+  }
+
+  .admin-profile-general__field-card {
+    padding: 14px 14px 10px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .admin-profile-general__field-card:hover {
+    border-color: rgba(113, 158, 223, 0.2);
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .admin-profile-general__field-card :deep(.ui-form-control__label) {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ui-text-secondary);
   }
 
   .admin-profile-general__form-actions {
     display: flex;
     justify-content: flex-end;
+    padding-top: 4px;
+  }
+
+  .admin-profile-general__form-actions :deep(button) {
+    min-width: 220px;
   }
 
   @media (max-width: 1120px) {
     .admin-profile-general {
       grid-template-columns: 1fr;
     }
+
+    .admin-profile-general__photo-panel {
+      position: static;
+    }
   }
 
   @media (max-width: 720px) {
+    .admin-profile-general__photo-chips,
     .admin-profile-general__form-grid {
       grid-template-columns: 1fr;
     }
@@ -790,12 +921,16 @@
       align-items: flex-start;
     }
 
+    .admin-profile-general__photo-actions,
     .admin-profile-general__form-actions {
-      justify-content: stretch;
+      flex-direction: column;
+      align-items: stretch;
     }
 
+    .admin-profile-general__photo-actions :deep(button),
     .admin-profile-general__form-actions :deep(button) {
       width: 100%;
+      min-width: 0;
     }
   }
 </style>

@@ -1,86 +1,88 @@
 <template>
   <div class="admin-profile-activity">
-    <div class="admin-profile-activity__presets">
-      <button
-        v-for="preset in metricRangePresets"
-        :key="preset.id"
-        type="button"
-        class="admin-profile-activity__preset-button"
-        :class="{ 'admin-profile-activity__preset-button--active': filters.preset === preset.id }"
-        @click="applyPreset(preset.id)">
-        {{ preset.label }}
-      </button>
-    </div>
-
-    <div class="admin-profile-activity__filters">
-      <div class="admin-profile-activity__filter">
-        <span class="admin-profile-activity__filter-label">
-          {{ resolveText("admin.profile.activity.filters.from", "From") }}
-        </span>
-        <UiInput
-          type="date"
-          :value="toDateInputValue(filters.date_from)"
-          @input="value => updateFilter('date_from', value)" />
+    <PanelDefault class="admin-profile-activity__toolbar">
+      <div class="admin-profile-activity__presets">
+        <button
+          v-for="preset in metricRangePresets"
+          :key="preset.id"
+          type="button"
+          class="admin-profile-activity__preset-button"
+          :class="{ 'admin-profile-activity__preset-button--active': filters.preset === preset.id }"
+          @click="applyPreset(preset.id)">
+          {{ preset.label }}
+        </button>
       </div>
 
-      <div class="admin-profile-activity__filter">
-        <span class="admin-profile-activity__filter-label">
-          {{ resolveText("admin.profile.activity.filters.to", "To") }}
-        </span>
-        <UiInput
-          type="date"
-          :value="toDateInputValue(filters.date_to)"
-          @input="value => updateFilter('date_to', value)" />
-      </div>
+      <div class="admin-profile-activity__filters">
+        <div class="admin-profile-activity__filter">
+          <span class="admin-profile-activity__filter-label">
+            {{ resolveText("admin.profile.activity.filters.from", "From") }}
+          </span>
+          <UiInput
+            type="date"
+            :value="toDateInputValue(filters.date_from)"
+            @input="value => updateFilter('date_from', value)" />
+        </div>
 
-      <div class="admin-profile-activity__filter">
-        <span class="admin-profile-activity__filter-label">
-          {{ resolveText("admin.profile.activity.filters.bucket", "Step") }}
-        </span>
-        <UiSelect
-          :data="bucketOptions"
-          :value="filters.bucket"
-          without-no-select
-          @change="value => updateFilter('bucket', value || 'day')" />
-      </div>
+        <div class="admin-profile-activity__filter">
+          <span class="admin-profile-activity__filter-label">
+            {{ resolveText("admin.profile.activity.filters.to", "To") }}
+          </span>
+          <UiInput
+            type="date"
+            :value="toDateInputValue(filters.date_to)"
+            @input="value => updateFilter('date_to', value)" />
+        </div>
 
-      <div class="admin-profile-activity__filter">
-        <span class="admin-profile-activity__filter-label">
-          {{ resolveText("admin.profile.activity.filters.device", "Device") }}
-        </span>
-        <UiSelect
-          :data="deviceOptions"
-          :value="filters.device_type"
-          @change="value => updateFilter('device_type', value || '')" />
-      </div>
+        <div class="admin-profile-activity__filter">
+          <span class="admin-profile-activity__filter-label">
+            {{ resolveText("admin.profile.activity.filters.bucket", "Step") }}
+          </span>
+          <UiSelect
+            :data="bucketOptions"
+            :value="filters.bucket"
+            without-no-select
+            @change="value => updateFilter('bucket', value || 'day')" />
+        </div>
 
-      <div class="admin-profile-activity__filter">
-        <span class="admin-profile-activity__filter-label">
-          {{ resolveText("admin.profile.activity.filters.browser", "Browser") }}
-        </span>
-        <UiSelect
-          :data="browserOptions"
-          :value="filters.browser"
-          @change="value => updateFilter('browser', value || '')" />
-      </div>
+        <div class="admin-profile-activity__filter">
+          <span class="admin-profile-activity__filter-label">
+            {{ resolveText("admin.profile.activity.filters.device", "Device") }}
+          </span>
+          <UiSelect
+            :data="deviceOptions"
+            :value="filters.device_type"
+            @change="value => updateFilter('device_type', value || '')" />
+        </div>
 
-      <div class="admin-profile-activity__filter">
-        <span class="admin-profile-activity__filter-label">
-          {{ resolveText("admin.profile.activity.filters.os", "OS") }}
-        </span>
-        <UiSelect
-          :data="osOptions"
-          :value="filters.os"
-          @change="value => updateFilter('os', value || '')" />
-      </div>
+        <div class="admin-profile-activity__filter">
+          <span class="admin-profile-activity__filter-label">
+            {{ resolveText("admin.profile.activity.filters.browser", "Browser") }}
+          </span>
+          <UiSelect
+            :data="browserOptions"
+            :value="filters.browser"
+            @change="value => updateFilter('browser', value || '')" />
+        </div>
 
-      <UiButtonDefault
-        state="info"
-        :isLoading="isLoading"
-        @click="loadActivity">
-        {{ resolveText("admin.profile.actions.refresh", "Refresh") }}
-      </UiButtonDefault>
-    </div>
+        <div class="admin-profile-activity__filter">
+          <span class="admin-profile-activity__filter-label">
+            {{ resolveText("admin.profile.activity.filters.os", "OS") }}
+          </span>
+          <UiSelect
+            :data="osOptions"
+            :value="filters.os"
+            @change="value => updateFilter('os', value || '')" />
+        </div>
+
+        <UiButtonDefault
+          state="info"
+          :isLoading="isLoading"
+          @click="loadActivity">
+          {{ resolveText("admin.profile.actions.refresh", "Refresh") }}
+        </UiButtonDefault>
+      </div>
+    </PanelDefault>
 
     <div class="admin-profile-activity__summary-grid">
       <PanelDefault
@@ -697,7 +699,17 @@
   .admin-profile-activity {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 22px;
+  }
+
+  .admin-profile-activity__toolbar {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background:
+      radial-gradient(circle at top left, rgba(113, 158, 223, 0.14), transparent 32%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
   }
 
   .admin-profile-activity__presets {
@@ -708,17 +720,22 @@
 
   .admin-profile-activity__preset-button {
     border: 1px solid rgba(113, 158, 223, 0.18);
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.035);
     color: var(--ui-text-secondary);
     border-radius: 999px;
-    padding: 8px 12px;
-    transition: 0.2s ease;
+    padding: 9px 14px;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .admin-profile-activity__preset-button--active {
     color: var(--ui-text-main);
     border-color: rgba(113, 158, 223, 0.48);
     background: rgba(113, 158, 223, 0.12);
+    transform: translateY(-1px);
   }
 
   .admin-profile-activity__filters {
@@ -732,6 +749,10 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.04);
   }
 
   .admin-profile-activity__filter-label,
@@ -744,18 +765,47 @@
   .admin-profile-activity__summary-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 12px;
+    gap: 14px;
   }
 
   .admin-profile-activity__summary-card,
   .admin-profile-activity__panel {
-    padding: 20px;
+    padding: 22px;
   }
 
   .admin-profile-activity__summary-card {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)), rgba(7, 18, 53, 0.34);
+  }
+
+  .admin-profile-activity__summary-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: 999px;
+    background: rgba(113, 158, 223, 0.7);
+  }
+
+  .admin-profile-activity__summary-card:nth-child(2)::before {
+    background: rgba(113, 223, 173, 0.76);
+  }
+
+  .admin-profile-activity__summary-card:nth-child(3)::before {
+    background: rgba(255, 173, 66, 0.82);
+  }
+
+  .admin-profile-activity__summary-card:nth-child(4)::before {
+    background: rgba(255, 99, 132, 0.78);
+  }
+
+  .admin-profile-activity__summary-card:nth-child(5)::before {
+    background: rgba(128, 169, 255, 0.82);
   }
 
   .admin-profile-activity__summary-value,
@@ -767,13 +817,14 @@
   .admin-profile-activity__logs-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+    gap: 22px;
   }
 
   .admin-profile-activity__panel {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)), rgba(7, 18, 53, 0.24);
   }
 
   .admin-profile-activity__panel-header {
@@ -786,13 +837,13 @@
   .admin-profile-activity__breakdowns {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
   }
 
   .admin-profile-activity__breakdown-block {
-    border-radius: 16px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: 18px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.06);
     display: flex;
     flex-direction: column;
@@ -820,12 +871,13 @@
   }
 
   .admin-profile-activity__empty-state {
-    min-height: 140px;
+    min-height: 144px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 18px;
+    border-radius: 20px;
     border: 1px dashed rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .admin-profile-activity__sessions,
@@ -837,13 +889,28 @@
 
   .admin-profile-activity__session-card,
   .admin-profile-activity__log-card {
-    padding: 14px 16px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.03);
+    position: relative;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.06);
     display: flex;
     flex-direction: column;
     gap: 10px;
+    overflow: hidden;
+  }
+
+  .admin-profile-activity__session-card::before,
+  .admin-profile-activity__log-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: rgba(113, 158, 223, 0.55);
+  }
+
+  .admin-profile-activity__log-card::before {
+    background: rgba(113, 223, 173, 0.5);
   }
 
   .admin-profile-activity__session-top,
@@ -867,6 +934,7 @@
   .admin-profile-activity__log-time {
     color: var(--ui-text-secondary);
     white-space: nowrap;
+    font-size: 13px;
   }
 
   .admin-profile-activity__session-agent,
@@ -895,6 +963,12 @@
     .admin-profile-activity__filters,
     .admin-profile-activity__summary-grid {
       grid-template-columns: 1fr;
+    }
+
+    .admin-profile-activity__toolbar,
+    .admin-profile-activity__summary-card,
+    .admin-profile-activity__panel {
+      padding: 18px;
     }
 
     .admin-profile-activity__session-top,
