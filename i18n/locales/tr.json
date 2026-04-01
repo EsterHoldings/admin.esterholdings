@@ -1395,7 +1395,183 @@
       "recentUsers": "Recent users",
       "recentPayments": "Recent payments"
     },
-    "profile": {},
+    "profile": {
+      "title": "Admin profile",
+      "subtitle": "Manage your administrator account, security, and activity.",
+      "tabs": {
+        "general": "General",
+        "security": "Security",
+        "activity": "Activity"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "save": "Save changes",
+        "chooseFile": "Choose file",
+        "uploadPhoto": "Upload photo",
+        "selectPhoto": "Use photo",
+        "deletePhoto": "Delete",
+        "updatePassword": "Update password",
+        "sendGeneratedPassword": "Generate and send password",
+        "enableTwoFactor": "Enable 2FA",
+        "disableTwoFactor": "Disable 2FA"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline"
+      },
+      "summary": {
+        "nickname": "Nickname",
+        "lastSeen": "Last seen",
+        "twoFactor": "2FA",
+        "roles": "Roles"
+      },
+      "errors": {
+        "load": "Failed to load admin profile.",
+        "save": "Failed to save admin profile."
+      },
+      "general": {
+        "sections": {
+          "photo": "Profile photo",
+          "history": "Photo history",
+          "details": "General"
+        },
+        "hints": {
+          "fileSupport": "Upload JPG, JPEG or PNG up to 5 MB.",
+          "photoHistory": "Reuse any previously uploaded image or remove it from history.",
+          "profileDetails": "Update the administrator account details used across the admin panel."
+        },
+        "fields": {
+          "nickname": "Nickname",
+          "email": "Email",
+          "firstName": "First name",
+          "middleName": "Middle name",
+          "lastName": "Last name",
+          "birthdate": "Birthdate",
+          "phone": "Phone",
+          "country": "Country",
+          "state": "State / region",
+          "city": "City",
+          "address": "Address",
+          "postalCode": "Postal code"
+        },
+        "labels": {
+          "selectedFile": "Selected file",
+          "currentPhoto": "Current"
+        },
+        "empty": {
+          "photoHistory": "No uploaded photos yet."
+        },
+        "messages": {
+          "profileUpdated": "Profile updated successfully.",
+          "photoUploaded": "Profile photo uploaded successfully.",
+          "photoSelected": "Profile photo updated successfully.",
+          "photoDeleted": "Profile photo deleted successfully.",
+          "photoDeleteConfirm": "Delete this photo from history?"
+        },
+        "errors": {
+          "invalidFileType": "Please select an image file.",
+          "invalidFileSize": "Image size must be 5 MB or less.",
+          "photoUpload": "Failed to upload profile photo.",
+          "photoSelect": "Failed to select profile photo.",
+          "photoDelete": "Failed to delete profile photo."
+        }
+      },
+      "security": {
+        "sections": {
+          "password": "Password",
+          "recovery": "Password recovery",
+          "twoFactor": "Two-factor authentication"
+        },
+        "descriptions": {
+          "password": "Change the current password for this administrator account.",
+          "recovery": "Generate a new password automatically and send it to the administrator email.",
+          "recoveryNote": "The current password will be replaced immediately after the email is sent.",
+          "twoFactor": "Protect the admin login with a one-time code from an authenticator app."
+        },
+        "fields": {
+          "currentPassword": "Current password",
+          "newPassword": "New password",
+          "confirmPassword": "Confirm password",
+          "code": "Authenticator code"
+        },
+        "twoFactor": {
+          "enabled": "Enabled",
+          "disabled": "Disabled"
+        },
+        "loading": {
+          "qr": "Loading QR code..."
+        },
+        "placeholders": {
+          "enabled": "Two-factor authentication is already enabled for this account."
+        },
+        "messages": {
+          "passwordUpdated": "Password updated successfully.",
+          "generatedPasswordSent": "A new password was generated and sent by email.",
+          "twoFactorEnabled": "Two-factor authentication enabled.",
+          "twoFactorDisabled": "Two-factor authentication disabled."
+        },
+        "errors": {
+          "password": "Failed to update password.",
+          "generatedPassword": "Failed to generate and send a new password.",
+          "twoFactorEnable": "Failed to enable 2FA.",
+          "twoFactorDisable": "Failed to disable 2FA.",
+          "qr": "Failed to generate QR code."
+        }
+      },
+      "activity": {
+        "filters": {
+          "from": "From",
+          "to": "To",
+          "bucket": "Step",
+          "device": "Device",
+          "browser": "Browser",
+          "os": "OS",
+          "day": "By day",
+          "hour": "By hour"
+        },
+        "sections": {
+          "chart": "Online activity",
+          "breakdowns": "Environment breakdown",
+          "sessions": "Online sessions",
+          "actions": "Admin actions",
+          "chatConnections": "Chat connections"
+        },
+        "descriptions": {
+          "chart": "Monitor online time and active sessions across the selected period.",
+          "breakdowns": "Which devices, browsers and operating systems were used most often.",
+          "sessions": "Recent presence sessions in the admin panel with technical details.",
+          "actions": "Profile updates, security changes and write actions from the admin panel.",
+          "chatConnections": "All connections and disconnections from support chats."
+        },
+        "summary": {
+          "onlineNow": "Online now",
+          "totalHours": "Total online time",
+          "periodHint": "For the selected period",
+          "sessions": "Sessions",
+          "avgSession": "Average session",
+          "actions": "Actions",
+          "lastActivity": "Last activity",
+          "chatConnections": "Chat connections",
+          "liveSupport": "Support chat connect/disconnect events"
+        },
+        "empty": {
+          "breakdowns": "No data yet.",
+          "sessions": "No online sessions recorded yet.",
+          "actions": "No actions recorded yet.",
+          "chatConnections": "No chat connections recorded yet."
+        },
+        "labels": {
+          "unknown": "Unknown"
+        },
+        "series": {
+          "hours": "Online hours",
+          "sessions": "Sessions"
+        },
+        "errors": {
+          "load": "Failed to load activity."
+        }
+      }
+    },
     "referral": {},
     "settings": {
       "title": "Ayarlar",

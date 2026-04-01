@@ -32,6 +32,7 @@ import AdminClientsModule from "~/composables/core/modules/adminModules/clients/
 import AdminDashboardModule from "~/composables/core/modules/adminModules/dashboard/dashboard.module";
 import AdminDocumentsModule from "~/composables/core/modules/adminModules/documents/documents.module";
 import AdminNotificationsModule from "~/composables/core/modules/adminModules/notifications/notifications.module";
+import AdminProfileModule from "~/composables/core/modules/adminModules/profile/profile.module";
 import AdminVerificationRequests from "~/composables/core/modules/adminModules/verificationRequests/verificationRequests.module";
 import TicketsPresenceModule from "~/composables/core/modules/ticketsPresence/ticketsPresence.module";
 
@@ -71,6 +72,7 @@ export interface ICoreModules {
     dashboard: AdminDashboardModule;
     documents: AdminDocumentsModule;
     notifications: AdminNotificationsModule;
+    profile: AdminProfileModule;
     verificationRequests: AdminVerificationRequests;
     tickets: AdminTicketsModule;
   };
@@ -113,6 +115,7 @@ export const useAppCore = (): ICoreModules => {
       dashboard: new AdminDashboardModule(),
       documents: new AdminDocumentsModule(),
       notifications: new AdminNotificationsModule(),
+      profile: new AdminProfileModule(),
       verificationRequests: new AdminVerificationRequests(),
       tickets: new AdminTicketsModule(),
     },

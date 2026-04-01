@@ -19,6 +19,21 @@ type AdminUser = {
   nickname?: string | null;
   email?: string | null;
   name?: string | null;
+  initials?: string | null;
+  first_name?: string | null;
+  mid_name?: string | null;
+  last_name?: string | null;
+  birthdate?: string | null;
+  phone?: string | null;
+  country?: string | null;
+  state?: string | null;
+  city?: string | null;
+  address?: string | null;
+  postal_code?: string | null;
+  photo_path?: string | null;
+  two_factor_enabled?: boolean | null;
+  is_online?: boolean | null;
+  last_seen_at?: string | null;
   user_id?: string | null;
   photo_url?: string | null;
   avatar_url?: string | null;
@@ -132,6 +147,17 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     photoUrl.value = typeof resolvedPhoto === "string" ? resolvedPhoto : "";
   }
 
+  function setPhotoUrl(url: string) {
+    photoUrl.value = url;
+
+    if (user.value && typeof user.value === "object") {
+      user.value = {
+        ...user.value,
+        photo_url: url,
+      };
+    }
+  }
+
   async function initAuth(options: { force?: boolean } = {}) {
     if (!process.client) return;
     if (!accessToken.value) {
@@ -238,6 +264,7 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     roles,
     setAccessToken,
     setPermissions,
+    setPhotoUrl,
     setRoles,
     setUser,
     user,
