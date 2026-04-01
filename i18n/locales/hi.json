@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "खाता अवलोकन",
-            "items": [
-              "मानक",
-              "प्रो",
-              "इस्लामिक",
-              "डेमो"
-            ]
+            "items": ["मानक", "प्रो", "इस्लामिक", "डेमो"]
           },
           {
             "section": "बाजार उपकरण",
-            "items": [
-              "विदेशी मुद्रा",
-              "धातु",
-              "क्रिप्टो CFD",
-              "सूचकांक",
-              "शेयर",
-              "ऊर्जा",
-              "ETF"
-            ]
+            "items": ["विदेशी मुद्रा", "धातु", "क्रिप्टो CFD", "सूचकांक", "शेयर", "ऊर्जा", "ETF"]
           },
           {
             "section": "प्लेटफॉर्म",
-            "items": [
-              "MT4 डेस्कटॉप",
-              "MT4 मोबाइल"
-            ]
+            "items": ["MT4 डेस्कटॉप", "MT4 मोबाइल"]
           },
           {
             "section": "व्यापार की शर्तें",
-            "items": [
-              "खाता जमा",
-              "धनराशि निकासी"
-            ]
+            "items": ["खाता जमा", "धनराशि निकासी"]
           },
           {
             "section": "ट्रेडर HUB",
-            "items": [
-              "ट्रेडर ब्लॉग",
-              "आर्थिक कैलेंडर",
-              "बाजार समाचार"
-            ]
+            "items": ["ट्रेडर ब्लॉग", "आर्थिक कैलेंडर", "बाजार समाचार"]
           },
           {
             "section": "TANDEM व्यापार",
-            "items": [
-              "व्यापारी के लिए",
-              "निवेशक के लिए"
-            ]
+            "items": ["व्यापारी के लिए", "निवेशक के लिए"]
           }
         ],
         "Partnership": [
           {
             "section": "साझेदारी",
-            "items": [
-              "IB/साझेदारी पंजीकरण",
-              "IB आय कैसे उत्पन्न करते हैं"
-            ]
+            "items": ["IB/साझेदारी पंजीकरण", "IB आय कैसे उत्पन्न करते हैं"]
           }
         ],
         "Company": [
           {
             "section": "कंपनी",
-            "items": [
-              "कंपनी के बारे में",
-              "दस्तावेज़",
-              "कंपनी समाचार",
-              "संपर्क",
-              "करियर"
-            ]
+            "items": ["कंपनी के बारे में", "दस्तावेज़", "कंपनी समाचार", "संपर्क", "करियर"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "डेमो",
           "subtitle": "खाता",
           "description": "आभासी धनराशि के साथ जोखिम-मुक्त व्यापार, शुरुआती लोगों के लिए बाजारों का पता लगाने के लिए बिल्कुल सही।",
-          "features": [
-            "1:100 तक का लीवरेज",
-            "0.0 पिप्स से स्प्रेड",
-            "जमा की आवश्यकता नहीं"
-          ],
+          "features": ["1:100 तक का लीवरेज", "0.0 पिप्स से स्प्रेड", "जमा की आवश्यकता नहीं"],
           "buttonText": "अभी डेमो आज़माएं",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "मानक",
           "subtitle": "खाता",
           "description": "कम शुल्क के साथ स्पॉट बाजारों तक आसान पहुंच — शुरुआती और सक्रिय व्यापारियों के लिए आदर्श।",
-          "features": [
-            "1:100 तक का लीवरेज",
-            "1.2 पिप्स से स्प्रेड",
-            "पहली जमा $50"
-          ],
+          "features": ["1:100 तक का लीवरेज", "1.2 पिप्स से स्प्रेड", "पहली जमा $50"],
           "buttonText": "मानक खाता खोलें",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "प्रो",
           "subtitle": "खाता",
           "description": "तंग स्प्रेड, उच्च लीवरेज और प्रत्येक व्यापार पर पूर्ण नियंत्रण का अनुभव करें।",
-          "features": [
-            "1:100 तक का लीवरेज",
-            "0.0 पिप्स से स्प्रेड",
-            "पहली जमा $1000"
-          ],
+          "features": ["1:100 तक का लीवरेज", "0.0 पिप्स से स्प्रेड", "पहली जमा $1000"],
           "buttonText": "प्रो की तरह व्यापार करें",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "टैंडम",
           "subtitle": "खाता",
           "description": "साथी, गुरु या सह-व्यापारी के साथ जोड़ी बनाएं और सिंक्रनाइज़्ड रणनीतियों के साथ एक साथ बढ़ें।",
-          "features": [
-            "1:100 तक का लीवरेज",
-            "साझा खाता पहुंच",
-            "वास्तविक समय व्यापार मिररिंग"
-          ],
+          "features": ["1:100 तक का लीवरेज", "साझा खाता पहुंच", "वास्तविक समय व्यापार मिररिंग"],
           "buttonText": "एक साथ व्यापार करें",
           "isRecommended": false
         },
@@ -291,11 +240,7 @@
           "title": "इस्लामिक",
           "subtitle": "खाता",
           "description": "स्वैप-मुक्त। शरिया-अनुपालन। ब्याज के बिना व्यापार, पूर्ण प्लेटफॉर्म पहुंच के साथ।",
-          "features": [
-            "1:100 तक का लीवरेज",
-            "कोई स्वैप/ब्याज शुल्क नहीं",
-            "सभी ट्रेडिंग उपकरणों तक पहुंच"
-          ],
+          "features": ["1:100 तक का लीवरेज", "कोई स्वैप/ब्याज शुल्क नहीं", "सभी ट्रेडिंग उपकरणों तक पहुंच"],
           "buttonText": "इस्लामिक खाता खोलें",
           "isRecommended": false
         }
@@ -486,10 +431,7 @@
         "career": {
           "title": "करियर",
           "subtitle": "वर्तमान में कंपनी निम्नलिखित विशेषज्ञों की तलाश कर रही है:",
-          "positions": [
-            "बिक्री प्रबंधक",
-            "विश्लेषण विभाग के प्रमुख"
-          ],
+          "positions": ["बिक्री प्रबंधक", "विश्लेषण विभाग के प्रमुख"],
           "cta": "यदि आप गतिशील वृद्धि के लिए तैयार हैं, आप महत्वाकांक्षी और प्रतिभाशाली हैं, तो अपना सारांश भेजें।",
           "button": "CV भेजें"
         },
@@ -686,30 +628,15 @@
       "description": "Ester का मुख्य लक्ष्य खुदरा और कॉर्पोरेट व्यापारियों के लिए सर्वोत्तम और सबसे पारदर्शी स्थितियां बनाना है।",
       "trading": {
         "title": "व्यापार",
-        "items": [
-          "खाता अवलोकन",
-          "बाजार",
-          "प्लेटफॉर्म",
-          "व्यापार की शर्तें",
-          "टैंडम ट्रेडिंग"
-        ]
+        "items": ["खाता अवलोकन", "बाजार", "प्लेटफॉर्म", "व्यापार की शर्तें", "टैंडम ट्रेडिंग"]
       },
       "partnership": {
         "title": "साझेदारी",
-        "items": [
-          "IB/साझेदारी पंजीकरण",
-          "IB आय कैसे उत्पन्न करते हैं"
-        ]
+        "items": ["IB/साझेदारी पंजीकरण", "IB आय कैसे उत्पन्न करते हैं"]
       },
       "company": {
         "title": "कंपनी",
-        "items": [
-          "कंपनी के बारे में",
-          "दस्तावेज़",
-          "कंपनी समाचार",
-          "संपर्क",
-          "करियर"
-        ]
+        "items": ["कंपनी के बारे में", "दस्तावेज़", "कंपनी समाचार", "संपर्क", "करियर"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1500,7 +1427,7 @@
     },
     "withdrawalRequests": {
       "title": "Withdrawal requests",
-      "subtitle": "Moderate client payout requests, update statuses and edit payout data before manual processing.",
+      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
       "searchPlaceholder": "Search by ID, client, comment or account",
       "empty": "No withdrawal requests found.",
       "fields": {
@@ -1510,7 +1437,11 @@
         "amount": "Amount",
         "createdAt": "Created at",
         "clientComment": "Client comment",
-        "adminComment": "Admin comment"
+        "adminComment": "Admin comment",
+        "transferRoute": "Transfer route",
+        "execution": "Execution",
+        "documents": "Documents",
+        "requisitesComment": "Requisites comment"
       },
       "actions": {
         "openClient": "Open client",
@@ -1520,17 +1451,24 @@
         "processing": "To processing",
         "successful": "Successful",
         "failed": "Failed",
-        "reject": "Reject"
+        "reject": "Reject",
+        "successfulManual": "Confirm without transfer",
+        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
         "statusUpdated": "Withdrawal request status updated.",
         "loadError": "Failed to load withdrawal requests.",
         "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request."
+        "saveError": "Failed to update withdrawal request.",
+        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
+        "confirmStatusChange": "Change request",
+        "confirmStatusChangeTo": "to status"
       },
       "filters": {
-        "allStatuses": "All statuses"
+        "allStatuses": "All statuses",
+        "currentStatus": "Status filter",
+        "reset": "Reset"
       },
       "stats": {
         "total": "Total"
@@ -1546,6 +1484,13 @@
         "account": "Choose an account.",
         "paymentDetail": "Choose approved payment details.",
         "amount": "Enter a valid amount."
+      },
+      "execution": {
+        "completed": "Executed in MT4",
+        "skipped": "Confirmed without automatic transfer",
+        "failed": "Automatic transfer failed",
+        "cancelled": "Cancelled",
+        "pending": "Awaiting admin decision"
       }
     }
   },

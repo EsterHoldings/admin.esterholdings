@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "계좌 개요",
-            "items": [
-              "스탠다드",
-              "프로",
-              "이슬람",
-              "데모"
-            ]
+            "items": ["스탠다드", "프로", "이슬람", "데모"]
           },
           {
             "section": "시장 상품",
-            "items": [
-              "외환",
-              "귀금속",
-              "암호화폐 CFD",
-              "지수",
-              "주식",
-              "에너지",
-              "ETF"
-            ]
+            "items": ["외환", "귀금속", "암호화폐 CFD", "지수", "주식", "에너지", "ETF"]
           },
           {
             "section": "플랫폼",
-            "items": [
-              "MT4 데스크톱",
-              "MT4 모바일"
-            ]
+            "items": ["MT4 데스크톱", "MT4 모바일"]
           },
           {
             "section": "거래 조건",
-            "items": [
-              "계좌 입금",
-              "출금"
-            ]
+            "items": ["계좌 입금", "출금"]
           },
           {
             "section": "트레이더 HUB",
-            "items": [
-              "트레이더 블로그",
-              "경제 캘린더",
-              "시장 뉴스"
-            ]
+            "items": ["트레이더 블로그", "경제 캘린더", "시장 뉴스"]
           },
           {
             "section": "TANDEM 거래",
-            "items": [
-              "트레이더용",
-              "투자자용"
-            ]
+            "items": ["트레이더용", "투자자용"]
           }
         ],
         "Partnership": [
           {
             "section": "파트너십",
-            "items": [
-              "IB/파트너십 등록",
-              "IB 수익 창출 방법"
-            ]
+            "items": ["IB/파트너십 등록", "IB 수익 창출 방법"]
           }
         ],
         "Company": [
           {
             "section": "회사",
-            "items": [
-              "회사 소개",
-              "문서",
-              "회사 뉴스",
-              "연락처",
-              "채용"
-            ]
+            "items": ["회사 소개", "문서", "회사 뉴스", "연락처", "채용"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "데모",
           "subtitle": "계좌",
           "description": "가상 자금으로 무위험 거래, 초보자가 시장을 탐색하기에 완벽합니다.",
-          "features": [
-            "최대 1:100 레버리지",
-            "0.0핍부터 스프레드",
-            "입금 불필요"
-          ],
+          "features": ["최대 1:100 레버리지", "0.0핍부터 스프레드", "입금 불필요"],
           "buttonText": "지금 데모 체험",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "스탠다드",
           "subtitle": "계좌",
           "description": "낮은 수수료로 현물 시장에 쉽게 접근 — 초보자와 활발한 트레이더에게 이상적입니다.",
-          "features": [
-            "최대 1:100 레버리지",
-            "1.2핍부터 스프레드",
-            "최초 입금 $50"
-          ],
+          "features": ["최대 1:100 레버리지", "1.2핍부터 스프레드", "최초 입금 $50"],
           "buttonText": "스탠다드 계좌 개설",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "프로",
           "subtitle": "계좌",
           "description": "타이트한 스프레드, 더 높은 레버리지, 모든 거래에 대한 완전한 제어를 경험하세요.",
-          "features": [
-            "최대 1:100 레버리지",
-            "0.0핍부터 스프레드",
-            "최초 입금 $1000"
-          ],
+          "features": ["최대 1:100 레버리지", "0.0핍부터 스프레드", "최초 입금 $1000"],
           "buttonText": "프로처럼 거래",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "탠덤",
           "subtitle": "계좌",
           "description": "파트너, 멘토 또는 공동 트레이더와 짝을 이루고 동기화된 전략으로 함께 성장하세요.",
-          "features": [
-            "최대 1:100 레버리지",
-            "공유 계좌 접근",
-            "실시간 거래 미러링"
-          ],
+          "features": ["최대 1:100 레버리지", "공유 계좌 접근", "실시간 거래 미러링"],
           "buttonText": "함께 거래",
           "isRecommended": false
         },
@@ -291,11 +240,7 @@
           "title": "이슬람",
           "subtitle": "계좌",
           "description": "스왑 없음. 샤리아 준수. 이자 없이 거래, 플랫폼에 완전 접근.",
-          "features": [
-            "최대 1:100 레버리지",
-            "스왑/이자 수수료 없음",
-            "모든 거래 상품 접근"
-          ],
+          "features": ["최대 1:100 레버리지", "스왑/이자 수수료 없음", "모든 거래 상품 접근"],
           "buttonText": "이슬람 계좌 개설",
           "isRecommended": false
         }
@@ -486,10 +431,7 @@
         "career": {
           "title": "채용",
           "subtitle": "현재 회사는 다음 전문가를 찾고 있습니다:",
-          "positions": [
-            "영업 관리자",
-            "분석 부서장"
-          ],
+          "positions": ["영업 관리자", "분석 부서장"],
           "cta": "역동적인 성장을 준비하고 있고, 야심차고 재능이 있다면 이력서를 보내주세요.",
           "button": "이력서 보내기"
         },
@@ -686,30 +628,15 @@
       "description": "Ester의 주요 목표는 소매 및 기업 트레이더를 위한 최상의 가장 투명한 조건을 만드는 것입니다.",
       "trading": {
         "title": "거래",
-        "items": [
-          "계좌 개요",
-          "시장",
-          "플랫폼",
-          "거래 조건",
-          "탠덤 거래"
-        ]
+        "items": ["계좌 개요", "시장", "플랫폼", "거래 조건", "탠덤 거래"]
       },
       "partnership": {
         "title": "파트너십",
-        "items": [
-          "IB/파트너십 등록",
-          "IB 수익 창출 방법"
-        ]
+        "items": ["IB/파트너십 등록", "IB 수익 창출 방법"]
       },
       "company": {
         "title": "회사",
-        "items": [
-          "회사 소개",
-          "문서",
-          "회사 뉴스",
-          "연락처",
-          "채용"
-        ]
+        "items": ["회사 소개", "문서", "회사 뉴스", "연락처", "채용"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1500,7 +1427,7 @@
     },
     "withdrawalRequests": {
       "title": "Withdrawal requests",
-      "subtitle": "Moderate client payout requests, update statuses and edit payout data before manual processing.",
+      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
       "searchPlaceholder": "Search by ID, client, comment or account",
       "empty": "No withdrawal requests found.",
       "fields": {
@@ -1510,7 +1437,11 @@
         "amount": "Amount",
         "createdAt": "Created at",
         "clientComment": "Client comment",
-        "adminComment": "Admin comment"
+        "adminComment": "Admin comment",
+        "transferRoute": "Transfer route",
+        "execution": "Execution",
+        "documents": "Documents",
+        "requisitesComment": "Requisites comment"
       },
       "actions": {
         "openClient": "Open client",
@@ -1520,17 +1451,24 @@
         "processing": "To processing",
         "successful": "Successful",
         "failed": "Failed",
-        "reject": "Reject"
+        "reject": "Reject",
+        "successfulManual": "Confirm without transfer",
+        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
         "statusUpdated": "Withdrawal request status updated.",
         "loadError": "Failed to load withdrawal requests.",
         "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request."
+        "saveError": "Failed to update withdrawal request.",
+        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
+        "confirmStatusChange": "Change request",
+        "confirmStatusChangeTo": "to status"
       },
       "filters": {
-        "allStatuses": "All statuses"
+        "allStatuses": "All statuses",
+        "currentStatus": "Status filter",
+        "reset": "Reset"
       },
       "stats": {
         "total": "Total"
@@ -1546,6 +1484,13 @@
         "account": "Choose an account.",
         "paymentDetail": "Choose approved payment details.",
         "amount": "Enter a valid amount."
+      },
+      "execution": {
+        "completed": "Executed in MT4",
+        "skipped": "Confirmed without automatic transfer",
+        "failed": "Automatic transfer failed",
+        "cancelled": "Cancelled",
+        "pending": "Awaiting admin decision"
       }
     }
   },

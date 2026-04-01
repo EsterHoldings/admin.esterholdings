@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "账户概览",
-            "items": [
-              "标准",
-              "专业",
-              "伊斯兰",
-              "模拟"
-            ]
+            "items": ["标准", "专业", "伊斯兰", "模拟"]
           },
           {
             "section": "市场工具",
-            "items": [
-              "外汇",
-              "贵金属",
-              "加密货币差价合约",
-              "指数",
-              "股票",
-              "能源",
-              "ETF"
-            ]
+            "items": ["外汇", "贵金属", "加密货币差价合约", "指数", "股票", "能源", "ETF"]
           },
           {
             "section": "平台",
-            "items": [
-              "MT4桌面版",
-              "MT4移动版"
-            ]
+            "items": ["MT4桌面版", "MT4移动版"]
           },
           {
             "section": "交易条件",
-            "items": [
-              "账户充值",
-              "资金提取"
-            ]
+            "items": ["账户充值", "资金提取"]
           },
           {
             "section": "交易者中心",
-            "items": [
-              "交易者博客",
-              "经济日历",
-              "市场新闻"
-            ]
+            "items": ["交易者博客", "经济日历", "市场新闻"]
           },
           {
             "section": "TANDEM交易",
-            "items": [
-              "交易者",
-              "投资者"
-            ]
+            "items": ["交易者", "投资者"]
           }
         ],
         "Partnership": [
           {
             "section": "合作伙伴",
-            "items": [
-              "注册IB/合作伙伴",
-              "IB如何产生收入"
-            ]
+            "items": ["注册IB/合作伙伴", "IB如何产生收入"]
           }
         ],
         "Company": [
           {
             "section": "公司",
-            "items": [
-              "关于公司",
-              "文件",
-              "公司新闻",
-              "联系方式",
-              "职业机会"
-            ]
+            "items": ["关于公司", "文件", "公司新闻", "联系方式", "职业机会"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "模拟",
           "subtitle": "账户",
           "description": "使用虚拟资金进行无风险交易，非常适合初学者探索市场。",
-          "features": [
-            "杠杆高达1:100",
-            "点差从0.0点起",
-            "无需存款"
-          ],
+          "features": ["杠杆高达1:100", "点差从0.0点起", "无需存款"],
           "buttonText": "立即试用模拟",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "标准",
           "subtitle": "账户",
           "description": "以低费用轻松进入现货市场——非常适合初学者和活跃交易者。",
-          "features": [
-            "杠杆高达1:100",
-            "点差从1.2点起",
-            "首次存款$50"
-          ],
+          "features": ["杠杆高达1:100", "点差从1.2点起", "首次存款$50"],
           "buttonText": "开设标准账户",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "专业",
           "subtitle": "账户",
           "description": "体验紧密点差、更高杠杆和对每笔交易的完全控制。",
-          "features": [
-            "杠杆高达1:100",
-            "点差从0.0点起",
-            "首次存款$1000"
-          ],
+          "features": ["杠杆高达1:100", "点差从0.0点起", "首次存款$1000"],
           "buttonText": "像专业人士一样交易",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "双人",
           "subtitle": "账户",
           "description": "与合作伙伴、导师或共同交易者配对，通过同步策略共同成长。",
-          "features": [
-            "杠杆高达1:100",
-            "共享账户访问",
-            "实时交易镜像"
-          ],
+          "features": ["杠杆高达1:100", "共享账户访问", "实时交易镜像"],
           "buttonText": "一起交易",
           "isRecommended": false
         },
@@ -291,11 +240,7 @@
           "title": "伊斯兰",
           "subtitle": "账户",
           "description": "无掉期。符合伊斯兰教法。无息交易，完全访问平台。",
-          "features": [
-            "杠杆高达1:100",
-            "无掉期/利息费用",
-            "访问所有交易工具"
-          ],
+          "features": ["杠杆高达1:100", "无掉期/利息费用", "访问所有交易工具"],
           "buttonText": "开设伊斯兰账户",
           "isRecommended": false
         }
@@ -486,10 +431,7 @@
         "career": {
           "title": "职业机会",
           "subtitle": "目前公司正在寻找以下专家：",
-          "positions": [
-            "销售经理",
-            "分析部门主管"
-          ],
+          "positions": ["销售经理", "分析部门主管"],
           "cta": "如果您准备好迎接动态增长，您雄心勃勃且有才华，请发送您的简历。",
           "button": "发送简历"
         },
@@ -574,11 +516,7 @@
         "agent_title": "代理计划",
         "agent_description": "从参与客户的交易活动中获得收入！由于互联网用户数量的动态增长，这在今天很容易实现。Ester Holdings公司最重要的优先事项是高水平的服务质量和形成长期关系。这将使您无需成为外汇市场的参与者，就能从参与成员的交易活动中获得稳定的佣金收入。",
         "agent_how_title": "如何运作？",
-        "agent_how_list": [
-          "为我们带来新客户",
-          "他们注册并赚钱",
-          "您将从他们的利润中获得佣金"
-        ],
+        "agent_how_list": ["为我们带来新客户", "他们注册并赚钱", "您将从他们的利润中获得佣金"],
         "agent_how_cta": "更多客户——更多利润",
         "franchising_title": "特许经营",
         "franchising_description_1": "Ester Holdings公司的合作伙伴从我们经验丰富的专家那里获得全面支持和个性化方法。我们可以选择符合您实际需求和个人目标的解决方案。请记住，我们公司的良好形象和无可挑剔的声誉也在为您工作。",
@@ -589,12 +527,7 @@
           "此外，您将获得在您的办公室提供的信息和咨询服务的所有收入。"
         ],
         "franchising_how_title": "如何做到这一点？",
-        "franchising_how_list": [
-          "发送申请",
-          "我们为您选择最佳解决方案",
-          "我们帮助实施",
-          "进行培训并提供支持"
-        ],
+        "franchising_how_list": ["发送申请", "我们为您选择最佳解决方案", "我们帮助实施", "进行培训并提供支持"],
         "button_receive": "获得特许经营",
         "generate_income_title": "IB如何产生收入",
         "register_ib_title": "注册IB/合作伙伴"
@@ -686,30 +619,15 @@
       "description": "Ester的主要目标是为零售和企业交易者创造最佳和最透明的条件。",
       "trading": {
         "title": "交易",
-        "items": [
-          "账户概览",
-          "市场",
-          "平台",
-          "交易条款",
-          "双人交易"
-        ]
+        "items": ["账户概览", "市场", "平台", "交易条款", "双人交易"]
       },
       "partnership": {
         "title": "合作伙伴",
-        "items": [
-          "注册IB/合作伙伴",
-          "IB如何产生收入"
-        ]
+        "items": ["注册IB/合作伙伴", "IB如何产生收入"]
       },
       "company": {
         "title": "公司",
-        "items": [
-          "关于公司",
-          "文件",
-          "公司新闻",
-          "联系方式",
-          "职业机会"
-        ]
+        "items": ["关于公司", "文件", "公司新闻", "联系方式", "职业机会"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1500,7 +1418,7 @@
     },
     "withdrawalRequests": {
       "title": "Withdrawal requests",
-      "subtitle": "Moderate client payout requests, update statuses and edit payout data before manual processing.",
+      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
       "searchPlaceholder": "Search by ID, client, comment or account",
       "empty": "No withdrawal requests found.",
       "fields": {
@@ -1510,7 +1428,11 @@
         "amount": "Amount",
         "createdAt": "Created at",
         "clientComment": "Client comment",
-        "adminComment": "Admin comment"
+        "adminComment": "Admin comment",
+        "transferRoute": "Transfer route",
+        "execution": "Execution",
+        "documents": "Documents",
+        "requisitesComment": "Requisites comment"
       },
       "actions": {
         "openClient": "Open client",
@@ -1520,17 +1442,24 @@
         "processing": "To processing",
         "successful": "Successful",
         "failed": "Failed",
-        "reject": "Reject"
+        "reject": "Reject",
+        "successfulManual": "Confirm without transfer",
+        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
         "statusUpdated": "Withdrawal request status updated.",
         "loadError": "Failed to load withdrawal requests.",
         "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request."
+        "saveError": "Failed to update withdrawal request.",
+        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
+        "confirmStatusChange": "Change request",
+        "confirmStatusChangeTo": "to status"
       },
       "filters": {
-        "allStatuses": "All statuses"
+        "allStatuses": "All statuses",
+        "currentStatus": "Status filter",
+        "reset": "Reset"
       },
       "stats": {
         "total": "Total"
@@ -1546,6 +1475,13 @@
         "account": "Choose an account.",
         "paymentDetail": "Choose approved payment details.",
         "amount": "Enter a valid amount."
+      },
+      "execution": {
+        "completed": "Executed in MT4",
+        "skipped": "Confirmed without automatic transfer",
+        "failed": "Automatic transfer failed",
+        "cancelled": "Cancelled",
+        "pending": "Awaiting admin decision"
       }
     }
   },

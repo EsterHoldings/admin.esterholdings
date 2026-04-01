@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "Kontoübersicht",
-            "items": [
-              "Standard",
-              "Pro",
-              "Islamisch",
-              "Demo"
-            ]
+            "items": ["Standard", "Pro", "Islamisch", "Demo"]
           },
           {
             "section": "Marktinstrumente",
-            "items": [
-              "Forex",
-              "Metalle",
-              "Krypto-CFDs",
-              "Indizes",
-              "Aktien",
-              "Energie",
-              "ETFs"
-            ]
+            "items": ["Forex", "Metalle", "Krypto-CFDs", "Indizes", "Aktien", "Energie", "ETFs"]
           },
           {
             "section": "Plattform",
-            "items": [
-              "MT4 Desktop",
-              "MT 4 Mobile"
-            ]
+            "items": ["MT4 Desktop", "MT 4 Mobile"]
           },
           {
             "section": "Handelsbedingungen",
-            "items": [
-              "Kontoaufladung",
-              "Auszahlung von Geldern"
-            ]
+            "items": ["Kontoaufladung", "Auszahlung von Geldern"]
           },
           {
             "section": "Trader's HUB",
-            "items": [
-              "Trader-Blog",
-              "Wirtschaftskalender",
-              "Marktnachrichten"
-            ]
+            "items": ["Trader-Blog", "Wirtschaftskalender", "Marktnachrichten"]
           },
           {
             "section": "TANDEM-Handel",
-            "items": [
-              "Für Trader",
-              "Für Investoren"
-            ]
+            "items": ["Für Trader", "Für Investoren"]
           }
         ],
         "Partnership": [
           {
             "section": "Partnerschaft",
-            "items": [
-              "IB/Partnerschaft registrieren",
-              "Wie IBs Einkommen generieren"
-            ]
+            "items": ["IB/Partnerschaft registrieren", "Wie IBs Einkommen generieren"]
           }
         ],
         "Company": [
           {
             "section": "Unternehmen",
-            "items": [
-              "Über das Unternehmen",
-              "Dokumente",
-              "Unternehmensnachrichten",
-              "Kontakte",
-              "Karriere"
-            ]
+            "items": ["Über das Unternehmen", "Dokumente", "Unternehmensnachrichten", "Kontakte", "Karriere"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "Demo",
           "subtitle": "Konto",
           "description": "Risikofreier Handel mit virtuellen Geldern, perfekt für Anfänger zur Erkundung der Märkte.",
-          "features": [
-            "Hebel bis zu 1:100",
-            "Spreads ab 0,0 Pips",
-            "Keine Einzahlung erforderlich"
-          ],
+          "features": ["Hebel bis zu 1:100", "Spreads ab 0,0 Pips", "Keine Einzahlung erforderlich"],
           "buttonText": "Demo jetzt ausprobieren",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "Standard",
           "subtitle": "Konto",
           "description": "Einfacher Zugang zu Spotmärkten mit niedrigen Gebühren – ideal für Anfänger und aktive Trader.",
-          "features": [
-            "Hebel bis zu 1:100",
-            "Spreads ab 1,2 Pips",
-            "Ersteinzahlung von 50 $"
-          ],
+          "features": ["Hebel bis zu 1:100", "Spreads ab 1,2 Pips", "Ersteinzahlung von 50 $"],
           "buttonText": "Standard-Konto eröffnen",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "Pro",
           "subtitle": "Konto",
           "description": "Erleben Sie enge Spreads, höheren Hebel und volle Kontrolle über jeden Trade.",
-          "features": [
-            "Hebel bis zu 1:100",
-            "Spreads ab 0,0 Pips",
-            "Ersteinzahlung von 1000 $"
-          ],
+          "features": ["Hebel bis zu 1:100", "Spreads ab 0,0 Pips", "Ersteinzahlung von 1000 $"],
           "buttonText": "Wie ein Profi handeln",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "Tandem",
           "subtitle": "Konto",
           "description": "Arbeiten Sie mit einem Partner, Mentor oder Co-Trader zusammen und wachsen Sie gemeinsam mit synchronisierten Strategien.",
-          "features": [
-            "Hebel bis zu 1:100",
-            "Gemeinsamer Kontozugriff",
-            "Echtzeit-Trade-Spiegelung"
-          ],
+          "features": ["Hebel bis zu 1:100", "Gemeinsamer Kontozugriff", "Echtzeit-Trade-Spiegelung"],
           "buttonText": "Gemeinsam handeln",
           "isRecommended": false
         },
@@ -291,11 +240,7 @@
           "title": "Islamisch",
           "subtitle": "Konto",
           "description": "Swap-frei. Scharia-konform. Handeln Sie ohne Zinsen mit vollem Plattformzugriff.",
-          "features": [
-            "Hebel bis zu 1:100",
-            "Keine Swap-/Zinsgebühren",
-            "Zugriff auf alle Handelsinstrumente"
-          ],
+          "features": ["Hebel bis zu 1:100", "Keine Swap-/Zinsgebühren", "Zugriff auf alle Handelsinstrumente"],
           "buttonText": "Islamisches Konto eröffnen",
           "isRecommended": false
         }
@@ -486,10 +431,7 @@
         "career": {
           "title": "Karriere",
           "subtitle": "Derzeit sucht das Unternehmen folgende Spezialisten:",
-          "positions": [
-            "VERTRIEBSLEITER",
-            "LEITER DER ANALYSE-ABTEILUNG"
-          ],
+          "positions": ["VERTRIEBSLEITER", "LEITER DER ANALYSE-ABTEILUNG"],
           "cta": "WENN SIE BEREIT SIND FÜR DYNAMISCHES WACHSTUM, EHRGEIZIG UND TALENTIERT SIND, SENDEN SIE IHREN LEBENSLAUF.",
           "button": "LEBENSLAUF SENDEN"
         },
@@ -686,30 +628,15 @@
       "description": "Das Hauptziel von Ester ist es, die besten und transparentesten Bedingungen für Privat- und Firmenhändler zu schaffen.",
       "trading": {
         "title": "Handel",
-        "items": [
-          "Kontoübersicht",
-          "Märkte",
-          "Plattform",
-          "Handelsbedingungen",
-          "Tandem-Handel"
-        ]
+        "items": ["Kontoübersicht", "Märkte", "Plattform", "Handelsbedingungen", "Tandem-Handel"]
       },
       "partnership": {
         "title": "Partnerschaft",
-        "items": [
-          "IB/Partnerschaft registrieren",
-          "Wie IBs Einkommen generieren"
-        ]
+        "items": ["IB/Partnerschaft registrieren", "Wie IBs Einkommen generieren"]
       },
       "company": {
         "title": "Unternehmen",
-        "items": [
-          "Über das Unternehmen",
-          "Dokumente",
-          "Unternehmensnachrichten",
-          "Kontakte",
-          "Karriere"
-        ]
+        "items": ["Über das Unternehmen", "Dokumente", "Unternehmensnachrichten", "Kontakte", "Karriere"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1500,7 +1427,7 @@
     },
     "withdrawalRequests": {
       "title": "Withdrawal requests",
-      "subtitle": "Moderate client payout requests, update statuses and edit payout data before manual processing.",
+      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
       "searchPlaceholder": "Search by ID, client, comment or account",
       "empty": "No withdrawal requests found.",
       "fields": {
@@ -1510,7 +1437,11 @@
         "amount": "Amount",
         "createdAt": "Created at",
         "clientComment": "Client comment",
-        "adminComment": "Admin comment"
+        "adminComment": "Admin comment",
+        "transferRoute": "Transfer route",
+        "execution": "Execution",
+        "documents": "Documents",
+        "requisitesComment": "Requisites comment"
       },
       "actions": {
         "openClient": "Open client",
@@ -1520,17 +1451,24 @@
         "processing": "To processing",
         "successful": "Successful",
         "failed": "Failed",
-        "reject": "Reject"
+        "reject": "Reject",
+        "successfulManual": "Confirm without transfer",
+        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
         "statusUpdated": "Withdrawal request status updated.",
         "loadError": "Failed to load withdrawal requests.",
         "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request."
+        "saveError": "Failed to update withdrawal request.",
+        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
+        "confirmStatusChange": "Change request",
+        "confirmStatusChangeTo": "to status"
       },
       "filters": {
-        "allStatuses": "All statuses"
+        "allStatuses": "All statuses",
+        "currentStatus": "Status filter",
+        "reset": "Reset"
       },
       "stats": {
         "total": "Total"
@@ -1546,6 +1484,13 @@
         "account": "Choose an account.",
         "paymentDetail": "Choose approved payment details.",
         "amount": "Enter a valid amount."
+      },
+      "execution": {
+        "completed": "Executed in MT4",
+        "skipped": "Confirmed without automatic transfer",
+        "failed": "Automatic transfer failed",
+        "cancelled": "Cancelled",
+        "pending": "Awaiting admin decision"
       }
     }
   },

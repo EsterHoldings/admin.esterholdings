@@ -16,8 +16,7 @@
             class="withdrawal-stat-card"
             :class="[card.cardClass, { 'is-active': card.isActive }]"
             type="button"
-            @click="handleStatCardClick(card.status)"
-          >
+            @click="handleStatCardClick(card.status)">
             <div class="withdrawal-stat-card__label">{{ card.label }}</div>
             <div class="withdrawal-stat-card__value">{{ card.value }}</div>
           </button>
@@ -29,8 +28,7 @@
               class="w-full"
               :value="searchFilter"
               :placeholder="searchPlaceholder"
-              @input="handleSearchInput"
-            >
+              @input="handleSearchInput">
               <template #icon-left>
                 <UiIconSearch />
               </template>
@@ -38,7 +36,10 @@
           </div>
 
           <div class="withdrawal-requests-page__toolbar-right">
-            <UiButtonDefault state="info--small" class="!w-[44px]" @click="refreshAll">
+            <UiButtonDefault
+              state="info--small"
+              class="!w-[44px]"
+              @click="refreshAll">
               <UiIconUpdate :spinning="isLoading || isStatsLoading" />
             </UiButtonDefault>
           </div>
@@ -46,53 +47,48 @@
 
         <div
           v-if="statusFilter"
-          class="withdrawal-requests-page__active-filter"
-        >
+          class="withdrawal-requests-page__active-filter">
           <span>{{ statusFilterNoteText }}: {{ statusText(statusFilter) }}</span>
           <button
             type="button"
             class="withdrawal-requests-page__active-filter-reset"
-            @click="handleStatCardClick('')"
-          >
+            @click="handleStatCardClick('')">
             {{ resetFilterText }}
           </button>
         </div>
 
         <div
           v-if="errorMessage"
-          class="withdrawal-requests-page__error"
-        >
+          class="withdrawal-requests-page__error">
           {{ errorMessage }}
         </div>
 
         <div
           v-if="isLoading && requests.length === 0"
-          class="withdrawal-requests-page__loading"
-        >
+          class="withdrawal-requests-page__loading">
           <UiIconSpinnerDefault />
         </div>
 
         <div
           v-else-if="requests.length === 0"
-          class="withdrawal-requests-page__empty"
-        >
+          class="withdrawal-requests-page__empty">
           {{ emptyText }}
         </div>
 
         <div
           v-else
-          class="withdrawal-requests-list"
-        >
+          class="withdrawal-requests-list">
           <article
             v-for="requestItem in requests"
             :key="requestItem.id"
-            class="withdrawal-request-card"
-          >
+            class="withdrawal-request-card">
             <div class="withdrawal-request-card__top">
               <div class="withdrawal-request-card__main">
                 <div class="withdrawal-request-card__id-row">
                   <span class="withdrawal-request-card__id">#{{ shortId(requestItem.id) }}</span>
-                  <span class="withdrawal-request-card__status" :class="statusClass(requestItem.status)">
+                  <span
+                    class="withdrawal-request-card__status"
+                    :class="statusClass(requestItem.status)">
                     {{ statusText(requestItem.status) }}
                   </span>
                 </div>
@@ -105,8 +101,7 @@
                     <NuxtLink
                       v-if="requestItem.user_id"
                       :to="localePath(`/clients/${requestItem.user_id}`)"
-                      class="withdrawal-request-card__owner-link"
-                    >
+                      class="withdrawal-request-card__owner-link">
                       {{ openClientText }}
                     </NuxtLink>
                   </div>
@@ -124,7 +119,13 @@
                 <div class="withdrawal-request-card__value">
                   {{ requestItem.account_number || "-" }}
                   <span v-if="requestItem.account_balance !== undefined">
-                    · {{ formatMoney(requestItem.account_balance, requestItem.account_currency || requestItem.currency || "USD") }}
+                    ·
+                    {{
+                      formatMoney(
+                        requestItem.account_balance,
+                        requestItem.account_currency || requestItem.currency || "USD"
+                      )
+                    }}
                   </span>
                 </div>
               </div>
@@ -135,36 +136,48 @@
               </div>
 
               <div class="withdrawal-request-card__cell">
-                <div class="withdrawal-request-card__label">{{ paymentDetailText }}</div>
-                <div class="withdrawal-request-card__value">{{ requestItem.payment_detail_name || "-" }}</div>
+                <div class="withdrawal-request-card__label">
+                  {{ requestItem.is_internal_transfer ? transferRouteText : paymentDetailText }}
+                </div>
+                <div class="withdrawal-request-card__value">
+                  {{
+                    requestItem.is_internal_transfer
+                      ? transferRouteValue(requestItem)
+                      : requestItem.payment_detail_name || "-"
+                  }}
+                </div>
               </div>
 
               <div class="withdrawal-request-card__cell">
                 <div class="withdrawal-request-card__label">{{ createdAtText }}</div>
                 <div class="withdrawal-request-card__value">{{ formatDateTime(requestItem.created_at) }}</div>
               </div>
+
+              <div
+                v-if="requestItem.is_internal_transfer"
+                class="withdrawal-request-card__cell">
+                <div class="withdrawal-request-card__label">{{ executionText }}</div>
+                <div class="withdrawal-request-card__value">{{ internalTransferExecutionText(requestItem) }}</div>
+              </div>
             </div>
 
             <div
               v-if="requestItem.comment"
-              class="withdrawal-request-card__comment"
-            >
+              class="withdrawal-request-card__comment">
               <div class="withdrawal-request-card__label">{{ clientCommentText }}</div>
               <div class="withdrawal-request-card__comment-body">{{ requestItem.comment }}</div>
             </div>
 
             <div
               v-if="requestItem.admin_comment"
-              class="withdrawal-request-card__comment withdrawal-request-card__comment--admin"
-            >
+              class="withdrawal-request-card__comment withdrawal-request-card__comment--admin">
               <div class="withdrawal-request-card__label">{{ adminCommentText }}</div>
               <div class="withdrawal-request-card__comment-body">{{ requestItem.admin_comment }}</div>
             </div>
 
             <div
-              v-if="hasPaymentDetailData(requestItem)"
-              class="withdrawal-request-card__details-panel"
-            >
+              v-if="!requestItem.is_internal_transfer && hasPaymentDetailData(requestItem)"
+              class="withdrawal-request-card__details-panel">
               <div class="withdrawal-request-card__details-header">
                 <div>
                   <div class="withdrawal-request-card__label">{{ paymentDetailText }}</div>
@@ -176,21 +189,18 @@
                 <span
                   v-if="requestItem.payment_detail?.status"
                   class="withdrawal-request-card__status"
-                  :class="statusClass(requestItem.payment_detail.status)"
-                >
+                  :class="statusClass(requestItem.payment_detail.status)">
                   {{ statusText(requestItem.payment_detail.status) }}
                 </span>
               </div>
 
               <div
                 v-if="paymentDetailEntries(requestItem).length"
-                class="withdrawal-request-card__details-grid"
-              >
+                class="withdrawal-request-card__details-grid">
                 <div
                   v-for="entry in paymentDetailEntries(requestItem)"
                   :key="entry.key"
-                  class="withdrawal-request-card__details-item"
-                >
+                  class="withdrawal-request-card__details-item">
                   <div class="withdrawal-request-card__details-key">{{ entry.label }}</div>
                   <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
                 </div>
@@ -198,15 +208,13 @@
 
               <div
                 v-if="requestItem.payment_detail?.documents?.length"
-                class="withdrawal-request-card__details-documents"
-              >
+                class="withdrawal-request-card__details-documents">
                 <div class="withdrawal-request-card__details-key">{{ documentsText }}</div>
                 <div class="withdrawal-request-card__details-document-list">
                   <span
                     v-for="document in requestItem.payment_detail.documents"
                     :key="`${requestItem.id}-${document.path}`"
-                    class="withdrawal-request-card__details-document"
-                  >
+                    class="withdrawal-request-card__details-document">
                     {{ document.name || document.path }}
                   </span>
                 </div>
@@ -214,8 +222,7 @@
 
               <div
                 v-if="requestItem.payment_detail?.comment"
-                class="withdrawal-request-card__details-note"
-              >
+                class="withdrawal-request-card__details-note">
                 <div class="withdrawal-request-card__details-key">{{ requisitesCommentText }}</div>
                 <div class="withdrawal-request-card__comment-body">{{ requestItem.payment_detail.comment }}</div>
               </div>
@@ -224,17 +231,16 @@
             <div class="withdrawal-request-card__actions">
               <div
                 v-if="canManagePayments"
-                class="withdrawal-request-card__status-actions"
-              >
+                class="withdrawal-request-card__status-actions">
                 <button
                   type="button"
                   class="withdrawal-status-action withdrawal-status-action--processing"
                   :class="{ 'is-active': isStatusActive(requestItem, 'processing') }"
                   :disabled="isStatusDisabled(requestItem, 'processing')"
                   :title="moveToProcessingText"
-                  @click="handleQuickStatusUpdate(requestItem, 'processing')"
-                >
-                  <UiIconUpdate :spinning="updatingRequestId === requestItem.id && isStatusActive(requestItem, 'processing')" />
+                  @click="handleQuickStatusUpdate(requestItem, 'processing')">
+                  <UiIconUpdate
+                    :spinning="updatingRequestId === requestItem.id && isStatusActive(requestItem, 'processing')" />
                 </button>
 
                 <button
@@ -242,10 +248,19 @@
                   class="withdrawal-status-action withdrawal-status-action--successful"
                   :class="{ 'is-active': isStatusActive(requestItem, 'successful') }"
                   :disabled="isStatusDisabled(requestItem, 'successful')"
-                  :title="markSuccessfulText"
-                  @click="handleQuickStatusUpdate(requestItem, 'successful')"
-                >
+                  :title="successfulActionTitle(requestItem)"
+                  @click="handleQuickStatusUpdate(requestItem, 'successful')">
                   <UiIconSuccessFull />
+                </button>
+
+                <button
+                  v-if="requestItem.is_internal_transfer"
+                  type="button"
+                  class="withdrawal-status-action withdrawal-status-action--auto-transfer"
+                  :disabled="isAutoTransferDisabled(requestItem)"
+                  :title="markSuccessfulAndTransferText"
+                  @click="handleAutoTransferStatusUpdate(requestItem)">
+                  <span class="withdrawal-status-action__text">MT4</span>
                 </button>
 
                 <button
@@ -254,8 +269,7 @@
                   :class="{ 'is-active': isStatusActive(requestItem, 'failed') }"
                   :disabled="isStatusDisabled(requestItem, 'failed')"
                   :title="markFailedText"
-                  @click="handleQuickStatusUpdate(requestItem, 'failed')"
-                >
+                  @click="handleQuickStatusUpdate(requestItem, 'failed')">
                   <UiIconDangerFull />
                 </button>
 
@@ -265,20 +279,18 @@
                   :class="{ 'is-active': isStatusActive(requestItem, 'cancelled') }"
                   :disabled="isStatusDisabled(requestItem, 'cancelled')"
                   :title="rejectText"
-                  @click="handleQuickStatusUpdate(requestItem, 'cancelled')"
-                >
+                  @click="handleQuickStatusUpdate(requestItem, 'cancelled')">
                   <UiIconDelete />
                 </button>
               </div>
 
               <button
-                v-if="canEditRequest(requestItem.status)"
+                v-if="canEditRequest(requestItem)"
                 type="button"
                 class="withdrawal-status-action withdrawal-status-action--edit"
                 :disabled="updatingRequestId === requestItem.id"
                 :title="editingRequestId === requestItem.id ? cancelEditText : editText"
-                @click="handleToggleEdit(requestItem)"
-              >
+                @click="handleToggleEdit(requestItem)">
                 <UiIconEdit v-if="editingRequestId !== requestItem.id" />
                 <UiIconDelete v-else />
               </button>
@@ -286,12 +298,10 @@
 
             <div
               v-if="editingRequestId === requestItem.id"
-              class="withdrawal-request-card__edit"
-            >
+              class="withdrawal-request-card__edit">
               <div
                 v-if="auxiliaryLoadingUserId === requestItem.user_id"
-                class="withdrawal-request-card__edit-loading"
-              >
+                class="withdrawal-request-card__edit-loading">
                 <UiIconSpinnerDefault />
               </div>
 
@@ -303,9 +313,10 @@
                       :without-no-select="true"
                       :value="editForm.accountId"
                       :data="accountOptionsByUserId[requestItem.user_id] || []"
-                      @change="value => handleEditSelectChange('accountId', value)"
-                    />
-                    <div v-if="editErrors.accountId" class="withdrawal-request-card__edit-error">
+                      @change="value => handleEditSelectChange('accountId', value)" />
+                    <div
+                      v-if="editErrors.accountId"
+                      class="withdrawal-request-card__edit-error">
                       {{ editErrors.accountId }}
                     </div>
                   </div>
@@ -316,17 +327,23 @@
                       :without-no-select="true"
                       :value="editForm.paymentDetailId"
                       :data="paymentDetailOptionsByUserId[requestItem.user_id] || []"
-                      @change="value => handleEditSelectChange('paymentDetailId', value)"
-                    />
-                    <div v-if="editErrors.paymentDetailId" class="withdrawal-request-card__edit-error">
+                      @change="value => handleEditSelectChange('paymentDetailId', value)" />
+                    <div
+                      v-if="editErrors.paymentDetailId"
+                      class="withdrawal-request-card__edit-error">
                       {{ editErrors.paymentDetailId }}
                     </div>
                   </div>
 
                   <div class="withdrawal-request-card__edit-field">
                     <label class="withdrawal-request-card__edit-label">{{ amountText }}</label>
-                    <UiInput type="number" :value="editForm.amount" @input="value => handleEditInput('amount', value)" />
-                    <div v-if="editErrors.amount" class="withdrawal-request-card__edit-error">
+                    <UiInput
+                      type="number"
+                      :value="editForm.amount"
+                      @input="value => handleEditInput('amount', value)" />
+                    <div
+                      v-if="editErrors.amount"
+                      class="withdrawal-request-card__edit-error">
                       {{ editErrors.amount }}
                     </div>
                   </div>
@@ -337,8 +354,7 @@
                   <textarea
                     class="withdrawal-request-card__textarea"
                     :value="editForm.comment"
-                    @input="event => handleEditTextarea('comment', event)"
-                  />
+                    @input="event => handleEditTextarea('comment', event)" />
                 </div>
 
                 <div class="withdrawal-request-card__edit-field">
@@ -346,8 +362,7 @@
                   <textarea
                     class="withdrawal-request-card__textarea"
                     :value="editForm.adminComment"
-                    @input="event => handleEditTextarea('adminComment', event)"
-                  />
+                    @input="event => handleEditTextarea('adminComment', event)" />
                 </div>
 
                 <div class="withdrawal-request-card__actions">
@@ -355,8 +370,7 @@
                     state="info"
                     class="withdrawal-request-card__action-btn"
                     :disabled="updatingRequestId === requestItem.id"
-                    @click="handleSaveEdit(requestItem)"
-                  >
+                    @click="handleSaveEdit(requestItem)">
                     {{ saveText }}
                   </UiButtonDefault>
                 </div>
@@ -415,6 +429,10 @@
     comment: string;
     admin_comment: string;
     created_at: string;
+    is_internal_transfer: boolean;
+    from_account_number: string;
+    to_account_number: string;
+    meta: Record<string, any>;
     payment_detail: {
       id: string;
       name: string;
@@ -475,21 +493,17 @@
     return value === key ? fallback : value;
   };
 
-  const titleText = computed(() =>
-    resolveText("admin.withdrawalRequests.title", "Withdrawal requests")
-  );
+  const titleText = computed(() => resolveText("admin.withdrawalRequests.title", "Withdrawal requests"));
   const subtitleText = computed(() =>
     resolveText(
       "admin.withdrawalRequests.subtitle",
-      "Moderate client payout requests, update statuses and edit payout data before manual processing."
+      "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing."
     )
   );
   const searchPlaceholder = computed(() =>
     resolveText("admin.withdrawalRequests.searchPlaceholder", "Search by ID, client, comment or account")
   );
-  const emptyText = computed(() =>
-    resolveText("admin.withdrawalRequests.empty", "No withdrawal requests found.")
-  );
+  const emptyText = computed(() => resolveText("admin.withdrawalRequests.empty", "No withdrawal requests found."));
   const accountText = computed(() => resolveText("admin.withdrawalRequests.fields.account", "Account"));
   const paymentMethodText = computed(() =>
     resolveText("admin.withdrawalRequests.fields.paymentMethod", "Payment method")
@@ -497,44 +511,40 @@
   const paymentDetailText = computed(() =>
     resolveText("admin.withdrawalRequests.fields.paymentDetail", "Payment details")
   );
+  const transferRouteText = computed(() =>
+    resolveText("admin.withdrawalRequests.fields.transferRoute", "Transfer route")
+  );
+  const executionText = computed(() => resolveText("admin.withdrawalRequests.fields.execution", "Execution"));
   const amountText = computed(() => resolveText("admin.withdrawalRequests.fields.amount", "Amount"));
   const createdAtText = computed(() => resolveText("admin.withdrawalRequests.fields.createdAt", "Created at"));
   const clientCommentText = computed(() =>
     resolveText("admin.withdrawalRequests.fields.clientComment", "Client comment")
   );
-  const documentsText = computed(() =>
-    resolveText("admin.withdrawalRequests.fields.documents", "Documents")
-  );
+  const documentsText = computed(() => resolveText("admin.withdrawalRequests.fields.documents", "Documents"));
   const requisitesCommentText = computed(() =>
     resolveText("admin.withdrawalRequests.fields.requisitesComment", "Requisites comment")
   );
-  const adminCommentText = computed(() =>
-    resolveText("admin.withdrawalRequests.fields.adminComment", "Admin comment")
-  );
-  const openClientText = computed(() =>
-    resolveText("admin.withdrawalRequests.actions.openClient", "Open client")
-  );
+  const adminCommentText = computed(() => resolveText("admin.withdrawalRequests.fields.adminComment", "Admin comment"));
+  const openClientText = computed(() => resolveText("admin.withdrawalRequests.actions.openClient", "Open client"));
   const editText = computed(() => resolveText("admin.withdrawalRequests.actions.edit", "Edit"));
-  const cancelEditText = computed(() =>
-    resolveText("admin.withdrawalRequests.actions.cancelEdit", "Cancel")
-  );
+  const cancelEditText = computed(() => resolveText("admin.withdrawalRequests.actions.cancelEdit", "Cancel"));
   const saveText = computed(() => resolveText("admin.withdrawalRequests.actions.save", "Save"));
   const moveToProcessingText = computed(() =>
     resolveText("admin.withdrawalRequests.actions.processing", "To processing")
   );
-  const markSuccessfulText = computed(() =>
-    resolveText("admin.withdrawalRequests.actions.successful", "Successful")
+  const markSuccessfulText = computed(() => resolveText("admin.withdrawalRequests.actions.successful", "Successful"));
+  const markSuccessfulManualText = computed(() =>
+    resolveText("admin.withdrawalRequests.actions.successfulManual", "Confirm without transfer")
   );
-  const markFailedText = computed(() =>
-    resolveText("admin.withdrawalRequests.actions.failed", "Failed")
+  const markSuccessfulAndTransferText = computed(() =>
+    resolveText("admin.withdrawalRequests.actions.successfulAutoTransfer", "Confirm and execute MT4 transfer")
   );
+  const markFailedText = computed(() => resolveText("admin.withdrawalRequests.actions.failed", "Failed"));
   const rejectText = computed(() => resolveText("admin.withdrawalRequests.actions.reject", "Reject"));
   const statusFilterNoteText = computed(() =>
     resolveText("admin.withdrawalRequests.filters.currentStatus", "Status filter")
   );
-  const resetFilterText = computed(() =>
-    resolveText("admin.withdrawalRequests.filters.reset", "Reset")
-  );
+  const resetFilterText = computed(() => resolveText("admin.withdrawalRequests.filters.reset", "Reset"));
   const savedText = computed(() =>
     resolveText("admin.withdrawalRequests.messages.saved", "Withdrawal request updated.")
   );
@@ -612,7 +622,9 @@
   };
 
   const statusText = (value: string): string => {
-    const normalized = String(value ?? "").trim().toLowerCase();
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase();
     const key = `admin.withdrawalRequests.statuses.${normalized}`;
 
     switch (normalized) {
@@ -632,7 +644,9 @@
   };
 
   const statusClass = (value: string): string => {
-    const normalized = String(value ?? "").trim().toLowerCase();
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase();
 
     if (normalized === "successful") return "is-success";
     if (normalized === "failed") return "is-failed";
@@ -682,12 +696,18 @@
 
   const formatPaymentDetailValue = (value: unknown): string => {
     if (Array.isArray(value)) {
-      return value.map(item => formatPaymentDetailValue(item)).filter(Boolean).join(", ");
+      return value
+        .map(item => formatPaymentDetailValue(item))
+        .filter(Boolean)
+        .join(", ");
     }
 
     if (value && typeof value === "object") {
       return Object.entries(value as Record<string, unknown>)
-        .map(([nestedKey, nestedValue]) => `${normalizePaymentDetailLabel(nestedKey)}: ${formatPaymentDetailValue(nestedValue)}`)
+        .map(
+          ([nestedKey, nestedValue]) =>
+            `${normalizePaymentDetailLabel(nestedKey)}: ${formatPaymentDetailValue(nestedValue)}`
+        )
         .join(" · ");
     }
 
@@ -743,6 +763,10 @@
     comment: String(row?.comment ?? ""),
     admin_comment: String(row?.admin_comment ?? ""),
     created_at: String(row?.created_at ?? ""),
+    is_internal_transfer: Boolean(row?.is_internal_transfer || row?.meta?.is_internal_transfer),
+    from_account_number: String(row?.from_account_number ?? row?.meta?.from_account_number ?? ""),
+    to_account_number: String(row?.to_account_number ?? row?.meta?.to_account_number ?? ""),
+    meta: row?.meta && typeof row.meta === "object" ? row.meta : {},
     payment_detail: {
       id: String(row?.payment_detail?.id ?? ""),
       name: String(row?.payment_detail?.name ?? ""),
@@ -835,36 +859,117 @@
     await loadRequests();
   };
 
-  const canEditRequest = (status: string): boolean =>
-    canManagePayments.value && String(status).toLowerCase() !== "successful";
+  const canEditRequest = (requestItem: WithdrawalRequestItem): boolean =>
+    canManagePayments.value &&
+    !requestItem.is_internal_transfer &&
+    String(requestItem.status).toLowerCase() !== "successful";
 
   const isStatusActive = (
     requestItem: WithdrawalRequestItem,
     nextStatus: "processing" | "successful" | "failed" | "cancelled"
   ): boolean => String(requestItem.status).toLowerCase() === nextStatus;
 
+  const canMoveToStatus = (
+    requestItem: WithdrawalRequestItem,
+    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+  ): boolean => {
+    const current = String(requestItem.status ?? "").toLowerCase();
+
+    if (current === "successful" && nextStatus !== "successful") {
+      return false;
+    }
+
+    switch (nextStatus) {
+      case "processing":
+        return ["pending", "processing", "cancelled", "failed"].includes(current);
+      case "successful":
+        return ["pending", "processing", "failed", "successful"].includes(current);
+      case "cancelled":
+        return ["pending", "processing", "failed", "cancelled"].includes(current);
+      case "failed":
+        return ["pending", "processing", "failed"].includes(current);
+      default:
+        return false;
+    }
+  };
+
   const isStatusDisabled = (
     requestItem: WithdrawalRequestItem,
     nextStatus: "processing" | "successful" | "failed" | "cancelled"
-  ): boolean => updatingRequestId.value === requestItem.id || isStatusActive(requestItem, nextStatus);
+  ): boolean =>
+    updatingRequestId.value === requestItem.id ||
+    isStatusActive(requestItem, nextStatus) ||
+    !canMoveToStatus(requestItem, nextStatus);
+
+  const isTransferExecuted = (requestItem: WithdrawalRequestItem): boolean =>
+    String(requestItem.meta?.transfer_execution?.status ?? "").toLowerCase() === "completed";
+
+  const isAutoTransferDisabled = (requestItem: WithdrawalRequestItem): boolean =>
+    updatingRequestId.value === requestItem.id ||
+    !requestItem.is_internal_transfer ||
+    isTransferExecuted(requestItem) ||
+    !canMoveToStatus(requestItem, "successful");
+
+  const successfulActionTitle = (requestItem: WithdrawalRequestItem): string =>
+    requestItem.is_internal_transfer ? markSuccessfulManualText.value : markSuccessfulText.value;
+
+  const transferRouteValue = (requestItem: WithdrawalRequestItem): string => {
+    const from = String(requestItem.from_account_number ?? "").trim() || "-";
+    const to = String(requestItem.to_account_number ?? "").trim() || "-";
+    return `${from} → ${to}`;
+  };
+
+  const internalTransferExecutionText = (requestItem: WithdrawalRequestItem): string => {
+    const status = String(requestItem.meta?.transfer_execution?.status ?? "")
+      .trim()
+      .toLowerCase();
+
+    if (status === "completed") {
+      return resolveText("admin.withdrawalRequests.execution.completed", "Executed in MT4");
+    }
+
+    if (status === "skipped") {
+      return resolveText("admin.withdrawalRequests.execution.skipped", "Confirmed without automatic transfer");
+    }
+
+    if (status === "failed") {
+      return resolveText("admin.withdrawalRequests.execution.failed", "Automatic transfer failed");
+    }
+
+    if (status === "cancelled") {
+      return resolveText("admin.withdrawalRequests.execution.cancelled", "Cancelled");
+    }
+
+    return resolveText("admin.withdrawalRequests.execution.pending", "Awaiting admin decision");
+  };
 
   const buildStatusConfirmText = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+    nextStatus: "processing" | "successful" | "failed" | "cancelled",
+    options: { executeTransfer?: boolean } = {}
   ): string =>
-    `${resolveText("admin.withdrawalRequests.messages.confirmStatusChange", "Change request")} #${shortId(
-      requestItem.id
-    )} ${resolveText("admin.withdrawalRequests.messages.confirmStatusChangeTo", "to status")} "${statusText(nextStatus)}"?`;
+    options.executeTransfer
+      ? `${resolveText(
+          "admin.withdrawalRequests.messages.confirmAutoTransfer",
+          "Confirm request and execute MT4 transfer"
+        )} #${shortId(requestItem.id)}?`
+      : `${resolveText("admin.withdrawalRequests.messages.confirmStatusChange", "Change request")} #${shortId(
+          requestItem.id
+        )} ${resolveText("admin.withdrawalRequests.messages.confirmStatusChangeTo", "to status")} "${statusText(nextStatus)}"?`;
 
   const handleQuickStatusUpdate = async (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+    nextStatus: "processing" | "successful" | "failed" | "cancelled",
+    options: { executeTransfer?: boolean } = {}
   ): Promise<void> => {
-    if (!canManagePayments.value || isStatusDisabled(requestItem, nextStatus)) {
+    if (
+      !canManagePayments.value ||
+      (options.executeTransfer ? isAutoTransferDisabled(requestItem) : isStatusDisabled(requestItem, nextStatus))
+    ) {
       return;
     }
 
-    const isConfirmed = window.confirm(buildStatusConfirmText(requestItem, nextStatus));
+    const isConfirmed = window.confirm(buildStatusConfirmText(requestItem, nextStatus, options));
     if (!isConfirmed) {
       return;
     }
@@ -876,6 +981,7 @@
         status: nextStatus,
         admin_comment:
           editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment,
+        ...(options.executeTransfer ? { execute_transfer: true } : {}),
       });
 
       toast.success(statusUpdatedText.value);
@@ -888,6 +994,10 @@
     } finally {
       updatingRequestId.value = "";
     }
+  };
+
+  const handleAutoTransferStatusUpdate = async (requestItem: WithdrawalRequestItem): Promise<void> => {
+    await handleQuickStatusUpdate(requestItem, "successful", { executeTransfer: true });
   };
 
   const loadEditDependencies = async (requestItem: WithdrawalRequestItem): Promise<void> => {
@@ -920,7 +1030,9 @@
         };
       });
 
-      const rawPaymentDetails = Array.isArray(paymentDetailsResponse?.data?.data) ? paymentDetailsResponse.data.data : [];
+      const rawPaymentDetails = Array.isArray(paymentDetailsResponse?.data?.data)
+        ? paymentDetailsResponse.data.data
+        : [];
       paymentDetailOptionsByUserId[requestItem.user_id] = rawPaymentDetails
         .filter((row: any) => String(row?.status ?? "").toLowerCase() === "approved")
         .map((row: any) => ({
@@ -1051,7 +1163,10 @@
     border-radius: 16px;
     background: var(--ui-background-panel);
     padding: 14px 16px;
-    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .withdrawal-stat-card:hover {
@@ -1149,7 +1264,9 @@
     border-radius: 999px;
     background: var(--color-stroke-ui-dark);
     color: var(--ui-text-main);
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .withdrawal-requests-page__active-filter-reset:hover {
@@ -1425,7 +1542,11 @@
     border: 1px solid transparent;
     background: transparent;
     color: var(--ui-text-main);
-    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.2s ease;
   }
 
   .withdrawal-status-action:disabled {
@@ -1460,6 +1581,23 @@
   .withdrawal-status-action--successful.is-active {
     background: color-mix(in srgb, #22c55e 22%, transparent);
     border-color: color-mix(in srgb, #22c55e 40%, transparent);
+  }
+
+  .withdrawal-status-action--auto-transfer {
+    min-width: 44px;
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .withdrawal-status-action--auto-transfer:not(:disabled):hover {
+    background: color-mix(in srgb, #22c55e 18%, transparent);
+    border-color: color-mix(in srgb, #3b82f6 42%, transparent);
+  }
+
+  .withdrawal-status-action__text {
+    line-height: 1;
   }
 
   .withdrawal-status-action--failed:not(:disabled):hover,

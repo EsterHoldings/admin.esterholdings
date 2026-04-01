@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "Descripción de cuentas",
-            "items": [
-              "Estándar",
-              "Pro",
-              "Islámica",
-              "Demo"
-            ]
+            "items": ["Estándar", "Pro", "Islámica", "Demo"]
           },
           {
             "section": "Instrumentos de mercado",
-            "items": [
-              "Forex",
-              "Metales",
-              "CFDs de Cripto",
-              "Índices",
-              "Acciones",
-              "Energía",
-              "ETFs"
-            ]
+            "items": ["Forex", "Metales", "CFDs de Cripto", "Índices", "Acciones", "Energía", "ETFs"]
           },
           {
             "section": "Plataforma",
-            "items": [
-              "MT4 Desktop",
-              "MT 4 Mobile"
-            ]
+            "items": ["MT4 Desktop", "MT 4 Mobile"]
           },
           {
             "section": "Condiciones de trading",
-            "items": [
-              "Recarga de cuenta",
-              "Retiro de fondos"
-            ]
+            "items": ["Recarga de cuenta", "Retiro de fondos"]
           },
           {
             "section": "HUB del Trader",
-            "items": [
-              "Blog del trader",
-              "Calendario económico",
-              "Noticias del mercado"
-            ]
+            "items": ["Blog del trader", "Calendario económico", "Noticias del mercado"]
           },
           {
             "section": "Trading TANDEM",
-            "items": [
-              "Para trader",
-              "Para inversor"
-            ]
+            "items": ["Para trader", "Para inversor"]
           }
         ],
         "Partnership": [
           {
             "section": "Asociación",
-            "items": [
-              "Registrar IB/ Asociación",
-              "Cómo los IB generan ingresos"
-            ]
+            "items": ["Registrar IB/ Asociación", "Cómo los IB generan ingresos"]
           }
         ],
         "Company": [
           {
             "section": "Empresa",
-            "items": [
-              "Sobre la empresa",
-              "Documentos",
-              "Noticias de la empresa",
-              "Contactos",
-              "Carrera"
-            ]
+            "items": ["Sobre la empresa", "Documentos", "Noticias de la empresa", "Contactos", "Carrera"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "Demo",
           "subtitle": "cuenta",
           "description": "Trading sin riesgo con fondos virtuales, perfecto para principiantes para explorar mercados.",
-          "features": [
-            "Apalancamiento hasta 1:100",
-            "Spreads desde 0.0 pips",
-            "No se requiere depósito"
-          ],
+          "features": ["Apalancamiento hasta 1:100", "Spreads desde 0.0 pips", "No se requiere depósito"],
           "buttonText": "Probar Demo Ahora",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "Estándar",
           "subtitle": "cuenta",
           "description": "Fácil acceso a mercados spot con tarifas bajas — ideal para principiantes y traders activos.",
-          "features": [
-            "Apalancamiento hasta 1:100",
-            "Spreads desde 1.2 pips",
-            "Primer depósito de $50"
-          ],
+          "features": ["Apalancamiento hasta 1:100", "Spreads desde 1.2 pips", "Primer depósito de $50"],
           "buttonText": "Abrir Cuenta Estándar",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "Pro",
           "subtitle": "cuenta",
           "description": "Experimenta spreads ajustados, mayor apalancamiento y control total sobre cada operación.",
-          "features": [
-            "Apalancamiento hasta 1:100",
-            "Spreads desde 0.0 pips",
-            "Primer depósito de $1000"
-          ],
+          "features": ["Apalancamiento hasta 1:100", "Spreads desde 0.0 pips", "Primer depósito de $1000"],
           "buttonText": "Opera Como un Pro",
           "isRecommended": false
         },
@@ -486,10 +439,7 @@
         "career": {
           "title": "Carrera",
           "subtitle": "En este momento, la empresa está buscando los siguientes especialistas:",
-          "positions": [
-            "GERENTE DE VENTAS",
-            "JEFE DEL DEPARTAMENTO DE ANÁLISIS"
-          ],
+          "positions": ["GERENTE DE VENTAS", "JEFE DEL DEPARTAMENTO DE ANÁLISIS"],
           "cta": "SI ESTÁS LISTO PARA UN CRECIMIENTO DINÁMICO, ERES AMBICIOSO Y TALENTOSO, ENVÍA TU RESUMEN.",
           "button": "ENVIAR CV"
         },
@@ -686,30 +636,15 @@
       "description": "El objetivo principal de Ester es crear las mejores y más transparentes condiciones para traders minoristas y corporativos.",
       "trading": {
         "title": "Trading",
-        "items": [
-          "Descripción de cuentas",
-          "Mercados",
-          "Plataforma",
-          "Términos de trading",
-          "Trading tándem"
-        ]
+        "items": ["Descripción de cuentas", "Mercados", "Plataforma", "Términos de trading", "Trading tándem"]
       },
       "partnership": {
         "title": "Asociación",
-        "items": [
-          "Registrar IB/ Asociación",
-          "Cómo los IB generan ingresos"
-        ]
+        "items": ["Registrar IB/ Asociación", "Cómo los IB generan ingresos"]
       },
       "company": {
         "title": "Empresa",
-        "items": [
-          "Sobre la empresa",
-          "Documentos",
-          "Noticias de la empresa",
-          "Contactos",
-          "Carrera"
-        ]
+        "items": ["Sobre la empresa", "Documentos", "Noticias de la empresa", "Contactos", "Carrera"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1500,7 +1435,7 @@
     },
     "withdrawalRequests": {
       "title": "Withdrawal requests",
-      "subtitle": "Moderate client payout requests, update statuses and edit payout data before manual processing.",
+      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
       "searchPlaceholder": "Search by ID, client, comment or account",
       "empty": "No withdrawal requests found.",
       "fields": {
@@ -1510,7 +1445,11 @@
         "amount": "Amount",
         "createdAt": "Created at",
         "clientComment": "Client comment",
-        "adminComment": "Admin comment"
+        "adminComment": "Admin comment",
+        "transferRoute": "Transfer route",
+        "execution": "Execution",
+        "documents": "Documents",
+        "requisitesComment": "Requisites comment"
       },
       "actions": {
         "openClient": "Open client",
@@ -1520,17 +1459,24 @@
         "processing": "To processing",
         "successful": "Successful",
         "failed": "Failed",
-        "reject": "Reject"
+        "reject": "Reject",
+        "successfulManual": "Confirm without transfer",
+        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
         "statusUpdated": "Withdrawal request status updated.",
         "loadError": "Failed to load withdrawal requests.",
         "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request."
+        "saveError": "Failed to update withdrawal request.",
+        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
+        "confirmStatusChange": "Change request",
+        "confirmStatusChangeTo": "to status"
       },
       "filters": {
-        "allStatuses": "All statuses"
+        "allStatuses": "All statuses",
+        "currentStatus": "Status filter",
+        "reset": "Reset"
       },
       "stats": {
         "total": "Total"
@@ -1546,6 +1492,13 @@
         "account": "Choose an account.",
         "paymentDetail": "Choose approved payment details.",
         "amount": "Enter a valid amount."
+      },
+      "execution": {
+        "completed": "Executed in MT4",
+        "skipped": "Confirmed without automatic transfer",
+        "failed": "Automatic transfer failed",
+        "cancelled": "Cancelled",
+        "pending": "Awaiting admin decision"
       }
     }
   },
