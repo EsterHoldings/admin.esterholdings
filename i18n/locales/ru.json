@@ -1573,7 +1573,7 @@
     },
     "dashboard": {
       "title": "Админ-дэшборд",
-      "subtitle": "Обзор (демо-данные)",
+      "subtitle": "Живой обзор регистраций, очередей модерации, транзакций и online-активности.",
       "users": "Пользователи",
       "deposits": "Депозиты",
       "withdrawals": "Выводы",
@@ -1581,7 +1581,82 @@
       "processingRequisites": "Реквизиты в обработке",
       "processingVerifications": "Верификации в обработке",
       "recentUsers": "Новые пользователи",
-      "recentPayments": "Недавние платежи"
+      "recentPayments": "Недавние платежи",
+      "autoRefresh": "Автообновление каждые 30 секунд",
+      "liveWaiting": "Ожидание первой синхронизации",
+      "lastUpdated": "Обновлено",
+      "actions": {
+        "refresh": "Обновить дашборд"
+      },
+      "cards": {
+        "onlineNow": "Сейчас онлайн",
+        "registrationsRange": "Регистрации за период",
+        "totalUsers": "Всего пользователей",
+        "unprocessedVerifications": "Необработанные заявки на верификацию",
+        "processingTransactions": "Транзакции в обработке",
+        "unprocessedTransactions": "Необработанные транзакции"
+      },
+      "hints": {
+        "activeClientsNow": "Клиенты, которые сейчас активны в кабинете",
+        "selectedRange": "За выбранный период",
+        "previousPeriod": "к предыдущему периоду",
+        "requiresReview": "Заявки ожидают модерации",
+        "processingNow": "Транзакции, которые сейчас обрабатываются",
+        "awaitingHandling": "Транзакции ожидают обработки"
+      },
+      "charts": {
+        "registrationsTitle": "Регистрации клиентов",
+        "registrationsSubtitle": "Новые клиенты за выбранный период.",
+        "onlineTitle": "Online-активность",
+        "onlineSubtitle": "Текущий online, накопленные часы и активные сессии."
+      },
+      "filters": {
+        "from": "От",
+        "to": "До",
+        "step": "Шаг",
+        "device": "Устройство",
+        "browser": "Браузер",
+        "os": "OS",
+        "day": "По дням",
+        "hour": "По часам"
+      },
+      "panels": {
+        "topOnline": "Топ клиентов по online",
+        "topOnlineSubtitle": "Кто провел больше всего времени онлайн за выбранный период.",
+        "recentUsersSubtitle": "Последние зарегистрированные клиенты и их текущий статус."
+      },
+      "empty": {
+        "topOnline": "Данных по online-сессиям пока нет.",
+        "recentUsers": "Новых пользователей пока нет."
+      },
+      "labels": {
+        "noEmail": "Без email",
+        "sessionsShort": "сесс."
+      },
+      "status": {
+        "online": "Онлайн",
+        "offline": "Оффлайн",
+        "active": "Активен",
+        "pending": "Ожидает",
+        "blocked": "Заблокирован"
+      },
+      "tooltip": {
+        "totalHours": "Всего часов",
+        "uniqueClients": "Уникальные клиенты",
+        "sessions": "Сессии",
+        "noClientsBucket": "В этом bucket нет клиентов."
+      },
+      "series": {
+        "registrations": "Регистрации",
+        "onlineHours": "Часы онлайн",
+        "onlineClients": "Клиенты онлайн"
+      },
+      "units": {
+        "hoursShort": "ч"
+      },
+      "errors": {
+        "load": "Не удалось загрузить данные дашборда."
+      }
     },
     "profile": {
       "title": "Профиль администратора",

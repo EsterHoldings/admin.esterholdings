@@ -1393,7 +1393,7 @@
     },
     "dashboard": {
       "title": "Admin dashboard",
-      "subtitle": "Overview with demo data",
+      "subtitle": "Live overview of registrations, moderation queues, transactions, and online activity.",
       "users": "Users",
       "deposits": "Deposits",
       "withdrawals": "Withdrawals",
@@ -1401,7 +1401,82 @@
       "processingRequisites": "Requisites in processing",
       "processingVerifications": "Verifications in processing",
       "recentUsers": "Recent users",
-      "recentPayments": "Recent payments"
+      "recentPayments": "Recent payments",
+      "autoRefresh": "Live updates every 30 seconds",
+      "liveWaiting": "Waiting for first sync",
+      "lastUpdated": "Updated",
+      "actions": {
+        "refresh": "Refresh dashboard"
+      },
+      "cards": {
+        "onlineNow": "Online now",
+        "registrationsRange": "Registrations in range",
+        "totalUsers": "Total users",
+        "unprocessedVerifications": "Unprocessed verification requests",
+        "processingTransactions": "Transactions in processing",
+        "unprocessedTransactions": "Unprocessed transactions"
+      },
+      "hints": {
+        "activeClientsNow": "Clients currently active in cabinet",
+        "selectedRange": "For the selected period",
+        "previousPeriod": "vs prev period",
+        "requiresReview": "Requests waiting for moderation",
+        "processingNow": "Transactions currently being processed",
+        "awaitingHandling": "Transactions waiting to be handled"
+      },
+      "charts": {
+        "registrationsTitle": "Client registrations",
+        "registrationsSubtitle": "New clients for the selected range.",
+        "onlineTitle": "Online activity",
+        "onlineSubtitle": "Current online users, accumulated online hours, and active sessions."
+      },
+      "filters": {
+        "from": "From",
+        "to": "To",
+        "step": "Step",
+        "device": "Device",
+        "browser": "Browser",
+        "os": "OS",
+        "day": "By day",
+        "hour": "By hour"
+      },
+      "panels": {
+        "topOnline": "Top online clients",
+        "topOnlineSubtitle": "Who spent the most time online in the selected period.",
+        "recentUsersSubtitle": "Newly registered clients with their current account status."
+      },
+      "empty": {
+        "topOnline": "No online session data yet.",
+        "recentUsers": "No recent users yet."
+      },
+      "labels": {
+        "noEmail": "No email",
+        "sessionsShort": "sessions"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline",
+        "active": "Active",
+        "pending": "Pending",
+        "blocked": "Blocked"
+      },
+      "tooltip": {
+        "totalHours": "Total hours",
+        "uniqueClients": "Unique clients",
+        "sessions": "Sessions",
+        "noClientsBucket": "No clients in this bucket."
+      },
+      "series": {
+        "registrations": "Registrations",
+        "onlineHours": "Online hours",
+        "onlineClients": "Clients online"
+      },
+      "units": {
+        "hoursShort": "h"
+      },
+      "errors": {
+        "load": "Failed to load dashboard data."
+      }
     },
     "profile": {
       "title": "Admin profile",

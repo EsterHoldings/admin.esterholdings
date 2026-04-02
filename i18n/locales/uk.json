@@ -1572,7 +1572,7 @@
     },
     "dashboard": {
       "title": "Адмін-дешборд",
-      "subtitle": "Огляд (демо-дані)",
+      "subtitle": "Живий огляд реєстрацій, черг модерації, транзакцій та online-активності.",
       "users": "Користувачі",
       "deposits": "Депозити",
       "withdrawals": "Виведення",
@@ -1580,7 +1580,82 @@
       "processingRequisites": "Реквізити в обробці",
       "processingVerifications": "Верифікації в обробці",
       "recentUsers": "Нові користувачі",
-      "recentPayments": "Останні платежі"
+      "recentPayments": "Останні платежі",
+      "autoRefresh": "Автооновлення кожні 30 секунд",
+      "liveWaiting": "Очікування першої синхронізації",
+      "lastUpdated": "Оновлено",
+      "actions": {
+        "refresh": "Оновити дешборд"
+      },
+      "cards": {
+        "onlineNow": "Зараз онлайн",
+        "registrationsRange": "Реєстрації за період",
+        "totalUsers": "Усього користувачів",
+        "unprocessedVerifications": "Необроблені запити на верифікацію",
+        "processingTransactions": "Транзакції в обробці",
+        "unprocessedTransactions": "Необроблені транзакції"
+      },
+      "hints": {
+        "activeClientsNow": "Клієнти, які зараз активні в кабінеті",
+        "selectedRange": "За вибраний період",
+        "previousPeriod": "до попереднього періоду",
+        "requiresReview": "Запити очікують модерації",
+        "processingNow": "Транзакції, які зараз обробляються",
+        "awaitingHandling": "Транзакції очікують обробки"
+      },
+      "charts": {
+        "registrationsTitle": "Реєстрації клієнтів",
+        "registrationsSubtitle": "Нові клієнти за вибраний період.",
+        "onlineTitle": "Online-активність",
+        "onlineSubtitle": "Поточний online, накопичені години та активні сесії."
+      },
+      "filters": {
+        "from": "Від",
+        "to": "До",
+        "step": "Крок",
+        "device": "Пристрій",
+        "browser": "Браузер",
+        "os": "OS",
+        "day": "По днях",
+        "hour": "По годинах"
+      },
+      "panels": {
+        "topOnline": "Топ клієнтів за online",
+        "topOnlineSubtitle": "Хто провів найбільше часу онлайн за вибраний період.",
+        "recentUsersSubtitle": "Останні зареєстровані клієнти та їхній поточний статус."
+      },
+      "empty": {
+        "topOnline": "Даних про online-сесії поки немає.",
+        "recentUsers": "Нових користувачів поки немає."
+      },
+      "labels": {
+        "noEmail": "Без email",
+        "sessionsShort": "сес."
+      },
+      "status": {
+        "online": "Онлайн",
+        "offline": "Офлайн",
+        "active": "Активний",
+        "pending": "Очікує",
+        "blocked": "Заблокований"
+      },
+      "tooltip": {
+        "totalHours": "Усього годин",
+        "uniqueClients": "Унікальні клієнти",
+        "sessions": "Сесії",
+        "noClientsBucket": "У цьому bucket немає клієнтів."
+      },
+      "series": {
+        "registrations": "Реєстрації",
+        "onlineHours": "Години онлайн",
+        "onlineClients": "Клієнти онлайн"
+      },
+      "units": {
+        "hoursShort": "год"
+      },
+      "errors": {
+        "load": "Не вдалося завантажити дані дешборда."
+      }
     },
     "profile": {
       "title": "Профіль адміністратора",
