@@ -371,9 +371,10 @@
 
 <script lang="ts" setup>
   import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+  import type Echo from "laravel-echo";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
-  import { navigateTo } from "nuxt/app";
+  import { navigateTo, useNuxtApp } from "nuxt/app";
   import { definePageMeta, useLocalePath } from "~/.nuxt/imports";
 
   import AdminMetricChart from "~/components/block/charts/AdminMetricChart.vue";
@@ -422,6 +423,7 @@
 
   const AUTO_REFRESH_INTERVAL_MS = 30_000;
   const FILTER_RELOAD_DELAY_MS = 350;
+  const REALTIME_REFRESH_DELAY_MS = 900;
 
   const metricRangePresets: MetricPreset[] = [
     { id: "1d", label: "24h", amount: 1, unit: "days", bucket: "hour" },
@@ -435,6 +437,7 @@
   const toast = useToast();
   const adminAuthStore = useAdminAuthStore();
   const appCore = useAppCore();
+  const { $echo } = useNuxtApp() as { $echo?: Echo<any> };
 
   const dashboard = ref<any>(null);
   const isLoading = ref(false);
@@ -443,6 +446,11 @@
 
   let autoRefreshIntervalId: number | null = null;
   let filterReloadTimeoutId: number | null = null;
+  let realtimeRefreshTimeoutId: number | null = null;
+  let queuedRealtimeRefresh = false;
+  let dashboardRealtimeChannel: any = null;
+  let supportRealtimeChannel: any = null;
+  let socketStateHandler: ((states: any) => void) | null = null;
 
   function resolveText(key: string, fallback: string): string {
     const translated = t(key);
@@ -631,6 +639,11 @@
       }
     } finally {
       isLoading.value = false;
+
+      if (queuedRealtimeRefresh && shouldAutoRefresh()) {
+        queuedRealtimeRefresh = false;
+        void loadDashboard({ silent: true });
+      }
     }
   }
 
@@ -643,6 +656,15 @@
     filterReloadTimeoutId = null;
   }
 
+  function clearRealtimeRefreshTimeout(): void {
+    if (realtimeRefreshTimeoutId === null || typeof window === "undefined") {
+      return;
+    }
+
+    window.clearTimeout(realtimeRefreshTimeoutId);
+    realtimeRefreshTimeoutId = null;
+  }
+
   function scheduleDashboardReload(): void {
     if (typeof window === "undefined") {
       return;
@@ -653,6 +675,29 @@
       filterReloadTimeoutId = null;
       void loadDashboard({ silent: true });
     }, FILTER_RELOAD_DELAY_MS);
+  }
+
+  function scheduleRealtimeReload(): void {
+    if (typeof window === "undefined" || !shouldAutoRefresh()) {
+      return;
+    }
+
+    if (isLoading.value) {
+      queuedRealtimeRefresh = true;
+      return;
+    }
+
+    clearRealtimeRefreshTimeout();
+    realtimeRefreshTimeoutId = window.setTimeout(() => {
+      realtimeRefreshTimeoutId = null;
+
+      if (isLoading.value) {
+        queuedRealtimeRefresh = true;
+        return;
+      }
+
+      void loadDashboard({ silent: true });
+    }, REALTIME_REFRESH_DELAY_MS);
   }
 
   function setPresetFilters(target: ChartFilters | OnlineChartFilters, presetId: string): void {
@@ -739,6 +784,176 @@
     }
 
     void loadDashboard({ silent: true });
+  }
+
+  function handleRealtimeDashboardUpdate(): void {
+    scheduleRealtimeReload();
+  }
+
+  function resolveEchoClient() {
+    if ($echo && typeof $echo.private === "function") {
+      return $echo;
+    }
+
+    if (typeof window !== "undefined") {
+      const fallbackEcho = (window as any).Echo;
+      if (fallbackEcho && typeof fallbackEcho.private === "function") {
+        return fallbackEcho;
+      }
+    }
+
+    return null;
+  }
+
+  function reconnectDashboardSocketTransport(): void {
+    const echoClient = resolveEchoClient();
+    const pusher = echoClient?.connector?.pusher;
+    const state = String(pusher?.connection?.state ?? "");
+
+    if (!pusher) {
+      return;
+    }
+
+    if (state === "disconnected" || state === "failed" || state === "unavailable") {
+      try {
+        pusher.connect();
+      } catch {
+        // noop
+      }
+    }
+  }
+
+  function connectDashboardRealtime(): void {
+    const echoClient = resolveEchoClient();
+    if (!echoClient || dashboardRealtimeChannel) {
+      return;
+    }
+
+    reconnectDashboardSocketTransport();
+    dashboardRealtimeChannel = echoClient.private("dashboard.admin");
+
+    const eventNames = [
+      ".admin.dashboard.updated",
+      "admin.dashboard.updated",
+      ".Modules\\System\\Events\\AdminDashboardUpdated",
+      "Modules\\System\\Events\\AdminDashboardUpdated",
+      ".AdminDashboardUpdated",
+      "AdminDashboardUpdated",
+    ];
+
+    for (const eventName of eventNames) {
+      dashboardRealtimeChannel.stopListening(eventName, handleRealtimeDashboardUpdate);
+      dashboardRealtimeChannel.listen(eventName, handleRealtimeDashboardUpdate);
+    }
+  }
+
+  function disconnectDashboardRealtime(): void {
+    if (!dashboardRealtimeChannel) {
+      return;
+    }
+
+    const eventNames = [
+      ".admin.dashboard.updated",
+      "admin.dashboard.updated",
+      ".Modules\\System\\Events\\AdminDashboardUpdated",
+      "Modules\\System\\Events\\AdminDashboardUpdated",
+      ".AdminDashboardUpdated",
+      "AdminDashboardUpdated",
+    ];
+
+    for (const eventName of eventNames) {
+      dashboardRealtimeChannel.stopListening(eventName, handleRealtimeDashboardUpdate);
+    }
+
+    dashboardRealtimeChannel = null;
+  }
+
+  function connectClientPresenceRealtime(): void {
+    const echoClient = resolveEchoClient();
+    if (!echoClient || supportRealtimeChannel) {
+      return;
+    }
+
+    reconnectDashboardSocketTransport();
+    supportRealtimeChannel = echoClient.private("support.global");
+
+    const eventNames = [
+      ".client.presence.updated",
+      "client.presence.updated",
+      ".App\\Events\\ClientPresenceUpdated",
+      "App\\Events\\ClientPresenceUpdated",
+      ".Modules\\Support\\Events\\ClientPresenceUpdated",
+      "Modules\\Support\\Events\\ClientPresenceUpdated",
+    ];
+
+    for (const eventName of eventNames) {
+      supportRealtimeChannel.stopListening(eventName, handleRealtimeDashboardUpdate);
+      supportRealtimeChannel.listen(eventName, handleRealtimeDashboardUpdate);
+    }
+  }
+
+  function disconnectClientPresenceRealtime(): void {
+    if (!supportRealtimeChannel) {
+      return;
+    }
+
+    const eventNames = [
+      ".client.presence.updated",
+      "client.presence.updated",
+      ".App\\Events\\ClientPresenceUpdated",
+      "App\\Events\\ClientPresenceUpdated",
+      ".Modules\\Support\\Events\\ClientPresenceUpdated",
+      "Modules\\Support\\Events\\ClientPresenceUpdated",
+    ];
+
+    for (const eventName of eventNames) {
+      supportRealtimeChannel.stopListening(eventName, handleRealtimeDashboardUpdate);
+    }
+
+    supportRealtimeChannel = null;
+  }
+
+  function bindDashboardSocketStateListener(): void {
+    if (socketStateHandler) {
+      return;
+    }
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (!connection || typeof connection.bind !== "function") {
+      return;
+    }
+
+    socketStateHandler = (states: any) => {
+      const currentState = String(states?.current ?? connection?.state ?? "");
+
+      if (currentState === "connected") {
+        connectDashboardRealtime();
+        connectClientPresenceRealtime();
+        scheduleRealtimeReload();
+        return;
+      }
+
+      if (currentState === "failed" || currentState === "unavailable" || currentState === "disconnected") {
+        reconnectDashboardSocketTransport();
+      }
+    };
+
+    connection.bind("state_change", socketStateHandler);
+  }
+
+  function unbindDashboardSocketStateListener(): void {
+    if (!socketStateHandler) {
+      return;
+    }
+
+    const echoClient = resolveEchoClient();
+    const connection = echoClient?.connector?.pusher?.connection;
+    if (connection && typeof connection.unbind === "function") {
+      connection.unbind("state_change", socketStateHandler);
+    }
+
+    socketStateHandler = null;
   }
 
   async function handleManualRefresh(): Promise<void> {
@@ -937,6 +1152,9 @@
 
   onMounted(() => {
     startAutoRefresh();
+    connectDashboardRealtime();
+    connectClientPresenceRealtime();
+    bindDashboardSocketStateListener();
     if (typeof document !== "undefined") {
       document.addEventListener("visibilitychange", handleVisibilityChange);
     }
@@ -950,6 +1168,10 @@
   onBeforeUnmount(() => {
     stopAutoRefresh();
     clearFilterReloadTimeout();
+    clearRealtimeRefreshTimeout();
+    disconnectDashboardRealtime();
+    disconnectClientPresenceRealtime();
+    unbindDashboardSocketStateListener();
 
     if (typeof document !== "undefined") {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
