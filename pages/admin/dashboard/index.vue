@@ -379,6 +379,7 @@
 
   import AdminMetricChart from "~/components/block/charts/AdminMetricChart.vue";
   import PanelDefault from "~/components/block/panels/PanelDefault.vue";
+  import useEventBus from "~/composables/useEventBus";
   import UiBadge from "~/components/ui/UiBadge.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiIconClients from "~/components/ui/UiIconClients.vue";
@@ -424,6 +425,8 @@
   const AUTO_REFRESH_INTERVAL_MS = 30_000;
   const FILTER_RELOAD_DELAY_MS = 350;
   const REALTIME_REFRESH_DELAY_MS = 900;
+  const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
+  const DASHBOARD_NOTIFICATION_TYPES = ["payments.withdrawal.created", "verification.request.created"];
 
   const metricRangePresets: MetricPreset[] = [
     { id: "1d", label: "24h", amount: 1, unit: "days", bucket: "hour" },
@@ -790,6 +793,73 @@
     scheduleRealtimeReload();
   }
 
+  function parseJsonObject(value: unknown): Record<string, any> | null {
+    if (typeof value !== "string") {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" ? (parsed as Record<string, any>) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function normalizePresencePayload(payload?: any): Record<string, any> | null {
+    if (!payload) {
+      return null;
+    }
+
+    const parsedPayload =
+      typeof payload === "string" ? parseJsonObject(payload) : payload && typeof payload === "object" ? payload : null;
+    if (!parsedPayload) {
+      return null;
+    }
+
+    const dataLayer =
+      parsedPayload?.data && typeof parsedPayload.data === "object"
+        ? parsedPayload.data
+        : (parseJsonObject(parsedPayload?.data) ?? parsedPayload);
+
+    return dataLayer && typeof dataLayer === "object" ? (dataLayer as Record<string, any>) : null;
+  }
+
+  function handleRealtimeClientPresence(payload: any): void {
+    const data = normalizePresencePayload(payload);
+    const onlineClientsNow = Number(data?.online_clients_now ?? data?.onlineClientsNow);
+
+    if (dashboard.value && Number.isFinite(onlineClientsNow)) {
+      const currentOnline = dashboard.value?.online?.summary ?? {};
+      dashboard.value = {
+        ...dashboard.value,
+        online: {
+          ...(dashboard.value?.online ?? {}),
+          summary: {
+            ...currentOnline,
+            currently_online_users: Math.max(0, onlineClientsNow),
+          },
+        },
+      };
+    }
+
+    if (!data || !Number.isFinite(onlineClientsNow)) {
+      scheduleRealtimeReload();
+      return;
+    }
+
+    scheduleRealtimeReload();
+  }
+
+  function handleAdminNotificationReceived(payload?: { notification?: any }): void {
+    const notificationType = String(payload?.notification?.type ?? "").trim();
+    if (!DASHBOARD_NOTIFICATION_TYPES.includes(notificationType)) {
+      return;
+    }
+
+    scheduleRealtimeReload();
+  }
+
   function resolveEchoClient() {
     if ($echo && typeof $echo.private === "function") {
       return $echo;
@@ -882,13 +952,15 @@
       "client.presence.updated",
       ".App\\Events\\ClientPresenceUpdated",
       "App\\Events\\ClientPresenceUpdated",
+      ".ClientPresenceUpdated",
+      "ClientPresenceUpdated",
       ".Modules\\Support\\Events\\ClientPresenceUpdated",
       "Modules\\Support\\Events\\ClientPresenceUpdated",
     ];
 
     for (const eventName of eventNames) {
-      supportRealtimeChannel.stopListening(eventName, handleRealtimeDashboardUpdate);
-      supportRealtimeChannel.listen(eventName, handleRealtimeDashboardUpdate);
+      supportRealtimeChannel.stopListening(eventName, handleRealtimeClientPresence);
+      supportRealtimeChannel.listen(eventName, handleRealtimeClientPresence);
     }
   }
 
@@ -902,12 +974,14 @@
       "client.presence.updated",
       ".App\\Events\\ClientPresenceUpdated",
       "App\\Events\\ClientPresenceUpdated",
+      ".ClientPresenceUpdated",
+      "ClientPresenceUpdated",
       ".Modules\\Support\\Events\\ClientPresenceUpdated",
       "Modules\\Support\\Events\\ClientPresenceUpdated",
     ];
 
     for (const eventName of eventNames) {
-      supportRealtimeChannel.stopListening(eventName, handleRealtimeDashboardUpdate);
+      supportRealtimeChannel.stopListening(eventName, handleRealtimeClientPresence);
     }
 
     supportRealtimeChannel = null;
@@ -1161,6 +1235,7 @@
     if (typeof window !== "undefined") {
       window.addEventListener("focus", handleVisibilityChange);
     }
+    useEventBus.on(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
 
     void loadDashboard();
   });
@@ -1179,6 +1254,7 @@
     if (typeof window !== "undefined") {
       window.removeEventListener("focus", handleVisibilityChange);
     }
+    useEventBus.off(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
   });
 </script>
 
