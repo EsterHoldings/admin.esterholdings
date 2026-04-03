@@ -17,6 +17,29 @@ const sanitizePort = (value: string | number | undefined, fallback: number): num
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
 
+const isLoopbackHost = (value: string | undefined): boolean => {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+
+  return normalized === "localhost" || normalized === "127.0.0.1";
+};
+
+const resolveWsHost = (candidate: string | undefined): string => {
+  const normalizedCandidate = String(candidate || "").trim();
+  const currentHost = window.location.hostname;
+
+  if (normalizedCandidate === "") {
+    return currentHost;
+  }
+
+  if (!isLoopbackHost(currentHost) && isLoopbackHost(normalizedCandidate)) {
+    return currentHost;
+  }
+
+  return normalizedCandidate;
+};
+
 const resolveOrigin = (candidate: string | undefined): string => {
   if (!candidate || candidate.trim() === "") {
     return window.location.origin;
@@ -93,7 +116,12 @@ export default defineNuxtPlugin(() => {
   const apiBase = resolveApiBase(cfg.baseApi);
   const authEndpoint = `${authOrigin}/broadcasting/auth`;
 
-  const scheme = (cfg.reverbScheme || window.location.protocol.replace(":", "") || "http").toLowerCase();
+  const runtimeScheme = String(cfg.reverbScheme || "")
+    .trim()
+    .toLowerCase();
+  const currentScheme = window.location.protocol.replace(":", "").toLowerCase();
+  const scheme =
+    currentScheme === "https" && runtimeScheme !== "https" ? "https" : runtimeScheme || currentScheme || "http";
   const forceTLS = scheme === "https";
   const port = sanitizePort(cfg.reverbPort, forceTLS ? 443 : 80);
   const transport = forceTLS ? "wss" : "ws";
@@ -189,7 +217,7 @@ export default defineNuxtPlugin(() => {
   const echo = new Echo({
     broadcaster: "reverb",
     key: cfg.reverbKey,
-    wsHost: cfg.reverbHost || window.location.hostname,
+    wsHost: resolveWsHost(cfg.reverbHost),
     wsPort: port,
     wssPort: port,
     forceTLS,
