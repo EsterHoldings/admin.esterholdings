@@ -1155,6 +1155,85 @@
       "access": "Access",
       "withdrawalRequests": "Withdrawal requests"
     },
+    "news": {
+      "title": "AI News Studio",
+      "subtitle": "Generate, edit and schedule news drafts directly from the admin panel.",
+      "testMode": "Test mode: generation uses the server OpenAI key from env.",
+      "aiTitle": "Generate with AI",
+      "aiSubtitle": "Describe the topic, then refine the draft before saving.",
+      "editorTitle": "Article editor",
+      "editorSubtitle": "Save as draft, publish immediately, or schedule publication.",
+      "listEmpty": "No news articles found yet.",
+      "statuses": {
+        "draft": "Draft",
+        "scheduled": "Scheduled",
+        "published": "Published"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Search news...",
+        "topic": "Topic",
+        "locale": "Language",
+        "tone": "Tone",
+        "angle": "Angle / headline direction",
+        "additionalInstructions": "Additional instructions",
+        "generateImages": "Generate cover images",
+        "includeVideoLinks": "Add video search links",
+        "imageCount": "Image count",
+        "title": "Title",
+        "slug": "Slug",
+        "status": "Status",
+        "publishAt": "Publish at",
+        "excerpt": "Excerpt",
+        "content": "Content",
+        "coverImageUrl": "Cover image URL",
+        "galleryImages": "Gallery image URLs",
+        "videoLinks": "Video links"
+      },
+      "placeholders": {
+        "topic": "ECB comments on inflation outlook",
+        "angle": "Focus on what the move means for retail traders.",
+        "additionalInstructions": "Optional constraints, disclaimers, style notes...",
+        "title": "Generated title will appear here",
+        "slug": "news-slug",
+        "excerpt": "Short summary for cards and previews",
+        "content": "Full article markdown",
+        "coverImageUrl": "https://... or /storage/news/...",
+        "galleryImages": "One image URL per line",
+        "videoLinks": "One video link per line"
+      },
+      "actions": {
+        "generate": "Generate Draft",
+        "generating": "Generating...",
+        "saveDraft": "Save Draft",
+        "publishNow": "Publish Now",
+        "schedule": "Schedule",
+        "delete": "Delete"
+      },
+      "preview": {
+        "cover": "Cover preview",
+        "gallery": "Gallery",
+        "videoLinks": "Video links"
+      },
+      "messages": {
+        "topicRequired": "Enter a topic for generation first.",
+        "generated": "Draft generated successfully.",
+        "loadFailed": "Failed to load news articles.",
+        "editorRequired": "Title and content are required.",
+        "scheduleRequired": "Pick the publication date and time first.",
+        "created": "News article created.",
+        "updated": "News article updated.",
+        "deleted": "News article deleted.",
+        "saveFailed": "Failed to save news article.",
+        "deleteFailed": "Failed to delete news article.",
+        "generateFailed": "Failed to generate draft."
+      }
+    },
     "access": {
       "index": {
         "title": "Access controls",

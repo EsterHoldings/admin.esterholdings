@@ -1,83 +1,44 @@
 import useApi from "~/composables/useApi";
-import type { NewsItem, NewsLatestResponse, NewsListResponse } from "./news.types";
-
-const mockNewsItems: NewsItem[] = [
-  {
-    id: "1",
-    slug: "trading-sessions-april-2023",
-    title: "Trading Sessions for April 2023",
-    subtitle: "Holiday hours and schedule updates for major exchanges.",
-    publishedAt: "Apr 02, 2023",
-    image: "/static/newsBg.jpg",
-  },
-  {
-    id: "2",
-    slug: "new-liquidity-providers",
-    title: "New Liquidity Providers Connected",
-    subtitle: "Tighter spreads and deeper books across key FX pairs.",
-    publishedAt: "Mar 18, 2023",
-    image: "/static/market-newsBg.jpg",
-  },
-  {
-    id: "3",
-    slug: "platform-update-q2",
-    title: "Platform Update Q2",
-    subtitle: "Performance improvements and a refreshed trading terminal.",
-    publishedAt: "Mar 05, 2023",
-    image: "/static/trader's-blogBg.jpg",
-  },
-  {
-    id: "4",
-    slug: "security-audit-complete",
-    title: "Security Audit Completed",
-    subtitle: "Independent audit confirms strengthened infrastructure.",
-    publishedAt: "Feb 21, 2023",
-    image: "/static/aboutCompany.jpeg",
-  },
-  {
-    id: "5",
-    slug: "new-account-types",
-    title: "New Account Types Launched",
-    subtitle: "Choose plans tailored for active and long-term traders.",
-    publishedAt: "Feb 01, 2023",
-    image: "/static/standardBgCard.jpeg",
-  },
-];
+import type {
+  AdminNewsListResponse,
+  GenerateNewsDraftPayload,
+  GeneratedNewsDraft,
+  UpsertNewsArticlePayload,
+} from "./news.types";
 
 export class NewsService {
   private useApi: any;
 
   constructor() {
-    this.useApi = new useApi(true);
+    this.useApi = new useApi(false);
   }
 
-  async list(params: { page?: number; perPage?: number } = {}): Promise<{ data: NewsListResponse }> {
-    // return await this.useApi.get("/news", params);
-    const page = params.page ?? 1;
-    const perPage = params.perPage ?? mockNewsItems.length;
-    const start = (page - 1) * perPage;
-    const items = mockNewsItems.slice(start, start + perPage);
-
-    return Promise.resolve({
-      data: {
-        data: items,
-        meta: {
-          page,
-          perPage,
-          total: mockNewsItems.length,
-        },
-      },
-    });
+  async list(
+    params: { page?: number; perPage?: number; search?: string; status?: string | null; locale?: string | null } = {}
+  ): Promise<{ data: { data: AdminNewsListResponse } }> {
+    return await this.useApi.get("/admin/news", params);
   }
 
-  async latest(params: { limit?: number } = {}): Promise<{ data: NewsLatestResponse }> {
-    // return await this.useApi.get("/news/latest", params);
-    const limit = params.limit ?? 3;
-    return Promise.resolve({
-      data: {
-        data: mockNewsItems.slice(0, limit),
-      },
-    });
+  async getById(id: string): Promise<{ data: { data: any } }> {
+    return await this.useApi.get(`/admin/news/${id}`);
+  }
+
+  async create(payload: UpsertNewsArticlePayload): Promise<{ data: { data: any; message?: string } }> {
+    return await this.useApi.post("/admin/news", payload);
+  }
+
+  async update(id: string, payload: UpsertNewsArticlePayload): Promise<{ data: { data: any; message?: string } }> {
+    return await this.useApi.patch(`/admin/news/${id}`, payload);
+  }
+
+  async delete(id: string): Promise<{ data: { message?: string } }> {
+    return await this.useApi.delete(`/admin/news/${id}`);
+  }
+
+  async generateDraft(
+    payload: GenerateNewsDraftPayload
+  ): Promise<{ data: { data: GeneratedNewsDraft; message?: string } }> {
+    return await this.useApi.post("/admin/news/generate", payload);
   }
 }
 
