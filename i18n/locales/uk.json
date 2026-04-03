@@ -1160,17 +1160,46 @@
     },
     "news": {
       "title": "AI-студія новин",
-      "subtitle": "Генеруйте, редагуйте та плануйте публікацію новин прямо з адмінки.",
-      "testMode": "Тестовий режим: генерація використовує серверний OpenAI key з env.",
-      "aiTitle": "Генерація через AI",
-      "aiSubtitle": "Опишіть тему, потім відредагуйте чернетку перед збереженням.",
-      "editorTitle": "Редактор новини",
-      "editorSubtitle": "Зберігайте в чернетки, публікуйте одразу або ставте відкладену публікацію.",
+      "subtitle": "Генеруйте, редагуйте, обговорюйте з GPT і плануйте публікацію новин в одному робочому просторі.",
+      "sidebarLabel": "Бібліотека чернеток",
+      "sidebarTitle": "Чернетки новин",
+      "testMode": "Тестовий режим використовує OpenAI ключ, налаштований на сервері.",
       "listEmpty": "Новин поки немає.",
+      "workspaceDraft": "Робочий простір чернетки",
+      "workspaceNew": "Новий діалог",
+      "workspaceSubtitle": "Продовжуйте допрацьовувати цю чернетку через чат або вручну в полях редактора.",
+      "workspaceSubtitleNew": "Опишіть потрібну новину, і асистент підготує текст, візуали та SEO.",
+      "emptyTitle": "Почніть з промпта, і GPT збере першу чернетку",
+      "chatTitle": "Редакційний чат",
+      "chatSubtitle": "Попросіть створити новину з нуля або змінити поточну чернетку.",
+      "chatEmpty": "Повідомлень поки немає. Попросіть GPT згенерувати першу чернетку новини.",
+      "chatPlaceholder": "Наприклад: підготуй ринковий апдейт щодо засідання ЄЦБ, у нейтральному тоні, з однією обкладинкою і повним SEO.",
+      "chatHintExisting": "Це повідомлення оновить поточну чернетку й врахує останні ручні правки.",
+      "chatHintNew": "Перше повідомлення створить нову чернетку і відразу відкриє її.",
+      "editorTitle": "Редактор чернетки",
+      "editorSubtitle": "Ви можете вручну змінити статтю в будь-який момент, а потім продовжити роботу в чаті.",
+      "seoTitle": "SEO-налаштування",
+      "seoSubtitle": "Керуйте метаданими, social cards та полями індексації повністю.",
+      "filters": {
+        "all": "Усі",
+        "draft": "Чернетки",
+        "scheduled": "Заплановані",
+        "published": "Опубліковані"
+      },
       "statuses": {
         "draft": "Чернетка",
-        "scheduled": "Запланована",
-        "published": "Опублікована"
+        "scheduled": "Заплановано",
+        "published": "Опубліковано"
+      },
+      "roles": {
+        "assistant": "GPT-редактор",
+        "user": "Ви"
+      },
+      "phases": {
+        "analyzing": "Аналізую ваш запит",
+        "writing": "Пишу чернетку статті",
+        "seo": "Готую SEO-метадані",
+        "finalizing": "Фіналізую результат"
       },
       "tones": {
         "professional": "Професійний",
@@ -1179,63 +1208,67 @@
         "analytical": "Аналітичний"
       },
       "fields": {
-        "search": "Пошук новин...",
-        "topic": "Тема",
+        "search": "Пошук чернеток...",
         "locale": "Мова",
-        "tone": "Тон",
-        "angle": "Кут / напрям заголовка",
-        "additionalInstructions": "Додаткові інструкції",
-        "generateImages": "Генерувати обкладинки",
-        "includeVideoLinks": "Додавати посилання на пошук відео",
-        "imageCount": "Кількість зображень",
+        "generateImages": "Зображення",
+        "includeVideoLinks": "Відео",
         "title": "Заголовок",
         "slug": "Slug",
-        "status": "Статус",
-        "publishAt": "Опублікувати о",
+        "publishedAt": "Дата публікації",
         "excerpt": "Короткий опис",
         "content": "Контент",
-        "coverImageUrl": "URL обкладинки",
-        "galleryImages": "URL зображень галереї",
-        "videoLinks": "Посилання на відео"
+        "coverImage": "URL обкладинки",
+        "galleryImages": "Зображення галереї",
+        "videoLinks": "Відео-посилання"
       },
       "placeholders": {
-        "topic": "Коментар ЄЦБ щодо інфляційного прогнозу",
-        "angle": "Зробити акцент на тому, що це означає для роздрібних трейдерів.",
-        "additionalInstructions": "Додаткові обмеження, дисклеймери, стиль...",
-        "title": "Тут зʼявиться згенерований заголовок",
+        "title": "Згенерований заголовок з'явиться тут",
         "slug": "news-slug",
-        "excerpt": "Короткий опис для карток і превʼю",
-        "content": "Повний текст новини у markdown",
-        "coverImageUrl": "https://... або /storage/news/...",
-        "galleryImages": "По одному URL зображення на рядок",
-        "videoLinks": "По одному посиланню на відео на рядок"
+        "excerpt": "Короткий опис для карток і прев'ю",
+        "content": "Текст статті з'явиться тут у markdown-форматі",
+        "coverImage": "https://...",
+        "galleryImages": "По одному URL на рядок",
+        "videoLinks": "По одному посиланню на рядок",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
       },
       "actions": {
-        "generate": "Згенерувати чернетку",
-        "generating": "Генеруємо...",
         "saveDraft": "Зберегти чернетку",
         "publishNow": "Опублікувати зараз",
         "schedule": "Запланувати",
-        "delete": "Видалити"
+        "delete": "Видалити",
+        "generating": "Генерація...",
+        "send": "Надіслати в GPT"
       },
-      "preview": {
-        "cover": "Превʼю обкладинки",
-        "gallery": "Галерея",
-        "videoLinks": "Посилання на відео"
+      "seo": {
+        "metaTitle": "Meta title",
+        "metaDescription": "Meta description",
+        "metaKeywords": "Meta keywords",
+        "canonicalUrl": "Canonical URL",
+        "robots": "Robots",
+        "schemaType": "Schema type",
+        "ogTitle": "Open Graph title",
+        "ogDescription": "Open Graph description",
+        "ogImageUrl": "Open Graph image",
+        "twitterTitle": "Twitter title",
+        "twitterDescription": "Twitter description",
+        "twitterImageUrl": "Twitter image"
       },
       "messages": {
-        "topicRequired": "Спочатку вкажіть тему для генерації.",
         "generated": "Чернетку успішно згенеровано.",
-        "loadFailed": "Не вдалося завантажити новини.",
-        "editorRequired": "Заголовок і контент обовʼязкові.",
-        "scheduleRequired": "Спочатку виберіть дату й час публікації.",
-        "created": "Новину створено.",
-        "updated": "Новину оновлено.",
+        "saved": "Новину збережено.",
         "deleted": "Новину видалено.",
+        "loadFailed": "Не вдалося завантажити список новин.",
+        "loadOneFailed": "Не вдалося завантажити чернетку.",
+        "editorRequired": "Заголовок і контент є обов'язковими.",
+        "scheduleRequired": "Спочатку оберіть дату та час публікації.",
+        "promptRequired": "Спочатку напишіть повідомлення для GPT.",
         "saveFailed": "Не вдалося зберегти новину.",
         "deleteFailed": "Не вдалося видалити новину.",
         "generateFailed": "Не вдалося згенерувати чернетку."
-      }
+      },
+      "noDate": "Без дати"
     },
     "access": {
       "index": {

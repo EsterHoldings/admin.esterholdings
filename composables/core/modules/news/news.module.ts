@@ -1,5 +1,5 @@
 import NewsService from "./news.service";
-import type { GenerateNewsDraftPayload, UpsertNewsArticlePayload } from "./news.types";
+import type { GenerateNewsDraftPayload, SendNewsChatMessagePayload, UpsertNewsArticlePayload } from "./news.types";
 
 export class NewsModule {
   private newsService: NewsService;
@@ -18,6 +18,10 @@ export class NewsModule {
     return await this.newsService.getById(id);
   }
 
+  async getMessages(id: string) {
+    return await this.newsService.getMessages(id);
+  }
+
   async create(payload: UpsertNewsArticlePayload) {
     return await this.newsService.create(payload);
   }
@@ -32,6 +36,14 @@ export class NewsModule {
 
   async generateDraft(payload: GenerateNewsDraftPayload) {
     return await this.newsService.generateDraft(payload);
+  }
+
+  async startChat(payload: SendNewsChatMessagePayload) {
+    return await this.newsService.startChat(payload);
+  }
+
+  async continueChat(id: string, payload: SendNewsChatMessagePayload) {
+    return await this.newsService.continueChat(id, payload);
   }
 }
 

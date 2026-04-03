@@ -10,13 +10,15 @@
     </template>
 
     <template #content>
-      <NewsStudio />
+      <NewsStudio :article-id="articleId" />
     </template>
   </PageStructureDefault>
 </template>
 
 <script setup lang="ts">
+  import { computed } from "vue";
   import { definePageMeta } from "~/.nuxt/imports";
+  import { useRoute } from "vue-router";
   import PageStructureDefault from "~/components/block/pages/PageStructureDefault.vue";
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
@@ -28,4 +30,6 @@
   });
 
   const { t } = useI18n({ useScope: "global" });
+  const route = useRoute();
+  const articleId = computed(() => String(route.params.id || ""));
 </script>

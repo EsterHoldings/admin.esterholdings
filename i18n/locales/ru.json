@@ -1161,17 +1161,46 @@
     },
     "news": {
       "title": "AI-студия новостей",
-      "subtitle": "Генерируйте, редактируйте и планируйте публикацию новостей прямо из админки.",
-      "testMode": "Тестовый режим: генерация использует серверный OpenAI key из env.",
-      "aiTitle": "Генерация через AI",
-      "aiSubtitle": "Опишите тему, затем отредактируйте черновик перед сохранением.",
-      "editorTitle": "Редактор новости",
-      "editorSubtitle": "Сохраняйте в черновики, публикуйте сразу или ставьте публикацию по времени.",
+      "subtitle": "Генерируйте, редактируйте, обсуждайте с GPT и планируйте публикацию новостей в одном рабочем пространстве.",
+      "sidebarLabel": "Библиотека черновиков",
+      "sidebarTitle": "Черновики новостей",
+      "testMode": "Тестовый режим использует OpenAI ключ, настроенный на сервере.",
       "listEmpty": "Новостей пока нет.",
+      "workspaceDraft": "Рабочее пространство черновика",
+      "workspaceNew": "Новый диалог",
+      "workspaceSubtitle": "Продолжайте дорабатывать этот черновик через чат или вручную в полях редактора.",
+      "workspaceSubtitleNew": "Опишите нужную новость, и ассистент подготовит текст, визуалы и SEO.",
+      "emptyTitle": "Начните с промпта, и GPT соберет первый черновик",
+      "chatTitle": "Редакционный чат",
+      "chatSubtitle": "Попросите создать новость с нуля или изменить текущий черновик.",
+      "chatEmpty": "Сообщений пока нет. Попросите GPT сгенерировать первый черновик новости.",
+      "chatPlaceholder": "Например: подготовь рыночный апдейт по заседанию ЕЦБ, в нейтральном тоне, с одной обложкой и полным SEO.",
+      "chatHintExisting": "Это сообщение обновит текущий черновик и учтет последние ручные правки.",
+      "chatHintNew": "Первое сообщение создаст новый черновик и сразу откроет его.",
+      "editorTitle": "Редактор черновика",
+      "editorSubtitle": "Вы можете вручную изменить статью в любой момент, а затем продолжить работу в чате.",
+      "seoTitle": "SEO-настройки",
+      "seoSubtitle": "Управляйте метаданными, social cards и индексируемыми полями полностью.",
+      "filters": {
+        "all": "Все",
+        "draft": "Черновики",
+        "scheduled": "Запланированные",
+        "published": "Опубликованные"
+      },
       "statuses": {
         "draft": "Черновик",
-        "scheduled": "Запланирована",
-        "published": "Опубликована"
+        "scheduled": "Запланировано",
+        "published": "Опубликовано"
+      },
+      "roles": {
+        "assistant": "GPT-редактор",
+        "user": "Вы"
+      },
+      "phases": {
+        "analyzing": "Анализирую ваш запрос",
+        "writing": "Пишу черновик статьи",
+        "seo": "Готовлю SEO-метаданные",
+        "finalizing": "Финализирую результат"
       },
       "tones": {
         "professional": "Профессиональный",
@@ -1180,63 +1209,67 @@
         "analytical": "Аналитический"
       },
       "fields": {
-        "search": "Поиск новостей...",
-        "topic": "Тема",
+        "search": "Поиск черновиков...",
         "locale": "Язык",
-        "tone": "Тон",
-        "angle": "Угол / направление заголовка",
-        "additionalInstructions": "Дополнительные инструкции",
-        "generateImages": "Генерировать обложки",
-        "includeVideoLinks": "Добавлять ссылки на поиск видео",
-        "imageCount": "Количество изображений",
+        "generateImages": "Изображения",
+        "includeVideoLinks": "Видео",
         "title": "Заголовок",
         "slug": "Slug",
-        "status": "Статус",
-        "publishAt": "Опубликовать в",
+        "publishedAt": "Дата публикации",
         "excerpt": "Краткое описание",
         "content": "Контент",
-        "coverImageUrl": "URL обложки",
-        "galleryImages": "URL изображений галереи",
-        "videoLinks": "Ссылки на видео"
+        "coverImage": "URL обложки",
+        "galleryImages": "Изображения галереи",
+        "videoLinks": "Видео-ссылки"
       },
       "placeholders": {
-        "topic": "Комментарий ЕЦБ по инфляционному прогнозу",
-        "angle": "Сделать акцент на том, что это значит для розничных трейдеров.",
-        "additionalInstructions": "Дополнительные ограничения, дисклеймеры, стиль...",
-        "title": "Здесь появится сгенерированный заголовок",
+        "title": "Сгенерированный заголовок появится здесь",
         "slug": "news-slug",
         "excerpt": "Короткое описание для карточек и превью",
-        "content": "Полный текст новости в markdown",
-        "coverImageUrl": "https://... или /storage/news/...",
-        "galleryImages": "По одному URL изображения на строку",
-        "videoLinks": "По одной ссылке на видео на строку"
+        "content": "Текст статьи появится здесь в markdown-формате",
+        "coverImage": "https://...",
+        "galleryImages": "По одному URL на строку",
+        "videoLinks": "По одной ссылке на строку",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
       },
       "actions": {
-        "generate": "Сгенерировать черновик",
-        "generating": "Генерируем...",
         "saveDraft": "Сохранить черновик",
         "publishNow": "Опубликовать сейчас",
         "schedule": "Запланировать",
-        "delete": "Удалить"
+        "delete": "Удалить",
+        "generating": "Генерация...",
+        "send": "Отправить в GPT"
       },
-      "preview": {
-        "cover": "Превью обложки",
-        "gallery": "Галерея",
-        "videoLinks": "Ссылки на видео"
+      "seo": {
+        "metaTitle": "Meta title",
+        "metaDescription": "Meta description",
+        "metaKeywords": "Meta keywords",
+        "canonicalUrl": "Canonical URL",
+        "robots": "Robots",
+        "schemaType": "Schema type",
+        "ogTitle": "Open Graph title",
+        "ogDescription": "Open Graph description",
+        "ogImageUrl": "Open Graph image",
+        "twitterTitle": "Twitter title",
+        "twitterDescription": "Twitter description",
+        "twitterImageUrl": "Twitter image"
       },
       "messages": {
-        "topicRequired": "Сначала укажите тему для генерации.",
         "generated": "Черновик успешно сгенерирован.",
-        "loadFailed": "Не удалось загрузить новости.",
+        "saved": "Новость сохранена.",
+        "deleted": "Новость удалена.",
+        "loadFailed": "Не удалось загрузить список новостей.",
+        "loadOneFailed": "Не удалось загрузить черновик.",
         "editorRequired": "Заголовок и контент обязательны.",
         "scheduleRequired": "Сначала выберите дату и время публикации.",
-        "created": "Новость создана.",
-        "updated": "Новость обновлена.",
-        "deleted": "Новость удалена.",
+        "promptRequired": "Сначала напишите сообщение для GPT.",
         "saveFailed": "Не удалось сохранить новость.",
         "deleteFailed": "Не удалось удалить новость.",
         "generateFailed": "Не удалось сгенерировать черновик."
-      }
+      },
+      "noDate": "Без даты"
     },
     "access": {
       "index": {

@@ -1,9 +1,12 @@
 import useApi from "~/composables/useApi";
 import type {
   AdminNewsListResponse,
+  AdminNewsStudioResponse,
   GenerateNewsDraftPayload,
   GeneratedNewsDraft,
+  SendNewsChatMessagePayload,
   UpsertNewsArticlePayload,
+  AdminNewsChatMessage,
 } from "./news.types";
 
 export class NewsService {
@@ -23,6 +26,10 @@ export class NewsService {
     return await this.useApi.get(`/admin/news/${id}`);
   }
 
+  async getMessages(id: string): Promise<{ data: { data: AdminNewsChatMessage[] } }> {
+    return await this.useApi.get(`/admin/news/${id}/messages`);
+  }
+
   async create(payload: UpsertNewsArticlePayload): Promise<{ data: { data: any; message?: string } }> {
     return await this.useApi.post("/admin/news", payload);
   }
@@ -39,6 +46,19 @@ export class NewsService {
     payload: GenerateNewsDraftPayload
   ): Promise<{ data: { data: GeneratedNewsDraft; message?: string } }> {
     return await this.useApi.post("/admin/news/generate", payload);
+  }
+
+  async startChat(
+    payload: SendNewsChatMessagePayload
+  ): Promise<{ data: { data: AdminNewsStudioResponse; message?: string } }> {
+    return await this.useApi.post("/admin/news/chat", payload);
+  }
+
+  async continueChat(
+    id: string,
+    payload: SendNewsChatMessagePayload
+  ): Promise<{ data: { data: AdminNewsStudioResponse; message?: string } }> {
+    return await this.useApi.post(`/admin/news/${id}/chat`, payload);
   }
 }
 

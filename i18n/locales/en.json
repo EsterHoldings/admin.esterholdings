@@ -1157,17 +1157,46 @@
     },
     "news": {
       "title": "AI News Studio",
-      "subtitle": "Generate, edit and schedule news drafts directly from the admin panel.",
-      "testMode": "Test mode: generation uses the server OpenAI key from env.",
-      "aiTitle": "Generate with AI",
-      "aiSubtitle": "Describe the topic, then refine the draft before saving.",
-      "editorTitle": "Article editor",
-      "editorSubtitle": "Save as draft, publish immediately, or schedule publication.",
+      "subtitle": "Generate, edit, chat and schedule news drafts from one workspace.",
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
       "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Example: Create a market update about the ECB meeting, add a neutral tone, one hero image and full SEO.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "All",
+        "draft": "Drafts",
+        "scheduled": "Scheduled",
+        "published": "Published"
+      },
       "statuses": {
         "draft": "Draft",
         "scheduled": "Scheduled",
         "published": "Published"
+      },
+      "roles": {
+        "assistant": "GPT Editor",
+        "user": "You"
+      },
+      "phases": {
+        "analyzing": "Analyzing your request",
+        "writing": "Writing the article draft",
+        "seo": "Preparing SEO metadata",
+        "finalizing": "Finalizing the newsroom output"
       },
       "tones": {
         "professional": "Professional",
@@ -1176,63 +1205,67 @@
         "analytical": "Analytical"
       },
       "fields": {
-        "search": "Search news...",
-        "topic": "Topic",
+        "search": "Search drafts...",
         "locale": "Language",
-        "tone": "Tone",
-        "angle": "Angle / headline direction",
-        "additionalInstructions": "Additional instructions",
-        "generateImages": "Generate cover images",
-        "includeVideoLinks": "Add video search links",
-        "imageCount": "Image count",
+        "generateImages": "Images",
+        "includeVideoLinks": "Videos",
         "title": "Title",
         "slug": "Slug",
-        "status": "Status",
-        "publishAt": "Publish at",
+        "publishedAt": "Publication date",
         "excerpt": "Excerpt",
         "content": "Content",
-        "coverImageUrl": "Cover image URL",
-        "galleryImages": "Gallery image URLs",
+        "coverImage": "Cover image URL",
+        "galleryImages": "Gallery images",
         "videoLinks": "Video links"
       },
       "placeholders": {
-        "topic": "ECB comments on inflation outlook",
-        "angle": "Focus on what the move means for retail traders.",
-        "additionalInstructions": "Optional constraints, disclaimers, style notes...",
         "title": "Generated title will appear here",
         "slug": "news-slug",
-        "excerpt": "Short summary for cards and previews",
-        "content": "Full article markdown",
-        "coverImageUrl": "https://... or /storage/news/...",
-        "galleryImages": "One image URL per line",
-        "videoLinks": "One video link per line"
+        "excerpt": "Short article summary for cards and previews",
+        "content": "The article body will appear here in markdown format",
+        "coverImage": "https://...",
+        "galleryImages": "One URL per line",
+        "videoLinks": "One URL per line",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
       },
       "actions": {
-        "generate": "Generate Draft",
-        "generating": "Generating...",
         "saveDraft": "Save Draft",
         "publishNow": "Publish Now",
         "schedule": "Schedule",
-        "delete": "Delete"
+        "delete": "Delete",
+        "generating": "Generating...",
+        "send": "Send to GPT"
       },
-      "preview": {
-        "cover": "Cover preview",
-        "gallery": "Gallery",
-        "videoLinks": "Video links"
+      "seo": {
+        "metaTitle": "Meta title",
+        "metaDescription": "Meta description",
+        "metaKeywords": "Meta keywords",
+        "canonicalUrl": "Canonical URL",
+        "robots": "Robots",
+        "schemaType": "Schema type",
+        "ogTitle": "Open Graph title",
+        "ogDescription": "Open Graph description",
+        "ogImageUrl": "Open Graph image",
+        "twitterTitle": "Twitter title",
+        "twitterDescription": "Twitter description",
+        "twitterImageUrl": "Twitter image"
       },
       "messages": {
-        "topicRequired": "Enter a topic for generation first.",
         "generated": "Draft generated successfully.",
+        "saved": "News article saved.",
+        "deleted": "News article deleted.",
         "loadFailed": "Failed to load news articles.",
+        "loadOneFailed": "Failed to load draft.",
         "editorRequired": "Title and content are required.",
         "scheduleRequired": "Pick the publication date and time first.",
-        "created": "News article created.",
-        "updated": "News article updated.",
-        "deleted": "News article deleted.",
+        "promptRequired": "Write a prompt for GPT first.",
         "saveFailed": "Failed to save news article.",
         "deleteFailed": "Failed to delete news article.",
         "generateFailed": "Failed to generate draft."
-      }
+      },
+      "noDate": "No date"
     },
     "access": {
       "index": {
