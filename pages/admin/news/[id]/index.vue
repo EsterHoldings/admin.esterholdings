@@ -1,25 +1,25 @@
 <template>
-  <PageStructureDefault>
-    <template #header>
+  <UiContainer fluid>
+    <div class="admin-news-page__header">
       <div class="flex flex-col gap-1 text-[var(--ui-text-main)]">
         <UiTextH4>{{ t("admin.news.title", "AI News Studio") }}</UiTextH4>
         <UiTextParagraph>
           {{ t("admin.news.subtitle", "Generate, edit, chat and schedule news drafts from one workspace.") }}
         </UiTextParagraph>
       </div>
-    </template>
+    </div>
 
-    <template #content>
+    <div class="admin-news-page__content">
       <NewsStudio :article-id="articleId" />
-    </template>
-  </PageStructureDefault>
+    </div>
+  </UiContainer>
 </template>
 
 <script setup lang="ts">
   import { computed } from "vue";
   import { definePageMeta } from "~/.nuxt/imports";
   import { useRoute } from "vue-router";
-  import PageStructureDefault from "~/components/block/pages/PageStructureDefault.vue";
+  import UiContainer from "~/components/ui/UiContainer.vue";
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
   import NewsStudio from "~/pages/admin/news/components/NewsStudio.vue";
@@ -33,3 +33,17 @@
   const route = useRoute();
   const articleId = computed(() => String(route.params.id || ""));
 </script>
+
+<style scoped lang="scss">
+  .admin-news-page__header {
+    margin: 8px 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .admin-news-page__content {
+    width: 100%;
+  }
+</style>
