@@ -1,4 +1,5 @@
-export type NewsStatus = "draft" | "scheduled" | "published";
+export type NewsPersistedStatus = "draft" | "scheduled" | "published";
+export type NewsStatus = NewsPersistedStatus | "archived";
 export type NewsTone = "professional" | "neutral" | "promotional" | "analytical";
 
 export interface NewsSeoPayload {
@@ -26,7 +27,7 @@ export interface AdminNewsArticle {
   cover_image_url: string | null;
   gallery_images: string[];
   video_links: string[];
-  status: NewsStatus;
+  status: NewsPersistedStatus;
   effective_status: NewsStatus;
   published_at: string | null;
   seo: NewsSeoPayload;
@@ -86,7 +87,7 @@ export interface UpsertNewsArticlePayload {
   cover_image_url?: string | null;
   gallery_images?: string[];
   video_links?: string[];
-  status: NewsStatus;
+  status: NewsPersistedStatus;
   published_at?: string | null;
   seo?: NewsSeoPayload;
   meta?: Record<string, any>;

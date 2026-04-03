@@ -1156,8 +1156,57 @@
       "withdrawalRequests": "Withdrawal requests"
     },
     "news": {
-      "title": "AI News Studio",
-      "subtitle": "Generate, edit, chat and schedule news drafts from one workspace.",
+      "title": "News Workspace",
+      "subtitle": "Manage the full newsroom from one place: browse every article, start a GPT draft in chat, preview the result and jump into full editing.",
+      "tabs": {
+        "library": "All News",
+        "draft": "New Draft"
+      },
+      "views": {
+        "list": "List",
+        "grid": "Tiles",
+        "table": "Table"
+      },
+      "columns": {
+        "article": "Article",
+        "status": "Status",
+        "locale": "Locale",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "library": {
+        "label": "News Library",
+        "title": "All News",
+        "subtitle": "Switch between draft, published and archived articles, preview them, and open the full editor when needed.",
+        "empty": "No articles found for the current filter."
+      },
+      "chatWorkspace": {
+        "label": "GPT Draft",
+        "title": "Create a New Draft",
+        "subtitleNew": "Describe the story in plain language and GPT will build a draft article with content, visuals and SEO metadata.",
+        "subtitleExisting": "Keep talking to GPT to reshape the draft. The latest article state stays in context for every next prompt.",
+        "empty": "There is no draft yet. Start with a prompt describing the topic, tone, media and angle.",
+        "hintNew": "The first prompt creates a new draft. After that, the same chat keeps refining the same article.",
+        "hintExisting": "Ask GPT to rewrite the headline, shorten the intro, add imagery, change the angle, or improve SEO.",
+        "previewHint": "Open the full preview of the current draft."
+      },
+      "preview": {
+        "label": "Preview",
+        "videoLinks": "Video links",
+        "noVideos": "No video links attached.",
+        "seo": "SEO snapshot"
+      },
+      "editor": {
+        "pageTitle": "News Editor",
+        "pageSubtitle": "Use the article and SEO tabs to prepare the draft for publication without collapsing everything into one narrow column.",
+        "label": "Article Editor",
+        "back": "Back to News",
+        "untitled": "Untitled article",
+        "articleTab": "Article",
+        "articleSubtitle": "Control title, slug, content, media and publication timing from one wide workspace.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Tune metadata, canonical URLs and social cards without mixing them into the article form."
+      },
       "sidebarLabel": "Draft library",
       "sidebarTitle": "News drafts",
       "testMode": "Test mode uses the OpenAI key configured on the server.",
@@ -1181,12 +1230,14 @@
         "all": "All",
         "draft": "Drafts",
         "scheduled": "Scheduled",
-        "published": "Published"
+        "published": "Published",
+        "archived": "Archived"
       },
       "statuses": {
         "draft": "Draft",
         "scheduled": "Scheduled",
-        "published": "Published"
+        "published": "Published",
+        "archived": "Archived"
       },
       "roles": {
         "assistant": "GPT Editor",
@@ -1231,9 +1282,13 @@
         "schemaType": "NewsArticle"
       },
       "actions": {
+        "createDraft": "Create Draft",
         "saveDraft": "Save Draft",
         "publishNow": "Publish Now",
         "schedule": "Schedule",
+        "preview": "Preview",
+        "editArticle": "Edit Article",
+        "archive": "Archive",
         "delete": "Delete",
         "generating": "Generating...",
         "send": "Send to GPT"

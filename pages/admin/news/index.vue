@@ -2,9 +2,14 @@
   <UiContainer fluid>
     <div class="admin-news-page__header">
       <div class="flex flex-col gap-1 text-[var(--ui-text-main)]">
-        <UiTextH4>{{ t("admin.news.title", "AI News Studio") }}</UiTextH4>
+        <UiTextH4>{{ t("admin.news.title", "News Workspace") }}</UiTextH4>
         <UiTextParagraph>
-          {{ t("admin.news.subtitle", "Generate, edit, chat and schedule news drafts from one workspace.") }}
+          {{
+            t(
+              "admin.news.subtitle",
+              "Manage the full newsroom from one place: browse every article, start a GPT draft in chat, preview the result and jump into full editing."
+            )
+          }}
         </UiTextParagraph>
       </div>
     </div>

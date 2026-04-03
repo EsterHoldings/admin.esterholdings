@@ -2,15 +2,20 @@
   <UiContainer fluid>
     <div class="admin-news-page__header">
       <div class="flex flex-col gap-1 text-[var(--ui-text-main)]">
-        <UiTextH4>{{ t("admin.news.title", "AI News Studio") }}</UiTextH4>
+        <UiTextH4>{{ t("admin.news.editor.pageTitle", "News Editor") }}</UiTextH4>
         <UiTextParagraph>
-          {{ t("admin.news.subtitle", "Generate, edit, chat and schedule news drafts from one workspace.") }}
+          {{
+            t(
+              "admin.news.editor.pageSubtitle",
+              "Use the article and SEO tabs to prepare the draft for publication without collapsing everything into one narrow column."
+            )
+          }}
         </UiTextParagraph>
       </div>
     </div>
 
     <div class="admin-news-page__content">
-      <NewsStudio :article-id="articleId" />
+      <NewsArticleEditor :article-id="articleId" />
     </div>
   </UiContainer>
 </template>
@@ -22,7 +27,7 @@
   import UiContainer from "~/components/ui/UiContainer.vue";
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-  import NewsStudio from "~/pages/admin/news/components/NewsStudio.vue";
+  import NewsArticleEditor from "~/pages/admin/news/components/NewsArticleEditor.vue";
   import { useI18n } from "vue-i18n";
 
   definePageMeta({
