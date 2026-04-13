@@ -173,27 +173,16 @@ type MetricPreset = {
 
 const metricRangePresets: MetricPreset[] = [
   { id: "1h", label: "1ч", amount: 1, unit: "hours", bucket: "hour" },
-  { id: "2h", label: "2ч", amount: 2, unit: "hours", bucket: "hour" },
   { id: "3h", label: "3ч", amount: 3, unit: "hours", bucket: "hour" },
   { id: "5h", label: "5ч", amount: 5, unit: "hours", bucket: "hour" },
-  { id: "10h", label: "10ч", amount: 10, unit: "hours", bucket: "hour" },
-  { id: "15h", label: "15ч", amount: 15, unit: "hours", bucket: "hour" },
-  { id: "20h", label: "20ч", amount: 20, unit: "hours", bucket: "hour" },
   { id: "1d", label: "1д", amount: 1, unit: "days", bucket: "hour" },
-  { id: "2d", label: "2д", amount: 2, unit: "days", bucket: "hour" },
   { id: "3d", label: "3д", amount: 3, unit: "days", bucket: "hour" },
-  { id: "5d", label: "5д", amount: 5, unit: "days", bucket: "day" },
   { id: "1w", label: "1н", amount: 1, unit: "weeks", bucket: "day" },
-  { id: "2w", label: "2н", amount: 2, unit: "weeks", bucket: "day" },
   { id: "3w", label: "3н", amount: 3, unit: "weeks", bucket: "day" },
-  { id: "4w", label: "4н", amount: 4, unit: "weeks", bucket: "day" },
   { id: "1m", label: "1м", amount: 1, unit: "months", bucket: "day" },
-  { id: "2m", label: "2м", amount: 2, unit: "months", bucket: "day" },
   { id: "3m", label: "3м", amount: 3, unit: "months", bucket: "day" },
   { id: "6m", label: "6м", amount: 6, unit: "months", bucket: "day" },
   { id: "1y", label: "1г", amount: 1, unit: "years", bucket: "day" },
-  { id: "2y", label: "2г", amount: 2, unit: "years", bucket: "day" },
-  { id: "3y", label: "3г", amount: 3, unit: "years", bucket: "day" },
 ];
 
 const resolvePreset = (presetId: string) => metricRangePresets.find(preset => preset.id === presetId) ?? metricRangePresets[15];
