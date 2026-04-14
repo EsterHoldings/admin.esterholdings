@@ -72,6 +72,111 @@
           <div class="dashboard-chart-card__header">
             <div class="dashboard-chart-card__heading">
               <UiTextH5 class="dashboard-chart-card__title">
+                {{ resolveText("admin.dashboard.charts.onlineTitle", "Online activity") }}
+              </UiTextH5>
+              <UiTextSmall class="dashboard-chart-card__subtitle">
+                {{
+                  resolveText(
+                      "admin.dashboard.charts.onlineSubtitle",
+                      "Current online users, accumulated online hours, and active sessions."
+                  )
+                }}
+              </UiTextSmall>
+            </div>
+
+            <div class="dashboard-chart-card__presets">
+              <button
+                  v-for="preset in metricRangePresets"
+                  :key="`online-${preset.id}`"
+                  type="button"
+                  class="dashboard-preset-button"
+                  :class="{ 'dashboard-preset-button--active': onlineFilters.preset === preset.id }"
+                  @click="applyDashboardPreset('online', preset.id)">
+                {{ preset.label }}
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.from", "From") }}
+              </span>
+              <UiInput
+                  type="date"
+                  :value="toDateInputValue(onlineFilters.date_from)"
+                  @input="value => updateDashboardFilter('online', 'date_from', value)" />
+            </div>
+
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.to", "To") }}
+              </span>
+              <UiInput
+                  type="date"
+                  :value="toDateInputValue(onlineFilters.date_to)"
+                  @input="value => updateDashboardFilter('online', 'date_to', value)" />
+            </div>
+
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.step", "Step") }}
+              </span>
+              <UiSelect
+                  :data="bucketOptions"
+                  :value="onlineFilters.bucket"
+                  without-no-select
+                  @change="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
+            </div>
+
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.device", "Device") }}
+              </span>
+              <UiSelect
+                  :data="deviceOptions"
+                  :value="onlineFilters.device_type"
+                  @change="value => updateDashboardFilter('online', 'device_type', value || '')" />
+            </div>
+
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.browser", "Browser") }}
+              </span>
+              <UiSelect
+                  :data="browserOptions"
+                  :value="onlineFilters.browser"
+                  @change="value => updateDashboardFilter('online', 'browser', value || '')" />
+            </div>
+
+            <div class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.os", "OS") }}
+              </span>
+              <UiSelect
+                  :data="osOptions"
+                  :value="onlineFilters.os"
+                  @change="value => updateDashboardFilter('online', 'os', value || '')" />
+            </div>
+          </div>
+
+          <AdminMetricChart
+              :categories="onlineLabels"
+              :category-keys="onlineCategoryKeys"
+              :series="onlineSeries"
+              :y-axes="onlineAxes"
+              :height="360"
+              enable-zoom
+              :tooltip-formatter="formatOnlineTooltip"
+              @range-selected="handleOnlineRangeSelected" />
+        </div>
+      </PanelDefault>
+
+      <PanelDefault class="dashboard-panel-card">
+        <div class="dashboard-chart-card">
+          <div class="dashboard-chart-card__header">
+            <div class="dashboard-chart-card__heading">
+              <UiTextH5 class="dashboard-chart-card__title">
                 {{ resolveText("admin.dashboard.charts.registrationsTitle", "Client registrations") }}
               </UiTextH5>
               <UiTextSmall class="dashboard-chart-card__subtitle">
@@ -129,111 +234,6 @@
             :categories="registrationLabels"
             :series="registrationSeries"
             :height="320" />
-        </div>
-      </PanelDefault>
-
-      <PanelDefault class="dashboard-panel-card">
-        <div class="dashboard-chart-card">
-          <div class="dashboard-chart-card__header">
-            <div class="dashboard-chart-card__heading">
-              <UiTextH5 class="dashboard-chart-card__title">
-                {{ resolveText("admin.dashboard.charts.onlineTitle", "Online activity") }}
-              </UiTextH5>
-              <UiTextSmall class="dashboard-chart-card__subtitle">
-                {{
-                  resolveText(
-                    "admin.dashboard.charts.onlineSubtitle",
-                    "Current online users, accumulated online hours, and active sessions."
-                  )
-                }}
-              </UiTextSmall>
-            </div>
-
-            <div class="dashboard-chart-card__presets">
-              <button
-                v-for="preset in metricRangePresets"
-                :key="`online-${preset.id}`"
-                type="button"
-                class="dashboard-preset-button"
-                :class="{ 'dashboard-preset-button--active': onlineFilters.preset === preset.id }"
-                @click="applyDashboardPreset('online', preset.id)">
-                {{ preset.label }}
-              </button>
-            </div>
-          </div>
-
-          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.from", "From") }}
-              </span>
-              <UiInput
-                type="date"
-                :value="toDateInputValue(onlineFilters.date_from)"
-                @input="value => updateDashboardFilter('online', 'date_from', value)" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.to", "To") }}
-              </span>
-              <UiInput
-                type="date"
-                :value="toDateInputValue(onlineFilters.date_to)"
-                @input="value => updateDashboardFilter('online', 'date_to', value)" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.step", "Step") }}
-              </span>
-              <UiSelect
-                :data="bucketOptions"
-                :value="onlineFilters.bucket"
-                without-no-select
-                @change="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.device", "Device") }}
-              </span>
-              <UiSelect
-                :data="deviceOptions"
-                :value="onlineFilters.device_type"
-                @change="value => updateDashboardFilter('online', 'device_type', value || '')" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.browser", "Browser") }}
-              </span>
-              <UiSelect
-                :data="browserOptions"
-                :value="onlineFilters.browser"
-                @change="value => updateDashboardFilter('online', 'browser', value || '')" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.os", "OS") }}
-              </span>
-              <UiSelect
-                :data="osOptions"
-                :value="onlineFilters.os"
-                @change="value => updateDashboardFilter('online', 'os', value || '')" />
-            </div>
-          </div>
-
-          <AdminMetricChart
-            :categories="onlineLabels"
-            :category-keys="onlineCategoryKeys"
-            :series="onlineSeries"
-            :y-axes="onlineAxes"
-            :height="360"
-            enable-zoom
-            :tooltip-formatter="formatOnlineTooltip"
-            @range-selected="handleOnlineRangeSelected" />
         </div>
       </PanelDefault>
     </div>
