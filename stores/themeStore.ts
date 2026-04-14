@@ -1,8 +1,15 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+type ThemeName = "light" | "dark";
+
+const DEFAULT_THEME: ThemeName = "light";
+const THEME_STORAGE_KEY = "theme";
+
+const isThemeName = (value: string | null): value is ThemeName => value === "light" || value === "dark";
+
 export const useThemeStore = defineStore("theme", () => {
-  const currentTheme = ref<"light" | "dark">("dark");
+  const currentTheme = ref<ThemeName>(DEFAULT_THEME);
   const lightTheme = {
     "--ui-background": "#ffffff",
     "--ui-background-secondary": "#2a5bbd",
@@ -34,7 +41,7 @@ export const useThemeStore = defineStore("theme", () => {
     "--ui-background-panel": "rgba(1, 22, 68, 0.6)",
     "--ui-background-secondary": "#031743",
     "--ui-background-sidebar": "rgba(0, 0, 40, 0.95)",
-    "--ui-background-sidebar-link": "#011644;",
+    "--ui-background-sidebar-link": "#011644",
 
     "--ui-primary-main": "#0051ff",
     "--ui-primary-accent": "#f75709",
@@ -55,8 +62,13 @@ export const useThemeStore = defineStore("theme", () => {
 
   let transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
-  function applyTheme(theme: Record<string, string>, withTransition = true) {
+  function applyTheme(themeName: ThemeName, withTransition = true) {
+    currentTheme.value = themeName;
+    const theme = themeName === "light" ? lightTheme : darkTheme;
     const root = document.documentElement;
+    root.dataset.theme = themeName;
+    root.style.colorScheme = themeName;
+
     if (withTransition) {
       root.classList.add("theme-transition");
       if (transitionTimer) clearTimeout(transitionTimer);
@@ -70,18 +82,18 @@ export const useThemeStore = defineStore("theme", () => {
     });
   }
 
+  function setTheme(themeName: ThemeName) {
+    applyTheme(themeName, true);
+    localStorage.setItem(THEME_STORAGE_KEY, themeName);
+  }
+
   function toggleTheme() {
-    currentTheme.value = currentTheme.value === "light" ? "dark" : "light";
-    const theme = currentTheme.value === "light" ? lightTheme : darkTheme;
-    applyTheme(theme, true);
-    localStorage.setItem("theme", currentTheme.value);
+    setTheme(currentTheme.value === "light" ? "dark" : "light");
   }
 
   function initTheme() {
-    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
-    currentTheme.value = saved || currentTheme.value;
-    const theme = currentTheme.value === "light" ? lightTheme : darkTheme;
-    applyTheme(theme, false);
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    applyTheme(isThemeName(saved) ? saved : DEFAULT_THEME, false);
   }
 
   if (process.client) {
@@ -92,5 +104,6 @@ export const useThemeStore = defineStore("theme", () => {
     currentTheme,
     toggleTheme,
     initTheme,
+    setTheme,
   };
 });

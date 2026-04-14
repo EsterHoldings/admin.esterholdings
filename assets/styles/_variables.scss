@@ -27,9 +27,9 @@
 
   //-------- UI -------- //
 
-  --color-ui-background: rgba(0, 0, 40, 0.95);
-  --color-ui-background-opacity-80: rgba(0, 0, 40, 0.82);
-  --color-ui-background-opacity-95: rgba(0, 0, 40, 0.95);
+  --color-ui-background: #ffffff;
+  --color-ui-background-opacity-80: rgba(255, 255, 255, 0.82);
+  --color-ui-background-opacity-95: rgba(255, 255, 255, 0.95);
 
   --color-ui-primary: #0051ff;
   --color-ui-primary-defalt: #858282;
@@ -39,33 +39,37 @@
   --color-ui-warning: #f75709;
   --color-sticker-ui-success: #03c11f;
   --color-sticker-ui-danger: #d93025;
-  --color-stroke-ui-light: #002880;
-  --color-stroke-ui-dark: #011644;
+  --color-stroke-ui-light: #dcdce1;
+  --color-stroke-ui-dark: #e4e4e7;
   --color-ui-grey: #b8b8c3;
 
   //MAIN COLOR VAR-----
-  --ui-primary-main: #0051ff;
+  --ui-primary-main: #0391ff;
   --ui-primary-accent: #f75709;
   --ui-primary-neutral: #ffffff;
 
-  --ui-sticker-success: #008001;
-  --ui-sticker-danger: rgba(244, 17, 18, 0.38);
+  --ui-sticker-success: #03c11f;
+  --ui-sticker-danger: #d93025;
 
   --ui-stroke: linear-gradient(137.67deg, #1b63ffff 2.397%, #011644ff 99.041%);
-  --color-stroke-ui: linear-gradient(137.67deg, #1b63ff 2.397%, #011644 99.041%);
+  --color-stroke-ui: #b8b8c3;
 
   --ui-gray: #b8b8c3;
-  --ui-background: #000028;
-  --ui-background-secondary: #031743;
-  --ui-background-panel: rgba(1, 22, 68, 0.6);
-  --ui-background-card: #021238;
-  --ui-background-admin: rgba(0, 0, 40, 0.78);
-  --ui-background-sidebar: rgba(0, 0, 40, 0.95);
-  --ui-background-sidebar-link: #011644;
+  --ui-background: #ffffff;
+  --ui-background-secondary: #2a5bbd;
+  --ui-background-panel: #f1f1f17a;
+  --ui-background-card: #f2f2f2;
+  --ui-background-admin: rgba(255, 255, 255, 0.95);
+  --ui-background-sidebar: #f9f9f9;
+  --ui-background-sidebar-link: #9ca9b3;
 
-  --ui-text-invert: #070707;
-  --ui-text-main: #ffffff;
-  --ui-text-secondary: rgb(147, 147, 148);
+  --ui-text-invert: #faf9f9;
+  --ui-text-main: #151515;
+  --ui-text-secondary: #3c3c3c;
+  --ui-control-bg: rgba(228, 228, 231, 0.6);
+  --ui-control-bg-disabled: #e4e4e7;
+  --ui-date-input-icon-filter: brightness(0) saturate(100%) invert(0%);
+  --ui-date-input-color-scheme: light;
 
   //MAIN COLOR VAR-----
   // Ui elements settings
@@ -78,16 +82,30 @@
   // Buttons
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --ui-background: #ffffff;
-    --ui-background-secondary: #f5f5f5;
-    --ui-background-panel: #f1f1f17a;
-    --ui-text-main: #070707;
-    --ui-text-secondary: #666666;
-    --color-stroke-ui-light: #e0e0e0;
-    --color-stroke-ui-dark: #cccccc;
-  }
+:root[data-theme="dark"] {
+  --color-ui-background: rgba(0, 0, 40, 0.95);
+  --color-ui-background-opacity-80: rgba(0, 0, 40, 0.82);
+  --color-ui-background-opacity-95: rgba(0, 0, 40, 0.95);
+  --color-stroke-ui-light: #002880;
+  --color-stroke-ui-dark: #011644;
+  --ui-primary-main: #0051ff;
+  --ui-sticker-success: #03c11f;
+  --ui-sticker-danger: #d93025;
+  --color-stroke-ui: linear-gradient(137.67deg, #1b63ff 2.397%, #011644 99.041%);
+  --ui-background: #000028;
+  --ui-background-secondary: #031743;
+  --ui-background-panel: rgba(1, 22, 68, 0.6);
+  --ui-background-card: #021238;
+  --ui-background-admin: rgba(0, 0, 40, 0.95);
+  --ui-background-sidebar: rgba(0, 0, 40, 0.95);
+  --ui-background-sidebar-link: #011644;
+  --ui-text-invert: #eeeeef;
+  --ui-text-main: #ffffff;
+  --ui-text-secondary: #b8b8c3;
+  --ui-control-bg: #011644;
+  --ui-control-bg-disabled: rgba(1, 22, 68, 0.6);
+  --ui-date-input-icon-filter: brightness(0) saturate(100%) invert(100%);
+  --ui-date-input-color-scheme: dark;
 }
 
 // Static variables
