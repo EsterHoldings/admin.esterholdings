@@ -1796,14 +1796,16 @@
         "reset": "रीसेट"
       },
       "stats": {
-        "total": "कुल"
+        "total": "कुल",
+        "rejected": "अस्वीकृत"
       },
       "statuses": {
         "pending": "लंबित",
         "processing": "प्रक्रिया में",
         "successful": "सफल",
-        "failed": "विफल",
-        "cancelled": "रद्द"
+        "failed": "अस्वीकृत",
+        "cancelled": "अस्वीकृत",
+        "rejected": "अस्वीकृत"
       },
       "validation": {
         "account": "एक खाता चुनें।",

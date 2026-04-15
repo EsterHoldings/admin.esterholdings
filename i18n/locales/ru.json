@@ -2147,14 +2147,16 @@
         "reset": "Сбросить"
       },
       "stats": {
-        "total": "Всего"
+        "total": "Всего",
+        "rejected": "Отклонена"
       },
       "statuses": {
         "pending": "Ожидает",
         "processing": "В обработке",
         "successful": "Успешно",
-        "failed": "Неуспешно",
-        "cancelled": "Отклонено"
+        "failed": "Отклонена",
+        "cancelled": "Отклонена",
+        "rejected": "Отклонена"
       },
       "validation": {
         "account": "Выберите счёт.",

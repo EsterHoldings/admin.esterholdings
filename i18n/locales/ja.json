@@ -1796,14 +1796,16 @@
         "reset": "リセット"
       },
       "stats": {
-        "total": "合計"
+        "total": "合計",
+        "rejected": "拒否済み"
       },
       "statuses": {
         "pending": "保留中",
         "processing": "処理中",
         "successful": "成功",
-        "failed": "失敗",
-        "cancelled": "キャンセル"
+        "failed": "拒否済み",
+        "cancelled": "拒否済み",
+        "rejected": "拒否済み"
       },
       "validation": {
         "account": "口座を選択してください。",

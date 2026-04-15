@@ -1796,14 +1796,16 @@
         "reset": "Réinitialiser"
       },
       "stats": {
-        "total": "Total"
+        "total": "Total",
+        "rejected": "Rejeté"
       },
       "statuses": {
         "pending": "En attente",
         "processing": "En traitement",
         "successful": "Réussi",
-        "failed": "Échec",
-        "cancelled": "Annulé"
+        "failed": "Rejeté",
+        "cancelled": "Rejeté",
+        "rejected": "Rejeté"
       },
       "validation": {
         "account": "Choisissez un compte.",

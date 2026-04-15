@@ -2147,14 +2147,16 @@
         "reset": "Reset"
       },
       "stats": {
-        "total": "Total"
+        "total": "Total",
+        "rejected": "Rejected"
       },
       "statuses": {
         "pending": "Pending",
         "processing": "Processing",
         "successful": "Successful",
-        "failed": "Failed",
-        "cancelled": "Cancelled"
+        "failed": "Rejected",
+        "cancelled": "Rejected",
+        "rejected": "Rejected"
       },
       "validation": {
         "account": "Choose an account.",

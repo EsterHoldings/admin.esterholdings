@@ -261,22 +261,12 @@
 
                 <button
                   type="button"
-                  class="withdrawal-status-action withdrawal-status-action--failed"
-                  :class="{ 'is-active': isStatusActive(requestItem, 'failed') }"
-                  :disabled="isStatusDisabled(requestItem, 'failed')"
-                  :title="markFailedText"
-                  @click="handleQuickStatusUpdate(requestItem, 'failed')">
-                  <UiIconDangerFull />
-                </button>
-
-                <button
-                  type="button"
-                  class="withdrawal-status-action withdrawal-status-action--cancelled"
-                  :class="{ 'is-active': isStatusActive(requestItem, 'cancelled') }"
-                  :disabled="isStatusDisabled(requestItem, 'cancelled')"
+                  class="withdrawal-status-action withdrawal-status-action--rejected"
+                  :class="{ 'is-active': isStatusActive(requestItem, 'rejected') }"
+                  :disabled="isStatusDisabled(requestItem, 'rejected')"
                   :title="rejectText"
-                  @click="handleQuickStatusUpdate(requestItem, 'cancelled')">
-                  <UiIconDelete />
+                  @click="handleQuickStatusUpdate(requestItem, 'rejected')">
+                  <UiIconDangerFull />
                 </button>
               </div>
 
@@ -447,6 +437,7 @@
       }>;
     };
   };
+  type WithdrawalStatusAction = "processing" | "successful" | "failed" | "cancelled" | "rejected";
 
   const { t } = useI18n({ useScope: "global" });
   const localePath = useLocalePath();
@@ -472,6 +463,7 @@
     successful: 0,
     failed: 0,
     cancelled: 0,
+    rejected: 0,
   });
   const accountOptionsByUserId = reactive<Record<string, Array<{ id: string; value: string; text: string }>>>({});
   const paymentDetailOptionsByUserId = reactive<Record<string, Array<{ id: string; value: string; text: string }>>>({});
@@ -534,7 +526,6 @@
     resolveText("admin.withdrawalRequests.actions.successfulAutoTransfer", "Confirm and execute MT4 transfer")
   );
   const copyValueText = computed(() => resolveText("admin.withdrawalRequests.actions.copyValue", "Copy value"));
-  const markFailedText = computed(() => resolveText("admin.withdrawalRequests.actions.failed", "Failed"));
   const rejectText = computed(() => resolveText("admin.withdrawalRequests.actions.reject", "Reject"));
   const statusFilterNoteText = computed(() =>
     resolveText("admin.withdrawalRequests.filters.currentStatus", "Status filter")
@@ -588,20 +579,12 @@
       isActive: statusFilter.value === "successful",
     },
     {
-      id: "failed",
-      status: "failed",
-      label: statusText("failed"),
-      value: stats.failed,
-      cardClass: "is-failed",
-      isActive: statusFilter.value === "failed",
-    },
-    {
-      id: "cancelled",
-      status: "cancelled",
-      label: statusText("cancelled"),
-      value: stats.cancelled,
-      cardClass: "is-cancelled",
-      isActive: statusFilter.value === "cancelled",
+      id: "rejected",
+      status: "rejected",
+      label: statusText("rejected"),
+      value: stats.rejected,
+      cardClass: "is-rejected",
+      isActive: statusFilter.value === "rejected",
     },
   ]);
 
@@ -629,10 +612,10 @@
         return resolveText(key, "Processing");
       case "successful":
         return resolveText(key, "Successful");
+      case "rejected":
       case "failed":
-        return resolveText(key, "Failed");
       case "cancelled":
-        return resolveText(key, "Cancelled");
+        return resolveText("admin.withdrawalRequests.statuses.rejected", "Rejected");
       default:
         return normalized || "-";
     }
@@ -644,6 +627,7 @@
       .toLowerCase();
 
     if (normalized === "successful") return "is-success";
+    if (normalized === "rejected") return "is-failed";
     if (normalized === "failed") return "is-failed";
     if (normalized === "cancelled") return "is-cancelled";
     if (normalized === "processing") return "is-processing";
@@ -835,6 +819,7 @@
       stats.successful = Number(payload?.successful ?? 0);
       stats.failed = Number(payload?.failed ?? 0);
       stats.cancelled = Number(payload?.cancelled ?? 0);
+      stats.rejected = Number(payload?.rejected ?? stats.failed + stats.cancelled);
     } finally {
       isStatsLoading.value = false;
     }
@@ -873,12 +858,20 @@
 
   const isStatusActive = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled"
-  ): boolean => String(requestItem.status).toLowerCase() === nextStatus;
+    nextStatus: WithdrawalStatusAction
+  ): boolean => {
+    const current = String(requestItem.status).toLowerCase();
+
+    if (nextStatus === "failed" || nextStatus === "rejected") {
+      return ["failed", "cancelled", "rejected"].includes(current);
+    }
+
+    return current === nextStatus;
+  };
 
   const canMoveToStatus = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+    nextStatus: WithdrawalStatusAction
   ): boolean => {
     const current = String(requestItem.status ?? "").toLowerCase();
 
@@ -888,13 +881,14 @@
 
     switch (nextStatus) {
       case "processing":
-        return ["pending", "processing", "cancelled", "failed"].includes(current);
+        return ["pending", "processing", "cancelled", "failed", "rejected"].includes(current);
       case "successful":
-        return ["pending", "processing", "failed", "successful"].includes(current);
+        return ["pending", "processing", "failed", "rejected", "successful"].includes(current);
       case "cancelled":
-        return ["pending", "processing", "failed", "cancelled"].includes(current);
+        return ["pending", "processing", "failed", "rejected", "cancelled"].includes(current);
       case "failed":
-        return ["pending", "processing", "failed"].includes(current);
+      case "rejected":
+        return ["pending", "processing", "failed", "rejected", "cancelled"].includes(current);
       default:
         return false;
     }
@@ -902,7 +896,7 @@
 
   const isStatusDisabled = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+    nextStatus: WithdrawalStatusAction
   ): boolean =>
     updatingRequestId.value === requestItem.id ||
     (isStatusActive(requestItem, nextStatus) &&
@@ -947,7 +941,7 @@
 
   const buildStatusConfirmText = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled"
+    nextStatus: WithdrawalStatusAction
   ): string =>
     requestItem.is_internal_transfer && nextStatus === "successful"
       ? `${resolveText(
@@ -960,7 +954,7 @@
 
   const handleQuickStatusUpdate = async (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled",
+    nextStatus: WithdrawalStatusAction,
     options: { executeTransfer?: boolean } = {}
   ): Promise<void> => {
     const executeTransfer = options.executeTransfer || (requestItem.is_internal_transfer && nextStatus === "successful");
@@ -1198,7 +1192,8 @@
   }
 
   .withdrawal-stat-card.is-failed,
-  .withdrawal-stat-card.is-cancelled {
+  .withdrawal-stat-card.is-cancelled,
+  .withdrawal-stat-card.is-rejected {
     background:
       linear-gradient(135deg, color-mix(in srgb, #ef4444 10%, transparent) 0%, transparent 72%),
       var(--ui-background-panel);
@@ -1600,6 +1595,8 @@
 
   .withdrawal-status-action--failed:not(:disabled):hover,
   .withdrawal-status-action--failed.is-active,
+  .withdrawal-status-action--rejected:not(:disabled):hover,
+  .withdrawal-status-action--rejected.is-active,
   .withdrawal-status-action--cancelled:not(:disabled):hover,
   .withdrawal-status-action--cancelled.is-active {
     background: color-mix(in srgb, #ef4444 22%, transparent);

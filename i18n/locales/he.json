@@ -1796,14 +1796,16 @@
         "reset": "איפוס"
       },
       "stats": {
-        "total": "סה״כ"
+        "total": "סה״כ",
+        "rejected": "נדחה"
       },
       "statuses": {
         "pending": "ממתין",
         "processing": "בטיפול",
         "successful": "הצליח",
-        "failed": "נכשל",
-        "cancelled": "בוטל"
+        "failed": "נדחה",
+        "cancelled": "נדחה",
+        "rejected": "נדחה"
       },
       "validation": {
         "account": "בחר חשבון.",

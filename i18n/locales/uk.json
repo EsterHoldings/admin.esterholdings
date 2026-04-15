@@ -2142,14 +2142,16 @@
         "reset": "Скинути"
       },
       "stats": {
-        "total": "Усього"
+        "total": "Усього",
+        "rejected": "Відхилено"
       },
       "statuses": {
         "pending": "Очікує",
         "processing": "В обробці",
         "successful": "Успішно",
-        "failed": "Неуспішно",
-        "cancelled": "Відхилено"
+        "failed": "Відхилено",
+        "cancelled": "Відхилено",
+        "rejected": "Відхилено"
       },
       "validation": {
         "account": "Оберіть рахунок.",

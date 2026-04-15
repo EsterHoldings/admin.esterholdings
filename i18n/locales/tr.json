@@ -1796,14 +1796,16 @@
         "reset": "Sıfırla"
       },
       "stats": {
-        "total": "Toplam"
+        "total": "Toplam",
+        "rejected": "Reddedildi"
       },
       "statuses": {
         "pending": "Beklemede",
         "processing": "İşlemde",
         "successful": "Başarılı",
-        "failed": "Başarısız",
-        "cancelled": "İptal edildi"
+        "failed": "Reddedildi",
+        "cancelled": "Reddedildi",
+        "rejected": "Reddedildi"
       },
       "validation": {
         "account": "Bir hesap seçin.",

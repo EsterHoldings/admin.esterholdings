@@ -1796,14 +1796,16 @@
         "reset": "초기화"
       },
       "stats": {
-        "total": "합계"
+        "total": "합계",
+        "rejected": "거부됨"
       },
       "statuses": {
         "pending": "대기 중",
         "processing": "처리 중",
         "successful": "성공",
-        "failed": "실패",
-        "cancelled": "취소됨"
+        "failed": "거부됨",
+        "cancelled": "거부됨",
+        "rejected": "거부됨"
       },
       "validation": {
         "account": "계정을 선택하세요.",
