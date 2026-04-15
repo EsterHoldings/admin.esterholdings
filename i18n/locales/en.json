@@ -35,39 +35,74 @@
         "Trading": [
           {
             "section": "Account overview",
-            "items": ["Standard", "Pro", "Islamic", "Demo"]
+            "items": [
+              "Standard",
+              "Pro",
+              "Islamic",
+              "Demo"
+            ]
           },
           {
             "section": "Market Instruments",
-            "items": ["Forex", "Metals", "Crypto CFDs", "Indices", "Shares", "Energy", "ETFs"]
+            "items": [
+              "Forex",
+              "Metals",
+              "Crypto CFDs",
+              "Indices",
+              "Shares",
+              "Energy",
+              "ETFs"
+            ]
           },
           {
             "section": "Platform",
-            "items": ["MT4 Desktop", "MT 4 Mobile"]
+            "items": [
+              "MT4 Desktop",
+              "MT 4 Mobile"
+            ]
           },
           {
             "section": "Trading conditions",
-            "items": ["Account replenishment", "Withdrawal of funds"]
+            "items": [
+              "Account replenishment",
+              "Withdrawal of funds"
+            ]
           },
           {
             "section": "Trader's HUB",
-            "items": ["Trader's blog", "Economic calendar", "Market news"]
+            "items": [
+              "Trader's blog",
+              "Economic calendar",
+              "Market news"
+            ]
           },
           {
             "section": "TANDEM trading",
-            "items": ["For trader", "For investor"]
+            "items": [
+              "For trader",
+              "For investor"
+            ]
           }
         ],
         "Partnership": [
           {
             "section": "Partnership",
-            "items": ["Register IB/ Partnership", "How IB generate income"]
+            "items": [
+              "Register IB/ Partnership",
+              "How IB generate income"
+            ]
           }
         ],
         "Company": [
           {
             "section": "Company",
-            "items": ["About the company", "Documents", "Company news", "Contacts", "Career"]
+            "items": [
+              "About the company",
+              "Documents",
+              "Company news",
+              "Contacts",
+              "Career"
+            ]
           }
         ]
       }
@@ -200,7 +235,11 @@
           "title": "Demo",
           "subtitle": "account",
           "description": "Risk-free trading with virtual funds, perfect for beginners to explore markets.",
-          "features": ["Leverage up to 1:100", "Spreads from 0.0 pips", "No deposit required"],
+          "features": [
+            "Leverage up to 1:100",
+            "Spreads from 0.0 pips",
+            "No deposit required"
+          ],
           "buttonText": "Try Demo Now",
           "isRecommended": true
         },
@@ -210,7 +249,11 @@
           "title": "Standard",
           "subtitle": "account",
           "description": "Easy access to spot markets with low fees and — ideal for beginners and active traders.",
-          "features": ["Leverage up to 1:100", "Spreads from 1.2 pips", "First deposit of $50"],
+          "features": [
+            "Leverage up to 1:100",
+            "Spreads from 1.2 pips",
+            "First deposit of $50"
+          ],
           "buttonText": "Open Standard Account",
           "isRecommended": false
         },
@@ -220,7 +263,11 @@
           "title": "Pro",
           "subtitle": "account",
           "description": "Experience tight spreads, higher leverage, and full control over every trade.",
-          "features": ["Leverage up to 1:100", "Spreads from 0.0 pips", "First deposit of $1000"],
+          "features": [
+            "Leverage up to 1:100",
+            "Spreads from 0.0 pips",
+            "First deposit of $1000"
+          ],
           "buttonText": "Trade Like a Pro",
           "isRecommended": false
         },
@@ -230,7 +277,11 @@
           "title": "Tandem",
           "subtitle": "account",
           "description": "Pair with a partner, mentor, or co-trader and grow together with synchronized strategies.",
-          "features": ["Leverage up to 1:100", "Shared account access", "Real-time trade mirroring"],
+          "features": [
+            "Leverage up to 1:100",
+            "Shared account access",
+            "Real-time trade mirroring"
+          ],
           "buttonText": "Trade Together",
           "isRecommended": false
         },
@@ -240,7 +291,11 @@
           "title": "Islamic",
           "subtitle": "account",
           "description": "Swap-free. Shariah-compliant. Trade without interest, with full platform access.",
-          "features": ["Leverage up to 1:100", "No swap / interest fees", "Access to all trading instruments"],
+          "features": [
+            "Leverage up to 1:100",
+            "No swap / interest fees",
+            "Access to all trading instruments"
+          ],
           "buttonText": "Open Islamic Account",
           "isRecommended": false
         }
@@ -431,7 +486,10 @@
         "career": {
           "title": "Career",
           "subtitle": "At the present moment the company is seeking the following specialists:",
-          "positions": ["SALES MANAGER", "HEADMASTER OF THE DEPARTMENT OF ANALYTICS"],
+          "positions": [
+            "SALES MANAGER",
+            "HEADMASTER OF THE DEPARTMENT OF ANALYTICS"
+          ],
           "cta": "IF YOU ARE READY TO DYNAMIC GROWTH, YOU ARE AMBITIOUS AND TALENTLY, SEND YOUR SUMMARY.",
           "button": "SEND CV"
         },
@@ -628,15 +686,30 @@
       "description": "The main goal of Ester is to create the best and most transparent conditions for retail and corporate traders.",
       "trading": {
         "title": "Trading",
-        "items": ["Account overview", "Markets", "Platform", "Terms of trade", "Tandem trading"]
+        "items": [
+          "Account overview",
+          "Markets",
+          "Platform",
+          "Terms of trade",
+          "Tandem trading"
+        ]
       },
       "partnership": {
         "title": "Partnership",
-        "items": ["Register IB/ Partnership", "How IB generate income"]
+        "items": [
+          "Register IB/ Partnership",
+          "How IB generate income"
+        ]
       },
       "company": {
         "title": "Company",
-        "items": ["About the company", "Documents", "Company news", "Contacts", "Career"]
+        "items": [
+          "About the company",
+          "Documents",
+          "Company news",
+          "Contacts",
+          "Career"
+        ]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -2029,7 +2102,7 @@
     },
     "withdrawalRequests": {
       "title": "Withdrawal requests",
-      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
+      "subtitle": "Moderate withdrawal and internal transfer requests. Approving an internal transfer executes it in MT4 automatically.",
       "searchPlaceholder": "Search by ID, client, comment or account",
       "empty": "No withdrawal requests found.",
       "fields": {
@@ -2051,11 +2124,12 @@
         "cancelEdit": "Cancel",
         "save": "Save",
         "processing": "To processing",
-        "successful": "Successful",
+        "successful": "Approve",
         "failed": "Failed",
         "reject": "Reject",
         "successfulManual": "Confirm without transfer",
-        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
+        "successfulAutoTransfer": "Approve and execute MT4 transfer",
+        "copyValue": "Copy value"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
@@ -2063,7 +2137,7 @@
         "loadError": "Failed to load withdrawal requests.",
         "statusError": "Failed to update withdrawal request status.",
         "saveError": "Failed to update withdrawal request.",
-        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
+        "confirmAutoTransfer": "Approve request and execute MT4 transfer",
         "confirmStatusChange": "Change request",
         "confirmStatusChangeTo": "to status"
       },
@@ -2093,6 +2167,9 @@
         "failed": "Automatic transfer failed",
         "cancelled": "Cancelled",
         "pending": "Awaiting admin decision"
+      },
+      "paymentDetailFields": {
+        "recipientAddress": "Recipient address"
       }
     }
   },

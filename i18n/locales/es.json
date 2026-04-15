@@ -35,39 +35,74 @@
         "Trading": [
           {
             "section": "Descripción de cuentas",
-            "items": ["Estándar", "Pro", "Islámica", "Demo"]
+            "items": [
+              "Estándar",
+              "Pro",
+              "Islámica",
+              "Demo"
+            ]
           },
           {
             "section": "Instrumentos de mercado",
-            "items": ["Forex", "Metales", "CFDs de Cripto", "Índices", "Acciones", "Energía", "ETFs"]
+            "items": [
+              "Forex",
+              "Metales",
+              "CFDs de Cripto",
+              "Índices",
+              "Acciones",
+              "Energía",
+              "ETFs"
+            ]
           },
           {
             "section": "Plataforma",
-            "items": ["MT4 Desktop", "MT 4 Mobile"]
+            "items": [
+              "MT4 Desktop",
+              "MT 4 Mobile"
+            ]
           },
           {
             "section": "Condiciones de trading",
-            "items": ["Recarga de cuenta", "Retiro de fondos"]
+            "items": [
+              "Recarga de cuenta",
+              "Retiro de fondos"
+            ]
           },
           {
             "section": "HUB del Trader",
-            "items": ["Blog del trader", "Calendario económico", "Noticias del mercado"]
+            "items": [
+              "Blog del trader",
+              "Calendario económico",
+              "Noticias del mercado"
+            ]
           },
           {
             "section": "Trading TANDEM",
-            "items": ["Para trader", "Para inversor"]
+            "items": [
+              "Para trader",
+              "Para inversor"
+            ]
           }
         ],
         "Partnership": [
           {
             "section": "Asociación",
-            "items": ["Registrar IB/ Asociación", "Cómo los IB generan ingresos"]
+            "items": [
+              "Registrar IB/ Asociación",
+              "Cómo los IB generan ingresos"
+            ]
           }
         ],
         "Company": [
           {
             "section": "Empresa",
-            "items": ["Sobre la empresa", "Documentos", "Noticias de la empresa", "Contactos", "Carrera"]
+            "items": [
+              "Sobre la empresa",
+              "Documentos",
+              "Noticias de la empresa",
+              "Contactos",
+              "Carrera"
+            ]
           }
         ]
       }
@@ -200,7 +235,11 @@
           "title": "Demo",
           "subtitle": "cuenta",
           "description": "Trading sin riesgo con fondos virtuales, perfecto para principiantes para explorar mercados.",
-          "features": ["Apalancamiento hasta 1:100", "Spreads desde 0.0 pips", "No se requiere depósito"],
+          "features": [
+            "Apalancamiento hasta 1:100",
+            "Spreads desde 0.0 pips",
+            "No se requiere depósito"
+          ],
           "buttonText": "Probar Demo Ahora",
           "isRecommended": true
         },
@@ -210,7 +249,11 @@
           "title": "Estándar",
           "subtitle": "cuenta",
           "description": "Fácil acceso a mercados spot con tarifas bajas — ideal para principiantes y traders activos.",
-          "features": ["Apalancamiento hasta 1:100", "Spreads desde 1.2 pips", "Primer depósito de $50"],
+          "features": [
+            "Apalancamiento hasta 1:100",
+            "Spreads desde 1.2 pips",
+            "Primer depósito de $50"
+          ],
           "buttonText": "Abrir Cuenta Estándar",
           "isRecommended": false
         },
@@ -220,7 +263,11 @@
           "title": "Pro",
           "subtitle": "cuenta",
           "description": "Experimenta spreads ajustados, mayor apalancamiento y control total sobre cada operación.",
-          "features": ["Apalancamiento hasta 1:100", "Spreads desde 0.0 pips", "Primer depósito de $1000"],
+          "features": [
+            "Apalancamiento hasta 1:100",
+            "Spreads desde 0.0 pips",
+            "Primer depósito de $1000"
+          ],
           "buttonText": "Opera Como un Pro",
           "isRecommended": false
         },
@@ -439,7 +486,10 @@
         "career": {
           "title": "Carrera",
           "subtitle": "En este momento, la empresa está buscando los siguientes especialistas:",
-          "positions": ["GERENTE DE VENTAS", "JEFE DEL DEPARTAMENTO DE ANÁLISIS"],
+          "positions": [
+            "GERENTE DE VENTAS",
+            "JEFE DEL DEPARTAMENTO DE ANÁLISIS"
+          ],
           "cta": "SI ESTÁS LISTO PARA UN CRECIMIENTO DINÁMICO, ERES AMBICIOSO Y TALENTOSO, ENVÍA TU RESUMEN.",
           "button": "ENVIAR CV"
         },
@@ -636,15 +686,30 @@
       "description": "El objetivo principal de Ester es crear las mejores y más transparentes condiciones para traders minoristas y corporativos.",
       "trading": {
         "title": "Trading",
-        "items": ["Descripción de cuentas", "Mercados", "Plataforma", "Términos de trading", "Trading tándem"]
+        "items": [
+          "Descripción de cuentas",
+          "Mercados",
+          "Plataforma",
+          "Términos de trading",
+          "Trading tándem"
+        ]
       },
       "partnership": {
         "title": "Asociación",
-        "items": ["Registrar IB/ Asociación", "Cómo los IB generan ingresos"]
+        "items": [
+          "Registrar IB/ Asociación",
+          "Cómo los IB generan ingresos"
+        ]
       },
       "company": {
         "title": "Empresa",
-        "items": ["Sobre la empresa", "Documentos", "Noticias de la empresa", "Contactos", "Carrera"]
+        "items": [
+          "Sobre la empresa",
+          "Documentos",
+          "Noticias de la empresa",
+          "Contactos",
+          "Carrera"
+        ]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1685,71 +1750,75 @@
       "title": "Soporte"
     },
     "withdrawalRequests": {
-      "title": "Withdrawal requests",
-      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
-      "searchPlaceholder": "Search by ID, client, comment or account",
-      "empty": "No withdrawal requests found.",
+      "title": "Solicitudes de retiro",
+      "subtitle": "Modere solicitudes de retiro y transferencias internas. Al aprobar una transferencia interna, se ejecuta automáticamente en MT4.",
+      "searchPlaceholder": "Buscar por ID, cliente, comentario o cuenta",
+      "empty": "No se encontraron solicitudes de retiro.",
       "fields": {
-        "account": "Account",
-        "paymentMethod": "Payment method",
-        "paymentDetail": "Payment details",
-        "amount": "Amount",
-        "createdAt": "Created at",
-        "clientComment": "Client comment",
-        "adminComment": "Admin comment",
-        "transferRoute": "Transfer route",
-        "execution": "Execution",
-        "documents": "Documents",
-        "requisitesComment": "Requisites comment"
+        "account": "Cuenta",
+        "paymentMethod": "Método de pago",
+        "paymentDetail": "Datos de pago",
+        "amount": "Importe",
+        "createdAt": "Creado el",
+        "clientComment": "Comentario del cliente",
+        "adminComment": "Comentario del administrador",
+        "transferRoute": "Ruta de transferencia",
+        "execution": "Ejecución",
+        "documents": "Documentos",
+        "requisitesComment": "Comentario de los datos"
       },
       "actions": {
-        "openClient": "Open client",
-        "edit": "Edit",
-        "cancelEdit": "Cancel",
-        "save": "Save",
-        "processing": "To processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "reject": "Reject",
-        "successfulManual": "Confirm without transfer",
-        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
+        "openClient": "Abrir cliente",
+        "edit": "Editar",
+        "cancelEdit": "Cancelar",
+        "save": "Guardar",
+        "processing": "A procesamiento",
+        "successful": "Aprobar",
+        "failed": "Fallida",
+        "reject": "Rechazar",
+        "successfulManual": "Confirmar sin transferencia",
+        "successfulAutoTransfer": "Aprobar y ejecutar transferencia MT4",
+        "copyValue": "Copiar valor"
       },
       "messages": {
-        "saved": "Withdrawal request updated.",
-        "statusUpdated": "Withdrawal request status updated.",
-        "loadError": "Failed to load withdrawal requests.",
-        "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request.",
-        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
-        "confirmStatusChange": "Change request",
-        "confirmStatusChangeTo": "to status"
+        "saved": "Solicitud de retiro actualizada.",
+        "statusUpdated": "Estado de la solicitud actualizado.",
+        "loadError": "No se pudieron cargar las solicitudes de retiro.",
+        "statusError": "No se pudo actualizar el estado de la solicitud.",
+        "saveError": "No se pudo actualizar la solicitud de retiro.",
+        "confirmAutoTransfer": "Aprobar solicitud y ejecutar transferencia MT4",
+        "confirmStatusChange": "Cambiar solicitud",
+        "confirmStatusChangeTo": "al estado"
       },
       "filters": {
-        "allStatuses": "All statuses",
-        "currentStatus": "Status filter",
-        "reset": "Reset"
+        "allStatuses": "Todos los estados",
+        "currentStatus": "Filtro de estado",
+        "reset": "Restablecer"
       },
       "stats": {
         "total": "Total"
       },
       "statuses": {
-        "pending": "Pending",
-        "processing": "Processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "cancelled": "Cancelled"
+        "pending": "Pendiente",
+        "processing": "En proceso",
+        "successful": "Exitosa",
+        "failed": "Fallida",
+        "cancelled": "Cancelada"
       },
       "validation": {
-        "account": "Choose an account.",
-        "paymentDetail": "Choose approved payment details.",
-        "amount": "Enter a valid amount."
+        "account": "Elija una cuenta.",
+        "paymentDetail": "Elija datos de pago aprobados.",
+        "amount": "Introduzca un importe válido."
       },
       "execution": {
-        "completed": "Executed in MT4",
-        "skipped": "Confirmed without automatic transfer",
-        "failed": "Automatic transfer failed",
-        "cancelled": "Cancelled",
-        "pending": "Awaiting admin decision"
+        "completed": "Ejecutado en MT4",
+        "skipped": "Confirmado sin transferencia automática",
+        "failed": "La transferencia automática falló",
+        "cancelled": "Cancelado",
+        "pending": "Esperando decisión del administrador"
+      },
+      "paymentDetailFields": {
+        "recipientAddress": "Dirección del destinatario"
       }
     }
   },

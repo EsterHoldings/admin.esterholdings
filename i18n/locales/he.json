@@ -35,39 +35,74 @@
         "Trading": [
           {
             "section": "סקירת חשבונות",
-            "items": ["רגיל", "מקצועי", "אסלמי", "הדגמה"]
+            "items": [
+              "רגיל",
+              "מקצועי",
+              "אסלמי",
+              "הדגמה"
+            ]
           },
           {
             "section": "מכשירי שוק",
-            "items": ["מט\"ח", "מתכות", "CFD קריפטו", "מדדים", "מניות", "אנרגיה", "ETF"]
+            "items": [
+              "מט\"ח",
+              "מתכות",
+              "CFD קריפטו",
+              "מדדים",
+              "מניות",
+              "אנרגיה",
+              "ETF"
+            ]
           },
           {
             "section": "פלטפורמה",
-            "items": ["MT4 שולחני", "MT4 נייד"]
+            "items": [
+              "MT4 שולחני",
+              "MT4 נייד"
+            ]
           },
           {
             "section": "תנאי מסחר",
-            "items": ["טעינת חשבון", "משיכת כספים"]
+            "items": [
+              "טעינת חשבון",
+              "משיכת כספים"
+            ]
           },
           {
             "section": "מרכז הסוחרים",
-            "items": ["בלוג סוחרים", "לוח שנה כלכלי", "חדשות שוק"]
+            "items": [
+              "בלוג סוחרים",
+              "לוח שנה כלכלי",
+              "חדשות שוק"
+            ]
           },
           {
             "section": "מסחר TANDEM",
-            "items": ["לסוחר", "למשקיע"]
+            "items": [
+              "לסוחר",
+              "למשקיע"
+            ]
           }
         ],
         "Partnership": [
           {
             "section": "שותפות",
-            "items": ["רישום IB/שותפות", "כיצד IB מייצרים הכנסה"]
+            "items": [
+              "רישום IB/שותפות",
+              "כיצד IB מייצרים הכנסה"
+            ]
           }
         ],
         "Company": [
           {
             "section": "חברה",
-            "items": ["אודות החברה", "מסמכים", "חדשות החברה", "צור קשר", "קריירה"]
+            "items": [
+              "אודות החברה",
+              "מסמכים",
+              "חדשות החברה",
+              "צור קשר",
+              "קריירה"
+            ]
           }
         ]
       }
@@ -200,7 +235,11 @@
           "title": "הדגמה",
           "subtitle": "חשבון",
           "description": "מסחר ללא סיכון עם כספים וירטואליים, מושלם למתחילים לחקור שווקים.",
-          "features": ["מינוף עד 1:100", "ספרדים מ-0.0 נקודות", "אין צורך בהפקדה"],
+          "features": [
+            "מינוף עד 1:100",
+            "ספרדים מ-0.0 נקודות",
+            "אין צורך בהפקדה"
+          ],
           "buttonText": "נסה הדגמה עכשיו",
           "isRecommended": true
         },
@@ -210,7 +249,11 @@
           "title": "רגיל",
           "subtitle": "חשבון",
           "description": "גישה קלה לשווקי ספוט עם עמלות נמוכות — אידיאלי למתחילים וסוחרים פעילים.",
-          "features": ["מינוף עד 1:100", "ספרדים מ-1.2 נקודות", "הפקדה ראשונה $50"],
+          "features": [
+            "מינוף עד 1:100",
+            "ספרדים מ-1.2 נקודות",
+            "הפקדה ראשונה $50"
+          ],
           "buttonText": "פתח חשבון רגיל",
           "isRecommended": false
         },
@@ -220,7 +263,11 @@
           "title": "מקצועי",
           "subtitle": "חשבון",
           "description": "חווה ספרדים צרים, מינוף גבוה יותר ושליטה מלאה בכל עסקה.",
-          "features": ["מינוף עד 1:100", "ספרדים מ-0.0 נקודות", "הפקדה ראשונה $1000"],
+          "features": [
+            "מינוף עד 1:100",
+            "ספרדים מ-0.0 נקודות",
+            "הפקדה ראשונה $1000"
+          ],
           "buttonText": "סחור כמו מקצוען",
           "isRecommended": false
         },
@@ -230,7 +277,11 @@
           "title": "טנדם",
           "subtitle": "חשבון",
           "description": "התחבר לשותף, מנטור או סוחר שותף וגדל ביחד עם אסטרטגיות מסונכרנות.",
-          "features": ["מינוף עד 1:100", "גישת חשבון משותפת", "שיקוף מסחר בזמן אמת"],
+          "features": [
+            "מינוף עד 1:100",
+            "גישת חשבון משותפת",
+            "שיקוף מסחר בזמן אמת"
+          ],
           "buttonText": "סחור ביחד",
           "isRecommended": false
         },
@@ -240,7 +291,11 @@
           "title": "אסלמי",
           "subtitle": "חשבון",
           "description": "ללא swap. תואם לשריעה. סחור ללא ריבית, עם גישה מלאה לפלטפורמה.",
-          "features": ["מינוף עד 1:100", "ללא עמלות swap/ריבית", "גישה לכל מכשירי המסחר"],
+          "features": [
+            "מינוף עד 1:100",
+            "ללא עמלות swap/ריבית",
+            "גישה לכל מכשירי המסחר"
+          ],
           "buttonText": "פתח חשבון אסלמי",
           "isRecommended": false
         }
@@ -431,7 +486,10 @@
         "career": {
           "title": "קריירה",
           "subtitle": "כרגע החברה מחפשת את המומחים הבאים:",
-          "positions": ["מנהל מכירות", "ראש מחלקת אנליסטים"],
+          "positions": [
+            "מנהל מכירות",
+            "ראש מחלקת אנליסטים"
+          ],
           "cta": "אם אתה מוכן לצמיחה דינמית, אתה שאפתן ומוכשר, שלח את קורות החיים שלך.",
           "button": "שלח קורות חיים"
         },
@@ -516,7 +574,11 @@
         "agent_title": "תוכנית סוכן",
         "agent_description": "קבל הכנסה מפעילות מסחר של לקוחות מעורבים! זה קל היום, הודות למספר המשתמשים הגדל באופן דינמי באינטרנט. העדיפות החשובה ביותר של חברת Ester Holdings בכך היא רמת השירות הגבוהה ויצירת יחסים לטווח ארוך. זה מה שיאפשר לך, מבלי להיות משתתף בשוק המט\"ח, לקבל הכנסה קבועה כעמלות מפעילות המסחר של חברים מעורבים.",
         "agent_how_title": "איך זה עובד?",
-        "agent_how_list": ["הבא לנו לקוחות חדשים", "הם ירשמו וירוויחו כסף", "תקבל עמלות מהרווחים שלהם"],
+        "agent_how_list": [
+          "הבא לנו לקוחות חדשים",
+          "הם ירשמו וירוויחו כסף",
+          "תקבל עמלות מהרווחים שלהם"
+        ],
         "agent_how_cta": "יותר לקוחות – יותר רווח",
         "franchising_title": "זיכיון",
         "franchising_description_1": "שותפי חברת Ester Holdings מקבלים תמיכה מקיפה וגישה אינדיבידואלית מצד המומחים המנוסים שלנו. אנו יכולים לבחור פתרונות התואמים את הצרכים האמיתיים שלך ואת המטרות האישיות שלך. זכור, שהתדמית החיובית והמוניטין המושלם של החברה שלנו גם עובדים עבורך.",
@@ -624,15 +686,30 @@
       "description": "המטרה העיקרית של Ester היא ליצור את התנאים הטובים והשקופים ביותר לסוחרים קמעונאיים וארגוניים.",
       "trading": {
         "title": "מסחר",
-        "items": ["סקירת חשבונות", "שווקים", "פלטפורמה", "תנאי מסחר", "מסחר טנדם"]
+        "items": [
+          "סקירת חשבונות",
+          "שווקים",
+          "פלטפורמה",
+          "תנאי מסחר",
+          "מסחר טנדם"
+        ]
       },
       "partnership": {
         "title": "שותפות",
-        "items": ["רישום IB/שותפות", "כיצד IB מייצרים הכנסה"]
+        "items": [
+          "רישום IB/שותפות",
+          "כיצד IB מייצרים הכנסה"
+        ]
       },
       "company": {
         "title": "חברה",
-        "items": ["אודות החברה", "מסמכים", "חדשות החברה", "צור קשר", "קריירה"]
+        "items": [
+          "אודות החברה",
+          "מסמכים",
+          "חדשות החברה",
+          "צור קשר",
+          "קריירה"
+        ]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1673,71 +1750,75 @@
       "title": "תמיכה"
     },
     "withdrawalRequests": {
-      "title": "Withdrawal requests",
-      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
-      "searchPlaceholder": "Search by ID, client, comment or account",
-      "empty": "No withdrawal requests found.",
+      "title": "בקשות משיכה",
+      "subtitle": "נהל בקשות משיכה והעברות פנימיות. אישור העברה פנימית מבצע את העברת MT4 אוטומטית.",
+      "searchPlaceholder": "חיפוש לפי מזהה, לקוח, תגובה או חשבון",
+      "empty": "לא נמצאו בקשות משיכה.",
       "fields": {
-        "account": "Account",
-        "paymentMethod": "Payment method",
-        "paymentDetail": "Payment details",
-        "amount": "Amount",
-        "createdAt": "Created at",
-        "clientComment": "Client comment",
-        "adminComment": "Admin comment",
-        "transferRoute": "Transfer route",
-        "execution": "Execution",
-        "documents": "Documents",
-        "requisitesComment": "Requisites comment"
+        "account": "חשבון",
+        "paymentMethod": "אמצעי תשלום",
+        "paymentDetail": "פרטי תשלום",
+        "amount": "סכום",
+        "createdAt": "נוצר בתאריך",
+        "clientComment": "תגובת לקוח",
+        "adminComment": "תגובת מנהל",
+        "transferRoute": "מסלול העברה",
+        "execution": "ביצוע",
+        "documents": "מסמכים",
+        "requisitesComment": "תגובה לפרטים"
       },
       "actions": {
-        "openClient": "Open client",
-        "edit": "Edit",
-        "cancelEdit": "Cancel",
-        "save": "Save",
-        "processing": "To processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "reject": "Reject",
-        "successfulManual": "Confirm without transfer",
-        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
+        "openClient": "פתח לקוח",
+        "edit": "ערוך",
+        "cancelEdit": "בטל",
+        "save": "שמור",
+        "processing": "בטיפול",
+        "successful": "אשר",
+        "failed": "נכשל",
+        "reject": "דחה",
+        "successfulManual": "אשר ללא העברה",
+        "successfulAutoTransfer": "אשר ובצע העברת MT4",
+        "copyValue": "העתק ערך"
       },
       "messages": {
-        "saved": "Withdrawal request updated.",
-        "statusUpdated": "Withdrawal request status updated.",
-        "loadError": "Failed to load withdrawal requests.",
-        "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request.",
-        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
-        "confirmStatusChange": "Change request",
-        "confirmStatusChangeTo": "to status"
+        "saved": "בקשת המשיכה עודכנה.",
+        "statusUpdated": "סטטוס בקשת המשיכה עודכן.",
+        "loadError": "לא נמצאו בקשות משיכה.",
+        "statusError": "לא ניתן לעדכן את סטטוס הבקשה.",
+        "saveError": "לא ניתן לעדכן את בקשת המשיכה.",
+        "confirmAutoTransfer": "אשר בקשה ובצע העברת MT4",
+        "confirmStatusChange": "שנה בקשה",
+        "confirmStatusChangeTo": "לסטטוס"
       },
       "filters": {
-        "allStatuses": "All statuses",
-        "currentStatus": "Status filter",
-        "reset": "Reset"
+        "allStatuses": "כל הסטטוסים",
+        "currentStatus": "מסנן סטטוס",
+        "reset": "איפוס"
       },
       "stats": {
-        "total": "Total"
+        "total": "סה״כ"
       },
       "statuses": {
-        "pending": "Pending",
-        "processing": "Processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "cancelled": "Cancelled"
+        "pending": "ממתין",
+        "processing": "בטיפול",
+        "successful": "הצליח",
+        "failed": "נכשל",
+        "cancelled": "בוטל"
       },
       "validation": {
-        "account": "Choose an account.",
-        "paymentDetail": "Choose approved payment details.",
-        "amount": "Enter a valid amount."
+        "account": "בחר חשבון.",
+        "paymentDetail": "בחר פרטי תשלום מאושרים.",
+        "amount": "הזן סכום תקין."
       },
       "execution": {
-        "completed": "Executed in MT4",
-        "skipped": "Confirmed without automatic transfer",
-        "failed": "Automatic transfer failed",
-        "cancelled": "Cancelled",
-        "pending": "Awaiting admin decision"
+        "completed": "בוצע ב-MT4",
+        "skipped": "בוצע ב-MT4",
+        "failed": "נכשל",
+        "cancelled": "בוטל",
+        "pending": "ממתין להחלטת מנהל"
+      },
+      "paymentDetailFields": {
+        "recipientAddress": "כתובת הנמען"
       }
     }
   },

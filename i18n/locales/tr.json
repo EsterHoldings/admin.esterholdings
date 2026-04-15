@@ -35,39 +35,74 @@
         "Trading": [
           {
             "section": "Hesap özeti",
-            "items": ["Standart", "Pro", "İslami", "Demo"]
+            "items": [
+              "Standart",
+              "Pro",
+              "İslami",
+              "Demo"
+            ]
           },
           {
             "section": "Piyasa Araçları",
-            "items": ["Forex", "Metaller", "Kripto CFD'ler", "Endeksler", "Hisse Senetleri", "Enerji", "ETF'ler"]
+            "items": [
+              "Forex",
+              "Metaller",
+              "Kripto CFD'ler",
+              "Endeksler",
+              "Hisse Senetleri",
+              "Enerji",
+              "ETF'ler"
+            ]
           },
           {
             "section": "Platform",
-            "items": ["MT4 Desktop", "MT 4 Mobile"]
+            "items": [
+              "MT4 Desktop",
+              "MT 4 Mobile"
+            ]
           },
           {
             "section": "İşlem koşulları",
-            "items": ["Hesap yükleme", "Para çekme"]
+            "items": [
+              "Hesap yükleme",
+              "Para çekme"
+            ]
           },
           {
             "section": "Trader'ın HUB'ı",
-            "items": ["Trader blogu", "Ekonomik takvim", "Piyasa haberleri"]
+            "items": [
+              "Trader blogu",
+              "Ekonomik takvim",
+              "Piyasa haberleri"
+            ]
           },
           {
             "section": "TANDEM işlem",
-            "items": ["Trader için", "Yatırımcı için"]
+            "items": [
+              "Trader için",
+              "Yatırımcı için"
+            ]
           }
         ],
         "Partnership": [
           {
             "section": "Ortaklık",
-            "items": ["IB/ Ortaklık kaydet", "IB'ler nasıl gelir elde eder"]
+            "items": [
+              "IB/ Ortaklık kaydet",
+              "IB'ler nasıl gelir elde eder"
+            ]
           }
         ],
         "Company": [
           {
             "section": "Şirket",
-            "items": ["Şirket hakkında", "Belgeler", "Şirket haberleri", "İletişim", "Kariyer"]
+            "items": [
+              "Şirket hakkında",
+              "Belgeler",
+              "Şirket haberleri",
+              "İletişim",
+              "Kariyer"
+            ]
           }
         ]
       }
@@ -200,7 +235,11 @@
           "title": "Demo",
           "subtitle": "hesap",
           "description": "Sanal fonlarla risksiz işlem, piyasaları keşfetmek isteyen yeni başlayanlar için mükemmel.",
-          "features": ["1:100'e kadar kaldıraç", "0,0 pip'ten itibaren spreadler", "Depozito gerekmez"],
+          "features": [
+            "1:100'e kadar kaldıraç",
+            "0,0 pip'ten itibaren spreadler",
+            "Depozito gerekmez"
+          ],
           "buttonText": "Şimdi Demoyu Deneyin",
           "isRecommended": true
         },
@@ -210,7 +249,11 @@
           "title": "Standart",
           "subtitle": "hesap",
           "description": "Düşük ücretlerle spot piyasalara kolay erişim — yeni başlayanlar ve aktif trader'lar için ideal.",
-          "features": ["1:100'e kadar kaldıraç", "1,2 pip'ten itibaren spreadler", "İlk depozito $50"],
+          "features": [
+            "1:100'e kadar kaldıraç",
+            "1,2 pip'ten itibaren spreadler",
+            "İlk depozito $50"
+          ],
           "buttonText": "Standart Hesap Aç",
           "isRecommended": false
         },
@@ -220,7 +263,11 @@
           "title": "Pro",
           "subtitle": "hesap",
           "description": "Dar spreadleri, daha yüksek kaldıracı ve her işlem üzerinde tam kontrolü deneyimleyin.",
-          "features": ["1:100'e kadar kaldıraç", "0,0 pip'ten itibaren spreadler", "İlk depozito $1000"],
+          "features": [
+            "1:100'e kadar kaldıraç",
+            "0,0 pip'ten itibaren spreadler",
+            "İlk depozito $1000"
+          ],
           "buttonText": "Pro Gibi İşlem Yapın",
           "isRecommended": false
         },
@@ -230,7 +277,11 @@
           "title": "Tandem",
           "subtitle": "hesap",
           "description": "Bir ortak, mentor veya ortak trader ile işbirliği yapın ve senkronize stratejilerle birlikte büyüyün.",
-          "features": ["1:100'e kadar kaldıraç", "Paylaşımlı hesap erişimi", "Gerçek zamanlı işlem yansıtma"],
+          "features": [
+            "1:100'e kadar kaldıraç",
+            "Paylaşımlı hesap erişimi",
+            "Gerçek zamanlı işlem yansıtma"
+          ],
           "buttonText": "Birlikte İşlem Yapın",
           "isRecommended": false
         },
@@ -240,7 +291,11 @@
           "title": "İslami",
           "subtitle": "hesap",
           "description": "Swap yok. Şeriata uygun. Tam platform erişimiyle faizsiz işlem yapın.",
-          "features": ["1:100'e kadar kaldıraç", "Swap / faiz ücreti yok", "Tüm işlem araçlarına erişim"],
+          "features": [
+            "1:100'e kadar kaldıraç",
+            "Swap / faiz ücreti yok",
+            "Tüm işlem araçlarına erişim"
+          ],
           "buttonText": "İslami Hesap Aç",
           "isRecommended": false
         }
@@ -431,7 +486,10 @@
         "career": {
           "title": "Kariyer",
           "subtitle": "Şu anda şirket aşağıdaki uzmanları arıyor:",
-          "positions": ["SATIŞ MÜDÜRÜ", "ANALİTİK DEPARTMANI BAŞKANI"],
+          "positions": [
+            "SATIŞ MÜDÜRÜ",
+            "ANALİTİK DEPARTMANI BAŞKANI"
+          ],
           "cta": "DİNAMİK BÜYÜMEYE HAZIR, HİRSLI VE YETENEKLIYSEN, ÖZGEÇMİŞİNİ GÖNDER.",
           "button": "CV GÖNDER"
         },
@@ -628,15 +686,30 @@
       "description": "Ester'in ana hedefi, perakende ve kurumsal trader'lar için en iyi ve en şeffaf koşulları oluşturmaktır.",
       "trading": {
         "title": "İşlem",
-        "items": ["Hesap özeti", "Piyasalar", "Platform", "İşlem koşulları", "Tandem işlem"]
+        "items": [
+          "Hesap özeti",
+          "Piyasalar",
+          "Platform",
+          "İşlem koşulları",
+          "Tandem işlem"
+        ]
       },
       "partnership": {
         "title": "Ortaklık",
-        "items": ["IB/ Ortaklık kaydet", "IB'ler nasıl gelir elde eder"]
+        "items": [
+          "IB/ Ortaklık kaydet",
+          "IB'ler nasıl gelir elde eder"
+        ]
       },
       "company": {
         "title": "Şirket",
-        "items": ["Şirket hakkında", "Belgeler", "Şirket haberleri", "İletişim", "Kariyer"]
+        "items": [
+          "Şirket hakkında",
+          "Belgeler",
+          "Şirket haberleri",
+          "İletişim",
+          "Kariyer"
+        ]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1677,71 +1750,75 @@
       "title": "Destek"
     },
     "withdrawalRequests": {
-      "title": "Withdrawal requests",
-      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
-      "searchPlaceholder": "Search by ID, client, comment or account",
-      "empty": "No withdrawal requests found.",
+      "title": "Para çekme talepleri",
+      "subtitle": "Para çekme ve dahili transfer taleplerini yönetin. Dahili transfer onaylandığında MT4 transferi otomatik çalışır.",
+      "searchPlaceholder": "ID, müşteri, yorum veya hesap ara",
+      "empty": "Para çekme talebi bulunamadı.",
       "fields": {
-        "account": "Account",
-        "paymentMethod": "Payment method",
-        "paymentDetail": "Payment details",
-        "amount": "Amount",
-        "createdAt": "Created at",
-        "clientComment": "Client comment",
-        "adminComment": "Admin comment",
-        "transferRoute": "Transfer route",
-        "execution": "Execution",
-        "documents": "Documents",
-        "requisitesComment": "Requisites comment"
+        "account": "Hesap",
+        "paymentMethod": "Ödeme yöntemi",
+        "paymentDetail": "Ödeme bilgileri",
+        "amount": "Tutar",
+        "createdAt": "Oluşturulma",
+        "clientComment": "Müşteri yorumu",
+        "adminComment": "Yönetici yorumu",
+        "transferRoute": "Transfer rotası",
+        "execution": "Çalıştırma",
+        "documents": "Belgeler",
+        "requisitesComment": "Bilgi yorumu"
       },
       "actions": {
-        "openClient": "Open client",
-        "edit": "Edit",
-        "cancelEdit": "Cancel",
-        "save": "Save",
-        "processing": "To processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "reject": "Reject",
-        "successfulManual": "Confirm without transfer",
-        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
+        "openClient": "Müşteriyi aç",
+        "edit": "Düzenle",
+        "cancelEdit": "İptal",
+        "save": "Kaydet",
+        "processing": "İşlemde",
+        "successful": "Onayla",
+        "failed": "Başarısız",
+        "reject": "Reddet",
+        "successfulManual": "Transfer olmadan onayla",
+        "successfulAutoTransfer": "Onayla ve MT4 transferini çalıştır",
+        "copyValue": "Değeri kopyala"
       },
       "messages": {
-        "saved": "Withdrawal request updated.",
-        "statusUpdated": "Withdrawal request status updated.",
-        "loadError": "Failed to load withdrawal requests.",
-        "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request.",
-        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
-        "confirmStatusChange": "Change request",
-        "confirmStatusChangeTo": "to status"
+        "saved": "Para çekme talebi güncellendi.",
+        "statusUpdated": "Para çekme talebi durumu güncellendi.",
+        "loadError": "Para çekme talebi bulunamadı.",
+        "statusError": "Talep durumu güncellenemedi.",
+        "saveError": "Para çekme talebi güncellenemedi.",
+        "confirmAutoTransfer": "Talebi onayla ve MT4 transferini çalıştır",
+        "confirmStatusChange": "Talebi değiştir",
+        "confirmStatusChangeTo": "durumuna"
       },
       "filters": {
-        "allStatuses": "All statuses",
-        "currentStatus": "Status filter",
-        "reset": "Reset"
+        "allStatuses": "Tüm durumlar",
+        "currentStatus": "Durum filtresi",
+        "reset": "Sıfırla"
       },
       "stats": {
-        "total": "Total"
+        "total": "Toplam"
       },
       "statuses": {
-        "pending": "Pending",
-        "processing": "Processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "cancelled": "Cancelled"
+        "pending": "Beklemede",
+        "processing": "İşlemde",
+        "successful": "Başarılı",
+        "failed": "Başarısız",
+        "cancelled": "İptal edildi"
       },
       "validation": {
-        "account": "Choose an account.",
-        "paymentDetail": "Choose approved payment details.",
-        "amount": "Enter a valid amount."
+        "account": "Bir hesap seçin.",
+        "paymentDetail": "Onaylı ödeme bilgilerini seçin.",
+        "amount": "Geçerli bir tutar girin."
       },
       "execution": {
-        "completed": "Executed in MT4",
-        "skipped": "Confirmed without automatic transfer",
-        "failed": "Automatic transfer failed",
-        "cancelled": "Cancelled",
-        "pending": "Awaiting admin decision"
+        "completed": "MT4’te yürütüldü",
+        "skipped": "MT4’te yürütüldü",
+        "failed": "Başarısız",
+        "cancelled": "İptal edildi",
+        "pending": "Yönetici kararı bekleniyor"
+      },
+      "paymentDetailFields": {
+        "recipientAddress": "Alıcı adresi"
       }
     }
   },

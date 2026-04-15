@@ -35,39 +35,74 @@
         "Trading": [
           {
             "section": "アカウント概要",
-            "items": ["スタンダード", "プロ", "イスラム", "デモ"]
+            "items": [
+              "スタンダード",
+              "プロ",
+              "イスラム",
+              "デモ"
+            ]
           },
           {
             "section": "市場商品",
-            "items": ["外国為替", "貴金属", "暗号CFD", "指数", "株式", "エネルギー", "ETF"]
+            "items": [
+              "外国為替",
+              "貴金属",
+              "暗号CFD",
+              "指数",
+              "株式",
+              "エネルギー",
+              "ETF"
+            ]
           },
           {
             "section": "プラットフォーム",
-            "items": ["MT4デスクトップ", "MT4モバイル"]
+            "items": [
+              "MT4デスクトップ",
+              "MT4モバイル"
+            ]
           },
           {
             "section": "取引条件",
-            "items": ["口座入金", "出金"]
+            "items": [
+              "口座入金",
+              "出金"
+            ]
           },
           {
             "section": "トレーダーズHUB",
-            "items": ["トレーダーズブログ", "経済カレンダー", "マーケットニュース"]
+            "items": [
+              "トレーダーズブログ",
+              "経済カレンダー",
+              "マーケットニュース"
+            ]
           },
           {
             "section": "TANDEM取引",
-            "items": ["トレーダー向け", "投資家向け"]
+            "items": [
+              "トレーダー向け",
+              "投資家向け"
+            ]
           }
         ],
         "Partnership": [
           {
             "section": "パートナーシップ",
-            "items": ["IB/パートナーシップ登録", "IBの収益方法"]
+            "items": [
+              "IB/パートナーシップ登録",
+              "IBの収益方法"
+            ]
           }
         ],
         "Company": [
           {
             "section": "会社",
-            "items": ["会社について", "書類", "会社ニュース", "お問い合わせ", "キャリア"]
+            "items": [
+              "会社について",
+              "書類",
+              "会社ニュース",
+              "お問い合わせ",
+              "キャリア"
+            ]
           }
         ]
       }
@@ -200,7 +235,11 @@
           "title": "デモ",
           "subtitle": "口座",
           "description": "仮想資金でのリスクフリー取引。市場を探索する初心者に最適。",
-          "features": ["最大1:100のレバレッジ", "0.0ピップからのスプレッド", "入金不要"],
+          "features": [
+            "最大1:100のレバレッジ",
+            "0.0ピップからのスプレッド",
+            "入金不要"
+          ],
           "buttonText": "今すぐデモを試す",
           "isRecommended": true
         },
@@ -210,7 +249,11 @@
           "title": "スタンダード",
           "subtitle": "口座",
           "description": "低手数料でスポット市場に簡単アクセス — 初心者とアクティブトレーダーに最適。",
-          "features": ["最大1:100のレバレッジ", "1.2ピップからのスプレッド", "初回入金$50"],
+          "features": [
+            "最大1:100のレバレッジ",
+            "1.2ピップからのスプレッド",
+            "初回入金$50"
+          ],
           "buttonText": "スタンダード口座を開設",
           "isRecommended": false
         },
@@ -220,7 +263,11 @@
           "title": "プロ",
           "subtitle": "口座",
           "description": "タイトなスプレッド、より高いレバレッジ、すべての取引の完全なコントロールを体験。",
-          "features": ["最大1:100のレバレッジ", "0.0ピップからのスプレッド", "初回入金$1000"],
+          "features": [
+            "最大1:100のレバレッジ",
+            "0.0ピップからのスプレッド",
+            "初回入金$1000"
+          ],
           "buttonText": "プロのように取引",
           "isRecommended": false
         },
@@ -230,7 +277,11 @@
           "title": "タンデム",
           "subtitle": "口座",
           "description": "パートナー、メンター、または共同トレーダーとペアを組み、同期戦略で一緒に成長。",
-          "features": ["最大1:100のレバレッジ", "共有口座アクセス", "リアルタイム取引ミラーリング"],
+          "features": [
+            "最大1:100のレバレッジ",
+            "共有口座アクセス",
+            "リアルタイム取引ミラーリング"
+          ],
           "buttonText": "一緒に取引",
           "isRecommended": false
         },
@@ -240,7 +291,11 @@
           "title": "イスラム",
           "subtitle": "口座",
           "description": "スワップフリー。シャリーア準拠。利息なしで取引、プラットフォームへの完全アクセス。",
-          "features": ["最大1:100のレバレッジ", "スワップ/利息手数料なし", "すべての取引商品へのアクセス"],
+          "features": [
+            "最大1:100のレバレッジ",
+            "スワップ/利息手数料なし",
+            "すべての取引商品へのアクセス"
+          ],
           "buttonText": "イスラム口座を開設",
           "isRecommended": false
         }
@@ -431,7 +486,10 @@
         "career": {
           "title": "キャリア",
           "subtitle": "現在、会社は次の専門家を探しています：",
-          "positions": ["セールスマネージャー", "分析部門長"],
+          "positions": [
+            "セールスマネージャー",
+            "分析部門長"
+          ],
           "cta": "ダイナミックな成長の準備ができていて、意欲的で才能があるなら、履歴書を送ってください。",
           "button": "履歴書を送信"
         },
@@ -628,15 +686,30 @@
       "description": "Esterの主な目標は、小売および法人トレーダーのための最高かつ最も透明な条件を作成することです。",
       "trading": {
         "title": "取引",
-        "items": ["アカウント概要", "市場", "プラットフォーム", "取引条件", "タンデム取引"]
+        "items": [
+          "アカウント概要",
+          "市場",
+          "プラットフォーム",
+          "取引条件",
+          "タンデム取引"
+        ]
       },
       "partnership": {
         "title": "パートナーシップ",
-        "items": ["IB/パートナーシップ登録", "IBの収益方法"]
+        "items": [
+          "IB/パートナーシップ登録",
+          "IBの収益方法"
+        ]
       },
       "company": {
         "title": "会社",
-        "items": ["会社について", "書類", "会社ニュース", "お問い合わせ", "キャリア"]
+        "items": [
+          "会社について",
+          "書類",
+          "会社ニュース",
+          "お問い合わせ",
+          "キャリア"
+        ]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1677,71 +1750,75 @@
       "title": "サポート"
     },
     "withdrawalRequests": {
-      "title": "Withdrawal requests",
-      "subtitle": "Moderate client withdrawal and transfer requests, update statuses and edit payout data before manual processing.",
-      "searchPlaceholder": "Search by ID, client, comment or account",
-      "empty": "No withdrawal requests found.",
+      "title": "出金リクエスト",
+      "subtitle": "出金および内部振替リクエストを管理します。内部振替を承認すると MT4 振替が自動実行されます。",
+      "searchPlaceholder": "ID、顧客、コメント、口座で検索",
+      "empty": "出金リクエストが見つかりません。",
       "fields": {
-        "account": "Account",
-        "paymentMethod": "Payment method",
-        "paymentDetail": "Payment details",
-        "amount": "Amount",
-        "createdAt": "Created at",
-        "clientComment": "Client comment",
-        "adminComment": "Admin comment",
-        "transferRoute": "Transfer route",
-        "execution": "Execution",
-        "documents": "Documents",
-        "requisitesComment": "Requisites comment"
+        "account": "口座",
+        "paymentMethod": "支払い方法",
+        "paymentDetail": "支払い詳細",
+        "amount": "金額",
+        "createdAt": "作成日時",
+        "clientComment": "顧客コメント",
+        "adminComment": "管理者コメント",
+        "transferRoute": "振替ルート",
+        "execution": "実行",
+        "documents": "書類",
+        "requisitesComment": "詳細コメント"
       },
       "actions": {
-        "openClient": "Open client",
-        "edit": "Edit",
-        "cancelEdit": "Cancel",
-        "save": "Save",
-        "processing": "To processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "reject": "Reject",
-        "successfulManual": "Confirm without transfer",
-        "successfulAutoTransfer": "Confirm and execute MT4 transfer"
+        "openClient": "顧客を開く",
+        "edit": "編集",
+        "cancelEdit": "キャンセル",
+        "save": "保存",
+        "processing": "処理中",
+        "successful": "承認",
+        "failed": "失敗",
+        "reject": "却下",
+        "successfulManual": "振替なしで確認",
+        "successfulAutoTransfer": "承認してMT4振替を実行",
+        "copyValue": "値をコピー"
       },
       "messages": {
-        "saved": "Withdrawal request updated.",
-        "statusUpdated": "Withdrawal request status updated.",
-        "loadError": "Failed to load withdrawal requests.",
-        "statusError": "Failed to update withdrawal request status.",
-        "saveError": "Failed to update withdrawal request.",
-        "confirmAutoTransfer": "Confirm request and execute MT4 transfer",
-        "confirmStatusChange": "Change request",
-        "confirmStatusChangeTo": "to status"
+        "saved": "出金リクエストを更新しました。",
+        "statusUpdated": "出金リクエストのステータスを更新しました。",
+        "loadError": "出金リクエストが見つかりません。",
+        "statusError": "リクエストのステータスを更新できませんでした。",
+        "saveError": "出金リクエストを更新できませんでした。",
+        "confirmAutoTransfer": "リクエストを承認してMT4振替を実行",
+        "confirmStatusChange": "リクエストを変更",
+        "confirmStatusChangeTo": "ステータスへ"
       },
       "filters": {
-        "allStatuses": "All statuses",
-        "currentStatus": "Status filter",
-        "reset": "Reset"
+        "allStatuses": "すべてのステータス",
+        "currentStatus": "ステータスフィルター",
+        "reset": "リセット"
       },
       "stats": {
-        "total": "Total"
+        "total": "合計"
       },
       "statuses": {
-        "pending": "Pending",
-        "processing": "Processing",
-        "successful": "Successful",
-        "failed": "Failed",
-        "cancelled": "Cancelled"
+        "pending": "保留中",
+        "processing": "処理中",
+        "successful": "成功",
+        "failed": "失敗",
+        "cancelled": "キャンセル"
       },
       "validation": {
-        "account": "Choose an account.",
-        "paymentDetail": "Choose approved payment details.",
-        "amount": "Enter a valid amount."
+        "account": "口座を選択してください。",
+        "paymentDetail": "承認済みの支払い詳細を選択してください。",
+        "amount": "有効な金額を入力してください。"
       },
       "execution": {
-        "completed": "Executed in MT4",
-        "skipped": "Confirmed without automatic transfer",
-        "failed": "Automatic transfer failed",
-        "cancelled": "Cancelled",
-        "pending": "Awaiting admin decision"
+        "completed": "MT4で実行済み",
+        "skipped": "MT4で実行済み",
+        "failed": "失敗",
+        "cancelled": "キャンセル",
+        "pending": "管理者の判断待ち"
+      },
+      "paymentDetailFields": {
+        "recipientAddress": "受取人アドレス"
       }
     }
   },

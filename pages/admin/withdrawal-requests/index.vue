@@ -202,7 +202,13 @@
                   :key="entry.key"
                   class="withdrawal-request-card__details-item">
                   <div class="withdrawal-request-card__details-key">{{ entry.label }}</div>
-                  <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
+                  <div class="withdrawal-request-card__details-value-row">
+                    <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
+                    <UiIconCopy
+                      class="withdrawal-request-card__details-copy"
+                      :text="entry.value"
+                      :title="copyValueText" />
+                  </div>
                 </div>
               </div>
 
@@ -251,16 +257,6 @@
                   :title="successfulActionTitle(requestItem)"
                   @click="handleQuickStatusUpdate(requestItem, 'successful')">
                   <UiIconSuccessFull />
-                </button>
-
-                <button
-                  v-if="requestItem.is_internal_transfer"
-                  type="button"
-                  class="withdrawal-status-action withdrawal-status-action--auto-transfer"
-                  :disabled="isAutoTransferDisabled(requestItem)"
-                  :title="markSuccessfulAndTransferText"
-                  @click="handleAutoTransferStatusUpdate(requestItem)">
-                  <span class="withdrawal-status-action__text">MT4</span>
                 </button>
 
                 <button
@@ -400,6 +396,7 @@
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
   import UiIconDelete from "~/components/ui/UiIconDelete.vue";
   import UiIconEdit from "~/components/ui/UiIconEdit.vue";
+  import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -533,12 +530,10 @@
     resolveText("admin.withdrawalRequests.actions.processing", "To processing")
   );
   const markSuccessfulText = computed(() => resolveText("admin.withdrawalRequests.actions.successful", "Successful"));
-  const markSuccessfulManualText = computed(() =>
-    resolveText("admin.withdrawalRequests.actions.successfulManual", "Confirm without transfer")
-  );
   const markSuccessfulAndTransferText = computed(() =>
     resolveText("admin.withdrawalRequests.actions.successfulAutoTransfer", "Confirm and execute MT4 transfer")
   );
+  const copyValueText = computed(() => resolveText("admin.withdrawalRequests.actions.copyValue", "Copy value"));
   const markFailedText = computed(() => resolveText("admin.withdrawalRequests.actions.failed", "Failed"));
   const rejectText = computed(() => resolveText("admin.withdrawalRequests.actions.reject", "Reject"));
   const statusFilterNoteText = computed(() =>
@@ -688,10 +683,22 @@
 
   const normalizePaymentDetailLabel = (key: string): string => {
     return String(key ?? "")
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
       .replace(/[_-]+/g, " ")
       .replace(/\s+/g, " ")
       .trim()
       .replace(/\b\w/g, letter => letter.toUpperCase());
+  };
+
+  const paymentDetailFieldLabel = (key: string): string => {
+    const normalizedKey = String(key ?? "")
+      .trim()
+      .replace(/[-_\s]+([a-zA-Z0-9])/g, (_, letter: string) => letter.toUpperCase())
+      .replace(/^([A-Z])/, letter => letter.toLowerCase());
+    const translationKey = `admin.withdrawalRequests.paymentDetailFields.${normalizedKey}`;
+    const translated = t(translationKey);
+
+    return translated === translationKey ? normalizePaymentDetailLabel(key) : translated;
   };
 
   const formatPaymentDetailValue = (value: unknown): string => {
@@ -729,7 +736,7 @@
     return Object.entries(detail.data)
       .map(([key, value]) => ({
         key,
-        label: normalizePaymentDetailLabel(key),
+        label: paymentDetailFieldLabel(key),
         value: formatPaymentDetailValue(value),
       }))
       .filter(entry => entry.value !== "");
@@ -898,20 +905,15 @@
     nextStatus: "processing" | "successful" | "failed" | "cancelled"
   ): boolean =>
     updatingRequestId.value === requestItem.id ||
-    isStatusActive(requestItem, nextStatus) ||
+    (isStatusActive(requestItem, nextStatus) &&
+      !(requestItem.is_internal_transfer && nextStatus === "successful" && !isTransferExecuted(requestItem))) ||
     !canMoveToStatus(requestItem, nextStatus);
 
   const isTransferExecuted = (requestItem: WithdrawalRequestItem): boolean =>
     String(requestItem.meta?.transfer_execution?.status ?? "").toLowerCase() === "completed";
 
-  const isAutoTransferDisabled = (requestItem: WithdrawalRequestItem): boolean =>
-    updatingRequestId.value === requestItem.id ||
-    !requestItem.is_internal_transfer ||
-    isTransferExecuted(requestItem) ||
-    !canMoveToStatus(requestItem, "successful");
-
   const successfulActionTitle = (requestItem: WithdrawalRequestItem): string =>
-    requestItem.is_internal_transfer ? markSuccessfulManualText.value : markSuccessfulText.value;
+    requestItem.is_internal_transfer ? markSuccessfulAndTransferText.value : markSuccessfulText.value;
 
   const transferRouteValue = (requestItem: WithdrawalRequestItem): string => {
     const from = String(requestItem.from_account_number ?? "").trim() || "-";
@@ -945,10 +947,9 @@
 
   const buildStatusConfirmText = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: "processing" | "successful" | "failed" | "cancelled",
-    options: { executeTransfer?: boolean } = {}
+    nextStatus: "processing" | "successful" | "failed" | "cancelled"
   ): string =>
-    options.executeTransfer
+    requestItem.is_internal_transfer && nextStatus === "successful"
       ? `${resolveText(
           "admin.withdrawalRequests.messages.confirmAutoTransfer",
           "Confirm request and execute MT4 transfer"
@@ -962,14 +963,16 @@
     nextStatus: "processing" | "successful" | "failed" | "cancelled",
     options: { executeTransfer?: boolean } = {}
   ): Promise<void> => {
+    const executeTransfer = options.executeTransfer || (requestItem.is_internal_transfer && nextStatus === "successful");
+
     if (
       !canManagePayments.value ||
-      (options.executeTransfer ? isAutoTransferDisabled(requestItem) : isStatusDisabled(requestItem, nextStatus))
+      isStatusDisabled(requestItem, nextStatus)
     ) {
       return;
     }
 
-    const isConfirmed = window.confirm(buildStatusConfirmText(requestItem, nextStatus, options));
+    const isConfirmed = window.confirm(buildStatusConfirmText(requestItem, nextStatus));
     if (!isConfirmed) {
       return;
     }
@@ -981,7 +984,7 @@
         status: nextStatus,
         admin_comment:
           editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment,
-        ...(options.executeTransfer ? { execute_transfer: true } : {}),
+        ...(executeTransfer ? { execute_transfer: true } : {}),
       });
 
       toast.success(statusUpdatedText.value);
@@ -994,10 +997,6 @@
     } finally {
       updatingRequestId.value = "";
     }
-  };
-
-  const handleAutoTransferStatusUpdate = async (requestItem: WithdrawalRequestItem): Promise<void> => {
-    await handleQuickStatusUpdate(requestItem, "successful", { executeTransfer: true });
   };
 
   const loadEditDependencies = async (requestItem: WithdrawalRequestItem): Promise<void> => {
@@ -1488,6 +1487,22 @@
     word-break: break-word;
   }
 
+  .withdrawal-request-card__details-value-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .withdrawal-request-card__details-copy {
+    color: var(--ui-text-secondary);
+    transition: color 0.2s ease;
+  }
+
+  .withdrawal-request-card__details-copy:hover {
+    color: var(--ui-primary-main);
+  }
+
   .withdrawal-request-card__details-documents,
   .withdrawal-request-card__details-note {
     display: flex;
@@ -1581,23 +1596,6 @@
   .withdrawal-status-action--successful.is-active {
     background: color-mix(in srgb, #22c55e 22%, transparent);
     border-color: color-mix(in srgb, #22c55e 40%, transparent);
-  }
-
-  .withdrawal-status-action--auto-transfer {
-    min-width: 44px;
-    padding: 0 8px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-  }
-
-  .withdrawal-status-action--auto-transfer:not(:disabled):hover {
-    background: color-mix(in srgb, #22c55e 18%, transparent);
-    border-color: color-mix(in srgb, #3b82f6 42%, transparent);
-  }
-
-  .withdrawal-status-action__text {
-    line-height: 1;
   }
 
   .withdrawal-status-action--failed:not(:disabled):hover,
