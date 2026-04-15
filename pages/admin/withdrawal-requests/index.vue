@@ -108,8 +108,45 @@
                 </div>
               </div>
 
-              <div class="withdrawal-request-card__amount">
-                {{ formatMoney(requestItem.amount, requestItem.currency || requestItem.account_currency || "USD") }}
+              <div class="withdrawal-request-card__side">
+                <div class="withdrawal-request-card__side-head">
+                  <button
+                    v-if="canEditRequest(requestItem)"
+                    type="button"
+                    class="withdrawal-request-card__edit-link"
+                    :disabled="updatingRequestId === requestItem.id"
+                    @click="handleToggleEdit(requestItem)">
+                    {{ editingRequestId === requestItem.id ? cancelEditText : editText }}
+                  </button>
+
+                  <div class="withdrawal-request-card__amount">
+                    {{ formatMoney(requestItem.amount, requestItem.currency || requestItem.account_currency || "USD") }}
+                  </div>
+                </div>
+
+                <div
+                  v-if="canManagePayments"
+                  class="withdrawal-request-card__status-actions withdrawal-request-card__status-actions--top">
+                  <button
+                    type="button"
+                    class="withdrawal-status-action withdrawal-status-action--successful"
+                    :class="{ 'is-active': isStatusActive(requestItem, 'successful') }"
+                    :disabled="isStatusDisabled(requestItem, 'successful')"
+                    :title="successfulActionTitle(requestItem)"
+                    @click="handleQuickStatusUpdate(requestItem, 'successful')">
+                    <UiIconSuccessFull />
+                  </button>
+
+                  <button
+                    type="button"
+                    class="withdrawal-status-action withdrawal-status-action--rejected"
+                    :class="{ 'is-active': isStatusActive(requestItem, 'rejected') }"
+                    :disabled="isStatusDisabled(requestItem, 'rejected')"
+                    :title="rejectText"
+                    @click="handleQuickStatusUpdate(requestItem, 'rejected')">
+                    <UiIconDangerFull />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -186,12 +223,6 @@
                   </div>
                 </div>
 
-                <span
-                  v-if="requestItem.payment_detail?.status"
-                  class="withdrawal-request-card__status"
-                  :class="statusClass(requestItem.payment_detail.status)">
-                  {{ statusText(requestItem.payment_detail.status) }}
-                </span>
               </div>
 
               <div
@@ -232,54 +263,6 @@
                 <div class="withdrawal-request-card__details-key">{{ requisitesCommentText }}</div>
                 <div class="withdrawal-request-card__comment-body">{{ requestItem.payment_detail.comment }}</div>
               </div>
-            </div>
-
-            <div class="withdrawal-request-card__actions">
-              <div
-                v-if="canManagePayments"
-                class="withdrawal-request-card__status-actions">
-                <button
-                  type="button"
-                  class="withdrawal-status-action withdrawal-status-action--processing"
-                  :class="{ 'is-active': isStatusActive(requestItem, 'processing') }"
-                  :disabled="isStatusDisabled(requestItem, 'processing')"
-                  :title="moveToProcessingText"
-                  @click="handleQuickStatusUpdate(requestItem, 'processing')">
-                  <UiIconUpdate
-                    :spinning="updatingRequestId === requestItem.id && isStatusActive(requestItem, 'processing')" />
-                </button>
-
-                <button
-                  type="button"
-                  class="withdrawal-status-action withdrawal-status-action--successful"
-                  :class="{ 'is-active': isStatusActive(requestItem, 'successful') }"
-                  :disabled="isStatusDisabled(requestItem, 'successful')"
-                  :title="successfulActionTitle(requestItem)"
-                  @click="handleQuickStatusUpdate(requestItem, 'successful')">
-                  <UiIconSuccessFull />
-                </button>
-
-                <button
-                  type="button"
-                  class="withdrawal-status-action withdrawal-status-action--rejected"
-                  :class="{ 'is-active': isStatusActive(requestItem, 'rejected') }"
-                  :disabled="isStatusDisabled(requestItem, 'rejected')"
-                  :title="rejectText"
-                  @click="handleQuickStatusUpdate(requestItem, 'rejected')">
-                  <UiIconDangerFull />
-                </button>
-              </div>
-
-              <button
-                v-if="canEditRequest(requestItem)"
-                type="button"
-                class="withdrawal-status-action withdrawal-status-action--edit"
-                :disabled="updatingRequestId === requestItem.id"
-                :title="editingRequestId === requestItem.id ? cancelEditText : editText"
-                @click="handleToggleEdit(requestItem)">
-                <UiIconEdit v-if="editingRequestId !== requestItem.id" />
-                <UiIconDelete v-else />
-              </button>
             </div>
 
             <div
@@ -384,8 +367,6 @@
   import UiSelect from "~/components/ui/UiSelect.vue";
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-  import UiIconDelete from "~/components/ui/UiIconDelete.vue";
-  import UiIconEdit from "~/components/ui/UiIconEdit.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
@@ -437,7 +418,7 @@
       }>;
     };
   };
-  type WithdrawalStatusAction = "processing" | "successful" | "failed" | "cancelled" | "rejected";
+  type WithdrawalStatusAction = "successful" | "failed" | "cancelled" | "rejected";
 
   const { t } = useI18n({ useScope: "global" });
   const localePath = useLocalePath();
@@ -452,7 +433,7 @@
   const isStatsLoading = ref(false);
   const errorMessage = ref("");
   const searchFilter = ref("");
-  const statusFilter = ref("");
+  const statusFilter = ref("pending");
   const editingRequestId = ref("");
   const updatingRequestId = ref("");
   const auxiliaryLoadingUserId = ref("");
@@ -518,9 +499,6 @@
   const editText = computed(() => resolveText("admin.withdrawalRequests.actions.edit", "Edit"));
   const cancelEditText = computed(() => resolveText("admin.withdrawalRequests.actions.cancelEdit", "Cancel"));
   const saveText = computed(() => resolveText("admin.withdrawalRequests.actions.save", "Save"));
-  const moveToProcessingText = computed(() =>
-    resolveText("admin.withdrawalRequests.actions.processing", "To processing")
-  );
   const markSuccessfulText = computed(() => resolveText("admin.withdrawalRequests.actions.successful", "Successful"));
   const markSuccessfulAndTransferText = computed(() =>
     resolveText("admin.withdrawalRequests.actions.successfulAutoTransfer", "Confirm and execute MT4 transfer")
@@ -547,14 +525,6 @@
 
   const statCards = computed(() => [
     {
-      id: "total",
-      status: "",
-      label: resolveText("admin.withdrawalRequests.stats.total", "Total"),
-      value: stats.total,
-      cardClass: "is-total",
-      isActive: statusFilter.value === "",
-    },
-    {
       id: "pending",
       status: "pending",
       label: statusText("pending"),
@@ -563,12 +533,12 @@
       isActive: statusFilter.value === "pending",
     },
     {
-      id: "processing",
-      status: "processing",
-      label: statusText("processing"),
-      value: stats.processing,
-      cardClass: "is-processing",
-      isActive: statusFilter.value === "processing",
+      id: "total",
+      status: "",
+      label: resolveText("admin.withdrawalRequests.stats.total", "Total"),
+      value: stats.total,
+      cardClass: "is-total",
+      isActive: statusFilter.value === "",
     },
     {
       id: "successful",
@@ -880,8 +850,6 @@
     }
 
     switch (nextStatus) {
-      case "processing":
-        return ["pending", "processing", "cancelled", "failed", "rejected"].includes(current);
       case "successful":
         return ["pending", "processing", "failed", "rejected", "successful"].includes(current);
       case "cancelled":
@@ -1179,12 +1147,6 @@
       var(--ui-background-panel);
   }
 
-  .withdrawal-stat-card.is-processing {
-    background:
-      linear-gradient(135deg, color-mix(in srgb, #3b82f6 10%, transparent) 0%, transparent 72%),
-      var(--ui-background-panel);
-  }
-
   .withdrawal-stat-card.is-success {
     background:
       linear-gradient(135deg, color-mix(in srgb, #22c55e 10%, transparent) 0%, transparent 72%),
@@ -1378,6 +1340,52 @@
     color: var(--ui-primary-main);
   }
 
+  .withdrawal-request-card__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .withdrawal-request-card__side-head {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .withdrawal-request-card__edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 12px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 24%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+    color: var(--ui-primary-main);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .withdrawal-request-card__edit-link:not(:disabled):hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 42%, transparent);
+    background: color-mix(in srgb, var(--ui-primary-main) 16%, transparent);
+  }
+
+  .withdrawal-request-card__edit-link:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   .withdrawal-request-card__amount {
     font-size: 28px;
     font-weight: 700;
@@ -1542,6 +1550,10 @@
     border: 1px solid var(--color-stroke-ui-light);
   }
 
+  .withdrawal-request-card__status-actions--top {
+    justify-content: flex-end;
+  }
+
   .withdrawal-status-action {
     display: inline-flex;
     align-items: center;
@@ -1581,12 +1593,6 @@
     transform: translateY(-1px);
   }
 
-  .withdrawal-status-action--processing:not(:disabled):hover,
-  .withdrawal-status-action--processing.is-active {
-    background: color-mix(in srgb, #3b82f6 22%, transparent);
-    border-color: color-mix(in srgb, #3b82f6 40%, transparent);
-  }
-
   .withdrawal-status-action--successful:not(:disabled):hover,
   .withdrawal-status-action--successful.is-active {
     background: color-mix(in srgb, #22c55e 22%, transparent);
@@ -1601,16 +1607,6 @@
   .withdrawal-status-action--cancelled.is-active {
     background: color-mix(in srgb, #ef4444 22%, transparent);
     border-color: color-mix(in srgb, #ef4444 40%, transparent);
-  }
-
-  .withdrawal-status-action--edit {
-    background: color-mix(in srgb, var(--color-stroke-ui-dark) 84%, transparent);
-    border: 1px solid var(--color-stroke-ui-light);
-  }
-
-  .withdrawal-status-action--edit:not(:disabled):hover {
-    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
-    border-color: color-mix(in srgb, var(--ui-primary-main) 28%, transparent);
   }
 
   .withdrawal-request-card__edit {
@@ -1682,6 +1678,17 @@
       flex-direction: column;
     }
 
+    .withdrawal-request-card__side {
+      width: 100%;
+      align-items: stretch;
+      margin-left: 0;
+    }
+
+    .withdrawal-request-card__side-head {
+      width: 100%;
+      justify-content: space-between;
+    }
+
     .withdrawal-request-card__amount {
       white-space: normal;
     }
@@ -1693,11 +1700,7 @@
 
     .withdrawal-request-card__status-actions {
       width: 100%;
-      justify-content: space-between;
-    }
-
-    .withdrawal-status-action--edit {
-      width: 100%;
+      justify-content: flex-end;
     }
 
     .withdrawal-requests-page__toolbar-right {
