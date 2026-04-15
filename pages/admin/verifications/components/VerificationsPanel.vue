@@ -293,7 +293,7 @@ import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 import UiInput from "~/components/ui/UiInput.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
 
-type RequestReviewState = "pending" | "viewed" | "approved" | "rejected";
+type RequestReviewState = "pending" | "approved" | "rejected";
 type VerificationStatus = "pending" | "approved" | "rejected";
 
 interface VerificationRequestItem {
@@ -436,7 +436,6 @@ const requestItems = ref<VerificationRequestItem[]>([]);
 const summary = reactive<Record<string, number>>({
   all: 0,
   pending: 0,
-  viewed: 0,
   approved: 0,
   rejected: 0,
 });
@@ -553,7 +552,6 @@ const sortOptions = [
 const statCards = computed(() => [
   { id: "all", filter: "all" as const, label: "All", value: formatCount(summary.all) },
   { id: "pending", filter: "pending" as const, label: "Unprocessed", value: formatCount(summary.pending) },
-  { id: "viewed", filter: "viewed" as const, label: "Viewed", value: formatCount(summary.viewed) },
   { id: "approved", filter: "approved" as const, label: "Confirmed", value: formatCount(summary.approved) },
   { id: "rejected", filter: "rejected" as const, label: "Cancelled", value: formatCount(summary.rejected) },
 ]);
@@ -569,7 +567,7 @@ const normalizeVerificationStatus = (value: unknown): VerificationStatus => {
 
 const normalizeRequestReviewState = (value: unknown): RequestReviewState => {
   const normalized = String(value ?? "").trim().toLowerCase();
-  if (normalized === "viewed" || normalized === "approved" || normalized === "rejected") {
+  if (normalized === "approved" || normalized === "rejected") {
     return normalized;
   }
 
@@ -711,8 +709,6 @@ const requestStateText = (state: "all" | RequestReviewState): string => {
   switch (state) {
     case "all":
       return "All";
-    case "viewed":
-      return "Viewed";
     case "approved":
       return "Confirmed";
     case "rejected":
@@ -863,7 +859,6 @@ const loadList = async (): Promise<void> => {
     Object.assign(summary, {
       all: Number(payload?.summary?.all ?? 0),
       pending: Number(payload?.summary?.pending ?? 0),
-      viewed: Number(payload?.summary?.viewed ?? 0),
       approved: Number(payload?.summary?.approved ?? 0),
       rejected: Number(payload?.summary?.rejected ?? 0),
     });
@@ -1439,11 +1434,6 @@ defineExpose({
 .verification-request-badge.is-pending {
   background: rgba(233, 174, 0, 0.14);
   border-color: rgba(233, 174, 0, 0.24);
-}
-
-.verification-request-badge.is-viewed {
-  background: rgba(73, 108, 222, 0.14);
-  border-color: rgba(73, 108, 222, 0.24);
 }
 
 .verification-request-badge.is-approved {

@@ -648,7 +648,7 @@ import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 type VerificationTab = "client" | "payout" | "requests";
 type VerificationSectionTarget = "profile" | "documents" | "payout";
 type VerificationStatus = "approved" | "pending" | "rejected";
-type RequestReviewState = "pending" | "viewed" | "approved" | "rejected";
+type RequestReviewState = "pending" | "approved" | "rejected";
 type AdminPaymentDetailStatus = "approved" | "pending" | "rejected";
 
 interface VerificationSection {
@@ -825,7 +825,7 @@ const normalizeVerificationStatus = (value: unknown): VerificationStatus => {
 
 const normalizeRequestReviewState = (value: unknown): RequestReviewState => {
   const normalized = String(value ?? "").trim().toLowerCase();
-  if (normalized === "viewed" || normalized === "approved" || normalized === "rejected") {
+  if (normalized === "approved" || normalized === "rejected") {
     return normalized;
   }
 
@@ -1272,12 +1272,10 @@ const requestStateRank = (state: RequestReviewState): number => {
   switch (state) {
     case "pending":
       return 0;
-    case "viewed":
-      return 1;
     case "approved":
-      return 2;
+      return 1;
     case "rejected":
-      return 3;
+      return 2;
   }
 };
 
@@ -1920,8 +1918,6 @@ const paymentStatusText = (status: string): string => {
 
 const requestStateText = (state: RequestReviewState): string => {
   switch (state) {
-    case "viewed":
-      return "Viewed";
     case "approved":
       return "Confirmed";
     case "rejected":
@@ -2492,11 +2488,6 @@ onBeforeUnmount(() => {
 .verification-inline-badge.is-pending {
   background: rgba(233, 174, 0, 0.14);
   border-color: rgba(233, 174, 0, 0.24);
-}
-
-.verification-inline-badge.is-viewed {
-  background: rgba(73, 108, 222, 0.14);
-  border-color: rgba(73, 108, 222, 0.24);
 }
 
 .verification-inline-badge.is-rejected {
