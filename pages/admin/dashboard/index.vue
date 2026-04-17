@@ -1,371 +1,514 @@
 <template>
-  <div class="admin-dashboard">
+  <div
+    class="admin-dashboard"
+    :class="{ 'admin-dashboard--refreshing': isRefreshing }">
     <div class="admin-dashboard__header">
       <div class="admin-dashboard__heading">
-        <UiTextH4 class="admin-dashboard__title text-[var(--ui-text-main)]">
+        <h1 class="admin-dashboard__title">
           {{ resolveText("admin.dashboard.title", "Admin dashboard") }}
-        </UiTextH4>
-        <UiTextParagraph class="admin-dashboard__subtitle">
+        </h1>
+        <p class="admin-dashboard__subtitle">
           {{
             resolveText(
               "admin.dashboard.subtitle",
               "Live overview of registrations, moderation queues, transactions, and online activity."
             )
           }}
-        </UiTextParagraph>
+        </p>
       </div>
 
       <div class="admin-dashboard__header-actions">
-        <div class="admin-dashboard__live-meta">
-          <span class="admin-dashboard__live-pill">
-            {{ resolveText("admin.dashboard.autoRefresh", "Live updates every 30 seconds") }}
-          </span>
-          <UiTextSmall class="admin-dashboard__updated-at">
-            {{ lastUpdatedText }}
-          </UiTextSmall>
-        </div>
-
-        <UiButtonDefault
-          state="info--small"
-          class="admin-dashboard__refresh-button !w-[40px]"
-          :disabled="isLoading"
+        <PrimeTag
+          class="admin-dashboard__live-tag"
+          severity="info"
+          :value="resolveText('admin.dashboard.autoRefresh', 'Live updates every 30 seconds')" />
+        <span class="admin-dashboard__updated-at">{{ lastUpdatedText }}</span>
+        <PrimeButton
+          icon="pi pi-refresh"
+          rounded
+          text
+          :loading="isLoading"
+          :aria-label="resolveText('admin.dashboard.actions.refresh', 'Refresh dashboard')"
           :title="resolveText('admin.dashboard.actions.refresh', 'Refresh dashboard')"
-          @click="handleManualRefresh">
-          <UiIconUpdate :spinning="isLoading" />
-        </UiButtonDefault>
+          @click="handleManualRefresh" />
       </div>
     </div>
 
-    <div class="admin-dashboard__summary-grid">
-      <button
-        v-for="card in summaryCards"
-        :key="card.id"
-        type="button"
-        class="admin-dashboard__summary-link"
-        @click="handleNavigate(card.to)">
-        <PanelDefault
-          class="dashboard-summary-card"
-          :class="`dashboard-summary-card--${card.kind}`">
-          <div class="dashboard-summary-card__body">
-            <div class="dashboard-summary-card__top">
-              <div class="dashboard-summary-card__copy">
-                <UiTextSmall class="dashboard-summary-card__label">{{ card.label }}</UiTextSmall>
-                <UiTextH5 class="dashboard-summary-card__value">{{ card.value }}</UiTextH5>
+    <template v-if="isInitialLoading">
+      <div class="admin-dashboard__summary-grid">
+        <PrimeCard
+          v-for="item in summarySkeletonCards"
+          :key="`summary-skeleton-${item}`"
+          class="dashboard-summary-card dashboard-summary-card--skeleton">
+          <template #content>
+            <div class="dashboard-summary-card__body">
+              <div class="dashboard-summary-card__top">
+                <div class="dashboard-summary-card__copy">
+                  <PrimeSkeleton
+                    width="62%"
+                    height="14px"
+                    border-radius="999px" />
+                  <PrimeSkeleton
+                    width="44%"
+                    height="32px"
+                    border-radius="10px" />
+                </div>
+                <PrimeSkeleton
+                  shape="circle"
+                  size="44px" />
               </div>
+              <PrimeSkeleton
+                width="74%"
+                height="14px"
+                border-radius="999px" />
+            </div>
+          </template>
+        </PrimeCard>
+      </div>
 
-              <div class="dashboard-summary-card__icon-wrap">
-                <component
-                  :is="card.icon"
-                  class="dashboard-summary-card__icon" />
+      <div class="admin-dashboard__charts">
+        <PrimeCard
+          v-for="item in chartSkeletonCards"
+          :key="`chart-skeleton-${item}`"
+          class="dashboard-panel-card dashboard-panel-card--skeleton">
+          <template #content>
+            <div class="dashboard-chart-card">
+              <div class="dashboard-chart-card__header">
+                <div class="dashboard-chart-card__heading">
+                  <PrimeSkeleton
+                    width="220px"
+                    height="22px"
+                    border-radius="8px" />
+                  <PrimeSkeleton
+                    width="320px"
+                    height="14px"
+                    border-radius="999px" />
+                </div>
+                <div class="dashboard-chart-card__presets">
+                  <PrimeSkeleton
+                    v-for="preset in metricRangePresets"
+                    :key="`chart-preset-skeleton-${item}-${preset.id}`"
+                    width="52px"
+                    height="34px"
+                    border-radius="999px" />
+                </div>
+              </div>
+              <div class="dashboard-chart-card__filters dashboard-chart-card__filters--skeleton">
+                <PrimeSkeleton
+                  v-for="filter in 6"
+                  :key="`filter-skeleton-${item}-${filter}`"
+                  height="64px"
+                  border-radius="16px" />
+              </div>
+              <PrimeSkeleton
+                height="300px"
+                border-radius="18px" />
+            </div>
+          </template>
+        </PrimeCard>
+      </div>
+
+      <div class="admin-dashboard__panels">
+        <PrimeCard
+          v-for="item in chartSkeletonCards"
+          :key="`list-skeleton-${item}`"
+          class="dashboard-panel-card dashboard-panel-card--skeleton">
+          <template #content>
+            <div class="dashboard-list-card">
+              <div class="dashboard-list-card__header">
+                <div>
+                  <PrimeSkeleton
+                    width="210px"
+                    height="22px"
+                    border-radius="8px" />
+                  <PrimeSkeleton
+                    width="280px"
+                    height="14px"
+                    border-radius="999px" />
+                </div>
+                <PrimeSkeleton
+                  width="48px"
+                  height="28px"
+                  border-radius="999px" />
+              </div>
+              <div class="dashboard-list-card__rows">
+                <PrimeSkeleton
+                  v-for="row in listSkeletonRows"
+                  :key="`row-skeleton-${item}-${row}`"
+                  height="62px"
+                  border-radius="16px" />
               </div>
             </div>
+          </template>
+        </PrimeCard>
+      </div>
+    </template>
 
-            <UiTextSmall class="dashboard-summary-card__hint">{{ card.hint }}</UiTextSmall>
-          </div>
-        </PanelDefault>
-      </button>
-    </div>
+    <template v-else>
+      <div class="admin-dashboard__summary-grid">
+        <button
+          v-for="card in summaryCards"
+          :key="card.id"
+          type="button"
+          class="admin-dashboard__summary-link"
+          @click="handleNavigate(card.to)">
+          <PrimeCard
+            class="dashboard-summary-card"
+            :class="`dashboard-summary-card--${card.kind}`">
+            <template #content>
+              <div class="dashboard-summary-card__body">
+                <div class="dashboard-summary-card__top">
+                  <div class="dashboard-summary-card__copy">
+                    <span class="dashboard-summary-card__label">{{ card.label }}</span>
+                    <strong class="dashboard-summary-card__value">{{ card.value }}</strong>
+                  </div>
 
-    <div class="admin-dashboard__charts">
-      <PanelDefault class="dashboard-panel-card">
-        <div class="dashboard-chart-card">
-          <div class="dashboard-chart-card__header">
-            <div class="dashboard-chart-card__heading">
-              <UiTextH5 class="dashboard-chart-card__title">
-                {{ resolveText("admin.dashboard.charts.onlineTitle", "Online activity") }}
-              </UiTextH5>
-              <UiTextSmall class="dashboard-chart-card__subtitle">
-                {{
-                  resolveText(
-                      "admin.dashboard.charts.onlineSubtitle",
-                      "Current online users, accumulated online hours, and active sessions."
-                  )
-                }}
-              </UiTextSmall>
+                  <div class="dashboard-summary-card__icon-wrap">
+                    <component
+                      :is="card.icon"
+                      class="dashboard-summary-card__icon" />
+                  </div>
+                </div>
+
+                <span class="dashboard-summary-card__hint">{{ card.hint }}</span>
+              </div>
+            </template>
+          </PrimeCard>
+        </button>
+      </div>
+
+      <div class="admin-dashboard__charts">
+        <PrimeCard class="dashboard-panel-card">
+          <template #content>
+            <div class="dashboard-chart-card">
+              <div class="dashboard-chart-card__header">
+                <div class="dashboard-chart-card__heading">
+                  <h2 class="dashboard-chart-card__title">
+                    {{ resolveText("admin.dashboard.charts.onlineTitle", "Online activity") }}
+                  </h2>
+                  <p class="dashboard-chart-card__subtitle">
+                    {{
+                      resolveText(
+                        "admin.dashboard.charts.onlineSubtitle",
+                        "Current online users, accumulated online hours, and active sessions."
+                      )
+                    }}
+                  </p>
+                </div>
+
+                <div class="dashboard-chart-card__presets">
+                  <PrimeButton
+                    v-for="preset in metricRangePresets"
+                    :key="`online-${preset.id}`"
+                    size="small"
+                    rounded
+                    :outlined="onlineFilters.preset !== preset.id"
+                    :text="onlineFilters.preset !== preset.id"
+                    :label="preset.label"
+                    @click="applyDashboardPreset('online', preset.id)" />
+                </div>
+              </div>
+
+              <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.from", "From") }}
+                  </span>
+                  <PrimeDatePicker
+                    :model-value="toDatePickerValue(onlineFilters.date_from)"
+                    date-format="yy-mm-dd"
+                    show-icon
+                    fluid
+                    @update:model-value="value => updateDateFilter('online', 'date_from', value)" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.to", "To") }}
+                  </span>
+                  <PrimeDatePicker
+                    :model-value="toDatePickerValue(onlineFilters.date_to)"
+                    date-format="yy-mm-dd"
+                    show-icon
+                    fluid
+                    @update:model-value="value => updateDateFilter('online', 'date_to', value)" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.step", "Step") }}
+                  </span>
+                  <PrimeSelect
+                    :model-value="onlineFilters.bucket"
+                    :options="bucketSelectOptions"
+                    option-label="label"
+                    option-value="value"
+                    fluid
+                    @update:model-value="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.device", "Device") }}
+                  </span>
+                  <PrimeSelect
+                    :model-value="onlineFilters.device_type"
+                    :options="deviceSelectOptions"
+                    option-label="label"
+                    option-value="value"
+                    show-clear
+                    fluid
+                    :placeholder="resolveText('admin.dashboard.filters.allDevices', 'All devices')"
+                    @update:model-value="value => updateDashboardFilter('online', 'device_type', value || '')" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.browser", "Browser") }}
+                  </span>
+                  <PrimeSelect
+                    :model-value="onlineFilters.browser"
+                    :options="browserSelectOptions"
+                    option-label="label"
+                    option-value="value"
+                    show-clear
+                    fluid
+                    :placeholder="resolveText('admin.dashboard.filters.allBrowsers', 'All browsers')"
+                    @update:model-value="value => updateDashboardFilter('online', 'browser', value || '')" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.os", "OS") }}
+                  </span>
+                  <PrimeSelect
+                    :model-value="onlineFilters.os"
+                    :options="osSelectOptions"
+                    option-label="label"
+                    option-value="value"
+                    show-clear
+                    fluid
+                    :placeholder="resolveText('admin.dashboard.filters.allOs', 'All OS')"
+                    @update:model-value="value => updateDashboardFilter('online', 'os', value || '')" />
+                </label>
+              </div>
+
+              <div class="dashboard-chart-card__chart">
+                <AdminMetricChart
+                  :categories="onlineLabels"
+                  :category-keys="onlineCategoryKeys"
+                  :series="onlineSeries"
+                  :y-axes="onlineAxes"
+                  :height="300"
+                  enable-zoom
+                  :tooltip-formatter="formatOnlineTooltip"
+                  @range-selected="handleOnlineRangeSelected" />
+              </div>
             </div>
+          </template>
+        </PrimeCard>
 
-            <div class="dashboard-chart-card__presets">
-              <button
-                  v-for="preset in metricRangePresets"
-                  :key="`online-${preset.id}`"
+        <PrimeCard class="dashboard-panel-card">
+          <template #content>
+            <div class="dashboard-chart-card">
+              <div class="dashboard-chart-card__header">
+                <div class="dashboard-chart-card__heading">
+                  <h2 class="dashboard-chart-card__title">
+                    {{ resolveText("admin.dashboard.charts.registrationsTitle", "Client registrations") }}
+                  </h2>
+                  <p class="dashboard-chart-card__subtitle">
+                    {{
+                      resolveText("admin.dashboard.charts.registrationsSubtitle", "New clients for the selected range.")
+                    }}
+                  </p>
+                </div>
+
+                <div class="dashboard-chart-card__presets">
+                  <PrimeButton
+                    v-for="preset in metricRangePresets"
+                    :key="`registrations-${preset.id}`"
+                    size="small"
+                    rounded
+                    :outlined="registrationsFilters.preset !== preset.id"
+                    :text="registrationsFilters.preset !== preset.id"
+                    :label="preset.label"
+                    @click="applyDashboardPreset('registrations', preset.id)" />
+                </div>
+              </div>
+
+              <div class="dashboard-chart-card__filters dashboard-chart-card__filters--compact">
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.from", "From") }}
+                  </span>
+                  <PrimeDatePicker
+                    :model-value="toDatePickerValue(registrationsFilters.date_from)"
+                    date-format="yy-mm-dd"
+                    show-icon
+                    fluid
+                    @update:model-value="value => updateDateFilter('registrations', 'date_from', value)" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.to", "To") }}
+                  </span>
+                  <PrimeDatePicker
+                    :model-value="toDatePickerValue(registrationsFilters.date_to)"
+                    date-format="yy-mm-dd"
+                    show-icon
+                    fluid
+                    @update:model-value="value => updateDateFilter('registrations', 'date_to', value)" />
+                </label>
+
+                <label class="admin-dashboard__filter">
+                  <span class="admin-dashboard__filter-label">
+                    {{ resolveText("admin.dashboard.filters.step", "Step") }}
+                  </span>
+                  <PrimeSelect
+                    :model-value="registrationsFilters.bucket"
+                    :options="bucketSelectOptions"
+                    option-label="label"
+                    option-value="value"
+                    fluid
+                    @update:model-value="value => updateDashboardFilter('registrations', 'bucket', value || 'day')" />
+                </label>
+              </div>
+
+              <div class="dashboard-chart-card__chart">
+                <AdminMetricChart
+                  :categories="registrationLabels"
+                  :series="registrationSeries"
+                  :height="270" />
+              </div>
+            </div>
+          </template>
+        </PrimeCard>
+      </div>
+
+      <div class="admin-dashboard__panels">
+        <PrimeCard class="dashboard-panel-card">
+          <template #content>
+            <div class="dashboard-list-card">
+              <div class="dashboard-list-card__header">
+                <div>
+                  <h2 class="dashboard-list-card__title">
+                    {{ resolveText("admin.dashboard.panels.topOnline", "Top online clients") }}
+                  </h2>
+                  <p class="dashboard-list-card__subtitle">
+                    {{
+                      resolveText(
+                        "admin.dashboard.panels.topOnlineSubtitle",
+                        "Who spent the most time online in the selected period."
+                      )
+                    }}
+                  </p>
+                </div>
+
+                <PrimeTag
+                  severity="info"
+                  :value="formatNumber(topOnlineClients.length)" />
+              </div>
+
+              <div
+                v-if="topOnlineClients.length === 0"
+                class="dashboard-empty-state">
+                {{ resolveText("admin.dashboard.empty.topOnline", "No online session data yet.") }}
+              </div>
+
+              <div
+                v-else
+                class="dashboard-list-card__rows">
+                <button
+                  v-for="user in topOnlineClients"
+                  :key="user.user_id"
                   type="button"
-                  class="dashboard-preset-button"
-                  :class="{ 'dashboard-preset-button--active': onlineFilters.preset === preset.id }"
-                  @click="applyDashboardPreset('online', preset.id)">
-                {{ preset.label }}
-              </button>
+                  class="dashboard-row-link"
+                  @click="handleNavigate(`/clients/${user.user_id}`)">
+                  <span class="dashboard-row-link__avatar">{{ getInitials(user.name || user.email) }}</span>
+                  <span class="dashboard-row-link__main">
+                    <span class="dashboard-row-link__title">{{ user.name }}</span>
+                    <span class="dashboard-row-link__meta">
+                      {{ user.email || resolveText("admin.dashboard.labels.noEmail", "No email") }}
+                      ·
+                      {{ formatHours(user.total_online_hours) }}
+                      ·
+                      {{ formatNumber(user.sessions_count) }}
+                      {{ resolveText("admin.dashboard.labels.sessionsShort", "sessions") }}
+                    </span>
+                  </span>
+
+                  <PrimeTag
+                    :severity="user.is_online ? 'success' : 'secondary'"
+                    :value="
+                      user.is_online
+                        ? resolveText('admin.dashboard.status.online', 'Online')
+                        : resolveText('admin.dashboard.status.offline', 'Offline')
+                    " />
+                </button>
+              </div>
             </div>
-          </div>
+          </template>
+        </PrimeCard>
 
-          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.from", "From") }}
-              </span>
-              <UiInput
-                  type="date"
-                  :value="toDateInputValue(onlineFilters.date_from)"
-                  @input="value => updateDashboardFilter('online', 'date_from', value)" />
-            </div>
+        <PrimeCard class="dashboard-panel-card">
+          <template #content>
+            <div class="dashboard-list-card">
+              <div class="dashboard-list-card__header">
+                <div>
+                  <h2 class="dashboard-list-card__title">
+                    {{ resolveText("admin.dashboard.recentUsers", "Recent users") }}
+                  </h2>
+                  <p class="dashboard-list-card__subtitle">
+                    {{
+                      resolveText(
+                        "admin.dashboard.panels.recentUsersSubtitle",
+                        "Newly registered clients with their current account status."
+                      )
+                    }}
+                  </p>
+                </div>
 
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.to", "To") }}
-              </span>
-              <UiInput
-                  type="date"
-                  :value="toDateInputValue(onlineFilters.date_to)"
-                  @input="value => updateDashboardFilter('online', 'date_to', value)" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.step", "Step") }}
-              </span>
-              <UiSelect
-                  :data="bucketOptions"
-                  :value="onlineFilters.bucket"
-                  without-no-select
-                  @change="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.device", "Device") }}
-              </span>
-              <UiSelect
-                  :data="deviceOptions"
-                  :value="onlineFilters.device_type"
-                  @change="value => updateDashboardFilter('online', 'device_type', value || '')" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.browser", "Browser") }}
-              </span>
-              <UiSelect
-                  :data="browserOptions"
-                  :value="onlineFilters.browser"
-                  @change="value => updateDashboardFilter('online', 'browser', value || '')" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.os", "OS") }}
-              </span>
-              <UiSelect
-                  :data="osOptions"
-                  :value="onlineFilters.os"
-                  @change="value => updateDashboardFilter('online', 'os', value || '')" />
-            </div>
-          </div>
-
-          <AdminMetricChart
-              :categories="onlineLabels"
-              :category-keys="onlineCategoryKeys"
-              :series="onlineSeries"
-              :y-axes="onlineAxes"
-              :height="360"
-              enable-zoom
-              :tooltip-formatter="formatOnlineTooltip"
-              @range-selected="handleOnlineRangeSelected" />
-        </div>
-      </PanelDefault>
-
-      <PanelDefault class="dashboard-panel-card">
-        <div class="dashboard-chart-card">
-          <div class="dashboard-chart-card__header">
-            <div class="dashboard-chart-card__heading">
-              <UiTextH5 class="dashboard-chart-card__title">
-                {{ resolveText("admin.dashboard.charts.registrationsTitle", "Client registrations") }}
-              </UiTextH5>
-              <UiTextSmall class="dashboard-chart-card__subtitle">
-                {{ resolveText("admin.dashboard.charts.registrationsSubtitle", "New clients for the selected range.") }}
-              </UiTextSmall>
-            </div>
-
-            <div class="dashboard-chart-card__presets">
-              <button
-                v-for="preset in metricRangePresets"
-                :key="`registrations-${preset.id}`"
-                type="button"
-                class="dashboard-preset-button"
-                :class="{ 'dashboard-preset-button--active': registrationsFilters.preset === preset.id }"
-                @click="applyDashboardPreset('registrations', preset.id)">
-                {{ preset.label }}
-              </button>
-            </div>
-          </div>
-
-          <div class="dashboard-chart-card__filters">
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.from", "From") }}
-              </span>
-              <UiInput
-                type="date"
-                :value="toDateInputValue(registrationsFilters.date_from)"
-                @input="value => updateDashboardFilter('registrations', 'date_from', value)" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.to", "To") }}
-              </span>
-              <UiInput
-                type="date"
-                :value="toDateInputValue(registrationsFilters.date_to)"
-                @input="value => updateDashboardFilter('registrations', 'date_to', value)" />
-            </div>
-
-            <div class="admin-dashboard__filter">
-              <span class="admin-dashboard__filter-label">
-                {{ resolveText("admin.dashboard.filters.step", "Step") }}
-              </span>
-              <UiSelect
-                :data="bucketOptions"
-                :value="registrationsFilters.bucket"
-                without-no-select
-                @change="value => updateDashboardFilter('registrations', 'bucket', value || 'day')" />
-            </div>
-          </div>
-
-          <AdminMetricChart
-            :categories="registrationLabels"
-            :series="registrationSeries"
-            :height="320" />
-        </div>
-      </PanelDefault>
-    </div>
-
-    <div class="admin-dashboard__panels">
-      <PanelDefault class="dashboard-panel-card">
-        <div class="dashboard-list-card">
-          <div class="dashboard-list-card__header">
-            <div>
-              <UiTextH5 class="dashboard-list-card__title">
-                {{ resolveText("admin.dashboard.panels.topOnline", "Top online clients") }}
-              </UiTextH5>
-              <UiTextSmall class="dashboard-list-card__subtitle">
-                {{
-                  resolveText(
-                    "admin.dashboard.panels.topOnlineSubtitle",
-                    "Who spent the most time online in the selected period."
-                  )
-                }}
-              </UiTextSmall>
-            </div>
-
-            <UiBadge
-              state="info"
-              outline
-              class="!px-3">
-              {{ formatNumber(topOnlineClients.length) }}
-            </UiBadge>
-          </div>
-
-          <div
-            v-if="topOnlineClients.length === 0"
-            class="dashboard-empty-state">
-            {{ resolveText("admin.dashboard.empty.topOnline", "No online session data yet.") }}
-          </div>
-
-          <div
-            v-else
-            class="dashboard-list-card__rows">
-            <button
-              v-for="user in topOnlineClients"
-              :key="user.user_id"
-              type="button"
-              class="dashboard-row-link"
-              @click="handleNavigate(`/clients/${user.user_id}`)">
-              <div class="dashboard-row-link__main">
-                <UiTextSmall class="dashboard-row-link__title">{{ user.name }}</UiTextSmall>
-                <UiTextSmall class="dashboard-row-link__meta">
-                  {{ user.email || resolveText("admin.dashboard.labels.noEmail", "No email") }}
-                  ·
-                  {{ formatHours(user.total_online_hours) }}
-                  ·
-                  {{ formatNumber(user.sessions_count) }}
-                  {{ resolveText("admin.dashboard.labels.sessionsShort", "sessions") }}
-                </UiTextSmall>
+                <PrimeTag
+                  severity="secondary"
+                  :value="formatNumber(recentUsers.length)" />
               </div>
 
-              <UiBadge
-                :state="user.is_online ? 'success' : 'secondary'"
-                outline
-                class="!px-3">
-                {{
-                  user.is_online
-                    ? resolveText("admin.dashboard.status.online", "Online")
-                    : resolveText("admin.dashboard.status.offline", "Offline")
-                }}
-              </UiBadge>
-            </button>
-          </div>
-        </div>
-      </PanelDefault>
-
-      <PanelDefault class="dashboard-panel-card">
-        <div class="dashboard-list-card">
-          <div class="dashboard-list-card__header">
-            <div>
-              <UiTextH5 class="dashboard-list-card__title">
-                {{ resolveText("admin.dashboard.recentUsers", "Recent users") }}
-              </UiTextH5>
-              <UiTextSmall class="dashboard-list-card__subtitle">
-                {{
-                  resolveText(
-                    "admin.dashboard.panels.recentUsersSubtitle",
-                    "Newly registered clients with their current account status."
-                  )
-                }}
-              </UiTextSmall>
-            </div>
-
-            <UiBadge
-              state="secondary"
-              outline
-              class="!px-3">
-              {{ formatNumber(recentUsers.length) }}
-            </UiBadge>
-          </div>
-
-          <div
-            v-if="recentUsers.length === 0"
-            class="dashboard-empty-state">
-            {{ resolveText("admin.dashboard.empty.recentUsers", "No recent users yet.") }}
-          </div>
-
-          <div
-            v-else
-            class="dashboard-list-card__rows">
-            <button
-              v-for="user in recentUsers"
-              :key="user.id"
-              type="button"
-              class="dashboard-row-link"
-              @click="handleNavigate(`/clients/${user.id}`)">
-              <div class="dashboard-row-link__main">
-                <UiTextSmall class="dashboard-row-link__title">{{ user.name }}</UiTextSmall>
-                <UiTextSmall class="dashboard-row-link__meta">
-                  {{ user.email || resolveText("admin.dashboard.labels.noEmail", "No email") }}
-                  ·
-                  {{ formatDateTime(user.created_at) }}
-                </UiTextSmall>
+              <div
+                v-if="recentUsers.length === 0"
+                class="dashboard-empty-state">
+                {{ resolveText("admin.dashboard.empty.recentUsers", "No recent users yet.") }}
               </div>
 
-              <UiBadge
-                :state="resolveUserBadgeState(user.status)"
-                outline
-                class="!px-3">
-                {{ resolveUserStatusText(user.status) }}
-              </UiBadge>
-            </button>
-          </div>
-        </div>
-      </PanelDefault>
-    </div>
+              <div
+                v-else
+                class="dashboard-list-card__rows">
+                <button
+                  v-for="user in recentUsers"
+                  :key="user.id"
+                  type="button"
+                  class="dashboard-row-link"
+                  @click="handleNavigate(`/clients/${user.id}`)">
+                  <span class="dashboard-row-link__avatar">{{ getInitials(user.name || user.email) }}</span>
+                  <span class="dashboard-row-link__main">
+                    <span class="dashboard-row-link__title">{{ user.name }}</span>
+                    <span class="dashboard-row-link__meta">
+                      {{ user.email || resolveText("admin.dashboard.labels.noEmail", "No email") }}
+                      ·
+                      {{ formatDateTime(user.created_at) }}
+                    </span>
+                  </span>
+
+                  <PrimeTag
+                    :severity="resolveUserTagSeverity(user.status)"
+                    :value="resolveUserStatusText(user.status)" />
+                </button>
+              </div>
+            </div>
+          </template>
+        </PrimeCard>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -378,22 +521,12 @@
   import { definePageMeta, useLocalePath } from "~/.nuxt/imports";
 
   import AdminMetricChart from "~/components/block/charts/AdminMetricChart.vue";
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import useEventBus from "~/composables/useEventBus";
-  import UiBadge from "~/components/ui/UiBadge.vue";
-  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiIconClients from "~/components/ui/UiIconClients.vue";
   import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
   import UiIconTime from "~/components/ui/UiIconTime.vue";
-  import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
   import UiIconUser from "~/components/ui/UiIconUser.vue";
   import UiIconWarningFull from "~/components/ui/UiIconWarningFull.vue";
-  import UiInput from "~/components/ui/UiInput.vue";
-  import UiSelect from "~/components/ui/UiSelect.vue";
-  import UiTextH4 from "~/components/ui/UiTextH4.vue";
-  import UiTextH5 from "~/components/ui/UiTextH5.vue";
-  import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-  import UiTextSmall from "~/components/ui/UiTextSmall.vue";
   import { canAccessAdminPath } from "~/constants/adminPagePermissions";
   import useAppCore from "~/composables/useAppCore";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -444,8 +577,12 @@
 
   const dashboard = ref<any>(null);
   const isLoading = ref(false);
+  const hasLoadedDashboard = ref(false);
   const registrationsFilters = reactive<ChartFilters>(createChartFilters("30d"));
   const onlineFilters = reactive<OnlineChartFilters>(createOnlineChartFilters("7d"));
+  const summarySkeletonCards = [1, 2, 3, 4, 5, 6];
+  const chartSkeletonCards = [1, 2];
+  const listSkeletonRows = [1, 2, 3, 4, 5];
 
   let autoRefreshIntervalId: number | null = null;
   let filterReloadTimeoutId: number | null = null;
@@ -538,6 +675,20 @@
     }))
   );
 
+  const isInitialLoading = computed(() => !hasLoadedDashboard.value || (isLoading.value && !dashboard.value));
+  const isRefreshing = computed(() => isLoading.value && Boolean(dashboard.value));
+
+  const toPrimeOptions = (options: Array<{ value: string; text?: string; label?: string }>) =>
+    options.map(option => ({
+      label: option.label ?? option.text ?? option.value,
+      value: option.value,
+    }));
+
+  const bucketSelectOptions = computed(() => toPrimeOptions(bucketOptions.value));
+  const deviceSelectOptions = computed(() => toPrimeOptions(deviceOptions.value));
+  const browserSelectOptions = computed(() => toPrimeOptions(browserOptions.value));
+  const osSelectOptions = computed(() => toPrimeOptions(osOptions.value));
+
   function formatNumber(value: number | string | null | undefined): string {
     return new Intl.NumberFormat(locale.value || undefined).format(Number(value ?? 0));
   }
@@ -595,10 +746,44 @@
     return `${year}-${month}-${day}`;
   }
 
-  function resolveUserBadgeState(status: string): string {
+  function toDatePickerValue(value?: string | null): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const normalized = toDateInputValue(value);
+    if (!normalized) {
+      return null;
+    }
+
+    const [year, month, day] = normalized.split("-").map(Number);
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    return new Date(year, month - 1, day);
+  }
+
+  function toDateFilterValue(value: Date | string | null | undefined): string {
+    if (!value) {
+      return "";
+    }
+
+    if (value instanceof Date) {
+      return toDateInputValue(value.toISOString());
+    }
+
+    return String(value);
+  }
+
+  function updateDateFilter(section: "registrations" | "online", key: string, value: Date | string | null): void {
+    updateDashboardFilter(section, key, toDateFilterValue(value));
+  }
+
+  function resolveUserTagSeverity(status: string): "success" | "danger" | "warn" {
     if (status === "active") return "success";
     if (status === "blocked") return "danger";
-    return "warning";
+    return "warn";
   }
 
   function resolveUserStatusText(status: string): string {
@@ -610,6 +795,22 @@
     }
 
     return resolveText("admin.dashboard.status.pending", "Pending");
+  }
+
+  function getInitials(value?: string | null): string {
+    const parts = String(value || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (parts.length === 0) {
+      return "AA";
+    }
+
+    return parts
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase() ?? "")
+      .join("");
   }
 
   async function loadDashboard(options: { silent?: boolean } = {}): Promise<void> {
@@ -642,6 +843,7 @@
       }
     } finally {
       isLoading.value = false;
+      hasLoadedDashboard.value = true;
 
       if (queuedRealtimeRefresh && shouldAutoRefresh()) {
         queuedRealtimeRefresh = false;
@@ -1260,104 +1462,109 @@
 
 <style lang="scss" scoped>
   .admin-dashboard {
-    padding: 20px;
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+    padding: 18px;
     color: var(--ui-text-main);
+    animation: dashboard-enter 0.32s ease both;
+  }
+
+  .admin-dashboard--refreshing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 24px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--ui-primary-main) 7%, transparent),
+      transparent
+    );
+    animation: dashboard-refresh-sheen 1.35s ease infinite;
   }
 
   .admin-dashboard__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     gap: 16px;
   }
 
   .admin-dashboard__heading {
     min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
   }
 
   .admin-dashboard__title {
-    min-width: 0;
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: clamp(24px, 2.2vw, 34px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
   }
 
-  .admin-dashboard__subtitle,
-  .admin-dashboard__updated-at,
-  .admin-dashboard__filter-label,
-  .dashboard-summary-card__label,
-  .dashboard-summary-card__hint,
-  .dashboard-chart-card__subtitle,
-  .dashboard-list-card__subtitle,
-  .dashboard-empty-state,
-  .dashboard-row-link__meta {
+  .admin-dashboard__subtitle {
+    max-width: 760px;
+    margin: 7px 0 0;
     color: var(--ui-text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
   }
 
   .admin-dashboard__header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: 0;
   }
 
-  .admin-dashboard__live-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-  }
-
-  .admin-dashboard__live-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 34px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
-    background: color-mix(in srgb, var(--ui-primary-main) 10%, var(--ui-background-panel));
-    color: var(--ui-text-main);
-    font-size: 12px;
-    font-weight: 600;
+  .admin-dashboard__live-tag {
     white-space: nowrap;
   }
 
-  .admin-dashboard__refresh-button {
-    flex-shrink: 0;
+  .admin-dashboard__updated-at {
+    max-width: 260px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: right;
   }
 
   .admin-dashboard__summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(6, minmax(150px, 1fr));
+    gap: 12px;
   }
 
   .admin-dashboard__summary-link {
-    appearance: none;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    width: 100%;
     min-width: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    appearance: none;
+    background: transparent;
     text-align: left;
+    cursor: pointer;
+  }
+
+  .dashboard-summary-card,
+  .dashboard-panel-card {
+    overflow: hidden;
+    height: 100%;
+    border-radius: 20px;
   }
 
   .dashboard-summary-card {
     position: relative;
-    overflow: hidden;
-    height: 100%;
-    border-radius: 18px;
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--ui-background-card) 88%, transparent), transparent),
-      var(--ui-background-panel);
     transition:
-      transform 0.2s ease,
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease;
   }
 
   .dashboard-summary-card::before {
@@ -1365,158 +1572,139 @@
     position: absolute;
     inset: 0 0 auto;
     height: 3px;
-    background: var(--ui-primary-main);
+    background: var(--summary-accent, var(--ui-primary-main));
   }
 
   .dashboard-summary-card__body {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    min-height: 148px;
-    padding: 18px;
+    justify-content: space-between;
+    gap: 13px;
+    min-height: 124px;
+    padding: 15px;
   }
 
   .dashboard-summary-card__top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 14px;
+    gap: 12px;
   }
 
   .dashboard-summary-card__copy {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
+  }
+
+  .dashboard-summary-card__label,
+  .dashboard-summary-card__hint,
+  .dashboard-chart-card__subtitle,
+  .dashboard-list-card__subtitle,
+  .dashboard-empty-state,
+  .dashboard-row-link__meta,
+  .admin-dashboard__filter-label {
+    color: var(--ui-text-secondary);
   }
 
   .dashboard-summary-card__label {
-    line-height: 1.45;
-  }
-
-  .dashboard-summary-card__value,
-  .dashboard-chart-card__title,
-  .dashboard-list-card__title,
-  .dashboard-row-link__title {
-    color: var(--ui-text-main);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
   }
 
   .dashboard-summary-card__value {
-    font-size: 28px;
-    line-height: 1.1;
+    color: var(--ui-text-main);
+    font-size: clamp(22px, 2vw, 30px);
+    font-weight: 850;
+    line-height: 1;
+    letter-spacing: -0.03em;
     word-break: break-word;
   }
 
   .dashboard-summary-card__hint {
-    line-height: 1.45;
+    min-height: 31px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
   }
 
   .dashboard-summary-card__icon-wrap {
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
-    color: var(--ui-primary-main);
+    border-radius: 14px;
+    color: var(--summary-accent, var(--ui-primary-main));
+    background: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 14%, transparent);
   }
 
   .dashboard-summary-card__icon {
-    width: 20px;
-    height: 20px;
+    width: 19px;
+    height: 19px;
   }
 
-  .admin-dashboard__summary-link:hover .dashboard-summary-card,
-  .dashboard-row-link:hover,
-  .dashboard-preset-button:hover {
-    transform: translateY(-2px);
+  .admin-dashboard__summary-link:hover .dashboard-summary-card {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 36%, var(--color-stroke-ui-light));
+    box-shadow: 0 18px 38px color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 14%, transparent);
   }
 
-  .dashboard-summary-card--primary::before,
-  .dashboard-summary-card--primary .dashboard-summary-card__icon-wrap {
-    background: color-mix(in srgb, var(--ui-primary-main) 16%, transparent);
-    color: var(--ui-primary-main);
+  .dashboard-summary-card--primary {
+    --summary-accent: var(--ui-primary-main);
   }
 
-  .dashboard-summary-card--primary::before {
-    background: var(--ui-primary-main);
+  .dashboard-summary-card--accent {
+    --summary-accent: var(--ui-primary-accent);
   }
 
-  .dashboard-summary-card--accent::before {
-    background: var(--ui-primary-accent);
+  .dashboard-summary-card--info {
+    --summary-accent: var(--color-info);
   }
 
-  .dashboard-summary-card--accent .dashboard-summary-card__icon-wrap {
-    background: color-mix(in srgb, var(--ui-primary-accent) 18%, transparent);
-    color: var(--ui-primary-accent);
+  .dashboard-summary-card--warning {
+    --summary-accent: var(--color-warning);
   }
 
-  .dashboard-summary-card--info::before {
-    background: var(--color-info);
+  .dashboard-summary-card--success {
+    --summary-accent: var(--color-success);
   }
 
-  .dashboard-summary-card--info .dashboard-summary-card__icon-wrap {
-    background: color-mix(in srgb, var(--color-info) 18%, transparent);
-    color: var(--color-info);
+  .dashboard-summary-card--danger {
+    --summary-accent: var(--color-danger);
   }
 
-  .dashboard-summary-card--warning::before {
-    background: var(--color-warning);
+  .admin-dashboard__charts {
+    display: grid;
+    grid-template-columns: minmax(0, 1.22fr) minmax(360px, 0.78fr);
+    gap: 14px;
+    align-items: stretch;
   }
 
-  .dashboard-summary-card--warning .dashboard-summary-card__icon-wrap {
-    background: color-mix(in srgb, var(--color-warning) 18%, transparent);
-    color: var(--color-warning);
-  }
-
-  .dashboard-summary-card--success::before {
-    background: var(--color-success);
-  }
-
-  .dashboard-summary-card--success .dashboard-summary-card__icon-wrap {
-    background: color-mix(in srgb, var(--color-success) 18%, transparent);
-    color: var(--color-success);
-  }
-
-  .dashboard-summary-card--danger::before {
-    background: var(--color-danger);
-  }
-
-  .dashboard-summary-card--danger .dashboard-summary-card__icon-wrap {
-    background: color-mix(in srgb, var(--color-danger) 18%, transparent);
-    color: var(--color-danger);
-  }
-
-  .admin-dashboard__charts,
   .admin-dashboard__panels {
     display: grid;
-    gap: 18px;
-  }
-
-  .dashboard-panel-card {
-    overflow: hidden;
-    border-radius: 18px;
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--ui-background-card) 90%, transparent), transparent),
-      var(--ui-background-panel);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
 
   .dashboard-chart-card,
   .dashboard-list-card {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    padding: 20px;
+    gap: 14px;
+    padding: 16px;
   }
 
   .dashboard-chart-card__header,
   .dashboard-list-card__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 14px;
   }
 
   .dashboard-chart-card__heading,
@@ -1524,7 +1712,24 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
+  }
+
+  .dashboard-chart-card__title,
+  .dashboard-list-card__title {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+  }
+
+  .dashboard-chart-card__subtitle,
+  .dashboard-list-card__subtitle {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
   }
 
   .dashboard-chart-card__presets {
@@ -1532,111 +1737,145 @@
     align-items: center;
     justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  .dashboard-preset-button {
-    appearance: none;
-    min-height: 34px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--ui-background-card);
-    color: var(--ui-text-secondary);
-    font-size: 12px;
-    font-weight: 600;
-    transition:
-      transform 0.2s ease,
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease;
-  }
-
-  .dashboard-preset-button--active {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 54%, var(--color-stroke-ui-light));
-    background: color-mix(in srgb, var(--ui-primary-main) 12%, var(--ui-background-card));
-    color: var(--ui-text-main);
+    gap: 7px;
   }
 
   .dashboard-chart-card__filters {
     display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
   }
 
   .dashboard-chart-card__filters--online {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(116px, 1fr));
+  }
+
+  .dashboard-chart-card__filters--compact {
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+  }
+
+  .dashboard-chart-card__filters--skeleton {
+    grid-template-columns: repeat(6, minmax(116px, 1fr));
   }
 
   .admin-dashboard__filter {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 12px;
-    border-radius: 14px;
+    padding: 10px;
     border: 1px solid var(--color-stroke-ui-light);
-    background: var(--ui-background-card);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
   }
 
   .admin-dashboard__filter-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
-  .admin-dashboard__panels {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .dashboard-chart-card__chart {
+    min-height: 300px;
+    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 76%, transparent);
+    border-radius: 18px;
+    background: radial-gradient(
+      circle at 18% 0%,
+      color-mix(in srgb, var(--ui-primary-main) 10%, transparent),
+      transparent 34%
+    );
   }
 
   .dashboard-list-card__rows {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-  }
-
-  .dashboard-empty-state {
-    min-height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border: 1px dashed var(--color-stroke-ui-light);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--ui-background-card) 82%, transparent);
+    gap: 9px;
   }
 
   .dashboard-row-link {
-    appearance: none;
-    border: 1px solid var(--color-stroke-ui-light);
     width: 100%;
-    display: flex;
+    min-height: 62px;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 16px;
+    gap: 12px;
+    padding: 11px 12px;
+    border: 1px solid var(--color-stroke-ui-light);
     border-radius: 16px;
-    background: var(--ui-background-card);
+    appearance: none;
+    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    cursor: pointer;
     transition:
-      transform 0.2s ease,
-      border-color 0.2s ease,
-      background-color 0.2s ease;
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
   .dashboard-row-link:hover {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 32%, var(--color-stroke-ui-light));
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-primary-main) 6%, var(--ui-background-card));
+    box-shadow: 0 12px 26px color-mix(in srgb, #000000 11%, transparent);
+  }
+
+  .dashboard-row-link__avatar {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    color: var(--ui-text-invert);
+    background: linear-gradient(
+      135deg,
+      var(--ui-primary-main),
+      color-mix(in srgb, var(--ui-primary-main) 45%, var(--ui-primary-accent))
+    );
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
   }
 
   .dashboard-row-link__main {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+    text-align: left;
   }
 
-  .dashboard-row-link__title,
+  .dashboard-row-link__title {
+    overflow: hidden;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .dashboard-row-link__meta {
-    text-align: left;
+    overflow: hidden;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-empty-state {
+    min-height: 176px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 1px dashed var(--color-stroke-ui-light);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--ui-background-card) 78%, transparent);
+    font-size: 13px;
+    font-weight: 650;
+    text-align: center;
   }
 
   :deep(.admin-chart-tooltip--online) {
@@ -1647,8 +1886,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 8px;
     max-height: 220px;
+    margin-top: 8px;
     overflow: auto;
   }
 
@@ -1670,19 +1909,55 @@
   }
 
   :deep(.admin-chart-tooltip__empty) {
-    color: var(--ui-text-secondary);
     margin-top: 8px;
+    color: var(--ui-text-secondary);
   }
 
-  @media (max-width: 1240px) {
+  @keyframes dashboard-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes dashboard-refresh-sheen {
+    0% {
+      opacity: 0;
+      transform: translateX(-34%);
+    }
+    40%,
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(34%);
+    }
+  }
+
+  @media (max-width: 1500px) {
+    .admin-dashboard__summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-dashboard__charts {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 1120px) {
     .admin-dashboard__summary-grid,
     .admin-dashboard__panels {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .dashboard-chart-card__filters,
-    .dashboard-chart-card__filters--online {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .dashboard-chart-card__filters--online,
+    .dashboard-chart-card__filters--skeleton {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
@@ -1690,13 +1965,17 @@
     .admin-dashboard__header,
     .dashboard-chart-card__header,
     .dashboard-list-card__header {
-      flex-direction: column;
+      grid-template-columns: 1fr;
     }
 
-    .admin-dashboard__header-actions,
-    .admin-dashboard__live-meta {
-      width: 100%;
-      align-items: flex-start;
+    .admin-dashboard__header-actions {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .admin-dashboard__updated-at {
+      max-width: none;
+      text-align: left;
     }
 
     .dashboard-chart-card__presets {
@@ -1704,32 +1983,31 @@
     }
 
     .dashboard-row-link {
-      flex-direction: column;
-      align-items: flex-start;
+      grid-template-columns: 38px minmax(0, 1fr);
+    }
+
+    .dashboard-row-link :deep(.p-tag) {
+      grid-column: 2;
+      justify-self: start;
     }
   }
 
   @media (max-width: 640px) {
     .admin-dashboard {
-      padding: 16px;
-      gap: 16px;
+      padding: 14px;
     }
 
     .admin-dashboard__summary-grid,
     .admin-dashboard__panels,
-    .dashboard-chart-card__filters,
-    .dashboard-chart-card__filters--online {
+    .dashboard-chart-card__filters--online,
+    .dashboard-chart-card__filters--compact,
+    .dashboard-chart-card__filters--skeleton {
       grid-template-columns: 1fr;
     }
 
     .dashboard-chart-card,
     .dashboard-list-card {
-      padding: 16px;
-    }
-
-    .dashboard-summary-card__body {
-      min-height: 134px;
-      padding: 16px;
+      padding: 14px;
     }
   }
 </style>

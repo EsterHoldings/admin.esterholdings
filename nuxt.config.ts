@@ -2,6 +2,7 @@
 import { defineNuxtConfig } from "nuxt/config";
 // @ts-ignore
 import * as process from "node:process";
+import Aura from "@primeuix/themes/aura";
 
 // @ts-ignore
 export default defineNuxtConfig({
@@ -45,8 +46,25 @@ export default defineNuxtConfig({
     "/**": { ssr: false } as any,
     "/": { ssr: true } as any,
   },
-  css: ["~/assets/styles/main.scss"],
-  modules: ["@pinia/nuxt", "@nuxtjs/i18n", "@nuxtjs/tailwindcss", "@vite-pwa/nuxt"],
+  css: ["primeicons/primeicons.css", "~/assets/styles/main.scss", "~/assets/styles/primevue.scss"],
+  modules: ["@pinia/nuxt", "@nuxtjs/i18n", "@nuxtjs/tailwindcss", "@vite-pwa/nuxt", "@primevue/nuxt-module"],
+  primevue: {
+    autoImport: false,
+    components: {
+      prefix: "Prime",
+      include: ["Button", "Card", "DatePicker", "Select", "Skeleton", "Tag"],
+    },
+    options: {
+      ripple: true,
+      inputVariant: "filled",
+      theme: {
+        preset: Aura,
+        options: {
+          darkModeSelector: '[data-theme="dark"]',
+        },
+      },
+    },
+  },
   plugins: ["~/plugins/eventBus.ts"],
   imports: {
     dirs: ["stores"],

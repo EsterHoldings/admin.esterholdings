@@ -1,0 +1,150 @@
+:root {
+  --p-primary-50: color-mix(in srgb, var(--ui-primary-main) 8%, var(--ui-background));
+  --p-primary-100: color-mix(in srgb, var(--ui-primary-main) 14%, var(--ui-background));
+  --p-primary-200: color-mix(in srgb, var(--ui-primary-main) 24%, var(--ui-background));
+  --p-primary-300: color-mix(in srgb, var(--ui-primary-main) 40%, var(--ui-background));
+  --p-primary-400: color-mix(in srgb, var(--ui-primary-main) 68%, var(--ui-background));
+  --p-primary-500: var(--ui-primary-main);
+  --p-primary-600: color-mix(in srgb, var(--ui-primary-main) 86%, #000000);
+  --p-primary-700: color-mix(in srgb, var(--ui-primary-main) 76%, #000000);
+  --p-primary-800: color-mix(in srgb, var(--ui-primary-main) 64%, #000000);
+  --p-primary-900: color-mix(in srgb, var(--ui-primary-main) 52%, #000000);
+  --p-primary-950: color-mix(in srgb, var(--ui-primary-main) 38%, #000000);
+
+  --p-content-background: var(--ui-background-card);
+  --p-content-hover-background: color-mix(in srgb, var(--ui-primary-main) 9%, var(--ui-background-card));
+  --p-content-border-color: var(--color-stroke-ui-light);
+  --p-content-color: var(--ui-text-main);
+  --p-content-hover-color: var(--ui-text-main);
+  --p-text-color: var(--ui-text-main);
+  --p-text-muted-color: var(--ui-text-secondary);
+  --p-surface-0: var(--ui-background);
+  --p-surface-50: var(--ui-background-panel);
+  --p-surface-100: var(--ui-background-card);
+  --p-surface-200: var(--color-stroke-ui-light);
+  --p-surface-300: var(--color-stroke-ui-light);
+  --p-surface-400: var(--ui-gray);
+  --p-surface-500: var(--ui-gray);
+  --p-surface-600: var(--ui-text-secondary);
+  --p-surface-700: var(--ui-text-secondary);
+  --p-surface-800: var(--ui-background-card);
+  --p-surface-900: var(--ui-background-panel);
+  --p-surface-950: var(--ui-background);
+  --p-border-radius-md: 14px;
+  --p-border-radius-lg: 18px;
+  --p-border-radius-xl: 20px;
+  --p-focus-ring-color: color-mix(in srgb, var(--ui-primary-main) 32%, transparent);
+  --p-mask-background: rgba(0, 0, 0, 0.42);
+}
+
+.p-component {
+  font-family: inherit;
+}
+
+.p-card {
+  color: var(--ui-text-main);
+  border: 1px solid var(--color-stroke-ui-light);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ui-background-card) 92%, transparent), transparent),
+    var(--ui-background-panel);
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--ui-background) 72%, transparent);
+}
+
+.p-card-body,
+.p-card-content {
+  padding: 0;
+}
+
+.p-button {
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.p-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.p-button.p-button-sm {
+  min-height: 34px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.p-button.p-button-text {
+  color: var(--ui-text-secondary);
+}
+
+.p-button.p-button-text:not(:disabled):hover {
+  color: var(--ui-text-main);
+  background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+}
+
+.p-inputtext,
+.p-select {
+  min-height: 40px;
+  border-color: var(--color-stroke-ui-light);
+  color: var(--ui-text-main);
+  background: color-mix(in srgb, var(--ui-background-card) 94%, transparent);
+}
+
+.p-inputtext:hover,
+.p-select:not(.p-disabled):hover {
+  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
+}
+
+.p-inputtext:enabled:focus,
+.p-select.p-focus {
+  border-color: var(--ui-primary-main);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+}
+
+.p-select-overlay,
+.p-datepicker-panel {
+  color: var(--ui-text-main);
+  border: 1px solid var(--color-stroke-ui-light);
+  background: color-mix(in srgb, var(--ui-background-card) 96%, transparent);
+  box-shadow: 0 18px 42px color-mix(in srgb, #000000 26%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.p-select-option,
+.p-datepicker-day {
+  color: var(--ui-text-main);
+}
+
+.p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
+.p-select-option:not(.p-select-option-selected):not(.p-disabled):hover,
+.p-datepicker-day:not(.p-disabled):hover {
+  background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+  color: var(--ui-text-main);
+}
+
+.p-select-option-selected,
+.p-datepicker-day-selected {
+  background: color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  color: var(--ui-text-main);
+}
+
+.p-tag {
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.p-skeleton {
+  background: color-mix(in srgb, var(--ui-text-secondary) 10%, var(--ui-background-card));
+}
+
+.p-skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--ui-primary-main) 10%, transparent),
+    transparent
+  );
+}
