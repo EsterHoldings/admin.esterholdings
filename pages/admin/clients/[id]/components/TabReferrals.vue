@@ -1,104 +1,107 @@
 <template>
-  <div class="admin-referrals-tab flex flex-col gap-3 text-[var(--ui-text-main)]">
-    <div class="flex flex-col gap-2">
-      <UiTextH5>{{ t("cabinet.referrals.general.listTitle") }}</UiTextH5>
-      <div class="flex flex-wrap items-center gap-2">
-        <UiInput v-model="search" :placeholder="t('cabinet.referrals.general.searchPlaceholder')" class="min-w-[200px] flex-1">
-          <template #icon-left>
-            <UiIconSearch />
-          </template>
-        </UiInput>
-        <UiButtonDefault state="info--small" class="!w-[44px]" @click="reloadReferrals">
-          <UiIconUpdate />
-        </UiButtonDefault>
-      </div>
-      <div class="flex flex-col gap-2 text-sm text-[var(--ui-text-secondary)] w-full">
-        <div class="flex flex-wrap items-center gap-2">
-          <button
-            v-for="opt in sortOptions"
-            :key="opt.value"
-            type="button"
-            class="rounded-lg border px-3 py-1.5 transition truncate"
-            :class="sortBy === opt.value ? 'border-[var(--ui-primary-main)] bg-[var(--ui-primary-main)] text-white' : 'border-[var(--color-stroke-ui-light)] text-[var(--ui-text-main)] hover:bg-[var(--color-stroke-ui-dark)]'"
-            @click="sortBy = opt.value"
-          >
-            {{ opt.text }}
-          </button>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button
-            v-for="lvl in levelFilters"
-            :key="lvl.value"
-            type="button"
-            class="rounded-lg border px-3 py-1.5 transition truncate"
-            :class="activeLevel === lvl.value ? 'border-[var(--ui-primary-main)] bg-[var(--ui-primary-main)] text-white' : 'border-[var(--color-stroke-ui-light)] text-[var(--ui-text-main)] hover:bg-[var(--color-stroke-ui-dark)]'"
-            @click="activeLevel = lvl.value"
-          >
-            {{ lvl.text }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="relative flex flex-col gap-2">
-      <div
-        v-if="isLoadingList"
-        class="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm bg-[var(--ui-background)]/40 rounded-2xl"
-      >
-        <UiIconSpinnerDefault />
-      </div>
-      <div v-for="item in paginatedReferrals" :key="item.id" class="referral-card-full">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="h-10 w-10 rounded-full bg-[var(--color-stroke-ui-dark)] grid place-items-center text-sm font-semibold">
-              {{ item.initials }}
+  <div class="client-tab-space admin-referrals-tab">
+    <PrimeCard class="client-tab-card">
+      <template #content>
+        <div class="client-card-body">
+          <div class="client-card-header">
+            <div>
+              <h3 class="client-card-title">{{ t("cabinet.referrals.general.listTitle") }}</h3>
+              <p class="client-card-subtitle">{{ t("admin.clients.tabsDescription.referrals") }}</p>
             </div>
-            <div class="min-w-0">
-              <div class="font-semibold truncate">{{ item.name }}</div>
-              <UiTextSmall class="text-[var(--ui-text-secondary)] truncate">{{ item.email }}</UiTextSmall>
-              <UiTextSmall class="text-[var(--ui-text-secondary)]">
-                {{ t("cabinet.referrals.general.levelLabel", { level: item.level }) }}
-              </UiTextSmall>
-            </div>
+            <PrimeButton
+              icon="pi pi-refresh"
+              rounded
+              text
+              :loading="isLoadingList"
+              @click="reloadReferrals" />
           </div>
-          <div class="flex items-center gap-3 text-sm">
-            <UiBadge :state="statusMap[item.status]" outline class="!px-2 !py-1">{{ statusLabel(item.status) }}</UiBadge>
-            <div class="text-[var(--ui-text-secondary)]">
-              {{ t("cabinet.referrals.general.earned") }}: ${{ item.earned.toLocaleString() }}
-            </div>
+
+          <div class="admin-referrals-tab__toolbar">
+            <span class="admin-referrals-tab__search">
+              <i class="pi pi-search" aria-hidden="true" />
+              <PrimeInputText
+                v-model="search"
+                :placeholder="t('cabinet.referrals.general.searchPlaceholder')"
+                fluid />
+            </span>
+
+            <PrimeSelect
+              v-model="sortBy"
+              :options="sortOptions"
+              option-label="text"
+              option-value="value" />
+
+            <PrimeSelect
+              v-model="activeLevel"
+              :options="levelFilters"
+              option-label="text"
+              option-value="value" />
           </div>
         </div>
-      </div>
+      </template>
+    </PrimeCard>
 
-      <div v-if="sortedReferrals.length === 0" class="referral-card-full text-center text-[var(--ui-text-secondary)]">
-        {{ t("cabinet.referrals.general.empty") }}
-      </div>
+    <PrimeCard class="client-tab-card">
+      <template #content>
+        <div class="client-card-body">
+          <div
+            v-if="isLoadingList"
+            class="admin-referrals-tab__skeletons">
+            <PrimeSkeleton
+              v-for="row in 5"
+              :key="`referral-skeleton-${row}`"
+              height="62px"
+              border-radius="16px" />
+          </div>
 
-      <PaginationDefault
-        :isLoading="isLoadingList"
-        :perPage="perPage"
-        :page="page"
-        :totalRows="sortedReferrals.length"
-        @pageChange="handlePageChange"
-        @perPageChange="handlePerPageChange"
-      />
-    </div>
+          <div
+            v-else-if="sortedReferrals.length === 0"
+            class="admin-referrals-tab__empty">
+            {{ t("cabinet.referrals.general.empty") }}
+          </div>
+
+          <div
+            v-else
+            class="admin-referrals-tab__list">
+            <article
+              v-for="item in paginatedReferrals"
+              :key="item.id"
+              class="admin-referrals-tab__row">
+              <div class="admin-referrals-tab__avatar">
+                {{ item.initials }}
+              </div>
+              <div class="admin-referrals-tab__identity">
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.email }}</span>
+                <span>{{ t("cabinet.referrals.general.levelLabel", { level: item.level }) }}</span>
+              </div>
+              <div class="admin-referrals-tab__side">
+                <span
+                  class="client-inline-status"
+                  :class="statusClass(item.status)">
+                  {{ statusLabel(item.status) }}
+                </span>
+                <strong>${{ item.earned.toLocaleString() }}</strong>
+              </div>
+            </article>
+          </div>
+
+          <PrimePaginator
+            v-if="sortedReferrals.length > 0"
+            :first="(page - 1) * perPage"
+            :rows="perPage"
+            :total-records="sortedReferrals.length"
+            :rows-per-page-options="[5, 10, 20]"
+            @page="handlePaginatorPage" />
+        </div>
+      </template>
+    </PrimeCard>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-
-import UiTextH5 from "~/components/ui/UiTextH5.vue";
-import UiInput from "~/components/ui/UiInput.vue";
-import UiIconSearch from "~/components/ui/UiIconSearch.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-import UiBadge from "~/components/ui/UiBadge.vue";
-import UiTextSmall from "~/components/ui/UiTextSmall.vue";
-import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
 
 const props = defineProps({
   userData: {
@@ -136,13 +139,18 @@ const referrals = ref(
   }),
 );
 
-const statusMap: Record<string, string> = { active: "success", pending: "warning", inactive: "info" };
 const statusLabel = (status: string) =>
   ({
     active: t("cabinet.referrals.general.status.active", "Active"),
     pending: t("cabinet.referrals.general.status.pending", "Pending"),
     inactive: t("cabinet.referrals.general.status.inactive", "Inactive"),
   }[status] || status);
+
+const statusClass = (status: string) => {
+  if (status === "active") return "client-inline-status--success";
+  if (status === "pending") return "client-inline-status--warning";
+  return "";
+};
 
 const search = ref("");
 const sortBy = ref("earned");
@@ -219,24 +227,131 @@ const handlePerPageChange = (next: number) => {
   perPage.value = next;
   page.value = 1;
 };
+
+const handlePaginatorPage = (event: any) => {
+  page.value = Number(event.page ?? 0) + 1;
+  perPage.value = Number(event.rows ?? perPage.value);
+};
 </script>
 
 <style lang="scss" scoped>
-.referral-card-full {
-  width: 100%;
-  border-radius: 12px;
-  background: var(--ui-background-panel);
-  border: 1px solid var(--color-stroke-ui-light);
-  padding: 12px 14px;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  overflow: hidden;
-}
-
-.referral-card-full:hover {
-  background: var(--color-stroke-ui-dark);
-}
-
 .admin-referrals-tab {
   min-width: 0;
+
+  &__toolbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(170px, 220px) minmax(170px, 220px);
+    gap: 10px;
+  }
+
+  &__search {
+    position: relative;
+    display: block;
+  }
+
+  &__search i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+    color: var(--ui-text-secondary);
+  }
+
+  &__search :deep(.p-inputtext) {
+    padding-left: 38px;
+  }
+
+  &__list,
+  &__skeletons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    border-radius: 16px;
+    padding: 11px;
+    background: color-mix(in srgb, var(--ui-background-card) 58%, transparent);
+    transition:
+      background-color 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  &__row:hover {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-card));
+  }
+
+  &__avatar {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: color-mix(in srgb, var(--ui-primary-main) 13%, transparent);
+    color: var(--ui-primary-main);
+    font-size: 13px;
+    font-weight: 840;
+  }
+
+  &__identity,
+  &__side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__identity strong {
+    color: var(--ui-text-main);
+    font-size: 14px;
+  }
+
+  &__identity span {
+    overflow: hidden;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__side {
+    align-items: flex-end;
+  }
+
+  &__side strong {
+    color: var(--ui-text-main);
+    font-size: 14px;
+  }
+
+  &__empty {
+    min-height: 180px;
+    display: grid;
+    place-items: center;
+    color: var(--ui-text-secondary);
+    text-align: center;
+  }
+}
+
+@media (max-width: 860px) {
+  .admin-referrals-tab {
+    &__toolbar {
+      grid-template-columns: 1fr;
+    }
+
+    &__row {
+      grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    &__side {
+      grid-column: 2;
+      align-items: flex-start;
+    }
+  }
 }
 </style>

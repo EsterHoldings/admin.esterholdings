@@ -1392,7 +1392,11 @@
       },
       "tabs": {
         "settings": "Settings",
-        "security": "Security"
+        "security": "Security",
+        "kyc": "KYC",
+        "metrics": "Métricas",
+        "verification": "Verification",
+        "referrals": "Referrals"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1441,6 +1445,131 @@
           "disableSuccess": "2FA desabilitada com sucesso.",
           "disableError": "Não foi possível desabilitar a 2FA."
         }
+      },
+      "status": {
+        "active": "Ativo",
+        "blocked": "Bloqueado"
+      },
+      "detail": {
+        "unknownClient": "Cliente desconhecido"
+      },
+      "tabsDescription": {
+        "kyc": "Client identity, access and visit history.",
+        "metrics": "Online activity, sessions and device analytics.",
+        "verification": "Moderation timeline for profile, documents and payment details.",
+        "referrals": "Referral network and rewards for this client.",
+        "settings": "Client support and cabinet configuration.",
+        "security": "Password and two-factor authentication controls."
+      },
+      "common": {
+        "emptyValue": "-"
+      },
+      "kyc": {
+        "profile": {
+          "title": "Client profile",
+          "description": "Identity, contact details and access controls.",
+          "photoMissing": "No photo uploaded",
+          "birthdateMissing": "Birthdate is missing",
+          "accessBlocked": "Access blocked",
+          "accessActive": "Access active",
+          "emailVerifiedAt": "Email verified at",
+          "phone": "Phone",
+          "createdAt": "Created at",
+          "blockedAt": "Blocked at"
+        },
+        "history": {
+          "title": "Visit history",
+          "description": "Recent client sign-ins with IP, device and browser details.",
+          "emptyTitle": "No visits yet",
+          "emptyDescription": "Real sign-in records will appear here after the client visits the cabinet.",
+          "locationUnknown": "Unknown location",
+          "loadFailed": "Failed to load visit history.",
+          "device": {
+            "mobile": "Mobile",
+            "tablet": "Tablet",
+            "desktop": "Desktop"
+          }
+        },
+        "actions": {
+          "saving": "Saving...",
+          "block": "Block",
+          "unblock": "Unblock",
+          "preparingLogin": "Preparing login...",
+          "impersonate": "Sign in as client",
+          "refreshHistory": "Refresh history",
+          "loadMore": "Load more"
+        },
+        "confirm": {
+          "block": "Block this client? Cabinet access will be closed.",
+          "unblock": "Unblock this client?"
+        },
+        "toasts": {
+          "blocked": "Client blocked.",
+          "unblocked": "Client unblocked.",
+          "blockFailed": "Failed to update block status.",
+          "authLinkMissing": "Cabinet auth link is missing.",
+          "impersonationStarted": "Cabinet window opened. Signing in as client.",
+          "impersonationFailed": "Failed to sign in as client."
+        }
+      },
+      "metrics": {
+        "filters": {
+          "from": "From",
+          "to": "To",
+          "bucket": "Step",
+          "device": "Device",
+          "browser": "Browser",
+          "os": "OS"
+        },
+        "actions": {
+          "refresh": "Refresh"
+        },
+        "bucket": {
+          "day": "By days",
+          "hour": "By hours"
+        },
+        "toasts": {
+          "loadFailed": "Failed to load client metrics."
+        },
+        "summary": {
+          "totalOnline": "Total online",
+          "totalOnlineHint": "Total presence time",
+          "sessions": "Sessions",
+          "sessionsHint": "For the selected period",
+          "averageSession": "Average session",
+          "averageSessionHint": "Average duration",
+          "lastSeen": "Last online",
+          "clientOnline": "Client is currently in the cabinet",
+          "clientOffline": "Client is not in the cabinet now"
+        },
+        "timeline": {
+          "title": "Online by period",
+          "description": "Hours spent by the client in the cabinet.",
+          "seriesOnlineHours": "Online, hours"
+        },
+        "breakdowns": {
+          "title": "Device and browser breakdown",
+          "description": "What the client used while working in the cabinet.",
+          "devices": "Devices",
+          "browsers": "Browsers",
+          "os": "OS"
+        },
+        "sessions": {
+          "title": "Recent online sessions",
+          "description": "When and where the client visited the cabinet.",
+          "empty": "No sessions yet",
+          "startedAt": "Start",
+          "endedAt": "End",
+          "locationUnknown": "Unknown location"
+        },
+        "empty": {
+          "noData": "No data"
+        },
+        "sessionsCount": "{count} sessions",
+        "units": {
+          "hoursShort": "h",
+          "minutesShort": "m"
+        }
       }
     },
     "verifications": {
@@ -1459,7 +1588,9 @@
         "refresh": "Atualizar",
         "retry": "Tentar novamente",
         "approveAll": "Aprovar tudo",
-        "rejectAll": "Rejeitar tudo"
+        "rejectAll": "Rejeitar tudo",
+        "approve": "Aprovar",
+        "reject": "Rejeitar"
       },
       "filters": {
         "active": "Filtro",
@@ -1536,7 +1667,8 @@
         "loadMore": "Carregar mais",
         "actorAdmin": "Admin",
         "actorClient": "Cliente",
-        "actorSystem": "Sistema"
+        "actorSystem": "Sistema",
+        "generic": "Verification activity"
       },
       "tabs": {
         "client": "Verificação geral",
@@ -1626,6 +1758,54 @@
           "currency": "Currency",
           "comment": "Comment"
         }
+      },
+      "clientTimeline": {
+        "title": "Linha do tempo de verificação",
+        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
+        "hasPending": "Pending review",
+        "noPending": "No pending review",
+        "emptyTitle": "No verification activity yet",
+        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "summary": {
+          "profile": "Profile changes",
+          "documents": "Documents",
+          "paymentDetails": "Payment details",
+          "history": "History records",
+          "pending": "Waiting for review",
+          "clear": "No pending changes",
+          "pendingDocuments": "Documents waiting for moderation",
+          "pendingPaymentDetails": "Payment details waiting for moderation",
+          "historyHint": "Newest records are shown first"
+        },
+        "items": {
+          "profileTitle": "Profile data requires review",
+          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
+          "documentTitle": "Document requires review",
+          "documentDescription": "Client uploaded a document for identity verification.",
+          "payoutTitle": "Payment detail requires review",
+          "payoutDescription": "Client submitted or updated payment details.",
+          "historyDescription": "Recorded verification activity."
+        }
+      },
+      "historyKeys": {
+        "profile_submitted": "Profile data submitted",
+        "documents_uploaded": "Documents uploaded",
+        "document_deleted": "Document deleted",
+        "photo_uploaded": "Profile photo uploaded",
+        "photo_deleted": "Profile photo deleted",
+        "email_verification_sent": "Email verification sent",
+        "documents_bulk_updated": "Documents status updated",
+        "document_updated": "Document status updated",
+        "payout_detail_submitted": "Payment detail submitted",
+        "payout_detail_updated": "Payment detail updated",
+        "payout_detail_status_updated": "Payment detail status updated",
+        "payout_detail_comment_updated": "Payment detail comment updated",
+        "payout_detail_deleted": "Payment detail archived",
+        "payout_detail_restored": "Payment detail restored",
+        "step_status_auto_synced": "Verification step synced",
+        "step_status_updated": "Verification step status updated",
+        "step_status_reset": "Verification step reset",
+        "step_comment_cleared": "Verification comment cleared"
       }
     },
     "dashboard": {

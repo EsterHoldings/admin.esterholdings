@@ -1,29 +1,45 @@
 <template>
-  <div class="client-settings">
-    <PanelDefault class="client-settings__panel">
-      <div class="client-settings__panel-header">
-        <UiTextH5>{{ resolveText("admin.clients.settings.supportMode.title", "Support mode") }}</UiTextH5>
-        <UiTextSmall class="client-settings__muted">
-          {{ resolveText("admin.clients.settings.supportMode.description", "Choose how the client can contact support.") }}
-        </UiTextSmall>
-      </div>
+  <div class="client-tab-space client-settings">
+    <PrimeCard class="client-tab-card">
+      <template #content>
+        <div class="client-card-body">
+          <div class="client-card-header">
+            <div>
+              <h3 class="client-card-title">{{ resolveText("admin.clients.settings.supportMode.title", "Support mode") }}</h3>
+              <p class="client-card-subtitle">
+                {{ resolveText("admin.clients.settings.supportMode.description", "Choose how the client can contact support.") }}
+              </p>
+            </div>
+            <span
+              class="client-inline-status"
+              :class="fullSupportEnabled ? 'client-inline-status--success' : 'client-inline-status--warning'">
+              {{
+                fullSupportEnabled
+                  ? resolveText("admin.clients.settings.supportMode.full", "Full chat support")
+                  : resolveText("admin.clients.settings.supportMode.simple", "Simple form")
+              }}
+            </span>
+          </div>
 
-      <div class="client-settings__switch-row">
-        <UiTextSmall class="client-settings__mode-label">
-          {{ resolveText("admin.clients.settings.supportMode.simple", "Simple form") }}
-        </UiTextSmall>
-        <UiSwitchToggle
-          :modelValue="fullSupportEnabled"
-          :disabled="!canUpdateSupportMode"
-          @change="handleSupportModeToggle" />
-        <UiTextSmall class="client-settings__mode-label">
-          {{ resolveText("admin.clients.settings.supportMode.full", "Full chat support") }}
-        </UiTextSmall>
-        <UiIconSpinnerDefault
-          v-if="supportModeUpdating"
-          class="client-settings__spinner" />
-      </div>
-    </PanelDefault>
+          <div class="client-settings__switch-row">
+            <span class="client-settings__mode-label">
+              {{ resolveText("admin.clients.settings.supportMode.simple", "Simple form") }}
+            </span>
+            <PrimeToggleSwitch
+              :model-value="fullSupportEnabled"
+              :disabled="!canUpdateSupportMode || supportModeUpdating"
+              @update:model-value="handleSupportModeToggle" />
+            <span class="client-settings__mode-label">
+              {{ resolveText("admin.clients.settings.supportMode.full", "Full chat support") }}
+            </span>
+            <i
+              v-if="supportModeUpdating"
+              class="pi pi-spin pi-spinner client-settings__spinner"
+              aria-hidden="true" />
+          </div>
+        </div>
+      </template>
+    </PrimeCard>
   </div>
 </template>
 
@@ -33,11 +49,6 @@
   import { useToast } from "vue-toastification";
 
   import useAppCore from "~/composables/useAppCore";
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-  import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-  import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
-  import UiTextH5 from "~/components/ui/UiTextH5.vue";
-  import UiTextSmall from "~/components/ui/UiTextSmall.vue";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   interface UserData {
@@ -94,31 +105,14 @@
 
 <style lang="scss" scoped>
   .client-settings {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-
-    &__panel {
-      padding: 20px;
-    }
-
-    &__panel-header {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    &__muted {
-      color: var(--ui-text-secondary);
-      line-height: 1.5;
-    }
-
     &__switch-row {
       display: flex;
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+      border-radius: 16px;
+      padding: 14px;
+      background: color-mix(in srgb, var(--ui-background-card) 58%, transparent);
     }
 
     &__mode-label {
@@ -135,10 +129,6 @@
 
   @media (max-width: 640px) {
     .client-settings {
-      &__panel {
-        padding: 16px;
-      }
-
       &__switch-row {
         align-items: flex-start;
         flex-direction: column;

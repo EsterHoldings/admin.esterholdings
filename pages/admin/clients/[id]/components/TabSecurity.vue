@@ -1,137 +1,138 @@
 <template>
-  <div class="client-security">
-    <div class="client-security__column client-security__column--main">
-      <PanelDefault class="client-security__panel">
-        <div class="client-security__two-factor-header">
-          <div class="client-security__panel-header client-security__panel-header--compact">
-            <UiTextH5>{{
-                resolveText("admin.clients.security.twoFactor.title", "Two-factor authentication")
-              }}
-            </UiTextH5>
-            <UiTextSmall class="client-security__muted">
-              {{
-                twoFactorEnabled
-                    ? resolveText("admin.clients.security.twoFactor.enabledDescription", "Two-factor authentication is enabled for this client.")
-                    : resolveText("admin.clients.security.twoFactor.disabledDescription", "Two-factor authentication is currently disabled for this client.")
-              }}
-            </UiTextSmall>
-          </div>
+  <div class="client-tab-space client-security">
+    <div class="client-security__grid">
+      <div class="client-security__column client-security__column--main">
+        <PrimeCard class="client-tab-card">
+          <template #content>
+            <div class="client-card-body">
+              <div class="client-card-header">
+                <div>
+                  <h3 class="client-card-title">
+                    {{ resolveText("admin.clients.security.twoFactor.title", "Two-factor authentication") }}
+                  </h3>
+                  <p class="client-card-subtitle">
+                    {{
+                      twoFactorEnabled
+                        ? resolveText("admin.clients.security.twoFactor.enabledDescription", "Two-factor authentication is enabled for this client.")
+                        : resolveText("admin.clients.security.twoFactor.disabledDescription", "Two-factor authentication is currently disabled for this client.")
+                    }}
+                  </p>
+                </div>
 
-          <span
-              class="client-security__status-pill"
-              :class="{
-              'client-security__status-pill--enabled': twoFactorEnabled,
-              'client-security__status-pill--disabled': !twoFactorEnabled,
-            }"
-          >
-            {{
-              twoFactorEnabled
-                  ? resolveText("admin.clients.security.twoFactor.statusEnabled", "Enabled")
-                  : resolveText("admin.clients.security.twoFactor.statusDisabled", "Disabled")
-            }}
-          </span>
-        </div>
+                <span
+                  class="client-inline-status"
+                  :class="twoFactorEnabled ? 'client-inline-status--success' : 'client-inline-status--warning'">
+                  {{
+                    twoFactorEnabled
+                      ? resolveText("admin.clients.security.twoFactor.statusEnabled", "Enabled")
+                      : resolveText("admin.clients.security.twoFactor.statusDisabled", "Disabled")
+                  }}
+                </span>
+              </div>
 
-        <div
-            v-if="twoFactorEnabled"
-            class="client-security__two-factor-actions"
-        >
-          <UiButtonDefault
-              state="danger--outline"
-              :disabled="!canManageClientSecurity || isTwoFactorDisabling"
-              :isLoading="isTwoFactorDisabling"
-              @click="handleDisableTwoFactor"
-          >
-            {{ resolveText("admin.clients.security.twoFactor.disable", "Disable 2FA") }}
-          </UiButtonDefault>
-        </div>
-      </PanelDefault>
-
-      <PanelDefault class="client-security__panel">
-        <div class="client-security__panel-header">
-          <UiTextH5>{{ resolveText("admin.clients.security.password.title", "Change password") }}</UiTextH5>
-          <UiTextSmall class="client-security__muted">
-            {{
-              resolveText("admin.clients.security.password.description", "Set a new password for this client account.")
-            }}
-          </UiTextSmall>
-        </div>
-
-        <div class="client-security__form">
-          <UiFormControl
-              class="client-security__field"
-              :label="resolveText('admin.clients.security.password.labels.newPassword', 'New password')"
-              :errors="passwordErrors"
-          >
-            <UiInput
-                type="password"
-                :disabled="!canManageClientSecurity"
-                :placeholder="resolveText('admin.clients.security.password.placeholders.newPassword', '*********')"
-                :value="form.password"
-                :isDirty="isPasswordDirty"
-                :isInvalid="passwordErrors.length > 0"
-                @input="handlePasswordInput"
-                @blur="handlePasswordBlur"/>
-          </UiFormControl>
-
-          <UiFormControl
-              class="client-security__field"
-              :label="resolveText('admin.clients.security.password.labels.confirmation', 'Confirm password')"
-              :errors="confirmationErrors"
-          >
-            <UiInput
-                type="password"
-                :disabled="!canManageClientSecurity"
-                :placeholder="resolveText('admin.clients.security.password.placeholders.confirmation', '*********')"
-                :value="form.password_confirmation"
-                :isDirty="isConfirmationDirty"
-                :isInvalid="confirmationErrors.length > 0"
-                @input="handleConfirmationInput"
-                @blur="handleConfirmationBlur"/>
-          </UiFormControl>
-
-          <div class="client-security__email-toggle">
-            <div class="client-security__email-toggle-copy">
-              <UiTextSmall class="client-security__email-toggle-label">
-                {{ resolveText("admin.clients.security.password.sendEmail", "Send new password to client email") }}
-              </UiTextSmall>
-              <UiTextSmall class="client-security__muted">
-                {{ userEmailDisplay }}
-              </UiTextSmall>
+              <PrimeButton
+                v-if="twoFactorEnabled"
+                :label="resolveText('admin.clients.security.twoFactor.disable', 'Disable 2FA')"
+                icon="pi pi-lock-open"
+                severity="danger"
+                outlined
+                :disabled="!canManageClientSecurity || isTwoFactorDisabling"
+                :loading="isTwoFactorDisabling"
+                @click="handleDisableTwoFactor" />
             </div>
+          </template>
+        </PrimeCard>
 
-            <UiSwitchToggle
-                :modelValue="form.send_email"
-                :disabled="!hasEmail || !canManageClientSecurity"
-                @change="form.send_email = $event"/>
+        <PrimeCard class="client-tab-card">
+          <template #content>
+            <div class="client-card-body">
+              <div class="client-card-header">
+                <div>
+                  <h3 class="client-card-title">{{ resolveText("admin.clients.security.password.title", "Change password") }}</h3>
+                  <p class="client-card-subtitle">
+                    {{ resolveText("admin.clients.security.password.description", "Set a new password for this client account.") }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="client-security__form">
+                <label class="client-security__field">
+                  <span>{{ resolveText("admin.clients.security.password.labels.newPassword", "New password") }}</span>
+                  <PrimeInputText
+                    type="password"
+                    :disabled="!canManageClientSecurity"
+                    :placeholder="resolveText('admin.clients.security.password.placeholders.newPassword', '*********')"
+                    :model-value="form.password"
+                    :invalid="passwordErrors.length > 0"
+                    @update:model-value="handlePasswordInput"
+                    @blur="handlePasswordBlur" />
+                  <small
+                    v-for="error in passwordErrors"
+                    :key="error"
+                    class="client-security__error">
+                    {{ error }}
+                  </small>
+                </label>
+
+                <label class="client-security__field">
+                  <span>{{ resolveText("admin.clients.security.password.labels.confirmation", "Confirm password") }}</span>
+                  <PrimeInputText
+                    type="password"
+                    :disabled="!canManageClientSecurity"
+                    :placeholder="resolveText('admin.clients.security.password.placeholders.confirmation', '*********')"
+                    :model-value="form.password_confirmation"
+                    :invalid="confirmationErrors.length > 0"
+                    @update:model-value="handleConfirmationInput"
+                    @blur="handleConfirmationBlur" />
+                  <small
+                    v-for="error in confirmationErrors"
+                    :key="error"
+                    class="client-security__error">
+                    {{ error }}
+                  </small>
+                </label>
+
+                <div class="client-security__email-toggle">
+                  <div class="client-security__email-toggle-copy">
+                    <strong>{{ resolveText("admin.clients.security.password.sendEmail", "Send new password to client email") }}</strong>
+                    <span class="client-card-subtitle">{{ userEmailDisplay }}</span>
+                  </div>
+
+                  <PrimeToggleSwitch
+                    :model-value="form.send_email"
+                    :disabled="!hasEmail || !canManageClientSecurity"
+                    @update:model-value="form.send_email = Boolean($event)" />
+                </div>
+
+                <PrimeButton
+                  class="client-security__submit"
+                  :label="resolveText('admin.clients.security.password.submit', 'Save password')"
+                  icon="pi pi-save"
+                  :loading="isSubmitting"
+                  :disabled="!canManageClientSecurity || isSubmitting"
+                  @click="handleSubmit" />
+              </div>
+            </div>
+          </template>
+        </PrimeCard>
+      </div>
+
+      <PrimeCard class="client-tab-card client-security__help-card">
+        <template #content>
+          <div class="client-card-body">
+            <div class="client-card-header">
+              <div>
+                <h3 class="client-card-title">{{ resolveText("admin.clients.security.help.title", "Password delivery") }}</h3>
+                <p class="client-card-subtitle">
+                  {{
+                    resolveText("admin.clients.security.help.description", "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back.")
+                  }}
+                </p>
+              </div>
+            </div>
           </div>
-
-          <div class="client-security__actions">
-            <UiButtonDefault
-                state="info--outline"
-                :disabled="!canManageClientSecurity || isSubmitting"
-                @click="handleSubmit"
-            >
-              <UiIconSpinnerDefault v-if="isSubmitting"/>
-              <span v-else>{{ resolveText("admin.clients.security.password.submit", "Save password") }}</span>
-            </UiButtonDefault>
-          </div>
-        </div>
-      </PanelDefault>
-    </div>
-
-    <div class="client-security__column client-security__column--aside">
-      <PanelDefault class="client-security__panel">
-        <div class="client-security__panel-header">
-          <UiTextH5>{{ resolveText("admin.clients.security.help.title", "Password delivery") }}</UiTextH5>
-        </div>
-
-        <UiTextSmall class="client-security__muted">
-          {{
-            resolveText("admin.clients.security.help.description", "If email sending is enabled, the password will be sent to the client after the password is updated successfully. If sending fails, the password change will be rolled back.")
-          }}
-        </UiTextSmall>
-      </PanelDefault>
+        </template>
+      </PrimeCard>
     </div>
   </div>
 </template>
@@ -142,14 +143,6 @@ import {useI18n} from "vue-i18n";
 import {useToast} from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
-import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiFormControl from "~/components/ui/UiFormControl.vue";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-import UiInput from "~/components/ui/UiInput.vue";
-import UiSwitchToggle from "~/components/ui/UiSwitchToggle.vue";
-import UiTextH5 from "~/components/ui/UiTextH5.vue";
-import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 import {useAdminAuthStore} from "~/stores/adminAuthStore";
 
 interface UserData {
@@ -335,35 +328,17 @@ const handleSubmit = async () => {
 
 <style lang="scss" scoped>
 .client-security {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
-  gap: 20px;
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+    gap: 14px;
+  }
 
   &__column {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-  }
-
-  &__panel {
-    padding: 20px;
-  }
-
-  &__panel-header {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-
-    &--compact {
-      margin-bottom: 0;
-    }
-  }
-
-  &__muted {
-    color: var(--ui-text-secondary);
-    line-height: 1.5;
+    gap: 14px;
   }
 
   &__form {
@@ -374,44 +349,21 @@ const handleSubmit = async () => {
 
   &__field {
     margin: 0;
-  }
-
-  &__two-factor-header {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--ui-text-main);
+    font-size: 12px;
+    font-weight: 760;
   }
 
-  &__status-pill {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 32px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    font-size: 0.875rem;
-    font-weight: 700;
-
-    &--enabled {
-      color: var(--color-success);
-      border-color: color-mix(in srgb, var(--color-success) 45%, transparent);
-      background: color-mix(in srgb, var(--color-success) 14%, transparent);
-    }
-
-    &--disabled {
-      color: var(--ui-text-secondary);
-      border-color: color-mix(in srgb, var(--ui-text-secondary) 25%, transparent);
-      background: color-mix(in srgb, var(--ui-text-secondary) 10%, transparent);
-    }
+  &__field :deep(.p-inputtext) {
+    width: 100%;
   }
 
-  &__two-factor-actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-start;
+  &__error {
+    color: var(--color-danger);
+    font-size: 12px;
   }
 
   &__email-toggle {
@@ -431,44 +383,30 @@ const handleSubmit = async () => {
     gap: 6px;
   }
 
-  &__email-toggle-label {
+  &__email-toggle-copy strong {
     color: var(--ui-text-main);
     font-size: 0.9375rem;
   }
 
-  &__actions {
-    display: flex;
-    justify-content: flex-start;
+  &__submit {
+    align-self: flex-start;
   }
 }
 
 @media (max-width: 992px) {
-  .client-security {
+  .client-security__grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
   .client-security {
-    &__panel {
-      padding: 16px;
-    }
-
-    &__two-factor-header {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
     &__email-toggle {
       align-items: flex-start;
       flex-direction: column;
     }
 
-    &__actions :deep(button) {
-      width: 100%;
-    }
-
-    &__two-factor-actions :deep(button) {
+    &__submit {
       width: 100%;
     }
   }

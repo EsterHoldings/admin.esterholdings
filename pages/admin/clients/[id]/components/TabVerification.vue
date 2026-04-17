@@ -1,738 +1,223 @@
 <template>
-  <div class="verification-tabs">
-    <button
-      v-for="tab in verificationTabs"
-      :key="tab.id"
-      type="button"
-      class="verification-tabs__btn"
-      :class="{
-        'verification-tabs__btn--active': activeVerificationTab === tab.id,
-        'verification-tabs__btn--attention': tab.needsAttention && !seenTabs[tab.id],
-      }"
-      @click="setVerificationTab(tab.id)"
-    >
-      <span>{{ tab.label }}</span>
-      <span
-        v-if="tab.needsAttention && !seenTabs[tab.id]"
-        class="verification-tabs__indicator"
-      />
-    </button>
-  </div>
-
-  <div class="verification-pane">
-    <template v-if="activeVerificationTab === 'client'">
-      <section
-        ref="profileSectionRef"
-        class="verification-card"
-        :class="{ 'verification-card--highlighted': highlightedSection === 'profile' }"
-      >
-        <div class="verification-card__header">
-          <div class="verification-card__title-group">
-            <UiIconProfile />
-            <div>
-              <UiTextH5 class="verification-card__title">
-                {{ text("admin.verifications.profile.title", "Profile") }}
-              </UiTextH5>
-              <div class="verification-card__subtitle">
-                {{ text("admin.verifications.profile.subtitle", "Core client data used for profile verification.") }}
-              </div>
-            </div>
-          </div>
-
-          <div class="verification-card__actions">
-            <UiButtonDefault
-              state="info--small"
-              class="verification-card__refresh"
-              @click="handleRefreshActiveTab"
-            >
-              <UiIconUpdate v-if="!isLoading" />
-              <UiIconSpinnerDefault v-else />
-            </UiButtonDefault>
-
-            <VerificationActions
-              :enable-comment="true"
-              :comment="infoComment"
-              :status="infoStatus"
-              :comment-open="isInfoCommentOpen"
-              :disabled="!canUpdateVerifications"
-              @update-status="handleVerificationProfile"
-              @toggle-comment="toggleInfoComment"
-            />
-          </div>
-        </div>
-
-        <div class="verification-grid">
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.first_name", "First name") }}</span>
-            <span class="verification-grid__value">{{ props.userData.first_name || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.last_name", "Last name") }}</span>
-            <span class="verification-grid__value">{{ props.userData.last_name || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.mid_name", "Middle name") }}</span>
-            <span class="verification-grid__value">{{ props.userData.mid_name || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.birthdate", "Birth date") }}</span>
-            <span class="verification-grid__value">{{ props.userData.birthdate || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.phone", "Phone") }}</span>
-            <span class="verification-grid__value">{{ props.userData.phone || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.email", "Email") }}</span>
-            <span class="verification-grid__value">{{ props.userData.email || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.country", "Country") }}</span>
-            <span class="verification-grid__value">{{ props.userData.country || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.state", "State / region") }}</span>
-            <span class="verification-grid__value">{{ props.userData.state || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.city", "City") }}</span>
-            <span class="verification-grid__value">{{ props.userData.city || "-" }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.postal_code", "Postal code") }}</span>
-            <span class="verification-grid__value">{{ props.userData.postal_code || "-" }}</span>
-          </div>
-          <div class="verification-grid__item verification-grid__item--wide">
-            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.address", "Address") }}</span>
-            <span class="verification-grid__value">{{ props.userData.address || "-" }}</span>
-          </div>
-        </div>
-
-        <transition name="comment-expand">
-          <div
-            v-if="isInfoCommentOpen"
-            class="verification-comment-box"
-          >
-            <UiFormControl :label="t('admin.verifications.comment.label')">
-              <UiTextarea
-                :value="infoCommentDraft"
-                @input="handleInfoCommentInput"
-                class="verification-comment-box__textarea"
-                :placeholder="t('admin.verifications.comment.placeholder')"
-              />
-            </UiFormControl>
-
-            <div class="verification-comment-box__actions">
-              <UiButtonDefault
-                state="info--outline--small"
-                :disabled="!canUpdateVerifications"
-                @click="submitInfoComment"
-              >
-                {{ t("admin.verifications.comment.save") }}
-              </UiButtonDefault>
-              <UiButtonDefault
-                state="info--outline--small"
-                @click="cancelInfoComment"
-              >
-                {{ t("admin.verifications.comment.close") }}
-              </UiButtonDefault>
-            </div>
-          </div>
-        </transition>
-      </section>
-
-      <section
-        ref="documentsSectionRef"
-        class="verification-card"
-        :class="{ 'verification-card--highlighted': highlightedSection === 'documents' }"
-      >
-        <div class="verification-card__header">
-          <div class="verification-card__title-group">
-            <UiIconDocuments />
-            <div>
-              <UiTextH5 class="verification-card__title">
-                {{ text("admin.verifications.documents.title", "Documents") }}
-              </UiTextH5>
-              <div class="verification-card__subtitle">
-                {{ text("admin.verifications.documents.subtitle", "Passport, ID and other documents uploaded by the client.") }}
-              </div>
-            </div>
-          </div>
-
-          <VerificationActions
-            :enable-comment="true"
-            :comment="documentsComment"
-            :status="documentsStatus"
-            :comment-open="isDocumentsCommentOpen"
-            :disabled="!canUpdateVerifications"
-            @update-status="handleVerificationDocuments"
-            @toggle-comment="toggleDocumentsComment"
-          />
-        </div>
-
-        <transition name="comment-expand">
-          <div
-            v-if="isDocumentsCommentOpen"
-            class="verification-comment-box"
-          >
-            <UiFormControl :label="t('admin.verifications.comment.label')">
-              <UiTextarea
-                :value="documentsCommentDraft"
-                @input="handleDocumentsCommentInput"
-                class="verification-comment-box__textarea"
-                :placeholder="t('admin.verifications.comment.placeholder')"
-              />
-            </UiFormControl>
-
-            <div class="verification-comment-box__actions">
-              <UiButtonDefault
-                state="info--outline--small"
-                :disabled="!canUpdateVerifications"
-                @click="submitDocumentsComment"
-              >
-                {{ t("admin.verifications.comment.save") }}
-              </UiButtonDefault>
-              <UiButtonDefault
-                state="info--outline--small"
-                @click="cancelDocumentsComment"
-              >
-                {{ t("admin.verifications.comment.close") }}
-              </UiButtonDefault>
-            </div>
-          </div>
-        </transition>
-
-        <div
-          v-if="documentsListRequestData.length === 0 && !isLoading"
-          class="verification-card__empty"
-        >
-          {{ text("admin.verifications.documents.empty", "No documents uploaded.") }}
-        </div>
-
-        <div
-          v-else
-          class="verification-documents-grid"
-        >
-          <article
-            v-for="documentRequestData in documentsListRequestData"
-            :key="documentRequestData.id"
-            class="verification-document-card"
-          >
-            <button
-              type="button"
-              class="verification-document-card__preview"
-              :class="`is-${documentPreviewMeta(documentRequestData).type}`"
-              @click="handleClientDocumentImage(documentRequestData.document_data.full_url)"
-            >
-              <img
-                v-if="documentPreviewMeta(documentRequestData).type === 'image' && documentPreviewMeta(documentRequestData).src"
-                :src="documentPreviewMeta(documentRequestData).src"
-                :alt="documentRequestData.document_data.number || text('admin.verifications.documents.previewAlt', 'Document preview')"
-              />
-              <span
-                v-else
-                class="verification-file-badge"
-                :class="`is-${documentPreviewMeta(documentRequestData).type}`"
-              >
-                {{ documentPreviewMeta(documentRequestData).label }}
-              </span>
-            </button>
-
-            <div class="verification-document-card__meta">
-              <div class="verification-document-card__title">
-                {{ documentRequestData.name || documentRequestData.document_data.number || text("admin.verifications.documents.defaultName", "Document") }}
-              </div>
-              <div class="verification-document-card__subtitle">
-                {{ documentRequestData.document_data.number || documentRequestData.id }}
-              </div>
-            </div>
-
-            <VerificationActions
-              :status="documentRequestData.state"
-              :disabled="!canUpdateVerifications"
-              @update-status="handleVerificationDocument($event, documentRequestData.id)"
-            />
-          </article>
-        </div>
-      </section>
-
-      <section
-        ref="payoutSectionRef"
-        class="verification-card"
-        :class="{ 'verification-card--highlighted': highlightedSection === 'payout' }"
-      >
-        <div class="verification-card__header">
-          <div class="verification-card__title-group">
-            <UiIconPaymentDetail />
-            <div>
-              <UiTextH5 class="verification-card__title">
-                {{ text("admin.verifications.firstDeposit.title", "First deposit") }}
-              </UiTextH5>
-              <div class="verification-card__subtitle">
-                {{ text("admin.verifications.firstDeposit.subtitle", "Calculated from the actual first client deposit.") }}
-              </div>
-            </div>
-          </div>
-
-          <span
-            class="verification-inline-badge"
-            :class="firstDeposit ? 'is-approved' : 'is-pending'"
-          >
-            {{ firstDeposit ? text("admin.verifications.firstDeposit.exists", "Deposit exists") : text("admin.verifications.firstDeposit.missing", "No deposit yet") }}
-          </span>
-        </div>
-
-        <div
-          v-if="firstDeposit"
-          class="verification-grid verification-grid--compact"
-        >
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.amount", "Amount") }}</span>
-            <span class="verification-grid__value">{{ formatMoney(firstDeposit.amount, firstDeposit.currency) }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.method", "Method") }}</span>
-            <span class="verification-grid__value">{{ paymentMethodName(firstDeposit) }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.status", "Status") }}</span>
-            <span class="verification-grid__value">{{ paymentStatusText(firstDeposit.status) }}</span>
-          </div>
-          <div class="verification-grid__item">
-            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.date", "Date") }}</span>
-            <span class="verification-grid__value">{{ firstDeposit.created_at || "-" }}</span>
-          </div>
-        </div>
-
-        <div
-          v-else
-          class="verification-card__empty"
-        >
-          {{ text("admin.verifications.firstDeposit.empty", "The client has no deposits yet.") }}
-        </div>
-      </section>
-    </template>
-
-    <template v-else-if="activeVerificationTab === 'payout'">
-      <section class="verification-card">
-        <div class="verification-card__header">
-          <div class="verification-card__title-group">
-            <UiIconPaymentDetail />
-            <div>
-              <UiTextH5 class="verification-card__title">
-                {{ text("admin.verifications.payout.title", "Payment details") }}
-              </UiTextH5>
-              <div class="verification-card__subtitle">
-                {{ text("admin.verifications.payout.subtitle", "Review payout details and attached documents.") }}
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 flex-wrap justify-end">
-            <div class="flex items-center gap-2 rounded-full border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-light)]/20 px-2 py-1">
-              <button
-                v-for="option in payoutArchivedFilterOptions"
-                :key="option.value"
-                type="button"
-                class="rounded-full px-3 py-1 text-xs font-semibold transition-colors"
-                :class="option.value === payoutArchivedFilter ? 'bg-[var(--ui-primary)] text-white' : 'text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-main)]'"
-                @click="setPayoutArchivedFilter(option.value)"
-              >
-                {{ option.label }}
-              </button>
-            </div>
-
-            <UiButtonDefault
-              state="info--small"
-              class="verification-card__refresh"
-              @click="handleRefreshActiveTab"
-            >
-              <UiIconUpdate v-if="!isPayoutLoading" />
-              <UiIconSpinnerDefault v-else />
-            </UiButtonDefault>
-          </div>
-        </div>
-
-        <div
-          v-if="payoutDetails.length === 0 && !isPayoutLoading"
-          class="verification-card__empty"
-        >
+  <div class="client-verification">
+    <div class="client-verification__header">
+      <div>
+        <h2>{{ text("admin.verifications.clientTimeline.title", "Verification timeline") }}</h2>
+        <p>
           {{
-            payoutArchivedFilter === "archived"
-              ? text("admin.verifications.payout.emptyArchived", "There are no archived payment details yet.")
-              : text("admin.verifications.payout.emptyActive", "There are no payout details yet.")
+            text(
+              "admin.verifications.clientTimeline.subtitle",
+              "Every profile, document and payment-detail change is shown as a separate review item."
+            )
           }}
+        </p>
+      </div>
+
+      <div class="client-verification__header-actions">
+        <span
+          class="verification-inline-status"
+          :class="hasPendingRequests ? 'verification-inline-status--warning' : 'verification-inline-status--success'">
+          <span class="verification-inline-status__dot" />
+          <span>
+            {{
+              hasPendingRequests
+                ? text("admin.verifications.clientTimeline.hasPending", "Pending review")
+                : text("admin.verifications.clientTimeline.noPending", "No pending review")
+            }}
+          </span>
+        </span>
+
+        <PrimeButton
+          icon="pi pi-refresh"
+          rounded
+          text
+          :loading="isAnyLoading"
+          :aria-label="text('admin.verifications.actions.refresh', 'Refresh')"
+          @click="handleRefreshAll" />
+      </div>
+    </div>
+
+    <div class="client-verification__summary-grid">
+      <PrimeCard
+        v-for="card in verificationSummaryCards"
+        :key="card.id"
+        class="verification-summary-card"
+        :class="`verification-summary-card--${card.kind}`">
+        <template #content>
+          <div class="verification-summary-card__body">
+            <span class="verification-summary-card__label">{{ card.label }}</span>
+            <strong class="verification-summary-card__value">{{ card.value }}</strong>
+            <span class="verification-summary-card__hint">{{ card.hint }}</span>
+          </div>
+        </template>
+      </PrimeCard>
+    </div>
+
+    <div class="client-verification__anchors" aria-hidden="true">
+      <span ref="profileSectionRef" />
+      <span ref="documentsSectionRef" />
+      <span ref="payoutSectionRef" />
+    </div>
+
+    <div
+      v-if="isInitialTimelineLoading"
+      class="verification-timeline">
+      <PrimeCard
+        v-for="item in 4"
+        :key="`verification-timeline-skeleton-${item}`"
+        class="verification-timeline-card verification-timeline-card--skeleton">
+        <template #content>
+          <div class="verification-timeline-card__inner">
+            <div class="verification-timeline-card__top">
+              <PrimeSkeleton shape="circle" size="40px" />
+              <div class="verification-timeline-card__main">
+                <PrimeSkeleton width="52%" height="18px" border-radius="8px" />
+                <PrimeSkeleton width="74%" height="12px" border-radius="999px" />
+              </div>
+              <PrimeSkeleton width="92px" height="26px" border-radius="999px" />
+            </div>
+            <PrimeSkeleton height="92px" border-radius="16px" />
+          </div>
+        </template>
+      </PrimeCard>
+    </div>
+
+    <PrimeCard
+      v-else-if="visibleVerificationTimelineItems.length === 0"
+      class="verification-empty-card">
+      <template #content>
+        <div class="verification-empty-card__body">
+          <i class="pi pi-check-circle" />
+          <strong>{{ text("admin.verifications.clientTimeline.emptyTitle", "No verification activity yet") }}</strong>
+          <span>{{ text("admin.verifications.clientTimeline.emptySubtitle", "Client changes and admin actions will appear here.") }}</span>
         </div>
+      </template>
+    </PrimeCard>
 
-        <div
-          v-else
-          class="verification-payout-list"
-        >
-          <article
-            v-for="paymentDetail in payoutDetails"
-            :key="paymentDetail.id"
-            class="verification-payout-card"
-          >
-            <div class="verification-payout-card__header">
-              <div class="verification-payout-card__title-group">
-                <div class="verification-payout-card__title">{{ paymentDetail.name || text("admin.verifications.payout.untitled", "Untitled payment detail") }}</div>
-                <div class="verification-payout-card__subtitle">
-                  {{ paymentDetail.paymentSystemName || text("admin.verifications.payout.paymentSystem", "Payment system") }}
-                  <span v-if="paymentDetail.updatedAt">· {{ paymentDetail.updatedAt }}</span>
-                </div>
+    <div
+      v-else
+      class="verification-timeline">
+      <PrimeCard
+        v-for="item in visibleVerificationTimelineItems"
+        :key="item.id"
+        class="verification-timeline-card"
+        :class="[
+          `verification-timeline-card--${item.kind}`,
+          `is-${item.status}`,
+          {
+            'is-actionable': item.actionable,
+            'is-highlighted': highlightedSection === item.section,
+            'is-unread': item.unread,
+          },
+        ]">
+        <template #content>
+          <div class="verification-timeline-card__inner">
+            <div class="verification-timeline-card__top">
+              <div class="verification-timeline-card__icon">
+                <i :class="item.icon" />
               </div>
 
-              <VerificationActions
-                v-if="!paymentDetail.isArchived"
-                :enable-comment="true"
-                :comment="resolvePayoutCommentValue(paymentDetail)"
-                :comment-open="isPayoutCommentOpen(paymentDetail.id)"
-                :status="paymentDetail.status"
-                :disabled="!canUpdatePaymentDetails"
-                @toggle-comment="togglePayoutComment(paymentDetail)"
-                @update-status="handleVerificationPayoutDetail($event, paymentDetail.id)"
-              />
-
-              <UiButtonDefault
-                v-if="canUpdatePaymentDetails"
-                state="info--outline--small"
-                @click="paymentDetail.isArchived ? handleRestorePayoutDetail(paymentDetail.id) : handleArchivePayoutDetail(paymentDetail.id)"
-              >
-                {{ paymentDetail.isArchived ? text("admin.verifications.payout.actions.restore", "Restore") : text("admin.verifications.payout.actions.archive", "Archive") }}
-              </UiButtonDefault>
-            </div>
-
-            <div class="verification-payout-card__body">
-              <div
-                v-if="paymentDetailPrimaryEntries(paymentDetail).length"
-                class="verification-payout-card__main"
-              >
-                <div
-                  v-for="entry in paymentDetailPrimaryEntries(paymentDetail)"
-                  :key="`${paymentDetail.id}:field:${entry.key}`"
-                  class="verification-payout-card__field"
-                >
-                  <span class="verification-payout-card__field-label">{{ entry.label }}</span>
-                  <span class="verification-payout-card__field-value">{{ entry.value }}</span>
+              <div class="verification-timeline-card__main">
+                <div class="verification-timeline-card__headline">
+                  <h3>{{ item.title }}</h3>
+                  <span
+                    class="verification-inline-status"
+                    :class="`verification-inline-status--${item.status}`">
+                    <span class="verification-inline-status__dot" />
+                    <span>{{ item.statusText }}</span>
+                  </span>
                 </div>
-              </div>
-
-              <div
-                v-if="paymentDetailLegacyEntries(paymentDetail).length"
-                class="verification-payout-card__legacy"
-              >
-                <div class="verification-payout-card__legacy-title">{{ text("admin.verifications.payout.legacy", "Legacy") }}</div>
-
-                <div class="verification-payout-card__legacy-list">
-                  <div
-                    v-for="entry in paymentDetailLegacyEntries(paymentDetail)"
-                    :key="`${paymentDetail.id}:legacy:${entry.key}`"
-                    class="verification-payout-card__legacy-row"
-                  >
-                    <span class="verification-payout-card__legacy-label">{{ entry.label }}</span>
-                    <span class="verification-payout-card__legacy-value">{{ entry.value }}</span>
-                  </div>
+                <p>{{ item.description }}</p>
+                <div class="verification-timeline-card__meta">
+                  <span>{{ item.actor }}</span>
+                  <span>{{ item.date || "-" }}</span>
+                  <span v-if="item.requestId">#{{ shortId(item.requestId) }}</span>
                 </div>
               </div>
             </div>
-
-            <transition name="comment-expand">
-              <div
-                v-if="isPayoutCommentOpen(paymentDetail.id)"
-                class="verification-comment-box"
-              >
-                <UiFormControl :label="t('admin.verifications.comment.label')">
-                  <UiTextarea
-                    :value="payoutCommentDraftMap[paymentDetail.id] || ''"
-                    @input="handlePayoutCommentInput(paymentDetail.id, $event)"
-                    class="verification-comment-box__textarea"
-                    :placeholder="t('admin.verifications.comment.placeholder')"
-                  />
-                </UiFormControl>
-
-                <div class="verification-comment-box__actions">
-                  <UiButtonDefault
-                    state="info--outline--small"
-                    @click="submitPayoutComment(paymentDetail.id)"
-                  >
-                    {{ t("admin.verifications.comment.save") }}
-                  </UiButtonDefault>
-                  <UiButtonDefault
-                    state="info--outline--small"
-                    @click="cancelPayoutComment(paymentDetail.id)"
-                  >
-                    {{ t("admin.verifications.comment.close") }}
-                  </UiButtonDefault>
-                </div>
-              </div>
-            </transition>
 
             <div
-              v-if="paymentDetail.documents.length > 0"
-              class="verification-payout-card__documents"
-            >
-              <span class="verification-payout-card__documents-label">{{ text("admin.verifications.documents.title", "Documents") }}</span>
+              v-if="item.changes.length"
+              class="verification-change-grid">
+              <div
+                v-for="change in item.changes"
+                :key="`${item.id}:${change.field}`"
+                class="verification-change-row">
+                <span class="verification-change-row__field">{{ profileFieldLabel(change.field) }}</span>
+                <span class="verification-change-row__value is-old">{{ formatHistoryValue(change.old) }}</span>
+                <i class="pi pi-arrow-right" />
+                <span class="verification-change-row__value is-new">{{ formatHistoryValue(change.new) }}</span>
+              </div>
+            </div>
+
+            <div
+              v-if="item.fields.length"
+              class="verification-field-grid">
+              <div
+                v-for="field in item.fields"
+                :key="`${item.id}:field:${field.key}`"
+                class="verification-field-card">
+                <span>{{ field.label }}</span>
+                <strong>{{ field.value || "-" }}</strong>
+              </div>
+            </div>
+
+            <div
+              v-if="item.documents.length"
+              class="verification-document-strip">
               <button
-                v-for="(paymentDetailDocument, documentIndex) in paymentDetail.documents"
-                :key="paymentDetail.id + ':' + paymentDetailDocument.path + ':' + documentIndex"
+                v-for="document in item.documents"
+                :key="`${item.id}:document:${document.id}`"
                 type="button"
-                class="verification-payout-card__document"
-                :class="`is-${paymentDetailDocumentPreviewMeta(paymentDetailDocument).type}`"
-                :disabled="isPayoutDocumentLoading(paymentDetail.id, documentIndex)"
-                @click="handleOpenPayoutDocument(paymentDetail.id, documentIndex)"
-              >
+                class="verification-document-chip"
+                :class="`is-${document.preview.type}`"
+                @click="openTimelineDocument(document)">
                 <img
-                  v-if="paymentDetailDocumentPreviewMeta(paymentDetailDocument).type === 'image' && paymentDetailDocumentPreviewMeta(paymentDetailDocument).src"
-                  :src="paymentDetailDocumentPreviewMeta(paymentDetailDocument).src"
-                  :alt="paymentDetailDocument.name || text('admin.verifications.documents.numberedPreviewAlt', 'Document #{number}', { number: documentIndex + 1 })"
-                />
+                  v-if="document.preview.type === 'image' && document.preview.src"
+                  :src="document.preview.src"
+                  :alt="document.label" />
                 <span
                   v-else
                   class="verification-file-badge"
-                  :class="`is-${paymentDetailDocumentPreviewMeta(paymentDetailDocument).type}`"
-                >
-                  {{ paymentDetailDocumentPreviewMeta(paymentDetailDocument).label }}
+                  :class="`is-${document.preview.type}`">
+                  {{ document.preview.label }}
                 </span>
+                <span>{{ document.label }}</span>
               </button>
             </div>
-          </article>
-        </div>
-      </section>
-    </template>
 
-    <template v-else>
-      <section class="verification-requests-pane">
-        <div class="verification-requests-pane__header">
-          <div class="verification-card__title-group">
-            <UiIconDocuments />
-            <div>
-              <UiTextH5 class="verification-card__title">
-                {{ text("admin.verifications.clientRequests.title", "Verification requests") }}
-              </UiTextH5>
-              <div class="verification-card__subtitle">
-                {{ text("admin.verifications.clientRequests.subtitle", "Review active client changes and the complete moderation history.") }}
-              </div>
+            <div
+              v-if="item.actionable"
+              class="verification-timeline-card__actions">
+              <PrimeButton
+                icon="pi pi-check"
+                :label="text('admin.verifications.actions.approve', 'Approve')"
+                size="small"
+                :loading="isTimelineItemUpdating(item)"
+                :disabled="isTimelineItemUpdating(item)"
+                @click="handleTimelineItemAction(item, 'approved')" />
+              <PrimeButton
+                icon="pi pi-times"
+                :label="text('admin.verifications.actions.reject', 'Reject')"
+                size="small"
+                severity="danger"
+                outlined
+                :loading="isTimelineItemUpdating(item)"
+                :disabled="isTimelineItemUpdating(item)"
+                @click="handleTimelineItemAction(item, 'rejected')" />
             </div>
           </div>
+        </template>
+      </PrimeCard>
 
-          <UiButtonDefault
-            state="info--small"
-            class="verification-card__refresh"
-            @click="handleRefreshActiveTab"
-          >
-            <UiIconUpdate v-if="!isRequestsLoading" />
-            <UiIconSpinnerDefault v-else />
-          </UiButtonDefault>
-        </div>
-
-        <div
-          v-if="isRequestsLoading"
-          class="verification-card__empty"
-        >
-          {{ text("admin.verifications.clientRequests.loading", "Loading verification requests...") }}
-        </div>
-
-        <div
-          v-else-if="sortedClientRequestRows.length === 0"
-          class="verification-card__empty"
-        >
-          {{ text("admin.verifications.clientRequests.empty", "This client has no verification requests yet.") }}
-        </div>
-
-        <div
-          v-else
-          class="verification-client-request-list"
-        >
-          <article
-            v-for="requestItem in sortedClientRequestRows"
-            :key="requestItem.id"
-            class="verification-client-request-card"
-            :class="{
-              'is-pending-row': requestItem.request_state === 'pending',
-              'is-unread-notification': hasUnreadVerificationSignal(requestItem.user_id),
-            }"
-          >
-            <div class="verification-client-request-card__body">
-              <div class="verification-client-request-card__top">
-                <div class="verification-client-request-card__title-wrap">
-                  <div class="verification-client-request-card__title">
-                    #{{ shortId(requestItem.id) }}
-                  </div>
-                  <span
-                    class="verification-inline-badge"
-                    :class="requestStateClass(requestItem.request_state)"
-                  >
-                    {{ requestStateText(requestItem.request_state) }}
-                  </span>
-                </div>
-
-                <div class="verification-client-request-card__meta">
-                  {{ requestItem.updated_at_human || requestItem.updated_at || "-" }}
-                </div>
-              </div>
-
-              <div class="verification-client-request-card__focus">
-                <template v-if="requestFocusItems(requestItem).length">
-                  <button
-                    v-for="item in requestFocusItems(requestItem)"
-                    :key="`${requestItem.id}:${item.id}`"
-                    type="button"
-                    class="verification-focus-link"
-                    :class="{ 'is-unread': hasUnreadVerificationSignal(requestItem.user_id, item.section) }"
-                    @click="navigateToVerificationSection(item.section)"
-                  >
-                    {{ item.label }}
-                  </button>
-                </template>
-                <span
-                  v-else
-                  class="verification-client-request-card__focus-muted"
-                >
-                  {{ text("admin.verifications.changes.none", "No active changes marked for review") }}
-                </span>
-              </div>
-
-              <div class="verification-client-request-card__previews">
-                <span
-                  v-for="(preview, previewIndex) in requestDocumentPreviews(requestItem)"
-                  :key="`${requestItem.id}:doc-preview:${previewIndex}:${preview.src || preview.label}`"
-                  class="verification-preview-chip"
-                  :class="`is-${preview.type}`"
-                >
-                  <img
-                    v-if="preview.type === 'image' && preview.src"
-                    :src="preview.src"
-                    :alt="text('admin.verifications.documents.previewAlt', 'Document preview')"
-                  />
-                  <span
-                  v-else
-                  class="verification-file-badge"
-                  :class="`is-${preview.type}`"
-                >
-                  {{ preview.label }}
-                  </span>
-                </span>
-
-                <span
-                  v-for="(preview, previewIndex) in requestPayoutPreviews(requestItem)"
-                  :key="`${requestItem.id}:payout-preview:${previewIndex}:${preview.src || preview.label}`"
-                  class="verification-preview-chip"
-                  :class="`is-${preview.type}`"
-                >
-                  <img
-                    v-if="preview.type === 'image' && preview.src"
-                    :src="preview.src"
-                    :alt="text('admin.verifications.payout.previewAlt', 'Payment detail preview')"
-                  />
-                  <span
-                    v-else
-                    class="verification-file-badge"
-                    :class="`is-${preview.type}`"
-                  >
-                  {{ preview.label }}
-                </span>
-              </span>
-            </div>
-
-              <div class="verification-client-request-history">
-                <div class="verification-client-request-history__header">
-                  <div>
-                    <strong>{{ text("admin.verifications.history.title", "Request history") }}</strong>
-                    <span>{{ text("admin.verifications.history.subtitle", "Newest actions are shown first.") }}</span>
-                  </div>
-                </div>
-
-                <div
-                  v-if="visibleVerificationHistoryRows.length === 0"
-                  class="verification-client-request-history__empty"
-                >
-                  {{ text("admin.verifications.history.empty", "No history yet.") }}
-                </div>
-
-                <div
-                  v-else
-                  class="verification-client-request-history__list"
-                >
-                  <article
-                    v-for="historyRow in visibleVerificationHistoryRows"
-                    :key="historyRow.id"
-                    class="verification-client-request-history__row"
-                  >
-                    <div class="verification-client-request-history__row-main">
-                      <span
-                        class="verification-inline-badge"
-                        :class="requestStateClass(historyRow.status)"
-                      >
-                        {{ statusText(historyRow.status) }}
-                      </span>
-                      <div>
-                        <strong>{{ historyRow.name }}</strong>
-                        <span>{{ historyActorText(historyRow) }} · {{ historyRow.date || "-" }}</span>
-                      </div>
-                    </div>
-
-                    <div
-                      v-if="historyChangeRows(historyRow).length"
-                      class="verification-client-request-history__changes"
-                    >
-                      <div
-                        v-for="change in historyChangeRows(historyRow)"
-                        :key="`${historyRow.id}:${change.field}`"
-                        class="verification-client-request-history__change"
-                      >
-                        <span>{{ profileFieldLabel(change.field) }}</span>
-                        <strong>{{ formatHistoryValue(change.old) }} → {{ formatHistoryValue(change.new) }}</strong>
-                      </div>
-                    </div>
-
-                    <div
-                      v-if="historyDocumentPreviews(historyRow).length"
-                      class="verification-client-request-history__documents"
-                    >
-                      <button
-                        v-for="preview in historyDocumentPreviews(historyRow)"
-                        :key="`${historyRow.id}:${preview.id}`"
-                        type="button"
-                        class="verification-client-request-history__document"
-                        @click="handleClientDocumentImage(preview.url)"
-                      >
-                        <img
-                          v-if="preview.preview.type === 'image' && preview.preview.src"
-                          :src="preview.preview.src"
-                          :alt="preview.label"
-                        />
-                        <span
-                          v-else
-                          class="verification-file-badge"
-                          :class="`is-${preview.preview.type}`"
-                        >
-                          {{ preview.preview.label }}
-                        </span>
-                      </button>
-                    </div>
-                  </article>
-
-                  <button
-                    v-if="hasMoreVerificationHistory"
-                    type="button"
-                    class="verification-client-request-history__load"
-                    @click="loadMoreVerificationHistory"
-                  >
-                    {{ text("admin.verifications.history.loadMore", "Load more") }}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <VerificationRequestStateActions
-              :state="requestItem.request_state"
-              :disabled="isRequestUpdating(requestItem.id)"
-              @update-state="handleRequestReviewUpdate(requestItem.id, $event)"
-            />
-          </article>
-        </div>
-      </section>
-    </template>
+      <button
+        v-if="hasMoreVerificationTimeline"
+        type="button"
+        class="verification-timeline__load"
+        @click="loadMoreVerificationHistory">
+        {{ text("admin.verifications.history.loadMore", "Load more") }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -861,6 +346,46 @@ interface VerificationPreviewMeta {
   label: string;
 }
 
+type VerificationTimelineKind = "profile" | "documents" | "payout" | "system";
+type VerificationTimelineAction = "profile" | "document" | "payout" | null;
+
+interface VerificationTimelineField {
+  key: string;
+  label: string;
+  value: string;
+}
+
+interface VerificationTimelineDocument {
+  id: string;
+  label: string;
+  url: string;
+  preview: VerificationPreviewMeta;
+  paymentDetailId?: string;
+  paymentDetailDocumentIndex?: number;
+}
+
+interface VerificationTimelineItem {
+  id: string;
+  kind: VerificationTimelineKind;
+  section: VerificationSectionTarget;
+  status: VerificationStatus;
+  statusText: string;
+  icon: string;
+  title: string;
+  description: string;
+  actor: string;
+  date: string;
+  sortTime: number;
+  requestId: string;
+  actionable: boolean;
+  actionType: VerificationTimelineAction;
+  actionId: string;
+  changes: VerificationHistoryChange[];
+  fields: VerificationTimelineField[];
+  documents: VerificationTimelineDocument[];
+  unread: boolean;
+}
+
 interface AdminVerificationUnreadNotification {
   id: string;
   userId: string;
@@ -910,6 +435,7 @@ const clientRequestRows = ref<ClientVerificationRequestRow[]>([]);
 const verificationHistoryRows = ref<VerificationHistoryRow[]>([]);
 const verificationHistoryVisibleCount = ref(10);
 const requestUpdatingState = reactive<Record<string, boolean>>({});
+const timelineUpdatingState = reactive<Record<string, boolean>>({});
 const highlightedSection = ref<VerificationSectionTarget | null>(null);
 const profileSectionRef = ref<HTMLElement | null>(null);
 const documentsSectionRef = ref<HTMLElement | null>(null);
@@ -1474,6 +1000,45 @@ const hasUnreadProfileSignals = computed(() => hasUnreadVerificationSignal(props
 const hasUnreadDocumentsSignals = computed(() => hasUnreadVerificationSignal(props.clientId, "documents"));
 const hasUnreadPayoutSignals = computed(() => hasUnreadVerificationSignal(props.clientId, "payout"));
 const hasUnreadRequestSignals = computed(() => hasUnreadVerificationSignal(props.clientId));
+const pendingDocuments = computed(() => documentsListRequestData.value.filter(document => document.state === "pending"));
+const pendingPayoutDetails = computed(() =>
+  payoutDetails.value.filter(paymentDetail => paymentDetail.status === "pending" && !paymentDetail.isArchived)
+);
+const isAnyLoading = computed(() => isLoading.value || isPayoutLoading.value || isRequestsLoading.value);
+const isInitialTimelineLoading = computed(() => isAnyLoading.value && verificationHistoryRows.value.length === 0 && clientRequestRows.value.length === 0);
+
+const verificationSummaryCards = computed(() => [
+  {
+    id: "pending_profile",
+    kind: hasPendingProfile.value ? "warning" : "success",
+    label: text("admin.verifications.clientTimeline.summary.profile", "Profile changes"),
+    value: hasPendingProfile.value ? "1" : "0",
+    hint: hasPendingProfile.value
+      ? text("admin.verifications.clientTimeline.summary.pending", "Waiting for review")
+      : text("admin.verifications.clientTimeline.summary.clear", "No pending changes"),
+  },
+  {
+    id: "pending_documents",
+    kind: pendingDocuments.value.length > 0 ? "warning" : "success",
+    label: text("admin.verifications.clientTimeline.summary.documents", "Documents"),
+    value: String(pendingDocuments.value.length),
+    hint: text("admin.verifications.clientTimeline.summary.pendingDocuments", "Documents waiting for moderation"),
+  },
+  {
+    id: "pending_payout",
+    kind: pendingPayoutDetails.value.length > 0 ? "warning" : "success",
+    label: text("admin.verifications.clientTimeline.summary.paymentDetails", "Payment details"),
+    value: String(pendingPayoutDetails.value.length),
+    hint: text("admin.verifications.clientTimeline.summary.pendingPaymentDetails", "Payment details waiting for moderation"),
+  },
+  {
+    id: "history",
+    kind: "info",
+    label: text("admin.verifications.clientTimeline.summary.history", "History records"),
+    value: String(verificationHistoryRows.value.length),
+    hint: text("admin.verifications.clientTimeline.summary.historyHint", "Newest records are shown first"),
+  },
+]);
 
 const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   id: VerificationSectionTarget;
@@ -1585,6 +1150,318 @@ const historyDocumentPreviews = (row: VerificationHistoryRow): Array<{
       preview: documentPreviewMeta(document),
     }));
 };
+
+const parseTimelineDate = (value: string | null | undefined): number => {
+  const normalized = String(value ?? "").trim();
+  if (normalized === "") {
+    return 0;
+  }
+
+  const nativeTime = new Date(normalized).getTime();
+  if (!Number.isNaN(nativeTime)) {
+    return nativeTime;
+  }
+
+  const match = normalized.match(/^(\d{2})\.(\d{2})\.(\d{2,4})\s+(\d{2}):(\d{2})$/);
+  if (!match) {
+    return 0;
+  }
+
+  const [, day, month, rawYear, hour, minute] = match;
+  const year = rawYear.length === 2 ? `20${rawYear}` : rawYear;
+
+  return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)).getTime();
+};
+
+const timelineKindFromHistoryKey = (key: string): VerificationTimelineKind => {
+  const normalized = String(key || "").toLowerCase();
+
+  if (normalized.includes("document") || normalized.includes("photo")) {
+    return "documents";
+  }
+
+  if (normalized.includes("payout")) {
+    return "payout";
+  }
+
+  if (normalized.includes("profile") || normalized.includes("step")) {
+    return "profile";
+  }
+
+  return "system";
+};
+
+const timelineSectionFromKind = (kind: VerificationTimelineKind): VerificationSectionTarget => {
+  if (kind === "documents") {
+    return "documents";
+  }
+
+  if (kind === "payout") {
+    return "payout";
+  }
+
+  return "profile";
+};
+
+const timelineIconFromKind = (kind: VerificationTimelineKind): string => {
+  switch (kind) {
+    case "documents":
+      return "pi pi-file";
+    case "payout":
+      return "pi pi-wallet";
+    case "system":
+      return "pi pi-history";
+    default:
+      return "pi pi-user";
+  }
+};
+
+const historyTitle = (row: VerificationHistoryRow): string => {
+  const key = `admin.verifications.historyKeys.${row.key}`;
+  return text(key, row.name || text("admin.verifications.history.generic", "Verification activity"));
+};
+
+const profileSnapshotFields = (): VerificationTimelineField[] =>
+  [
+    "first_name",
+    "last_name",
+    "mid_name",
+    "birthdate",
+    "phone",
+    "email",
+    "country",
+    "state",
+    "city",
+    "postal_code",
+    "address",
+  ].map(field => ({
+    key: field,
+    label: profileFieldLabel(field),
+    value: formatHistoryValue((props.userData as Record<string, unknown>)?.[field]),
+  }));
+
+const documentTimelineDocuments = (documents: VerificationDocumentItem[]): VerificationTimelineDocument[] =>
+  documents.map(document => ({
+    id: document.id,
+    label:
+      document.name ||
+      document.document_data.number ||
+      text("admin.verifications.documents.defaultName", "Document"),
+    url: document.document_data.full_url,
+    preview: documentPreviewMeta(document),
+  }));
+
+const payoutTimelineDocuments = (paymentDetail: AdminPaymentDetailItem): VerificationTimelineDocument[] =>
+  paymentDetail.documents.map((document, index) => ({
+    id: `${paymentDetail.id}:${index}`,
+    label:
+      document.name ||
+      text("admin.verifications.documents.numberedPreviewAlt", "Document #{number}", { number: index + 1 }),
+    url: resolvePayoutDocumentPreviewSrc(document) || document.path,
+    preview: paymentDetailDocumentPreviewMeta(document),
+    paymentDetailId: paymentDetail.id,
+    paymentDetailDocumentIndex: index,
+  }));
+
+const historyTimelineDocuments = (row: VerificationHistoryRow): VerificationTimelineDocument[] => {
+  const documents = historyDocumentPreviews(row).map(document => ({
+    id: document.id,
+    label: document.label,
+    url: document.url,
+    preview: document.preview,
+  }));
+
+  const payoutSnapshotDocuments = Array.isArray(row.data?.payment_detail_snapshot?.documents)
+    ? row.data.payment_detail_snapshot.documents
+    : Array.isArray(row.data?.documents)
+      ? row.data.documents
+      : [];
+
+  payoutSnapshotDocuments.forEach((rawDocument: any, index: number) => {
+    if (!rawDocument || typeof rawDocument !== "object") {
+      return;
+    }
+
+    const path = String(rawDocument.path ?? rawDocument.preview_url ?? rawDocument.previewUrl ?? "").trim();
+    const previewUrl = String(rawDocument.preview_url ?? rawDocument.previewUrl ?? "").trim();
+    if (!path && !previewUrl) {
+      return;
+    }
+
+    const preview = buildPreviewMeta({
+      src: previewUrl || path,
+      path,
+      mimeType: String(rawDocument.mime_type ?? rawDocument.mimeType ?? ""),
+      name: String(rawDocument.name ?? ""),
+    });
+
+    documents.push({
+      id: `${row.id}:payout-document:${index}`,
+      label:
+        String(rawDocument.name ?? "").trim() ||
+        text("admin.verifications.documents.numberedPreviewAlt", "Document #{number}", { number: index + 1 }),
+      url: previewUrl || path,
+      preview,
+    });
+  });
+
+  return documents;
+};
+
+const historyTimelineFields = (row: VerificationHistoryRow): VerificationTimelineField[] => {
+  const snapshot = row.data?.payment_detail_snapshot;
+  const source =
+    snapshot?.data?.fields && typeof snapshot.data.fields === "object"
+      ? snapshot.data.fields
+      : row.data?.payment_detail?.data && typeof row.data.payment_detail.data === "object"
+        ? row.data.payment_detail.data
+        : null;
+
+  if (!source || typeof source !== "object" || Array.isArray(source)) {
+    return [];
+  }
+
+  return Object.entries(source as Record<string, unknown>)
+    .map(([key, value]) => ({
+      key,
+      label: paymentFieldLabel(key),
+      value: formatPaymentValue(value),
+    }))
+    .filter(field => field.value !== "");
+};
+
+const pendingTimelineItems = computed<VerificationTimelineItem[]>(() => {
+  const request = activePendingRequest.value;
+  const items: VerificationTimelineItem[] = [];
+  const requestId = request?.id ?? "";
+  const requestDate = request?.updated_at_human || request?.updated_at || "";
+  const requestSortTime = parseTimelineDate(request?.updated_at);
+
+  if (request && requestHasProfileToReview(request)) {
+    const latestProfileHistory = verificationHistoryRows.value.find(row => row.key === "profile_submitted");
+    const changes = latestProfileHistory ? historyChangeRows(latestProfileHistory) : [];
+
+    items.push({
+      id: `pending-profile-${request.id}`,
+      kind: "profile",
+      section: "profile",
+      status: "pending",
+      statusText: statusText("pending"),
+      icon: "pi pi-user-edit",
+      title: text("admin.verifications.clientTimeline.items.profileTitle", "Profile data requires review"),
+      description: text(
+        "admin.verifications.clientTimeline.items.profileDescription",
+        "Client changed profile data. Approve to keep it or reject to roll back logged changes."
+      ),
+      actor: latestProfileHistory ? historyActorText(latestProfileHistory) : text("admin.verifications.history.actorClient", "Client"),
+      date: latestProfileHistory?.date || requestDate,
+      sortTime: parseTimelineDate(latestProfileHistory?.date) || requestSortTime,
+      requestId,
+      actionable: canUpdateVerifications.value,
+      actionType: "profile",
+      actionId: request.id,
+      changes,
+      fields: changes.length ? [] : profileSnapshotFields(),
+      documents: [],
+      unread: hasUnreadProfileSignals.value,
+    });
+  }
+
+  pendingDocuments.value.forEach(document => {
+    items.push({
+      id: `pending-document-${document.id}`,
+      kind: "documents",
+      section: "documents",
+      status: document.state,
+      statusText: statusText(document.state),
+      icon: "pi pi-file-check",
+      title:
+        document.name ||
+        document.document_data.number ||
+        text("admin.verifications.clientTimeline.items.documentTitle", "Document requires review"),
+      description: text("admin.verifications.clientTimeline.items.documentDescription", "Client uploaded a document for identity verification."),
+      actor: text("admin.verifications.history.actorClient", "Client"),
+      date: requestDate,
+      sortTime: requestSortTime,
+      requestId,
+      actionable: canUpdateVerifications.value,
+      actionType: "document",
+      actionId: document.id,
+      changes: [],
+      fields: [],
+      documents: documentTimelineDocuments([document]),
+      unread: hasUnreadDocumentsSignals.value,
+    });
+  });
+
+  pendingPayoutDetails.value.forEach(paymentDetail => {
+    items.push({
+      id: `pending-payout-${paymentDetail.id}`,
+      kind: "payout",
+      section: "payout",
+      status: paymentDetail.status,
+      statusText: statusText(paymentDetail.status),
+      icon: "pi pi-wallet",
+      title: paymentDetail.name || text("admin.verifications.clientTimeline.items.payoutTitle", "Payment detail requires review"),
+      description:
+        paymentDetail.paymentSystemName ||
+        text("admin.verifications.clientTimeline.items.payoutDescription", "Client submitted or updated payment details."),
+      actor: text("admin.verifications.history.actorClient", "Client"),
+      date: paymentDetail.updatedAt || requestDate,
+      sortTime: parseTimelineDate(paymentDetail.updatedAt) || requestSortTime,
+      requestId,
+      actionable: canUpdatePaymentDetails.value,
+      actionType: "payout",
+      actionId: paymentDetail.id,
+      changes: [],
+      fields: paymentDetailPrimaryEntries(paymentDetail),
+      documents: payoutTimelineDocuments(paymentDetail),
+      unread: hasUnreadPayoutSignals.value,
+    });
+  });
+
+  return items;
+});
+
+const historyTimelineItems = computed<VerificationTimelineItem[]>(() =>
+  verificationHistoryRows.value.map(row => {
+    const kind = timelineKindFromHistoryKey(row.key);
+    const section = timelineSectionFromKind(kind);
+
+    return {
+      id: `history-${row.id}`,
+      kind,
+      section,
+      status: row.status,
+      statusText: statusText(row.status),
+      icon: timelineIconFromKind(kind),
+      title: historyTitle(row),
+      description: text("admin.verifications.clientTimeline.items.historyDescription", "Recorded verification activity."),
+      actor: historyActorText(row),
+      date: row.date,
+      sortTime: parseTimelineDate(row.date),
+      requestId: "",
+      actionable: false,
+      actionType: null,
+      actionId: row.id,
+      changes: historyChangeRows(row),
+      fields: historyTimelineFields(row),
+      documents: historyTimelineDocuments(row),
+      unread: false,
+    };
+  })
+);
+
+const visibleVerificationTimelineItems = computed(() =>
+  [
+    ...pendingTimelineItems.value,
+    ...historyTimelineItems.value.slice(0, verificationHistoryVisibleCount.value),
+  ].sort((left, right) => right.sortTime - left.sortTime)
+);
+
+const hasMoreVerificationTimeline = computed(() =>
+  historyTimelineItems.value.length > verificationHistoryVisibleCount.value
+);
 
 const profileFieldLabel = (field: string): string => {
   const key = `admin.verifications.profileFields.${field}`;
@@ -1767,6 +1644,58 @@ const handleRefreshActiveTab = async () => {
   }
 
   await loadVerificationData();
+};
+
+const handleRefreshAll = async (): Promise<void> => {
+  await Promise.all([
+    loadVerificationData(),
+    loadPayoutVerificationData(),
+    loadClientVerificationRequests(),
+    loadUnreadVerificationNotifications(),
+  ]);
+};
+
+const getTimelineUpdateKey = (item: VerificationTimelineItem): string => `${item.actionType || "history"}:${item.actionId}`;
+
+const isTimelineItemUpdating = (item: VerificationTimelineItem): boolean =>
+  Boolean(timelineUpdatingState[getTimelineUpdateKey(item)]);
+
+const handleTimelineItemAction = async (item: VerificationTimelineItem, status: VerificationStatus): Promise<void> => {
+  if (!item.actionable || item.actionType === null) {
+    return;
+  }
+
+  const updateKey = getTimelineUpdateKey(item);
+  timelineUpdatingState[updateKey] = true;
+
+  try {
+    if (item.actionType === "profile") {
+      await handleVerificationProfile({ status, comment: "" });
+      return;
+    }
+
+    if (item.actionType === "document") {
+      await handleVerificationDocument({ status, comment: "" }, item.actionId);
+      return;
+    }
+
+    if (item.actionType === "payout") {
+      await handleVerificationPayoutDetail({ status, comment: "" }, item.actionId);
+    }
+  } finally {
+    delete timelineUpdatingState[updateKey];
+  }
+};
+
+const openTimelineDocument = async (document: VerificationTimelineDocument): Promise<void> => {
+  if (document.paymentDetailId && typeof document.paymentDetailDocumentIndex === "number") {
+    await handleOpenPayoutDocument(document.paymentDetailId, document.paymentDetailDocumentIndex);
+    return;
+  }
+
+  if (document.url) {
+    window.open(document.url, "_blank", "noopener,noreferrer");
+  }
 };
 
 const toggleInfoComment = () => {
@@ -3005,6 +2934,565 @@ onBeforeUnmount(() => {
 
   .verification-payout-card__main {
     grid-template-columns: 1fr;
+  }
+}
+
+.client-verification {
+  --verification-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
+  --verification-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
+  --verification-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+  --verification-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 20%, transparent);
+
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  color: var(--ui-text-main);
+}
+
+.client-verification__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.client-verification__header h2 {
+  margin: 0;
+  color: var(--ui-text-main);
+  font-size: clamp(22px, 1.8vw, 30px);
+  font-weight: 850;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+.client-verification__header p {
+  max-width: 820px;
+  margin: 6px 0 0;
+  color: var(--ui-text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.client-verification__header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.client-verification__summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.verification-summary-card,
+.verification-timeline-card,
+.verification-empty-card {
+  --verification-accent: var(--ui-primary-main);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 100%;
+  border: 1px solid var(--verification-glass-border);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--verification-accent) 10%, transparent), transparent 38%),
+    linear-gradient(145deg, var(--verification-glass-bg), var(--verification-glass-bg-strong));
+  box-shadow: var(--verification-glass-shadow);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.verification-summary-card :deep(.p-card-body),
+.verification-summary-card :deep(.p-card-content),
+.verification-timeline-card :deep(.p-card-body),
+.verification-timeline-card :deep(.p-card-content),
+.verification-empty-card :deep(.p-card-body),
+.verification-empty-card :deep(.p-card-content) {
+  padding: 0;
+}
+
+.verification-summary-card::after,
+.verification-timeline-card::after,
+.verification-empty-card::after {
+  content: "";
+  position: absolute;
+  inset: -30% auto -30% -52%;
+  z-index: 0;
+  width: 46%;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 13%, transparent), transparent);
+  opacity: 0;
+  transform: rotate(12deg) translateX(-35%);
+}
+
+.verification-summary-card:hover,
+.verification-timeline-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--verification-accent) 34%, var(--color-stroke-ui-light));
+  box-shadow: 0 22px 68px color-mix(in srgb, var(--verification-accent) 12%, #000000 20%);
+}
+
+.verification-summary-card:hover::after,
+.verification-timeline-card:hover::after {
+  animation: verification-glass-glint 1.1s ease both;
+}
+
+.verification-summary-card--warning,
+.verification-timeline-card--documents {
+  --verification-accent: var(--color-warning);
+}
+
+.verification-summary-card--success,
+.verification-timeline-card--profile {
+  --verification-accent: var(--color-success);
+}
+
+.verification-summary-card--info,
+.verification-timeline-card--payout {
+  --verification-accent: var(--color-info);
+}
+
+.verification-timeline-card--system {
+  --verification-accent: var(--ui-primary-main);
+}
+
+.verification-summary-card__body {
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 13px;
+}
+
+.verification-summary-card__label,
+.verification-summary-card__hint {
+  color: var(--ui-text-secondary);
+  font-size: 11px;
+  font-weight: 720;
+  line-height: 1.35;
+}
+
+.verification-summary-card__label {
+  font-weight: 780;
+  letter-spacing: 0.015em;
+}
+
+.verification-summary-card__value {
+  color: var(--ui-text-main);
+  font-size: clamp(26px, 2vw, 34px);
+  font-weight: 880;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.client-verification__anchors {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.verification-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.verification-timeline-card.is-highlighted {
+  border-color: color-mix(in srgb, var(--ui-primary-main) 48%, var(--color-stroke-ui-light));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 20%, transparent),
+    0 22px 62px color-mix(in srgb, var(--ui-primary-main) 14%, #000000 18%);
+}
+
+.verification-timeline-card.is-unread {
+  border-color: color-mix(in srgb, var(--color-warning) 48%, var(--color-stroke-ui-light));
+}
+
+.verification-timeline-card__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 13px;
+}
+
+.verification-timeline-card__top {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 11px;
+  align-items: flex-start;
+}
+
+.verification-timeline-card__icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: var(--verification-accent);
+  background: color-mix(in srgb, var(--verification-accent) 13%, transparent);
+}
+
+.verification-timeline-card__main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.verification-timeline-card__headline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.verification-timeline-card__headline h3 {
+  margin: 0;
+  color: var(--ui-text-main);
+  font-size: 16px;
+  font-weight: 840;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.verification-timeline-card__main p {
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.verification-timeline-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: var(--ui-text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.verification-timeline-card__meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: 7px;
+  color: color-mix(in srgb, var(--ui-text-secondary) 70%, transparent);
+}
+
+.verification-inline-status {
+  --status-color: var(--ui-text-secondary);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  color: var(--status-color);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.verification-inline-status__dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 999px;
+  background: var(--status-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
+}
+
+.verification-inline-status--approved,
+.verification-inline-status--success {
+  --status-color: var(--color-success);
+}
+
+.verification-inline-status--pending,
+.verification-inline-status--warning {
+  --status-color: var(--color-warning);
+}
+
+.verification-inline-status--rejected,
+.verification-inline-status--danger {
+  --status-color: var(--color-danger);
+}
+
+.verification-change-grid {
+  display: grid;
+  gap: 7px;
+}
+
+.verification-change-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.7fr) minmax(0, 1fr) 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
+}
+
+.verification-change-row__field {
+  color: var(--ui-text-secondary);
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.verification-change-row__value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ui-text-main);
+  font-size: 12px;
+  font-weight: 780;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.verification-change-row__value.is-old {
+  color: var(--ui-text-secondary);
+}
+
+.verification-change-row__value.is-new {
+  color: var(--ui-text-main);
+}
+
+.verification-change-row .pi {
+  color: var(--ui-primary-main);
+  font-size: 11px;
+}
+
+.verification-field-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.verification-field-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 62px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
+}
+
+.verification-field-card span {
+  color: var(--ui-text-secondary);
+  font-size: 11px;
+  font-weight: 720;
+}
+
+.verification-field-card strong {
+  color: var(--ui-text-main);
+  font-size: 12px;
+  font-weight: 800;
+  word-break: break-word;
+}
+
+.verification-document-strip {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.verification-document-chip {
+  min-width: 180px;
+  max-width: 260px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
+  color: var(--ui-text-main);
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.verification-document-chip:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
+  background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-card));
+}
+
+.verification-document-chip img,
+.verification-document-chip .verification-file-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+}
+
+.verification-document-chip img {
+  object-fit: cover;
+}
+
+.verification-document-chip > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.verification-file-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-text-main);
+  background: color-mix(in srgb, var(--ui-primary-main) 9%, var(--ui-background-card));
+  font-size: 10px;
+  font-weight: 860;
+  letter-spacing: 0.06em;
+}
+
+.verification-file-badge.is-pdf {
+  color: var(--color-danger);
+}
+
+.verification-file-badge.is-text {
+  color: var(--color-info);
+}
+
+.verification-file-badge.is-file {
+  color: var(--ui-text-secondary);
+}
+
+.verification-timeline-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.verification-empty-card__body {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px;
+  color: var(--ui-text-secondary);
+  text-align: center;
+}
+
+.verification-empty-card__body .pi {
+  color: var(--color-success);
+  font-size: 30px;
+}
+
+.verification-empty-card__body strong {
+  color: var(--ui-text-main);
+  font-size: 17px;
+  font-weight: 840;
+}
+
+.verification-empty-card__body span {
+  max-width: 420px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.verification-timeline__load {
+  align-self: center;
+  padding: 6px 0;
+  color: var(--ui-primary-main);
+  font-size: 13px;
+  font-weight: 820;
+}
+
+.verification-timeline__load:hover {
+  text-decoration: underline;
+}
+
+@keyframes verification-glass-glint {
+  0% {
+    opacity: 0;
+    transform: rotate(12deg) translateX(-45%);
+  }
+  35% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(12deg) translateX(330%);
+  }
+}
+
+@media (max-width: 1180px) {
+  .client-verification__summary-grid,
+  .verification-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .client-verification__header,
+  .verification-timeline-card__headline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .client-verification__header {
+    display: flex;
+  }
+
+  .client-verification__header-actions {
+    justify-content: flex-start;
+  }
+
+  .verification-change-row {
+    grid-template-columns: 1fr;
+  }
+
+  .verification-change-row .pi {
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .client-verification {
+    padding: 12px;
+  }
+
+  .client-verification__summary-grid,
+  .verification-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .verification-timeline-card__top {
+    grid-template-columns: 1fr;
+  }
+
+  .verification-document-chip {
+    width: 100%;
+    max-width: none;
   }
 }
 </style>

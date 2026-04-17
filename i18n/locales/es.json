@@ -1391,8 +1391,12 @@
         "subtitle": "Lista de clientes"
       },
       "tabs": {
-        "settings": "Settings",
-        "security": "Security"
+        "settings": "Configuración",
+        "security": "Seguridad",
+        "kyc": "KYC",
+        "metrics": "Métricas",
+        "verification": "Verificación",
+        "referrals": "Referidos"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1441,6 +1445,131 @@
           "disableSuccess": "La 2FA se deshabilitó correctamente.",
           "disableError": "No se pudo deshabilitar la 2FA."
         }
+      },
+      "status": {
+        "active": "Activo",
+        "blocked": "Bloqueado"
+      },
+      "detail": {
+        "unknownClient": "Cliente desconocido"
+      },
+      "tabsDescription": {
+        "kyc": "Identidad del cliente, acceso e historial de visitas.",
+        "metrics": "Actividad online, sesiones y analítica de dispositivos.",
+        "verification": "Cronología de moderación del perfil, documentos y datos de pago.",
+        "referrals": "Red de referidos y recompensas del cliente.",
+        "settings": "Soporte del cliente y configuración del gabinete.",
+        "security": "Controles de contraseña y autenticación de dos factores."
+      },
+      "common": {
+        "emptyValue": "-"
+      },
+      "kyc": {
+        "profile": {
+          "title": "Perfil del cliente",
+          "description": "Identidad, contactos y controles de acceso.",
+          "photoMissing": "Foto no cargada",
+          "birthdateMissing": "Fecha de nacimiento no indicada",
+          "accessBlocked": "Acceso bloqueado",
+          "accessActive": "Acceso activo",
+          "emailVerifiedAt": "Email verificado el",
+          "phone": "Teléfono",
+          "createdAt": "Creado el",
+          "blockedAt": "Bloqueado el"
+        },
+        "history": {
+          "title": "Historial de visitas",
+          "description": "Últimos accesos del cliente con IP, dispositivo y navegador.",
+          "emptyTitle": "Aún no hay visitas",
+          "emptyDescription": "Los accesos reales aparecerán aquí cuando el cliente entre al gabinete.",
+          "locationUnknown": "Ubicación desconocida",
+          "loadFailed": "No se pudo cargar el historial de visitas.",
+          "device": {
+            "mobile": "Móvil",
+            "tablet": "Tablet",
+            "desktop": "Escritorio"
+          }
+        },
+        "actions": {
+          "saving": "Guardando...",
+          "block": "Bloquear",
+          "unblock": "Desbloquear",
+          "preparingLogin": "Preparando acceso...",
+          "impersonate": "Entrar como cliente",
+          "refreshHistory": "Actualizar historial",
+          "loadMore": "Cargar más"
+        },
+        "confirm": {
+          "block": "¿Bloquear a este cliente? El acceso al gabinete se cerrará.",
+          "unblock": "¿Desbloquear a este cliente?"
+        },
+        "toasts": {
+          "blocked": "Cliente bloqueado.",
+          "unblocked": "Cliente desbloqueado.",
+          "blockFailed": "No se pudo cambiar el estado de bloqueo.",
+          "authLinkMissing": "Falta el enlace de acceso al gabinete.",
+          "impersonationStarted": "Ventana del gabinete abierta. Entrando como cliente.",
+          "impersonationFailed": "No se pudo entrar como cliente."
+        }
+      },
+      "metrics": {
+        "filters": {
+          "from": "Desde",
+          "to": "Hasta",
+          "bucket": "Paso",
+          "device": "Dispositivo",
+          "browser": "Navegador",
+          "os": "OS"
+        },
+        "actions": {
+          "refresh": "Actualizar"
+        },
+        "bucket": {
+          "day": "Por días",
+          "hour": "Por horas"
+        },
+        "toasts": {
+          "loadFailed": "No se pudieron cargar las métricas del cliente."
+        },
+        "summary": {
+          "totalOnline": "Total online",
+          "totalOnlineHint": "Tiempo total de presencia",
+          "sessions": "Sesiones",
+          "sessionsHint": "Para el periodo elegido",
+          "averageSession": "Sesión media",
+          "averageSessionHint": "Duración media",
+          "lastSeen": "Último online",
+          "clientOnline": "El cliente está ahora en el gabinete",
+          "clientOffline": "El cliente no está ahora en el gabinete"
+        },
+        "timeline": {
+          "title": "Online por periodo",
+          "description": "Horas del cliente dentro del gabinete.",
+          "seriesOnlineHours": "Online, horas"
+        },
+        "breakdowns": {
+          "title": "Desglose por dispositivo y navegador",
+          "description": "Qué usó el cliente en el gabinete.",
+          "devices": "Dispositivos",
+          "browsers": "Navegadores",
+          "os": "OS"
+        },
+        "sessions": {
+          "title": "Sesiones online recientes",
+          "description": "Cuándo y desde dónde entró el cliente.",
+          "empty": "Aún no hay sesiones",
+          "startedAt": "Inicio",
+          "endedAt": "Fin",
+          "locationUnknown": "Ubicación desconocida"
+        },
+        "empty": {
+          "noData": "Sin datos"
+        },
+        "sessionsCount": "{count} sesiones",
+        "units": {
+          "hoursShort": "h",
+          "minutesShort": "m"
+        }
       }
     },
     "verifications": {
@@ -1459,7 +1588,9 @@
         "refresh": "Actualizar",
         "retry": "Reintentar",
         "approveAll": "Aprobar todo",
-        "rejectAll": "Rechazar todo"
+        "rejectAll": "Rechazar todo",
+        "approve": "Aprobar",
+        "reject": "Rechazar"
       },
       "filters": {
         "active": "Filtro",
@@ -1536,7 +1667,8 @@
         "loadMore": "Cargar más",
         "actorAdmin": "Administrador",
         "actorClient": "Cliente",
-        "actorSystem": "Sistema"
+        "actorSystem": "Sistema",
+        "generic": "Actividad de verificación"
       },
       "tabs": {
         "client": "Verificación general",
@@ -1626,6 +1758,54 @@
           "currency": "Currency",
           "comment": "Comment"
         }
+      },
+      "clientTimeline": {
+        "title": "Cronología de verificación",
+        "subtitle": "Cada cambio de perfil, documento o dato de pago se muestra como un elemento de revisión separado.",
+        "hasPending": "Revisión pendiente",
+        "noPending": "Sin revisiones pendientes",
+        "emptyTitle": "Aún no hay actividad de verificación",
+        "emptySubtitle": "Los cambios del cliente y las acciones del administrador aparecerán aquí.",
+        "summary": {
+          "profile": "Cambios de perfil",
+          "documents": "Documentos",
+          "paymentDetails": "Datos de pago",
+          "history": "Registros de historial",
+          "pending": "Esperando revisión",
+          "clear": "Sin cambios pendientes",
+          "pendingDocuments": "Documentos esperando moderación",
+          "pendingPaymentDetails": "Datos de pago esperando moderación",
+          "historyHint": "Los registros más nuevos se muestran primero"
+        },
+        "items": {
+          "profileTitle": "Los datos del perfil requieren revisión",
+          "profileDescription": "El cliente cambió los datos del perfil. Aprueba para conservarlos o rechaza para revertir los cambios registrados.",
+          "documentTitle": "El documento requiere revisión",
+          "documentDescription": "El cliente cargó un documento para verificar su identidad.",
+          "payoutTitle": "El dato de pago requiere revisión",
+          "payoutDescription": "El cliente envió o actualizó datos de pago.",
+          "historyDescription": "Actividad de verificación registrada."
+        }
+      },
+      "historyKeys": {
+        "profile_submitted": "Datos del perfil enviados",
+        "documents_uploaded": "Documentos cargados",
+        "document_deleted": "Documento eliminado",
+        "photo_uploaded": "Foto de perfil cargada",
+        "photo_deleted": "Foto de perfil eliminada",
+        "email_verification_sent": "Verificación de email enviada",
+        "documents_bulk_updated": "Estado de documentos actualizado",
+        "document_updated": "Estado del documento actualizado",
+        "payout_detail_submitted": "Dato de pago enviado",
+        "payout_detail_updated": "Dato de pago actualizado",
+        "payout_detail_status_updated": "Estado del dato de pago actualizado",
+        "payout_detail_comment_updated": "Comentario del dato de pago actualizado",
+        "payout_detail_deleted": "Dato de pago archivado",
+        "payout_detail_restored": "Dato de pago restaurado",
+        "step_status_auto_synced": "Paso de verificación sincronizado",
+        "step_status_updated": "Estado del paso de verificación actualizado",
+        "step_status_reset": "Paso de verificación reiniciado",
+        "step_comment_cleared": "Comentario de verificación borrado"
       }
     },
     "dashboard": {

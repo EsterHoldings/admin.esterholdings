@@ -1,50 +1,79 @@
 <template>
-  <UiContainer>
-    <div>
-      <div class="mb-5">
-        <UiTextH4 class="text-[var(--ui-text-main)]"> {{ userData.first_name }} {{ userData.last_name }} </UiTextH4>
-        <UiTextParagraph class="text-[var(--ui-text-secondary)]">{{ userData.email }}</UiTextParagraph>
+  <div class="client-detail">
+    <div class="client-detail__header">
+      <div class="client-detail__identity">
+        <div class="client-detail__avatar">
+          <img
+            v-if="userData.photo_url"
+            :src="userData.photo_url"
+            :alt="clientName" />
+          <span v-else>{{ clientInitials }}</span>
+        </div>
+
+        <div class="client-detail__heading">
+          <h1 class="client-detail__title">{{ clientName }}</h1>
+          <p class="client-detail__subtitle">{{ userData.email || "-" }}</p>
+        </div>
       </div>
 
-      <PanelDefault>
-        <div class="flex flex-row max-lg:flex-col">
-          <div
-            class="w-[240px] max-lg:w-full border-r max-lg:border-r-0 max-lg:border-b border-[var(--ui-primary-main)] p-2 max-lg:p-2">
-            <TabsAsList
-              :tabsList="tabsList"
-              @selectTab="handleActiveTab"
-              :activeTabIndex="activeTabIndex" />
-          </div>
-
-          <div class="flex-1 min-w-0">
-            <Transition
-              enter-active-class="transition ease-linear duration-100"
-              enter-from-class="opacity-0 translate-x-4"
-              enter-to-class="opacity-100 translate-x-0"
-              leave-active-class="transition ease-linear duration-100"
-              leave-from-class="opacity-100 translate-x-0"
-              leave-to-class="opacity-0 -translate-x-4"
-              mode="out-in">
-              <div>
-                <div
-                  class="text-[--ui-text-main] h-[66px] w-full pl-5 pr-5 border-b border-solid border-[var(--ui-primary-main)] flex items-center justify-start">
-                  {{ tabsList[activeTabIndex].label }}
-                </div>
-                <div class="p-5 overflow-y-auto overflow-x-hidden">
-                  <component
-                    :is="tabsList[activeTabIndex].component"
-                    :key="activeTabIndex"
-                    :clientId="clientId"
-                    :userData="userData"
-                    @refresh-client="loadData" />
-                </div>
-              </div>
-            </Transition>
-          </div>
-        </div>
-      </PanelDefault>
+      <div class="client-detail__status">
+        <span
+          class="client-detail__status-dot"
+          :class="userData.is_blocked ? 'is-danger' : 'is-success'" />
+        <span>
+          {{
+            userData.is_blocked
+              ? resolveText("admin.clients.status.blocked", "Blocked")
+              : resolveText("admin.clients.status.active", "Active")
+          }}
+        </span>
+      </div>
     </div>
-  </UiContainer>
+
+    <PrimeCard class="client-detail-card">
+      <template #content>
+        <div class="client-detail__layout">
+          <aside class="client-detail__nav">
+            <PrimeButton
+              v-for="(tab, index) in tabsList"
+              :key="tab.id"
+              type="button"
+              class="client-detail__nav-button"
+              :class="{ 'is-active': activeTabIndex === index }"
+              :icon="tab.icon"
+              :label="tab.label"
+              text
+              @click="handleActiveTab(index)" />
+          </aside>
+
+          <main class="client-detail__content">
+            <div class="client-detail__content-header">
+              <div>
+                <h2>{{ tabsList[activeTabIndex]?.label }}</h2>
+                <p>{{ tabsList[activeTabIndex]?.description }}</p>
+              </div>
+            </div>
+
+            <Transition
+              enter-active-class="transition ease-out duration-150"
+              enter-from-class="opacity-0 translate-y-2"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition ease-in duration-100"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-1"
+              mode="out-in">
+              <component
+                :is="tabsList[activeTabIndex]?.component"
+                :key="activeTabIndex"
+                :clientId="clientId"
+                :userData="userData"
+                @refresh-client="loadData" />
+            </Transition>
+          </main>
+        </div>
+      </template>
+    </PrimeCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -61,11 +90,6 @@
   import TabSecurity from "~/pages/admin/clients/[id]/components/TabSecurity.vue";
   import TabSettings from "~/pages/admin/clients/[id]/components/TabSettings.vue";
   import TabVerification from "~/pages/admin/clients/[id]/components/TabVerification.vue";
-  import TabsAsList from "~/components/block/tabs/TabsAsList.vue";
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-  import UiContainer from "~/components/ui/UiContainer.vue";
-  import UiTextH4 from "~/components/ui/UiTextH4.vue";
-  import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
 
   definePageMeta({
     middleware: ["admin-middleware"],
@@ -132,20 +156,72 @@
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-clients")
   );
 
+  const clientName = computed(() => {
+    const name = [userData.first_name, userData.last_name, userData.mid_name]
+      .map(value => String(value ?? "").trim())
+      .filter(Boolean)
+      .join(" ");
+
+    return name || userData.email || resolveText("admin.clients.detail.unknownClient", "Unknown client");
+  });
+
+  const clientInitials = computed(() => {
+    const parts = clientName.value.split(/\s+/).filter(Boolean);
+    const initials = parts.slice(0, 2).map(part => part[0]).join("");
+
+    return initials.toUpperCase() || "CL";
+  });
+
   const tabsList = computed(() => [
-    { label: "KYC", component: TabKYC },
-    { label: "Метрики", component: TabMetrics },
+    {
+      id: "kyc",
+      label: resolveText("admin.clients.tabs.kyc", "KYC"),
+      description: resolveText("admin.clients.tabsDescription.kyc", "Client identity, access and visit history."),
+      icon: "pi pi-id-card",
+      component: TabKYC,
+    },
+    {
+      id: "metrics",
+      label: resolveText("admin.clients.tabs.metrics", "Metrics"),
+      description: resolveText("admin.clients.tabsDescription.metrics", "Online activity, sessions and device analytics."),
+      icon: "pi pi-chart-line",
+      component: TabMetrics,
+    },
     ...(canViewClientVerification.value
-      ? [{ label: resolveText("admin.clients.tabs.verification", "Verification"), component: TabVerification }]
+      ? [{
+          id: "verification",
+          label: resolveText("admin.clients.tabs.verification", "Verification"),
+          description: resolveText("admin.clients.tabsDescription.verification", "Moderation timeline for profile, documents and payment details."),
+          icon: "pi pi-verified",
+          component: TabVerification,
+        }]
       : []),
     ...(canViewClientReferrals.value
-      ? [{ label: resolveText("admin.clients.tabs.referrals", "Referrals"), component: TabReferrals }]
+      ? [{
+          id: "referrals",
+          label: resolveText("admin.clients.tabs.referrals", "Referrals"),
+          description: resolveText("admin.clients.tabsDescription.referrals", "Referral network and rewards for this client."),
+          icon: "pi pi-share-alt",
+          component: TabReferrals,
+        }]
       : []),
     ...(canManageClientSettings.value
-      ? [{ label: resolveText("admin.clients.tabs.settings", "Settings"), component: TabSettings }]
+      ? [{
+          id: "settings",
+          label: resolveText("admin.clients.tabs.settings", "Settings"),
+          description: resolveText("admin.clients.tabsDescription.settings", "Client support and cabinet configuration."),
+          icon: "pi pi-cog",
+          component: TabSettings,
+        }]
       : []),
     ...(canManageClientSecurity.value
-      ? [{ label: resolveText("admin.clients.tabs.security", "Security"), component: TabSecurity }]
+      ? [{
+          id: "security",
+          label: resolveText("admin.clients.tabs.security", "Security"),
+          description: resolveText("admin.clients.tabsDescription.security", "Password and two-factor authentication controls."),
+          icon: "pi pi-shield",
+          component: TabSecurity,
+        }]
       : []),
   ]);
 
@@ -194,4 +270,423 @@
   };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  .client-detail {
+    --client-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
+    --client-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
+    --client-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+    --client-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 20%, transparent);
+
+    width: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: clamp(12px, 1.35vw, 22px);
+    color: var(--ui-text-main);
+    animation: client-detail-enter 0.32s ease both;
+  }
+
+  .client-detail__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .client-detail__identity {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .client-detail__avatar {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 17px;
+    color: var(--ui-text-invert);
+    background: linear-gradient(
+      135deg,
+      var(--ui-primary-main),
+      color-mix(in srgb, var(--ui-primary-main) 45%, var(--ui-primary-accent))
+    );
+    font-size: 14px;
+    font-weight: 880;
+    letter-spacing: 0.04em;
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  }
+
+  .client-detail__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .client-detail__heading {
+    min-width: 0;
+  }
+
+  .client-detail__title {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: clamp(24px, 2.1vw, 36px);
+    font-weight: 850;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .client-detail__subtitle {
+    margin: 6px 0 0;
+    color: var(--ui-text-secondary);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .client-detail__status {
+    --status-color: var(--color-success);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--status-color);
+    font-size: 12px;
+    font-weight: 780;
+    white-space: nowrap;
+  }
+
+  .client-detail__status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    border-radius: 999px;
+    background: var(--status-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
+  }
+
+  .client-detail__status-dot.is-danger {
+    --status-color: var(--color-danger);
+  }
+
+  .client-detail-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--client-glass-border);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 38%),
+      linear-gradient(145deg, var(--client-glass-bg), var(--client-glass-bg-strong));
+    box-shadow: var(--client-glass-shadow);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+  }
+
+  .client-detail-card :deep(.p-card-body),
+  .client-detail-card :deep(.p-card-content) {
+    padding: 0;
+  }
+
+  .client-detail-card::after {
+    content: "";
+    position: absolute;
+    inset: -30% auto -30% -52%;
+    z-index: 0;
+    width: 46%;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 13%, transparent), transparent);
+    opacity: 0;
+    transform: rotate(12deg) translateX(-35%);
+  }
+
+  .client-detail-card:hover::after {
+    animation: client-detail-glint 1.1s ease both;
+  }
+
+  .client-detail__layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    min-height: 620px;
+  }
+
+  .client-detail__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 10px;
+    border-right: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+  }
+
+  .client-detail__nav-button {
+    justify-content: flex-start;
+    min-height: 42px;
+    border-radius: 14px;
+    color: var(--ui-text-secondary);
+    background: transparent;
+    transition:
+      color 0.18s ease,
+      background-color 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .client-detail__nav-button:hover,
+  .client-detail__nav-button.is-active {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 11%, transparent);
+    transform: translateX(2px);
+  }
+
+  .client-detail__nav-button.is-active {
+    box-shadow: inset 2px 0 0 var(--ui-primary-main);
+  }
+
+  .client-detail__content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .client-detail__content-header {
+    min-height: 74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+  }
+
+  .client-detail__content-header h2 {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: 18px;
+    font-weight: 840;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .client-detail__content-header p {
+    max-width: 820px;
+    margin: 5px 0 0;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .client-detail__content > :deep(*) {
+    min-width: 0;
+  }
+
+  .client-detail__content :deep(.client-tab-space) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .client-detail__content :deep(.client-tab-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 14px;
+  }
+
+  .client-detail__content :deep(.client-tab-card) {
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 14%, var(--color-stroke-ui-light));
+    border-radius: 20px;
+    background:
+      radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--ui-primary-main) 8%, transparent), transparent 36%),
+      color-mix(in srgb, var(--ui-background-panel) 84%, transparent);
+    box-shadow: 0 14px 34px color-mix(in srgb, #000000 10%, transparent);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+  }
+
+  .client-detail__content :deep(.client-tab-card .p-card-body),
+  .client-detail__content :deep(.client-tab-card .p-card-content) {
+    padding: 0;
+  }
+
+  .client-detail__content :deep(.client-card-body) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .client-detail__content :deep(.client-card-header) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .client-detail__content :deep(.client-card-title) {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: 16px;
+    font-weight: 840;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .client-detail__content :deep(.client-card-subtitle) {
+    margin: 4px 0 0;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .client-detail__content :deep(.client-inline-status) {
+    --status-color: var(--ui-text-secondary);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--status-color);
+    font-size: 12px;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .client-detail__content :deep(.client-inline-status::before) {
+    content: "";
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    border-radius: 999px;
+    background: var(--status-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
+  }
+
+  .client-detail__content :deep(.client-inline-status--success) {
+    --status-color: var(--color-success);
+  }
+
+  .client-detail__content :deep(.client-inline-status--warning) {
+    --status-color: var(--color-ui-warning);
+  }
+
+  .client-detail__content :deep(.client-inline-status--danger) {
+    --status-color: var(--color-danger);
+  }
+
+  .client-detail__content :deep(.client-data-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+  }
+
+  .client-detail__content :deep(.client-data-item) {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    border-radius: 14px;
+    padding: 11px 12px;
+    background: color-mix(in srgb, var(--ui-background-card) 58%, transparent);
+  }
+
+  .client-detail__content :deep(.client-data-item__label) {
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    font-weight: 720;
+    letter-spacing: 0.01em;
+  }
+
+  .client-detail__content :deep(.client-data-item__value) {
+    min-width: 0;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 760;
+    word-break: break-word;
+  }
+
+  .client-detail__content :deep(.client-muted) {
+    color: var(--ui-text-secondary);
+  }
+
+  .client-detail__content > :deep(.v-enter-active),
+  .client-detail__content > :deep(.v-leave-active) {
+    transition: opacity 0.16s ease, transform 0.16s ease;
+  }
+
+  .client-detail__content > :deep(.v-enter-from),
+  .client-detail__content > :deep(.v-leave-to) {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  @keyframes client-detail-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes client-detail-glint {
+    0% {
+      opacity: 0;
+      transform: rotate(12deg) translateX(-45%);
+    }
+    35% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(12deg) translateX(330%);
+    }
+  }
+
+  @media (max-width: 980px) {
+    .client-detail__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .client-detail__nav {
+      flex-direction: row;
+      overflow-x: auto;
+      border-right: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+    }
+
+    .client-detail__nav-button {
+      flex: 0 0 auto;
+    }
+
+    .client-detail__nav-button:hover,
+    .client-detail__nav-button.is-active {
+      transform: translateY(-1px);
+    }
+
+    .client-detail__nav-button.is-active {
+      box-shadow: inset 0 -2px 0 var(--ui-primary-main);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .client-detail {
+      padding: 12px;
+    }
+
+    .client-detail__header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .client-detail__content-header {
+      min-height: auto;
+      padding: 12px;
+    }
+  }
+</style>

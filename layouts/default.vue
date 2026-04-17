@@ -115,7 +115,12 @@
     const visibleSegments = segments.slice(startIdx);
     const routeKey = visibleSegments.join("/");
 
-    return routeKey === "dashboard" || routeKey === "verifications" || routeKey.endsWith("/verifications");
+    return (
+      routeKey === "dashboard" ||
+      routeKey === "verifications" ||
+      routeKey.endsWith("/verifications") ||
+      /^clients\/[^/]+$/.test(routeKey)
+    );
   });
 
   watch(

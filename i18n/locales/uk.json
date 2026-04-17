@@ -1655,7 +1655,9 @@
         "verification": "Верифікація",
         "referrals": "Реферали",
         "settings": "Налаштування",
-        "security": "Безпека"
+        "security": "Безпека",
+        "kyc": "KYC",
+        "metrics": "Метрики"
       },
       "supportMode": {
         "label": "Режим підтримки",
@@ -1787,6 +1789,131 @@
           "disableSuccess": "2FA успішно вимкнено.",
           "disableError": "Не вдалося вимкнути 2FA."
         }
+      },
+      "status": {
+        "active": "Активний",
+        "blocked": "Заблокований"
+      },
+      "detail": {
+        "unknownClient": "Невідомий клієнт"
+      },
+      "tabsDescription": {
+        "kyc": "Дані клієнта, доступ та історія відвідувань.",
+        "metrics": "Онлайн-активність, сесії та аналітика пристроїв.",
+        "verification": "Історія модерації профілю, документів і платіжних реквізитів.",
+        "referrals": "Реферальна мережа та винагороди клієнта.",
+        "settings": "Підтримка клієнта та налаштування кабінету.",
+        "security": "Пароль і керування двофакторною автентифікацією."
+      },
+      "common": {
+        "emptyValue": "-"
+      },
+      "kyc": {
+        "profile": {
+          "title": "Профіль клієнта",
+          "description": "Особисті дані, контакти та керування доступом.",
+          "photoMissing": "Фото не завантажено",
+          "birthdateMissing": "Дата народження не вказана",
+          "accessBlocked": "Доступ заблоковано",
+          "accessActive": "Доступ активний",
+          "emailVerifiedAt": "Email підтверджено",
+          "phone": "Телефон",
+          "createdAt": "Створено",
+          "blockedAt": "Заблоковано"
+        },
+        "history": {
+          "title": "Історія відвідувань",
+          "description": "Останні входи клієнта з IP, пристроєм і браузером.",
+          "emptyTitle": "Входів поки немає",
+          "emptyDescription": "Реальні записи зʼявляться тут після входу клієнта в кабінет.",
+          "locationUnknown": "Локація невідома",
+          "loadFailed": "Не вдалося завантажити історію відвідувань.",
+          "device": {
+            "mobile": "Мобільний пристрій",
+            "tablet": "Планшет",
+            "desktop": "Десктоп"
+          }
+        },
+        "actions": {
+          "saving": "Зберігаємо...",
+          "block": "Заблокувати",
+          "unblock": "Розблокувати",
+          "preparingLogin": "Готуємо вхід...",
+          "impersonate": "Увійти як клієнт",
+          "refreshHistory": "Оновити історію",
+          "loadMore": "Завантажити ще"
+        },
+        "confirm": {
+          "block": "Заблокувати клієнта? Доступ до кабінету буде закрито.",
+          "unblock": "Розблокувати клієнта?"
+        },
+        "toasts": {
+          "blocked": "Клієнта заблоковано.",
+          "unblocked": "Клієнта розблоковано.",
+          "blockFailed": "Не вдалося змінити статус блокування.",
+          "authLinkMissing": "Посилання авторизації в кабінет відсутнє.",
+          "impersonationStarted": "Вікно кабінету відкрито. Виконується вхід під клієнтом.",
+          "impersonationFailed": "Не вдалося увійти в кабінет клієнта."
+        }
+      },
+      "metrics": {
+        "filters": {
+          "from": "Від",
+          "to": "До",
+          "bucket": "Крок",
+          "device": "Пристрій",
+          "browser": "Браузер",
+          "os": "OS"
+        },
+        "actions": {
+          "refresh": "Оновити"
+        },
+        "bucket": {
+          "day": "За днями",
+          "hour": "За годинами"
+        },
+        "toasts": {
+          "loadFailed": "Не вдалося завантажити метрики клієнта."
+        },
+        "summary": {
+          "totalOnline": "Усього онлайн",
+          "totalOnlineHint": "Сумарний час присутності",
+          "sessions": "Сесії",
+          "sessionsHint": "За вибраний період",
+          "averageSession": "Середня сесія",
+          "averageSessionHint": "Середня тривалість",
+          "lastSeen": "Останній online",
+          "clientOnline": "Клієнт зараз у кабінеті",
+          "clientOffline": "Клієнт зараз не в кабінеті"
+        },
+        "timeline": {
+          "title": "Онлайн за періодами",
+          "description": "Години присутності клієнта в кабінеті.",
+          "seriesOnlineHours": "Онлайн, години"
+        },
+        "breakdowns": {
+          "title": "Розріз за пристроями та браузерами",
+          "description": "Що клієнт використовував у кабінеті.",
+          "devices": "Пристрої",
+          "browsers": "Браузери",
+          "os": "OS"
+        },
+        "sessions": {
+          "title": "Останні online-сесії",
+          "description": "Коли і звідки клієнт був у кабінеті.",
+          "empty": "Сесій поки немає",
+          "startedAt": "Старт",
+          "endedAt": "Фініш",
+          "locationUnknown": "Локація невідома"
+        },
+        "empty": {
+          "noData": "Немає даних"
+        },
+        "sessionsCount": "{count} сес.",
+        "units": {
+          "hoursShort": "год",
+          "minutesShort": "хв"
+        }
       }
     },
     "verifications": {
@@ -1805,7 +1932,9 @@
         "refresh": "Оновити",
         "retry": "Повторити",
         "approveAll": "Підтвердити все",
-        "rejectAll": "Відхилити все"
+        "rejectAll": "Відхилити все",
+        "approve": "Підтвердити",
+        "reject": "Відхилити"
       },
       "filters": {
         "active": "Фільтр",
@@ -1882,7 +2011,8 @@
         "loadMore": "Завантажити ще",
         "actorAdmin": "Адміністратор",
         "actorClient": "Клієнт",
-        "actorSystem": "Система"
+        "actorSystem": "Система",
+        "generic": "Дія верифікації"
       },
       "tabs": {
         "client": "Загальна верифікація",
@@ -1972,6 +2102,54 @@
           "currency": "Currency",
           "comment": "Comment"
         }
+      },
+      "clientTimeline": {
+        "title": "Історія верифікації",
+        "subtitle": "Кожна зміна профілю, документів або платіжних реквізитів показується окремим пунктом перевірки.",
+        "hasPending": "Очікує перевірки",
+        "noPending": "Немає очікуваних перевірок",
+        "emptyTitle": "Історії верифікації поки немає",
+        "emptySubtitle": "Зміни клієнта та дії адмінів з’являться тут.",
+        "summary": {
+          "profile": "Зміни профілю",
+          "documents": "Документи",
+          "paymentDetails": "Платіжні реквізити",
+          "history": "Записи історії",
+          "pending": "Очікує перевірки",
+          "clear": "Немає очікуваних змін",
+          "pendingDocuments": "Документи очікують модерації",
+          "pendingPaymentDetails": "Реквізити очікують модерації",
+          "historyHint": "Нові записи показуються першими"
+        },
+        "items": {
+          "profileTitle": "Дані профілю потребують перевірки",
+          "profileDescription": "Клієнт змінив дані профілю. Підтвердьте, щоб залишити їх, або відхиліть, щоб відкотити записані зміни.",
+          "documentTitle": "Документ потребує перевірки",
+          "documentDescription": "Клієнт завантажив документ для підтвердження особи.",
+          "payoutTitle": "Платіжний реквізит потребує перевірки",
+          "payoutDescription": "Клієнт додав або оновив платіжні реквізити.",
+          "historyDescription": "Записана дія верифікації."
+        }
+      },
+      "historyKeys": {
+        "profile_submitted": "Дані профілю відправлено",
+        "documents_uploaded": "Документи завантажено",
+        "document_deleted": "Документ видалено",
+        "photo_uploaded": "Фото профілю завантажено",
+        "photo_deleted": "Фото профілю видалено",
+        "email_verification_sent": "Лист підтвердження email відправлено",
+        "documents_bulk_updated": "Статус документів оновлено",
+        "document_updated": "Статус документа оновлено",
+        "payout_detail_submitted": "Платіжний реквізит відправлено",
+        "payout_detail_updated": "Платіжний реквізит оновлено",
+        "payout_detail_status_updated": "Статус платіжного реквізиту оновлено",
+        "payout_detail_comment_updated": "Коментар до реквізиту оновлено",
+        "payout_detail_deleted": "Платіжний реквізит архівовано",
+        "payout_detail_restored": "Платіжний реквізит відновлено",
+        "step_status_auto_synced": "Крок верифікації синхронізовано",
+        "step_status_updated": "Статус кроку верифікації оновлено",
+        "step_status_reset": "Крок верифікації скинуто",
+        "step_comment_cleared": "Коментар верифікації очищено"
       }
     },
     "dashboard": {

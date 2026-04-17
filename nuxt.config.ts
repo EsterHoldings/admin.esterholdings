@@ -52,7 +52,7 @@ export default defineNuxtConfig({
     autoImport: false,
     components: {
       prefix: "Prime",
-      include: ["Button", "Card", "DatePicker", "InputText", "Paginator", "Select", "Skeleton", "Tag"],
+      include: ["Button", "Card", "DatePicker", "InputText", "Paginator", "Select", "Skeleton", "Tag", "ToggleSwitch"],
     },
     options: {
       ripple: true,

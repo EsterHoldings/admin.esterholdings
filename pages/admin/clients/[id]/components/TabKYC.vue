@@ -1,193 +1,178 @@
 <template>
-  <div class="profile__tab--kyc">
-    <div class="profile__tab--kyc__left profile__tab--kyc__profile-data">
-      <div class="profile__tab--kyc__profile-data__form">
-        <UiTextH5 class="title"># Основные данные пользователя</UiTextH5>
-        <div class="profile-data__summary">
-          <div class="profile-data__summary-photo">
-            <UiImage
-              v-if="props.userData.photo_url"
-              class="profile-data__info_photo"
-              :src="props.userData.photo_url"
-            />
-            <div v-else class="profile-data__info_photo profile-data__info_photo--placeholder">
-              <span>Фото не загружено</span>
+  <div class="client-tab-space client-kyc">
+    <div class="client-tab-grid client-kyc__grid">
+      <PrimeCard class="client-tab-card client-kyc__identity-card">
+        <template #content>
+          <div class="client-card-body">
+            <div class="client-card-header">
+              <div>
+                <h3 class="client-card-title">{{ resolveText("admin.clients.kyc.profile.title", "Client profile") }}</h3>
+                <p class="client-card-subtitle">
+                  {{ resolveText("admin.clients.kyc.profile.description", "Identity, contact details and access controls.") }}
+                </p>
+              </div>
+              <span
+                class="client-inline-status"
+                :class="props.userData.is_blocked ? 'client-inline-status--danger' : 'client-inline-status--success'">
+                {{ accessStatusLabel }}
+              </span>
             </div>
 
-            <div class="actions actions--photo">
-              <UiButtonDefault
-                :state="props.userData.is_blocked ? 'success' : 'danger--outline'"
-                :disabled="isBlocking"
-                @click="handleToggleBlock"
-              >
-                {{ isBlocking ? "Сохраняем..." : (props.userData.is_blocked ? "Разблокировать" : "Заблокировать") }}
-              </UiButtonDefault>
+            <div class="client-kyc__profile-layout">
+              <div class="client-kyc__photo-column">
+                <img
+                  v-if="props.userData.photo_url"
+                  class="client-kyc__photo"
+                  :src="props.userData.photo_url"
+                  :alt="displayName" />
+                <div
+                  v-else
+                  class="client-kyc__photo client-kyc__photo--placeholder">
+                  <i class="pi pi-image" aria-hidden="true" />
+                  <span>{{ resolveText("admin.clients.kyc.profile.photoMissing", "No photo uploaded") }}</span>
+                </div>
 
-              <UiButtonDefault
-                state="info--outline"
-                :disabled="isImpersonating"
-                @click="handleImpersonate"
-              >
-                {{ isImpersonating ? "Подготавливаем вход..." : "Авторизоваться" }}
-              </UiButtonDefault>
-            </div>
-          </div>
+                <PrimeButton
+                  :label="isBlocking ? resolveText('admin.clients.kyc.actions.saving', 'Saving...') : props.userData.is_blocked ? resolveText('admin.clients.kyc.actions.unblock', 'Unblock') : resolveText('admin.clients.kyc.actions.block', 'Block')"
+                  :icon="props.userData.is_blocked ? 'pi pi-unlock' : 'pi pi-ban'"
+                  :severity="props.userData.is_blocked ? 'success' : 'danger'"
+                  :loading="isBlocking"
+                  :disabled="isBlocking"
+                  outlined
+                  @click="handleToggleBlock" />
 
-          <PanelDefault class="profile-data__summary-panel">
-            <div class="profile-data__summary-main">
-              <div class="profile-data__summary-header">
+                <PrimeButton
+                  :label="isImpersonating ? resolveText('admin.clients.kyc.actions.preparingLogin', 'Preparing login...') : resolveText('admin.clients.kyc.actions.impersonate', 'Sign in as client')"
+                  icon="pi pi-external-link"
+                  :loading="isImpersonating"
+                  :disabled="isImpersonating"
+                  @click="handleImpersonate" />
+              </div>
+
+              <div class="client-kyc__profile-main">
                 <div>
-                  <UiTextH5 class="profile-data__summary-name">
-                    {{ props.userData.first_name }}
-                    {{ props.userData.last_name }}
-                    {{ props.userData.mid_name }}
-                  </UiTextH5>
-                  <div class="profile-data__summary-birthdate">
-                    {{ props.userData.birthdate || "-" }}
+                  <h4 class="client-kyc__name">{{ displayName }}</h4>
+                  <p class="client-card-subtitle">
+                    {{ props.userData.birthdate || resolveText("admin.clients.kyc.profile.birthdateMissing", "Birthdate is missing") }}
+                  </p>
+                </div>
+
+                <div class="client-data-grid">
+                  <div
+                    v-for="item in profileDataItems"
+                    :key="item.key"
+                    class="client-data-item">
+                    <span class="client-data-item__label">{{ item.label }}</span>
+                    <span class="client-data-item__value">{{ item.value }}</span>
                   </div>
                 </div>
 
-                <div class="profile-data__summary-meta">
-                  <span>{{ props.userData.created_at || "-" }}</span>
-                  <span
-                    class="profile-data__status-badge"
-                    :class="props.userData.is_blocked ? 'profile-data__status-badge--blocked' : 'profile-data__status-badge--active'"
-                  >
-                    {{ props.userData.is_blocked ? "Доступ заблокирован" : "Доступ активен" }}
-                  </span>
-                  <span v-if="props.userData.is_blocked && props.userData.blocked_at" class="profile-data__summary-blocked-at">
-                    Блокировка: {{ props.userData.blocked_at }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="profile-data__summary-grid">
-                <div class="summary-item">
-                  <span class="label">Телефон</span>
-                  <span class="value">{{ props.userData.phone || "-" }}</span>
-                </div>
-                <div class="summary-item">
-                  <span class="label">Email</span>
-                  <span class="value">{{ props.userData.email || "-" }}</span>
-                  <span class="hint">VerifyAt: {{ props.userData.email_verified_at || "-" }}</span>
-                </div>
-              </div>
-
-              <div class="profile-data__summary-address">
-                <div class="label">Адрес</div>
-                <div class="value">
-                  <span>Страна: {{ props.userData.country || "-" }}</span>
-                  <span>Город: {{ props.userData.city || "-" }}</span>
-                  <span>Штат: {{ props.userData.state || "-" }}</span>
-                  <span>Адрес: {{ props.userData.address || "-" }}</span>
-                  <span>Индекс: {{ props.userData.postal_code || "-" }}</span>
-                </div>
-              </div>
-            </div>
-          </PanelDefault>
-        </div>
-      </div>
-    </div>
-
-    <div class="profile__tab--kyc__right profile__tab--kyc__profile-data--additional">
-      <div class="profile__tab--kyc__profile-data--additional__form">
-        <UiTextH5 class="title"># История посещений - IP</UiTextH5>
-
-        <div v-if="isHistoryLoading" class="browsing-history browsing-history--loading">
-          <UiIconSpinnerDefault class="browsing-history__loader" />
-        </div>
-
-        <div v-else-if="historyItems.length === 0" class="browsing-history browsing-history--empty">
-          <div class="browsing-history__empty-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 8V12L14.5 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="1.8" />
-            </svg>
-          </div>
-          <UiTextH5 class="browsing-history__empty-title">История входов пока пуста</UiTextH5>
-          <p class="browsing-history__empty-subtitle">
-            Здесь появятся реальные записи о входах клиента с IP, устройством и типом авторизации.
-          </p>
-        </div>
-
-        <div v-else class="browsing-history">
-          <div
-            v-for="item in visibleHistory"
-            :key="item.id"
-            class="browsing-history__card"
-          >
-            <div class="browsing-history__card-layout">
-              <div class="browsing-history__card-icon" :class="`browsing-history__card-icon--${item.icon}`">
-                <svg v-if="item.icon === 'mobile'" viewBox="0 0 24 24" fill="none">
-                  <rect x="7" y="2.75" width="10" height="18.5" rx="2.5" stroke="currentColor" stroke-width="1.8" />
-                  <path d="M10 18.25H14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                </svg>
-                <svg v-else-if="item.icon === 'tablet'" viewBox="0 0 24 24" fill="none">
-                  <rect x="5" y="2.75" width="14" height="18.5" rx="2.5" stroke="currentColor" stroke-width="1.8" />
-                  <circle cx="12" cy="17.75" r="0.9" fill="currentColor" />
-                </svg>
-                <svg v-else viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8" />
-                  <path d="M8 20H16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                  <path d="M12 16V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                </svg>
-              </div>
-
-              <div class="browsing-history__card-body">
-                <div class="browsing-history__card-top">
-                  <div class="browsing-history__card-ip">
-                    <span class="ip-address">{{ item.ip }}</span>
-                    <span class="visit-type">{{ item.auth_label }}</span>
+                <div class="client-data-grid">
+                  <div
+                    v-for="item in addressDataItems"
+                    :key="item.key"
+                    class="client-data-item">
+                    <span class="client-data-item__label">{{ item.label }}</span>
+                    <span class="client-data-item__value">{{ item.value }}</span>
                   </div>
-                  <span class="datetime">{{ item.datetime }}</span>
-                </div>
-
-                <div class="browsing-history__headline">
-                  <span class="device">{{ item.device_label }}</span>
-                  <span class="separator">•</span>
-                  <span class="browser">{{ item.browser }}</span>
-                  <span class="separator">•</span>
-                  <span class="os">{{ item.os }}</span>
-                </div>
-
-                <div class="browsing-history__card-meta">
-                  <span>Локация: {{ resolveLocation(item) }}</span>
-                  <span>Тип: {{ resolveDeviceTypeLabel(item.device_type) }}</span>
-                  <span>Метод: {{ item.auth_method || "-" }}</span>
-                </div>
-
-                <div v-if="item.user_agent" class="browsing-history__user-agent">
-                  {{ item.user_agent }}
                 </div>
               </div>
             </div>
           </div>
+        </template>
+      </PrimeCard>
 
-          <button
-            v-if="visibleCount < historyItems.length"
-            class="browsing-history__more"
-            type="button"
-            :disabled="isLoadingMore"
-            @click="handleLoadMore"
-          >
-            <UiIconSpinnerDefault v-if="isLoadingMore" class="h-4 w-4" />
-            <span v-else>Показать еще</span>
-          </button>
-        </div>
-      </div>
+      <PrimeCard class="client-tab-card client-kyc__history-card">
+        <template #content>
+          <div class="client-card-body">
+            <div class="client-card-header">
+              <div>
+                <h3 class="client-card-title">{{ resolveText("admin.clients.kyc.history.title", "Visit history") }}</h3>
+                <p class="client-card-subtitle">
+                  {{ resolveText("admin.clients.kyc.history.description", "Recent client sign-ins with IP, device and browser details.") }}
+                </p>
+              </div>
+              <PrimeButton
+                icon="pi pi-refresh"
+                rounded
+                text
+                :loading="isHistoryLoading"
+                :aria-label="resolveText('admin.clients.kyc.actions.refreshHistory', 'Refresh history')"
+                @click="loadVisitHistory" />
+            </div>
+
+            <div
+              v-if="isHistoryLoading"
+              class="client-kyc__history-list">
+              <PrimeSkeleton
+                v-for="index in 4"
+                :key="`history-skeleton-${index}`"
+                height="74px"
+                border-radius="16px" />
+            </div>
+
+            <div
+              v-else-if="historyItems.length === 0"
+              class="client-kyc__empty">
+              <i class="pi pi-clock" aria-hidden="true" />
+              <strong>{{ resolveText("admin.clients.kyc.history.emptyTitle", "No visits yet") }}</strong>
+              <span>{{ resolveText("admin.clients.kyc.history.emptyDescription", "Real sign-in records will appear here after the client visits the cabinet.") }}</span>
+            </div>
+
+            <div
+              v-else
+              class="client-kyc__history-list">
+              <article
+                v-for="item in visibleHistory"
+                :key="item.id"
+                class="client-kyc__history-row">
+                <div class="client-kyc__history-icon">
+                  <i
+                    :class="item.icon === 'mobile' ? 'pi pi-mobile' : item.icon === 'tablet' ? 'pi pi-tablet' : 'pi pi-desktop'"
+                    aria-hidden="true" />
+                </div>
+
+                <div class="client-kyc__history-body">
+                  <div class="client-kyc__history-top">
+                    <strong>{{ item.ip || "-" }}</strong>
+                    <span>{{ item.datetime || "-" }}</span>
+                  </div>
+                  <div class="client-kyc__history-meta">
+                    <span>{{ item.device_label || resolveDeviceTypeLabel(item.device_type) }}</span>
+                    <span>{{ item.browser || "-" }}</span>
+                    <span>{{ item.os || "-" }}</span>
+                    <span>{{ resolveLocation(item) }}</span>
+                    <span>{{ item.auth_method || "-" }}</span>
+                  </div>
+                  <p
+                    v-if="item.user_agent"
+                    class="client-kyc__user-agent">
+                    {{ item.user_agent }}
+                  </p>
+                </div>
+              </article>
+
+              <PrimeButton
+                v-if="visibleCount < historyItems.length"
+                class="client-kyc__more"
+                :label="resolveText('admin.clients.kyc.actions.loadMore', 'Load more')"
+                text
+                :loading="isLoadingMore"
+                :disabled="isLoadingMore"
+                @click="handleLoadMore" />
+            </div>
+          </div>
+        </template>
+      </PrimeCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import PanelDefault from "~/components/block/panels/PanelDefault.vue";
+import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import useAppCore from "~/composables/useAppCore";
-import UiTextH5 from "~/components/ui/UiTextH5.vue";
-import UiImage from "~/components/ui/UiImage.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
 
 type VisitHistoryItem = {
   id: string;
@@ -218,6 +203,7 @@ const props = defineProps({
 
 const emit = defineEmits(["refresh-client"]);
 
+const { t } = useI18n({ useScope: "global" });
 const toast = useToast();
 const appCore = useAppCore();
 
@@ -230,15 +216,67 @@ const historyItems = ref<VisitHistoryItem[]>([]);
 
 const visibleHistory = computed(() => historyItems.value.slice(0, visibleCount.value));
 
+const resolveText = (key: string, fallback: string) => {
+  const value = t(key);
+  return value === key ? fallback : value;
+};
+
+const emptyValue = computed(() => resolveText("admin.clients.common.emptyValue", "-"));
+
+const displayName = computed(() => {
+  const name = [props.userData.first_name, props.userData.last_name, props.userData.mid_name]
+    .map(value => String(value ?? "").trim())
+    .filter(Boolean)
+    .join(" ");
+
+  return name || props.userData.email || resolveText("admin.clients.detail.unknownClient", "Unknown client");
+});
+
+const accessStatusLabel = computed(() =>
+  props.userData.is_blocked
+    ? resolveText("admin.clients.kyc.profile.accessBlocked", "Access blocked")
+    : resolveText("admin.clients.kyc.profile.accessActive", "Access active")
+);
+
+const profileDataItems = computed(() => [
+  { key: "email", label: "Email", value: props.userData.email || emptyValue.value },
+  {
+    key: "emailVerified",
+    label: resolveText("admin.clients.kyc.profile.emailVerifiedAt", "Email verified at"),
+    value: props.userData.email_verified_at || emptyValue.value,
+  },
+  { key: "phone", label: resolveText("admin.clients.kyc.profile.phone", "Phone"), value: props.userData.phone || emptyValue.value },
+  {
+    key: "createdAt",
+    label: resolveText("admin.clients.kyc.profile.createdAt", "Created at"),
+    value: props.userData.created_at || emptyValue.value,
+  },
+  ...(props.userData.is_blocked
+    ? [{
+        key: "blockedAt",
+        label: resolveText("admin.clients.kyc.profile.blockedAt", "Blocked at"),
+        value: props.userData.blocked_at || emptyValue.value,
+      }]
+    : []),
+]);
+
+const addressDataItems = computed(() => [
+  { key: "country", label: resolveText("admin.clients.columns.country", "Country"), value: props.userData.country || emptyValue.value },
+  { key: "city", label: resolveText("admin.clients.columns.city", "City"), value: props.userData.city || emptyValue.value },
+  { key: "state", label: resolveText("admin.clients.columns.state", "State / Region"), value: props.userData.state || emptyValue.value },
+  { key: "address", label: resolveText("admin.clients.columns.address", "Address"), value: props.userData.address || emptyValue.value },
+  { key: "postalCode", label: resolveText("admin.clients.columns.postalCode", "Postal code"), value: props.userData.postal_code || emptyValue.value },
+]);
+
 const resolveLocation = (item: VisitHistoryItem): string => {
   const parts = [item.country, item.city].filter((value) => typeof value === "string" && value.trim() !== "");
-  return parts.length > 0 ? parts.join(" / ") : "Не удалось определить";
+  return parts.length > 0 ? parts.join(" / ") : resolveText("admin.clients.kyc.history.locationUnknown", "Unknown location");
 };
 
 const resolveDeviceTypeLabel = (deviceType: string): string => {
-  if (deviceType === "mobile") return "Мобильное устройство";
-  if (deviceType === "tablet") return "Планшет";
-  return "Десктоп";
+  if (deviceType === "mobile") return resolveText("admin.clients.kyc.history.device.mobile", "Mobile");
+  if (deviceType === "tablet") return resolveText("admin.clients.kyc.history.device.tablet", "Tablet");
+  return resolveText("admin.clients.kyc.history.device.desktop", "Desktop");
 };
 
 const loadVisitHistory = async () => {
@@ -252,7 +290,7 @@ const loadVisitHistory = async () => {
     visibleCount.value = Math.min(4, historyItems.value.length || 4);
   } catch (error: any) {
     historyItems.value = [];
-    toast.error(error?.response?.data?.message ?? "Не удалось загрузить историю посещений.");
+    toast.error(error?.response?.data?.message ?? resolveText("admin.clients.kyc.history.loadFailed", "Failed to load visit history."));
   } finally {
     isHistoryLoading.value = false;
   }
@@ -275,8 +313,8 @@ const handleToggleBlock = async () => {
   const nextState = !Boolean(props.userData?.is_blocked);
   const confirmed = window.confirm(
     nextState
-      ? "Подтвердить блокировку клиента? Доступ в кабинет будет закрыт."
-      : "Подтвердить разблокировку клиента?"
+      ? resolveText("admin.clients.kyc.confirm.block", "Block this client? Cabinet access will be closed.")
+      : resolveText("admin.clients.kyc.confirm.unblock", "Unblock this client?")
   );
 
   if (!confirmed) return;
@@ -294,9 +332,9 @@ const handleToggleBlock = async () => {
     }
 
     emit("refresh-client");
-    toast.success(response?.data?.message ?? (nextState ? "Клиент заблокирован." : "Клиент разблокирован."));
+    toast.success(response?.data?.message ?? (nextState ? resolveText("admin.clients.kyc.toasts.blocked", "Client blocked.") : resolveText("admin.clients.kyc.toasts.unblocked", "Client unblocked.")));
   } catch (error: any) {
-    toast.error(error?.response?.data?.message ?? "Не удалось изменить статус блокировки.");
+    toast.error(error?.response?.data?.message ?? resolveText("admin.clients.kyc.toasts.blockFailed", "Failed to update block status."));
   } finally {
     isBlocking.value = false;
   }
@@ -313,7 +351,7 @@ const handleImpersonate = async () => {
     const url = response?.data?.data?.url;
 
     if (!url) {
-      throw new Error("Cabinet auth link is missing.");
+      throw new Error(resolveText("admin.clients.kyc.toasts.authLinkMissing", "Cabinet auth link is missing."));
     }
 
     if (popup) {
@@ -322,10 +360,10 @@ const handleImpersonate = async () => {
       window.open(url, "_blank");
     }
 
-    toast.success("Окно кабинета открыто. Выполняется вход под клиентом.");
+    toast.success(resolveText("admin.clients.kyc.toasts.impersonationStarted", "Cabinet window opened. Signing in as client."));
   } catch (error: any) {
     popup?.close();
-    toast.error(error?.response?.data?.message ?? error?.message ?? "Не удалось авторизоваться в кабинете клиента.");
+    toast.error(error?.response?.data?.message ?? error?.message ?? resolveText("admin.clients.kyc.toasts.impersonationFailed", "Failed to sign in as client."));
   } finally {
     isImpersonating.value = false;
   }
@@ -804,4 +842,175 @@ watch(
     align-items: flex-start;
   }
 }
+  .client-kyc__grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  }
+
+  .client-kyc__profile-layout {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .client-kyc__photo-column {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .client-kyc__photo {
+    width: 100%;
+    min-height: 218px;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 12%, var(--color-stroke-ui-light));
+  }
+
+  .client-kyc__photo--placeholder {
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    color: var(--ui-text-secondary);
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .client-kyc__photo--placeholder i {
+    color: var(--ui-primary-main);
+    font-size: 26px;
+  }
+
+  .client-kyc__profile-main {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .client-kyc__name {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: 21px;
+    font-weight: 860;
+    letter-spacing: -0.025em;
+  }
+
+  .client-kyc__history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .client-kyc__history-row {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 11px;
+    border-radius: 16px;
+    padding: 11px;
+    background: color-mix(in srgb, var(--ui-background-card) 56%, transparent);
+    border: 1px solid transparent;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .client-kyc__history-row:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 25%, transparent);
+    background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-card));
+  }
+
+  .client-kyc__history-icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    color: var(--ui-primary-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+  }
+
+  .client-kyc__history-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .client-kyc__history-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--ui-text-main);
+    font-size: 13px;
+  }
+
+  .client-kyc__history-top span {
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .client-kyc__history-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+  }
+
+  .client-kyc__user-agent {
+    margin: 0;
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .client-kyc__empty {
+    min-height: 240px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    border-radius: 18px;
+    border: 1px dashed color-mix(in srgb, var(--ui-primary-main) 24%, var(--color-stroke-ui-light));
+    padding: 22px;
+    color: var(--ui-text-secondary);
+    text-align: center;
+  }
+
+  .client-kyc__empty i {
+    color: var(--ui-primary-main);
+    font-size: 28px;
+  }
+
+  .client-kyc__empty strong {
+    color: var(--ui-text-main);
+  }
+
+  .client-kyc__more {
+    align-self: center;
+  }
+
+  @media (max-width: 1200px) {
+    .client-kyc__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .client-kyc__profile-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .client-kyc__photo {
+      min-height: 180px;
+    }
+  }
 </style>

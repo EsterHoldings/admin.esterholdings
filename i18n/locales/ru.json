@@ -1602,7 +1602,9 @@
         "verification": "Верификация",
         "referrals": "Рефералы",
         "settings": "Настройки",
-        "security": "Безопасность"
+        "security": "Безопасность",
+        "kyc": "KYC",
+        "metrics": "Метрики"
       },
       "supportMode": {
         "label": "Режим поддержки",
@@ -1792,6 +1794,131 @@
           "disableSuccess": "2FA успешно отключена.",
           "disableError": "Не удалось отключить 2FA."
         }
+      },
+      "status": {
+        "active": "Активен",
+        "blocked": "Заблокирован"
+      },
+      "detail": {
+        "unknownClient": "Неизвестный клиент"
+      },
+      "tabsDescription": {
+        "kyc": "Данные клиента, доступ и история посещений.",
+        "metrics": "Онлайн-активность, сессии и аналитика устройств.",
+        "verification": "История модерации профиля, документов и платежных реквизитов.",
+        "referrals": "Реферальная сеть и вознаграждения клиента.",
+        "settings": "Поддержка клиента и настройки кабинета.",
+        "security": "Пароль и управление двухфакторной аутентификацией."
+      },
+      "common": {
+        "emptyValue": "-"
+      },
+      "kyc": {
+        "profile": {
+          "title": "Профиль клиента",
+          "description": "Личные данные, контакты и управление доступом.",
+          "photoMissing": "Фото не загружено",
+          "birthdateMissing": "Дата рождения не указана",
+          "accessBlocked": "Доступ заблокирован",
+          "accessActive": "Доступ активен",
+          "emailVerifiedAt": "Email подтвержден",
+          "phone": "Телефон",
+          "createdAt": "Создан",
+          "blockedAt": "Заблокирован"
+        },
+        "history": {
+          "title": "История посещений",
+          "description": "Последние входы клиента с IP, устройством и браузером.",
+          "emptyTitle": "Входов пока нет",
+          "emptyDescription": "Реальные записи появятся здесь после входа клиента в кабинет.",
+          "locationUnknown": "Локация неизвестна",
+          "loadFailed": "Не удалось загрузить историю посещений.",
+          "device": {
+            "mobile": "Мобильное устройство",
+            "tablet": "Планшет",
+            "desktop": "Десктоп"
+          }
+        },
+        "actions": {
+          "saving": "Сохраняем...",
+          "block": "Заблокировать",
+          "unblock": "Разблокировать",
+          "preparingLogin": "Готовим вход...",
+          "impersonate": "Войти как клиент",
+          "refreshHistory": "Обновить историю",
+          "loadMore": "Загрузить еще"
+        },
+        "confirm": {
+          "block": "Заблокировать клиента? Доступ в кабинет будет закрыт.",
+          "unblock": "Разблокировать клиента?"
+        },
+        "toasts": {
+          "blocked": "Клиент заблокирован.",
+          "unblocked": "Клиент разблокирован.",
+          "blockFailed": "Не удалось изменить статус блокировки.",
+          "authLinkMissing": "Ссылка авторизации в кабинет отсутствует.",
+          "impersonationStarted": "Окно кабинета открыто. Выполняется вход под клиентом.",
+          "impersonationFailed": "Не удалось войти в кабинет клиента."
+        }
+      },
+      "metrics": {
+        "filters": {
+          "from": "От",
+          "to": "До",
+          "bucket": "Шаг",
+          "device": "Устройство",
+          "browser": "Браузер",
+          "os": "OS"
+        },
+        "actions": {
+          "refresh": "Обновить"
+        },
+        "bucket": {
+          "day": "По дням",
+          "hour": "По часам"
+        },
+        "toasts": {
+          "loadFailed": "Не удалось загрузить метрики клиента."
+        },
+        "summary": {
+          "totalOnline": "Всего онлайн",
+          "totalOnlineHint": "Суммарное время присутствия",
+          "sessions": "Сессии",
+          "sessionsHint": "За выбранный период",
+          "averageSession": "Средняя сессия",
+          "averageSessionHint": "Средняя длительность",
+          "lastSeen": "Последний online",
+          "clientOnline": "Клиент сейчас в кабинете",
+          "clientOffline": "Клиент сейчас не в кабинете"
+        },
+        "timeline": {
+          "title": "Онлайн по периодам",
+          "description": "Часы присутствия клиента в кабинете.",
+          "seriesOnlineHours": "Онлайн, часы"
+        },
+        "breakdowns": {
+          "title": "Разрез по устройствам и браузерам",
+          "description": "Что клиент использовал в кабинете.",
+          "devices": "Устройства",
+          "browsers": "Браузеры",
+          "os": "OS"
+        },
+        "sessions": {
+          "title": "Последние online-сессии",
+          "description": "Когда и откуда клиент был в кабинете.",
+          "empty": "Сессий пока нет",
+          "startedAt": "Старт",
+          "endedAt": "Финиш",
+          "locationUnknown": "Локация неизвестна"
+        },
+        "empty": {
+          "noData": "Нет данных"
+        },
+        "sessionsCount": "{count} сесс.",
+        "units": {
+          "hoursShort": "ч",
+          "minutesShort": "м"
+        }
       }
     },
     "verifications": {
@@ -1810,7 +1937,9 @@
         "refresh": "Обновить",
         "retry": "Повторить",
         "approveAll": "Подтвердить все",
-        "rejectAll": "Отклонить все"
+        "rejectAll": "Отклонить все",
+        "approve": "Подтвердить",
+        "reject": "Отклонить"
       },
       "filters": {
         "active": "Фильтр",
@@ -1887,7 +2016,8 @@
         "loadMore": "Загрузить еще",
         "actorAdmin": "Администратор",
         "actorClient": "Клиент",
-        "actorSystem": "Система"
+        "actorSystem": "Система",
+        "generic": "Действие верификации"
       },
       "tabs": {
         "client": "Общая верификация",
@@ -1977,6 +2107,54 @@
           "currency": "Currency",
           "comment": "Comment"
         }
+      },
+      "clientTimeline": {
+        "title": "История верификации",
+        "subtitle": "Каждое изменение профиля, документов или платежных реквизитов отображается отдельным пунктом проверки.",
+        "hasPending": "Ожидает проверки",
+        "noPending": "Нет ожидающих проверок",
+        "emptyTitle": "Истории верификации пока нет",
+        "emptySubtitle": "Изменения клиента и действия админов появятся здесь.",
+        "summary": {
+          "profile": "Изменения профиля",
+          "documents": "Документы",
+          "paymentDetails": "Платежные реквизиты",
+          "history": "Записи истории",
+          "pending": "Ожидает проверки",
+          "clear": "Нет ожидающих изменений",
+          "pendingDocuments": "Документы ожидают модерации",
+          "pendingPaymentDetails": "Реквизиты ожидают модерации",
+          "historyHint": "Новые записи отображаются первыми"
+        },
+        "items": {
+          "profileTitle": "Данные профиля требуют проверки",
+          "profileDescription": "Клиент изменил данные профиля. Подтвердите, чтобы оставить их, или отклоните, чтобы откатить записанные изменения.",
+          "documentTitle": "Документ требует проверки",
+          "documentDescription": "Клиент загрузил документ для подтверждения личности.",
+          "payoutTitle": "Платежный реквизит требует проверки",
+          "payoutDescription": "Клиент добавил или обновил платежные реквизиты.",
+          "historyDescription": "Записанное действие верификации."
+        }
+      },
+      "historyKeys": {
+        "profile_submitted": "Данные профиля отправлены",
+        "documents_uploaded": "Документы загружены",
+        "document_deleted": "Документ удален",
+        "photo_uploaded": "Фото профиля загружено",
+        "photo_deleted": "Фото профиля удалено",
+        "email_verification_sent": "Письмо подтверждения email отправлено",
+        "documents_bulk_updated": "Статус документов обновлен",
+        "document_updated": "Статус документа обновлен",
+        "payout_detail_submitted": "Платежный реквизит отправлен",
+        "payout_detail_updated": "Платежный реквизит обновлен",
+        "payout_detail_status_updated": "Статус платежного реквизита обновлен",
+        "payout_detail_comment_updated": "Комментарий к реквизиту обновлен",
+        "payout_detail_deleted": "Платежный реквизит архивирован",
+        "payout_detail_restored": "Платежный реквизит восстановлен",
+        "step_status_auto_synced": "Шаг верификации синхронизирован",
+        "step_status_updated": "Статус шага верификации обновлен",
+        "step_status_reset": "Шаг верификации сброшен",
+        "step_comment_cleared": "Комментарий верификации очищен"
       }
     },
     "dashboard": {
