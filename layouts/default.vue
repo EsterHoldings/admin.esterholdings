@@ -25,7 +25,7 @@
             <div
               class="page"
               :key="route.fullPath">
-              <UiContainer :fluid="isDashboardRoute">
+              <UiContainer :fluid="isWideAdminRoute">
                 <slot />
               </UiContainer>
             </div>
@@ -108,13 +108,14 @@
     return visibleSegments.join("/") !== "dashboard";
   });
 
-  const isDashboardRoute = computed(() => {
+  const isWideAdminRoute = computed(() => {
     const segments = route.path.split("/").filter(Boolean);
     const currentLocale = locale.value?.toLowerCase?.();
     const startIdx = currentLocale && segments[0]?.toLowerCase() === currentLocale ? 1 : 0;
     const visibleSegments = segments.slice(startIdx);
+    const routeKey = visibleSegments.join("/");
 
-    return visibleSegments.join("/") === "dashboard";
+    return routeKey === "dashboard" || routeKey === "verifications" || routeKey.endsWith("/verifications");
   });
 
   watch(

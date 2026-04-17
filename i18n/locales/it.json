@@ -1448,12 +1448,184 @@
         "title": "Richieste di verifica",
         "subtitle": "Elenco delle richieste di verifica"
       },
-      "searchPlaceholder": "Cerca richieste di verifica...",
+      "searchPlaceholder": "Cerca per cliente, email o ID richiesta",
       "comment": {
         "label": "Commento",
-        "placeholder": "Inserisci un commento...",
+        "placeholder": "Inserisci commento...",
         "save": "Salva",
         "close": "Chiudi"
+      },
+      "actions": {
+        "refresh": "Aggiorna",
+        "retry": "Riprova",
+        "approveAll": "Approva tutto",
+        "rejectAll": "Rifiuta tutto"
+      },
+      "filters": {
+        "active": "Filtro",
+        "reset": "Reimposta"
+      },
+      "empty": {
+        "list": "Nessuna richiesta di verifica trovata."
+      },
+      "sort": {
+        "newest": "Aggiornate più recenti",
+        "oldest": "Aggiornate meno recenti",
+        "clientAsc": "Nome cliente A-Z",
+        "clientDesc": "Nome cliente Z-A",
+        "state": "Stato richiesta"
+      },
+      "stats": {
+        "all": "Tutte",
+        "allHint": "Tutte le richieste visibili",
+        "pending": "Non elaborate",
+        "pendingHint": "Richiedono decisione admin",
+        "approved": "Confermate",
+        "approvedHint": "Richieste approvate",
+        "rejected": "Rifiutate",
+        "rejectedHint": "Richieste rifiutate",
+        "ariaLabel": "Filtri richieste di verifica"
+      },
+      "changes": {
+        "none": "Nessuna modifica attiva da verificare",
+        "profile": "Dati profilo modificati",
+        "documents": "{count} documento/i caricato/i",
+        "requisites": "{count} dettaglio/i pagamento modificato/i"
+      },
+      "status": {
+        "approved": "Approvato",
+        "rejected": "Rifiutato",
+        "pending": "In attesa"
+      },
+      "overall": {
+        "approved": "Approvato complessivamente",
+        "rejected": "Richiede attenzione",
+        "pending": "In verifica"
+      },
+      "requestState": {
+        "all": "Tutte",
+        "approved": "Confermate",
+        "rejected": "Rifiutate",
+        "pending": "Non elaborate"
+      },
+      "messages": {
+        "updated": "Stato richiesta aggiornato.",
+        "documentsUpdated": "Stato documenti aggiornato.",
+        "documentUpdated": "Stato documento aggiornato.",
+        "profileUpdated": "Stato profilo aggiornato.",
+        "payoutUpdated": "Stato dati pagamento aggiornato.",
+        "payoutArchived": "Dato pagamento archiviato.",
+        "payoutRestored": "Dato pagamento ripristinato."
+      },
+      "errors": {
+        "load": "Impossibile caricare le richieste.",
+        "update": "Impossibile aggiornare la richiesta.",
+        "documentNotFound": "Documento non trovato.",
+        "openDocument": "Impossibile aprire il documento."
+      },
+      "clientRequests": {
+        "title": "Richieste di verifica",
+        "subtitle": "Controlla modifiche cliente e cronologia completa.",
+        "loading": "Caricamento richieste...",
+        "empty": "Questo cliente non ha ancora richieste."
+      },
+      "history": {
+        "title": "Cronologia richiesta",
+        "subtitle": "Le azioni più recenti sono mostrate per prime.",
+        "empty": "Nessuna cronologia.",
+        "loadMore": "Carica altro",
+        "actorAdmin": "Admin",
+        "actorClient": "Cliente",
+        "actorSystem": "Sistema"
+      },
+      "tabs": {
+        "client": "Verifica generale",
+        "payout": "Dati pagamento",
+        "requests": "Richieste"
+      },
+      "profileFields": {
+        "first_name": "Nome",
+        "last_name": "Cognome",
+        "mid_name": "Secondo nome",
+        "birthdate": "Data di nascita",
+        "phone": "Telefono",
+        "country": "Paese",
+        "state": "Stato / regione",
+        "city": "Città",
+        "address": "Indirizzo",
+        "postal_code": "CAP",
+        "email": "Email"
+      },
+      "profile": {
+        "title": "Profilo",
+        "subtitle": "Dati principali del cliente per la verifica."
+      },
+      "documents": {
+        "title": "Documenti",
+        "subtitle": "Passaporto, ID e altri documenti caricati dal cliente.",
+        "empty": "Nessun documento caricato.",
+        "previewAlt": "Anteprima documento",
+        "numberedPreviewAlt": "Documento #{number}",
+        "defaultName": "Documento"
+      },
+      "firstDeposit": {
+        "title": "Primo deposito",
+        "subtitle": "Calcolato dal primo deposito reale del cliente.",
+        "exists": "Deposito presente",
+        "missing": "Nessun deposito",
+        "amount": "Importo",
+        "method": "Metodo",
+        "status": "Stato",
+        "date": "Data",
+        "empty": "Il cliente non ha ancora depositi.",
+        "methodFallback": "Deposito"
+      },
+      "payout": {
+        "title": "Dati pagamento",
+        "subtitle": "Verifica dati pagamento e documenti allegati.",
+        "emptyArchived": "Non ci sono dati pagamento archiviati.",
+        "emptyActive": "Non ci sono dati pagamento.",
+        "untitled": "Dato pagamento senza titolo",
+        "paymentSystem": "Sistema pagamento",
+        "legacy": "Legacy",
+        "previewAlt": "Anteprima dato pagamento",
+        "filters": {
+          "active": "Attivi",
+          "archived": "Archiviati",
+          "all": "Tutti"
+        },
+        "actions": {
+          "restore": "Ripristina",
+          "archive": "Archivia"
+        },
+        "legacyFields": {
+          "system": "Sistema",
+          "type": "Tipo",
+          "status": "Stato legacy",
+          "id": "ID legacy",
+          "comment": "Commento legacy"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

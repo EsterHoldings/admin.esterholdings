@@ -1445,15 +1445,187 @@
     },
     "verifications": {
       "index": {
-        "title": "認証リクエスト",
-        "subtitle": "認証リクエスト一覧"
+        "title": "確認リクエスト",
+        "subtitle": "確認リクエスト一覧"
       },
-      "searchPlaceholder": "認証リクエストを検索...",
+      "searchPlaceholder": "顧客、メール、リクエストIDで検索",
       "comment": {
         "label": "コメント",
         "placeholder": "コメントを入力...",
         "save": "保存",
         "close": "閉じる"
+      },
+      "actions": {
+        "refresh": "更新",
+        "retry": "再試行",
+        "approveAll": "すべて承認",
+        "rejectAll": "すべて拒否"
+      },
+      "filters": {
+        "active": "フィルター",
+        "reset": "リセット"
+      },
+      "empty": {
+        "list": "確認リクエストが見つかりません。"
+      },
+      "sort": {
+        "newest": "更新が新しい順",
+        "oldest": "更新が古い順",
+        "clientAsc": "顧客名 A-Z",
+        "clientDesc": "顧客名 Z-A",
+        "state": "リクエスト状態"
+      },
+      "stats": {
+        "all": "すべて",
+        "allHint": "表示中の全リクエスト",
+        "pending": "未処理",
+        "pendingHint": "管理者の判断が必要",
+        "approved": "確認済み",
+        "approvedHint": "承認済みリクエスト",
+        "rejected": "拒否済み",
+        "rejectedHint": "拒否済みリクエスト",
+        "ariaLabel": "確認リクエストフィルター"
+      },
+      "changes": {
+        "none": "確認対象の有効な変更はありません",
+        "profile": "プロフィールデータが変更されました",
+        "documents": "{count} 件の書類がアップロードされました",
+        "requisites": "{count} 件の支払情報が変更されました"
+      },
+      "status": {
+        "approved": "承認済み",
+        "rejected": "拒否済み",
+        "pending": "保留中"
+      },
+      "overall": {
+        "approved": "全体承認済み",
+        "rejected": "確認が必要",
+        "pending": "確認中"
+      },
+      "requestState": {
+        "all": "すべて",
+        "approved": "確認済み",
+        "rejected": "拒否済み",
+        "pending": "未処理"
+      },
+      "messages": {
+        "updated": "リクエスト状態を更新しました。",
+        "documentsUpdated": "書類状態を更新しました。",
+        "documentUpdated": "書類状態を更新しました。",
+        "profileUpdated": "プロフィール状態を更新しました。",
+        "payoutUpdated": "支払情報状態を更新しました。",
+        "payoutArchived": "支払情報をアーカイブしました。",
+        "payoutRestored": "支払情報を復元しました。"
+      },
+      "errors": {
+        "load": "確認リクエストを読み込めませんでした。",
+        "update": "リクエスト状態を更新できませんでした。",
+        "documentNotFound": "書類が見つかりません。",
+        "openDocument": "書類を開けませんでした。"
+      },
+      "clientRequests": {
+        "title": "確認リクエスト",
+        "subtitle": "顧客の変更とすべてのモデレーション履歴を確認します。",
+        "loading": "確認リクエストを読み込み中...",
+        "empty": "この顧客にはまだ確認リクエストがありません。"
+      },
+      "history": {
+        "title": "リクエスト履歴",
+        "subtitle": "最新の操作が先に表示されます。",
+        "empty": "履歴はありません。",
+        "loadMore": "さらに読み込む",
+        "actorAdmin": "管理者",
+        "actorClient": "顧客",
+        "actorSystem": "システム"
+      },
+      "tabs": {
+        "client": "一般確認",
+        "payout": "支払情報",
+        "requests": "リクエスト"
+      },
+      "profileFields": {
+        "first_name": "名",
+        "last_name": "姓",
+        "mid_name": "ミドルネーム",
+        "birthdate": "生年月日",
+        "phone": "電話",
+        "country": "国",
+        "state": "州 / 地域",
+        "city": "市区町村",
+        "address": "住所",
+        "postal_code": "郵便番号",
+        "email": "メール"
+      },
+      "profile": {
+        "title": "プロフィール",
+        "subtitle": "プロフィール確認に使用する顧客基本データ。"
+      },
+      "documents": {
+        "title": "書類",
+        "subtitle": "顧客がアップロードしたパスポート、ID、その他の書類。",
+        "empty": "書類はアップロードされていません。",
+        "previewAlt": "書類プレビュー",
+        "numberedPreviewAlt": "書類 #{number}",
+        "defaultName": "書類"
+      },
+      "firstDeposit": {
+        "title": "初回入金",
+        "subtitle": "顧客の実際の初回入金から計算されます。",
+        "exists": "入金あり",
+        "missing": "入金なし",
+        "amount": "金額",
+        "method": "方法",
+        "status": "状態",
+        "date": "日付",
+        "empty": "顧客にはまだ入金がありません。",
+        "methodFallback": "入金"
+      },
+      "payout": {
+        "title": "支払情報",
+        "subtitle": "支払情報と添付書類を確認します。",
+        "emptyArchived": "アーカイブ済み支払情報はありません。",
+        "emptyActive": "支払情報はありません。",
+        "untitled": "無題の支払情報",
+        "paymentSystem": "支払システム",
+        "legacy": "Legacy",
+        "previewAlt": "支払情報プレビュー",
+        "filters": {
+          "active": "有効",
+          "archived": "アーカイブ",
+          "all": "すべて"
+        },
+        "actions": {
+          "restore": "復元",
+          "archive": "アーカイブ"
+        },
+        "legacyFields": {
+          "system": "システム",
+          "type": "タイプ",
+          "status": "Legacy 状態",
+          "id": "Legacy ID",
+          "comment": "Legacy コメント"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

@@ -1805,6 +1805,178 @@
         "placeholder": "Enter comment...",
         "save": "Save",
         "close": "Close"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "retry": "Retry",
+        "approveAll": "Approve all",
+        "rejectAll": "Reject all"
+      },
+      "filters": {
+        "active": "Filter",
+        "reset": "Reset"
+      },
+      "empty": {
+        "list": "No verification requests found."
+      },
+      "sort": {
+        "newest": "Newest updated first",
+        "oldest": "Oldest updated first",
+        "clientAsc": "Client name A-Z",
+        "clientDesc": "Client name Z-A",
+        "state": "Request state"
+      },
+      "stats": {
+        "all": "All",
+        "allHint": "All visible requests",
+        "pending": "Unprocessed",
+        "pendingHint": "Require admin decision",
+        "approved": "Confirmed",
+        "approvedHint": "Approved requests",
+        "rejected": "Cancelled",
+        "rejectedHint": "Rejected requests",
+        "ariaLabel": "Verification request filters"
+      },
+      "changes": {
+        "none": "No active changes marked for review",
+        "profile": "Profile data changed",
+        "documents": "{count} document(s) uploaded",
+        "requisites": "{count} payment detail(s) changed"
+      },
+      "status": {
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "pending": "Pending"
+      },
+      "overall": {
+        "approved": "Overall approved",
+        "rejected": "Needs attention",
+        "pending": "In review"
+      },
+      "requestState": {
+        "all": "All",
+        "approved": "Confirmed",
+        "rejected": "Cancelled",
+        "pending": "Unprocessed"
+      },
+      "messages": {
+        "updated": "Request status updated.",
+        "documentsUpdated": "Documents status updated.",
+        "documentUpdated": "Document status updated.",
+        "profileUpdated": "Profile status updated.",
+        "payoutUpdated": "Payment details status updated.",
+        "payoutArchived": "Payment detail archived.",
+        "payoutRestored": "Payment detail restored."
+      },
+      "errors": {
+        "load": "Failed to load verification requests.",
+        "update": "Failed to update request status.",
+        "documentNotFound": "Document not found.",
+        "openDocument": "Failed to open document."
+      },
+      "clientRequests": {
+        "title": "Verification requests",
+        "subtitle": "Review active client changes and the complete moderation history.",
+        "loading": "Loading verification requests...",
+        "empty": "This client has no verification requests yet."
+      },
+      "history": {
+        "title": "Request history",
+        "subtitle": "Newest actions are shown first.",
+        "empty": "No history yet.",
+        "loadMore": "Load more",
+        "actorAdmin": "Admin",
+        "actorClient": "Client",
+        "actorSystem": "System"
+      },
+      "tabs": {
+        "client": "General verification",
+        "payout": "Payment details",
+        "requests": "Requests"
+      },
+      "profileFields": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "mid_name": "Middle name",
+        "birthdate": "Birth date",
+        "phone": "Phone",
+        "country": "Country",
+        "state": "State / region",
+        "city": "City",
+        "address": "Address",
+        "postal_code": "Postal code",
+        "email": "Email"
+      },
+      "profile": {
+        "title": "Profile",
+        "subtitle": "Core client data used for profile verification."
+      },
+      "documents": {
+        "title": "Documents",
+        "subtitle": "Passport, ID and other documents uploaded by the client.",
+        "empty": "No documents uploaded.",
+        "previewAlt": "Document preview",
+        "numberedPreviewAlt": "Document #{number}",
+        "defaultName": "Document"
+      },
+      "firstDeposit": {
+        "title": "First deposit",
+        "subtitle": "Calculated from the actual first client deposit.",
+        "exists": "Deposit exists",
+        "missing": "No deposit yet",
+        "amount": "Amount",
+        "method": "Method",
+        "status": "Status",
+        "date": "Date",
+        "empty": "The client has no deposits yet.",
+        "methodFallback": "Deposit"
+      },
+      "payout": {
+        "title": "Payment details",
+        "subtitle": "Review payout details and attached documents.",
+        "emptyArchived": "There are no archived payment details yet.",
+        "emptyActive": "There are no payout details yet.",
+        "untitled": "Untitled payment detail",
+        "paymentSystem": "Payment system",
+        "legacy": "Legacy",
+        "previewAlt": "Payment detail preview",
+        "filters": {
+          "active": "Active",
+          "archived": "Archived",
+          "all": "All"
+        },
+        "actions": {
+          "restore": "Restore",
+          "archive": "Archive"
+        },
+        "legacyFields": {
+          "system": "System",
+          "type": "Type",
+          "status": "Legacy status",
+          "id": "Legacy ID",
+          "comment": "Legacy comment"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

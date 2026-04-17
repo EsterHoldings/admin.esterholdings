@@ -1448,12 +1448,184 @@
         "title": "בקשות אימות",
         "subtitle": "רשימת בקשות אימות"
       },
-      "searchPlaceholder": "חיפוש בקשות אימות...",
+      "searchPlaceholder": "חיפוש לפי לקוח, אימייל או מזהה בקשה",
       "comment": {
-        "label": "הערה",
-        "placeholder": "הזן הערה...",
+        "label": "תגובה",
+        "placeholder": "הזן תגובה...",
         "save": "שמור",
         "close": "סגור"
+      },
+      "actions": {
+        "refresh": "רענן",
+        "retry": "נסה שוב",
+        "approveAll": "אשר הכל",
+        "rejectAll": "דחה הכל"
+      },
+      "filters": {
+        "active": "מסנן",
+        "reset": "איפוס"
+      },
+      "empty": {
+        "list": "לא נמצאו בקשות אימות."
+      },
+      "sort": {
+        "newest": "עודכנו לאחרונה",
+        "oldest": "עודכנו ראשונות",
+        "clientAsc": "שם לקוח A-Z",
+        "clientDesc": "שם לקוח Z-A",
+        "state": "סטטוס בקשה"
+      },
+      "stats": {
+        "all": "הכל",
+        "allHint": "כל הבקשות המוצגות",
+        "pending": "לא טופלו",
+        "pendingHint": "דורשות החלטת מנהל",
+        "approved": "מאושרות",
+        "approvedHint": "בקשות שאושרו",
+        "rejected": "נדחו",
+        "rejectedHint": "בקשות שנדחו",
+        "ariaLabel": "מסנני בקשות אימות"
+      },
+      "changes": {
+        "none": "אין שינויים פעילים לבדיקה",
+        "profile": "נתוני הפרופיל השתנו",
+        "documents": "הועלו {count} מסמכים",
+        "requisites": "שונו {count} פרטי תשלום"
+      },
+      "status": {
+        "approved": "מאושר",
+        "rejected": "נדחה",
+        "pending": "ממתין"
+      },
+      "overall": {
+        "approved": "מאושר כללי",
+        "rejected": "דורש תשומת לב",
+        "pending": "בבדיקה"
+      },
+      "requestState": {
+        "all": "הכל",
+        "approved": "מאושרות",
+        "rejected": "נדחו",
+        "pending": "לא טופלו"
+      },
+      "messages": {
+        "updated": "סטטוס הבקשה עודכן.",
+        "documentsUpdated": "סטטוס המסמכים עודכן.",
+        "documentUpdated": "סטטוס המסמך עודכן.",
+        "profileUpdated": "סטטוס הפרופיל עודכן.",
+        "payoutUpdated": "סטטוס פרטי התשלום עודכן.",
+        "payoutArchived": "פרטי התשלום הועברו לארכיון.",
+        "payoutRestored": "פרטי התשלום שוחזרו."
+      },
+      "errors": {
+        "load": "טעינת בקשות האימות נכשלה.",
+        "update": "עדכון סטטוס הבקשה נכשל.",
+        "documentNotFound": "המסמך לא נמצא.",
+        "openDocument": "לא ניתן לפתוח את המסמך."
+      },
+      "clientRequests": {
+        "title": "בקשות אימות",
+        "subtitle": "בדיקת שינויי לקוח פעילים והיסטוריית טיפול מלאה.",
+        "loading": "טוען בקשות אימות...",
+        "empty": "ללקוח זה אין עדיין בקשות אימות."
+      },
+      "history": {
+        "title": "היסטוריית בקשה",
+        "subtitle": "הפעולות האחרונות מוצגות ראשונות.",
+        "empty": "אין היסטוריה.",
+        "loadMore": "טען עוד",
+        "actorAdmin": "מנהל",
+        "actorClient": "לקוח",
+        "actorSystem": "מערכת"
+      },
+      "tabs": {
+        "client": "אימות כללי",
+        "payout": "פרטי תשלום",
+        "requests": "בקשות"
+      },
+      "profileFields": {
+        "first_name": "שם פרטי",
+        "last_name": "שם משפחה",
+        "mid_name": "שם אמצעי",
+        "birthdate": "תאריך לידה",
+        "phone": "טלפון",
+        "country": "מדינה",
+        "state": "מדינה / אזור",
+        "city": "עיר",
+        "address": "כתובת",
+        "postal_code": "מיקוד",
+        "email": "אימייל"
+      },
+      "profile": {
+        "title": "פרופיל",
+        "subtitle": "נתוני לקוח בסיסיים לאימות הפרופיל."
+      },
+      "documents": {
+        "title": "מסמכים",
+        "subtitle": "דרכון, תעודת זהות ומסמכים נוספים שהלקוח העלה.",
+        "empty": "לא הועלו מסמכים.",
+        "previewAlt": "תצוגת מסמך",
+        "numberedPreviewAlt": "מסמך #{number}",
+        "defaultName": "מסמך"
+      },
+      "firstDeposit": {
+        "title": "הפקדה ראשונה",
+        "subtitle": "מחושב לפי ההפקדה הראשונה בפועל של הלקוח.",
+        "exists": "יש הפקדה",
+        "missing": "אין הפקדה",
+        "amount": "סכום",
+        "method": "שיטה",
+        "status": "סטטוס",
+        "date": "תאריך",
+        "empty": "ללקוח אין עדיין הפקדות.",
+        "methodFallback": "הפקדה"
+      },
+      "payout": {
+        "title": "פרטי תשלום",
+        "subtitle": "בדיקת פרטי תשלום ומסמכים מצורפים.",
+        "emptyArchived": "אין עדיין פרטי תשלום בארכיון.",
+        "emptyActive": "אין עדיין פרטי תשלום.",
+        "untitled": "פרטי תשלום ללא שם",
+        "paymentSystem": "מערכת תשלום",
+        "legacy": "Legacy",
+        "previewAlt": "תצוגת פרטי תשלום",
+        "filters": {
+          "active": "פעילים",
+          "archived": "בארכיון",
+          "all": "הכל"
+        },
+        "actions": {
+          "restore": "שחזר",
+          "archive": "העבר לארכיון"
+        },
+        "legacyFields": {
+          "system": "מערכת",
+          "type": "סוג",
+          "status": "סטטוס Legacy",
+          "id": "Legacy ID",
+          "comment": "תגובה Legacy"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

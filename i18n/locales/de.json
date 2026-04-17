@@ -1448,12 +1448,184 @@
         "title": "Verifizierungsanfragen",
         "subtitle": "Liste der Verifizierungsanfragen"
       },
-      "searchPlaceholder": "Verifizierungsanfragen suchen...",
+      "searchPlaceholder": "Nach Kunde, E-Mail oder Anfrage-ID suchen",
       "comment": {
         "label": "Kommentar",
         "placeholder": "Kommentar eingeben...",
         "save": "Speichern",
         "close": "Schließen"
+      },
+      "actions": {
+        "refresh": "Aktualisieren",
+        "retry": "Erneut versuchen",
+        "approveAll": "Alles bestätigen",
+        "rejectAll": "Alles ablehnen"
+      },
+      "filters": {
+        "active": "Filter",
+        "reset": "Zurücksetzen"
+      },
+      "empty": {
+        "list": "Keine Verifizierungsanfragen gefunden."
+      },
+      "sort": {
+        "newest": "Neueste Änderungen zuerst",
+        "oldest": "Älteste Änderungen zuerst",
+        "clientAsc": "Kundenname A-Z",
+        "clientDesc": "Kundenname Z-A",
+        "state": "Anfragestatus"
+      },
+      "stats": {
+        "all": "Alle",
+        "allHint": "Alle sichtbaren Anfragen",
+        "pending": "Unbearbeitet",
+        "pendingHint": "Erfordern Admin-Entscheidung",
+        "approved": "Bestätigt",
+        "approvedHint": "Bestätigte Anfragen",
+        "rejected": "Abgelehnt",
+        "rejectedHint": "Abgelehnte Anfragen",
+        "ariaLabel": "Filter für Verifizierungsanfragen"
+      },
+      "changes": {
+        "none": "Keine aktiven Änderungen zur Prüfung",
+        "profile": "Profildaten geändert",
+        "documents": "{count} Dokument(e) hochgeladen",
+        "requisites": "{count} Zahlungsdaten geändert"
+      },
+      "status": {
+        "approved": "Bestätigt",
+        "rejected": "Abgelehnt",
+        "pending": "Ausstehend"
+      },
+      "overall": {
+        "approved": "Insgesamt bestätigt",
+        "rejected": "Benötigt Aufmerksamkeit",
+        "pending": "In Prüfung"
+      },
+      "requestState": {
+        "all": "Alle",
+        "approved": "Bestätigt",
+        "rejected": "Abgelehnt",
+        "pending": "Unbearbeitet"
+      },
+      "messages": {
+        "updated": "Anfragestatus aktualisiert.",
+        "documentsUpdated": "Dokumentenstatus aktualisiert.",
+        "documentUpdated": "Dokumentstatus aktualisiert.",
+        "profileUpdated": "Profilstatus aktualisiert.",
+        "payoutUpdated": "Status der Zahlungsdaten aktualisiert.",
+        "payoutArchived": "Zahlungsdaten archiviert.",
+        "payoutRestored": "Zahlungsdaten wiederhergestellt."
+      },
+      "errors": {
+        "load": "Verifizierungsanfragen konnten nicht geladen werden.",
+        "update": "Anfragestatus konnte nicht aktualisiert werden.",
+        "documentNotFound": "Dokument nicht gefunden.",
+        "openDocument": "Dokument konnte nicht geöffnet werden."
+      },
+      "clientRequests": {
+        "title": "Verifizierungsanfragen",
+        "subtitle": "Aktive Kundenänderungen und vollständige Moderationshistorie prüfen.",
+        "loading": "Verifizierungsanfragen werden geladen...",
+        "empty": "Dieser Kunde hat noch keine Verifizierungsanfragen."
+      },
+      "history": {
+        "title": "Anfragehistorie",
+        "subtitle": "Neueste Aktionen werden zuerst angezeigt.",
+        "empty": "Noch keine Historie.",
+        "loadMore": "Mehr laden",
+        "actorAdmin": "Admin",
+        "actorClient": "Kunde",
+        "actorSystem": "System"
+      },
+      "tabs": {
+        "client": "Allgemeine Verifizierung",
+        "payout": "Zahlungsdaten",
+        "requests": "Anfragen"
+      },
+      "profileFields": {
+        "first_name": "Vorname",
+        "last_name": "Nachname",
+        "mid_name": "Zweiter Vorname",
+        "birthdate": "Geburtsdatum",
+        "phone": "Telefon",
+        "country": "Land",
+        "state": "Bundesland / Region",
+        "city": "Stadt",
+        "address": "Adresse",
+        "postal_code": "Postleitzahl",
+        "email": "E-Mail"
+      },
+      "profile": {
+        "title": "Profil",
+        "subtitle": "Basisdaten des Kunden für die Profilprüfung."
+      },
+      "documents": {
+        "title": "Dokumente",
+        "subtitle": "Pass, Ausweis und andere vom Kunden hochgeladene Dokumente.",
+        "empty": "Keine Dokumente hochgeladen.",
+        "previewAlt": "Dokumentvorschau",
+        "numberedPreviewAlt": "Dokument #{number}",
+        "defaultName": "Dokument"
+      },
+      "firstDeposit": {
+        "title": "Erste Einzahlung",
+        "subtitle": "Wird aus der tatsächlichen ersten Einzahlung des Kunden berechnet.",
+        "exists": "Einzahlung vorhanden",
+        "missing": "Noch keine Einzahlung",
+        "amount": "Betrag",
+        "method": "Methode",
+        "status": "Status",
+        "date": "Datum",
+        "empty": "Der Kunde hat noch keine Einzahlungen.",
+        "methodFallback": "Einzahlung"
+      },
+      "payout": {
+        "title": "Zahlungsdaten",
+        "subtitle": "Zahlungsdaten und angehängte Dokumente prüfen.",
+        "emptyArchived": "Es gibt noch keine archivierten Zahlungsdaten.",
+        "emptyActive": "Es gibt noch keine Zahlungsdaten.",
+        "untitled": "Zahlungsdaten ohne Titel",
+        "paymentSystem": "Zahlungssystem",
+        "legacy": "Legacy",
+        "previewAlt": "Vorschau der Zahlungsdaten",
+        "filters": {
+          "active": "Aktiv",
+          "archived": "Archiviert",
+          "all": "Alle"
+        },
+        "actions": {
+          "restore": "Wiederherstellen",
+          "archive": "Archivieren"
+        },
+        "legacyFields": {
+          "system": "System",
+          "type": "Typ",
+          "status": "Legacy-Status",
+          "id": "Legacy-ID",
+          "comment": "Legacy-Kommentar"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

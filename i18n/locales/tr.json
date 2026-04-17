@@ -1445,15 +1445,187 @@
     },
     "verifications": {
       "index": {
-        "title": "Doğrulama istekleri",
-        "subtitle": "Doğrulama istekleri listesi"
+        "title": "Doğrulama talepleri",
+        "subtitle": "Doğrulama talepleri listesi"
       },
-      "searchPlaceholder": "Doğrulama isteklerini ara...",
+      "searchPlaceholder": "Müşteri, e-posta veya talep ID ile ara",
       "comment": {
         "label": "Yorum",
         "placeholder": "Yorum girin...",
         "save": "Kaydet",
         "close": "Kapat"
+      },
+      "actions": {
+        "refresh": "Yenile",
+        "retry": "Tekrar dene",
+        "approveAll": "Tümünü onayla",
+        "rejectAll": "Tümünü reddet"
+      },
+      "filters": {
+        "active": "Filtre",
+        "reset": "Sıfırla"
+      },
+      "empty": {
+        "list": "Doğrulama talebi bulunamadı."
+      },
+      "sort": {
+        "newest": "En yeni güncellenenler",
+        "oldest": "En eski güncellenenler",
+        "clientAsc": "Müşteri adı A-Z",
+        "clientDesc": "Müşteri adı Z-A",
+        "state": "Talep durumu"
+      },
+      "stats": {
+        "all": "Tümü",
+        "allHint": "Görünen tüm talepler",
+        "pending": "İşlenmemiş",
+        "pendingHint": "Admin kararı gerekli",
+        "approved": "Onaylandı",
+        "approvedHint": "Onaylanan talepler",
+        "rejected": "Reddedildi",
+        "rejectedHint": "Reddedilen talepler",
+        "ariaLabel": "Doğrulama talebi filtreleri"
+      },
+      "changes": {
+        "none": "İncelenecek aktif değişiklik yok",
+        "profile": "Profil verileri değişti",
+        "documents": "{count} belge yüklendi",
+        "requisites": "{count} ödeme bilgisi değişti"
+      },
+      "status": {
+        "approved": "Onaylandı",
+        "rejected": "Reddedildi",
+        "pending": "Beklemede"
+      },
+      "overall": {
+        "approved": "Genel olarak onaylandı",
+        "rejected": "Dikkat gerekli",
+        "pending": "İncelemede"
+      },
+      "requestState": {
+        "all": "Tümü",
+        "approved": "Onaylandı",
+        "rejected": "Reddedildi",
+        "pending": "İşlenmemiş"
+      },
+      "messages": {
+        "updated": "Talep durumu güncellendi.",
+        "documentsUpdated": "Belgelerin durumu güncellendi.",
+        "documentUpdated": "Belge durumu güncellendi.",
+        "profileUpdated": "Profil durumu güncellendi.",
+        "payoutUpdated": "Ödeme bilgileri durumu güncellendi.",
+        "payoutArchived": "Ödeme bilgisi arşivlendi.",
+        "payoutRestored": "Ödeme bilgisi geri yüklendi."
+      },
+      "errors": {
+        "load": "Doğrulama talepleri yüklenemedi.",
+        "update": "Talep durumu güncellenemedi.",
+        "documentNotFound": "Belge bulunamadı.",
+        "openDocument": "Belge açılamadı."
+      },
+      "clientRequests": {
+        "title": "Doğrulama talepleri",
+        "subtitle": "Aktif müşteri değişikliklerini ve tüm moderasyon geçmişini inceleyin.",
+        "loading": "Doğrulama talepleri yükleniyor...",
+        "empty": "Bu müşterinin henüz doğrulama talebi yok."
+      },
+      "history": {
+        "title": "Talep geçmişi",
+        "subtitle": "En yeni işlemler önce gösterilir.",
+        "empty": "Henüz geçmiş yok.",
+        "loadMore": "Daha fazla yükle",
+        "actorAdmin": "Admin",
+        "actorClient": "Müşteri",
+        "actorSystem": "Sistem"
+      },
+      "tabs": {
+        "client": "Genel doğrulama",
+        "payout": "Ödeme bilgileri",
+        "requests": "Talepler"
+      },
+      "profileFields": {
+        "first_name": "Ad",
+        "last_name": "Soyad",
+        "mid_name": "İkinci ad",
+        "birthdate": "Doğum tarihi",
+        "phone": "Telefon",
+        "country": "Ülke",
+        "state": "Eyalet / bölge",
+        "city": "Şehir",
+        "address": "Adres",
+        "postal_code": "Posta kodu",
+        "email": "E-posta"
+      },
+      "profile": {
+        "title": "Profil",
+        "subtitle": "Profil doğrulaması için temel müşteri verileri."
+      },
+      "documents": {
+        "title": "Belgeler",
+        "subtitle": "Müşteri tarafından yüklenen pasaport, kimlik ve diğer belgeler.",
+        "empty": "Belge yüklenmedi.",
+        "previewAlt": "Belge önizlemesi",
+        "numberedPreviewAlt": "Belge #{number}",
+        "defaultName": "Belge"
+      },
+      "firstDeposit": {
+        "title": "İlk yatırım",
+        "subtitle": "Müşterinin gerçek ilk yatırımına göre hesaplanır.",
+        "exists": "Yatırım var",
+        "missing": "Henüz yatırım yok",
+        "amount": "Tutar",
+        "method": "Yöntem",
+        "status": "Durum",
+        "date": "Tarih",
+        "empty": "Müşterinin henüz yatırımı yok.",
+        "methodFallback": "Yatırım"
+      },
+      "payout": {
+        "title": "Ödeme bilgileri",
+        "subtitle": "Ödeme bilgilerini ve ek belgeleri inceleyin.",
+        "emptyArchived": "Arşivlenmiş ödeme bilgisi yok.",
+        "emptyActive": "Ödeme bilgisi yok.",
+        "untitled": "Başlıksız ödeme bilgisi",
+        "paymentSystem": "Ödeme sistemi",
+        "legacy": "Legacy",
+        "previewAlt": "Ödeme bilgisi önizlemesi",
+        "filters": {
+          "active": "Aktif",
+          "archived": "Arşiv",
+          "all": "Tümü"
+        },
+        "actions": {
+          "restore": "Geri yükle",
+          "archive": "Arşivle"
+        },
+        "legacyFields": {
+          "system": "Sistem",
+          "type": "Tür",
+          "status": "Legacy durumu",
+          "id": "Legacy ID",
+          "comment": "Legacy yorumu"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

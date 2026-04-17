@@ -30,8 +30,12 @@
           <div class="verification-card__title-group">
             <UiIconProfile />
             <div>
-              <UiTextH5 class="verification-card__title">Профиль</UiTextH5>
-              <div class="verification-card__subtitle">Основные данные клиента для проверки профиля.</div>
+              <UiTextH5 class="verification-card__title">
+                {{ text("admin.verifications.profile.title", "Profile") }}
+              </UiTextH5>
+              <div class="verification-card__subtitle">
+                {{ text("admin.verifications.profile.subtitle", "Core client data used for profile verification.") }}
+              </div>
             </div>
           </div>
 
@@ -59,47 +63,47 @@
 
         <div class="verification-grid">
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Имя</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.first_name", "First name") }}</span>
             <span class="verification-grid__value">{{ props.userData.first_name || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Фамилия</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.last_name", "Last name") }}</span>
             <span class="verification-grid__value">{{ props.userData.last_name || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Отчество</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.mid_name", "Middle name") }}</span>
             <span class="verification-grid__value">{{ props.userData.mid_name || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Дата рождения</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.birthdate", "Birth date") }}</span>
             <span class="verification-grid__value">{{ props.userData.birthdate || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Телефон</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.phone", "Phone") }}</span>
             <span class="verification-grid__value">{{ props.userData.phone || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Email</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.email", "Email") }}</span>
             <span class="verification-grid__value">{{ props.userData.email || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Страна</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.country", "Country") }}</span>
             <span class="verification-grid__value">{{ props.userData.country || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Штат / регион</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.state", "State / region") }}</span>
             <span class="verification-grid__value">{{ props.userData.state || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Город</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.city", "City") }}</span>
             <span class="verification-grid__value">{{ props.userData.city || "-" }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Индекс</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.postal_code", "Postal code") }}</span>
             <span class="verification-grid__value">{{ props.userData.postal_code || "-" }}</span>
           </div>
           <div class="verification-grid__item verification-grid__item--wide">
-            <span class="verification-grid__label">Адрес</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.profileFields.address", "Address") }}</span>
             <span class="verification-grid__value">{{ props.userData.address || "-" }}</span>
           </div>
         </div>
@@ -146,8 +150,12 @@
           <div class="verification-card__title-group">
             <UiIconDocuments />
             <div>
-              <UiTextH5 class="verification-card__title">Документы</UiTextH5>
-              <div class="verification-card__subtitle">Паспортные и другие загруженные документы клиента.</div>
+              <UiTextH5 class="verification-card__title">
+                {{ text("admin.verifications.documents.title", "Documents") }}
+              </UiTextH5>
+              <div class="verification-card__subtitle">
+                {{ text("admin.verifications.documents.subtitle", "Passport, ID and other documents uploaded by the client.") }}
+              </div>
             </div>
           </div>
 
@@ -198,7 +206,7 @@
           v-if="documentsListRequestData.length === 0 && !isLoading"
           class="verification-card__empty"
         >
-          No documents uploaded.
+          {{ text("admin.verifications.documents.empty", "No documents uploaded.") }}
         </div>
 
         <div
@@ -219,7 +227,7 @@
               <img
                 v-if="documentPreviewMeta(documentRequestData).type === 'image' && documentPreviewMeta(documentRequestData).src"
                 :src="documentPreviewMeta(documentRequestData).src"
-                :alt="documentRequestData.document_data.number || 'Document preview'"
+                :alt="documentRequestData.document_data.number || text('admin.verifications.documents.previewAlt', 'Document preview')"
               />
               <span
                 v-else
@@ -232,7 +240,7 @@
 
             <div class="verification-document-card__meta">
               <div class="verification-document-card__title">
-                {{ documentRequestData.name || documentRequestData.document_data.number || "Document" }}
+                {{ documentRequestData.name || documentRequestData.document_data.number || text("admin.verifications.documents.defaultName", "Document") }}
               </div>
               <div class="verification-document-card__subtitle">
                 {{ documentRequestData.document_data.number || documentRequestData.id }}
@@ -257,8 +265,12 @@
           <div class="verification-card__title-group">
             <UiIconPaymentDetail />
             <div>
-              <UiTextH5 class="verification-card__title">Первый депозит</UiTextH5>
-              <div class="verification-card__subtitle">Определяется по фактическому наличию первого депозита.</div>
+              <UiTextH5 class="verification-card__title">
+                {{ text("admin.verifications.firstDeposit.title", "First deposit") }}
+              </UiTextH5>
+              <div class="verification-card__subtitle">
+                {{ text("admin.verifications.firstDeposit.subtitle", "Calculated from the actual first client deposit.") }}
+              </div>
             </div>
           </div>
 
@@ -266,7 +278,7 @@
             class="verification-inline-badge"
             :class="firstDeposit ? 'is-approved' : 'is-pending'"
           >
-            {{ firstDeposit ? "Есть депозит" : "Депозита нет" }}
+            {{ firstDeposit ? text("admin.verifications.firstDeposit.exists", "Deposit exists") : text("admin.verifications.firstDeposit.missing", "No deposit yet") }}
           </span>
         </div>
 
@@ -275,19 +287,19 @@
           class="verification-grid verification-grid--compact"
         >
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Сумма</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.amount", "Amount") }}</span>
             <span class="verification-grid__value">{{ formatMoney(firstDeposit.amount, firstDeposit.currency) }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Метод</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.method", "Method") }}</span>
             <span class="verification-grid__value">{{ paymentMethodName(firstDeposit) }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Статус</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.status", "Status") }}</span>
             <span class="verification-grid__value">{{ paymentStatusText(firstDeposit.status) }}</span>
           </div>
           <div class="verification-grid__item">
-            <span class="verification-grid__label">Дата</span>
+            <span class="verification-grid__label">{{ text("admin.verifications.firstDeposit.date", "Date") }}</span>
             <span class="verification-grid__value">{{ firstDeposit.created_at || "-" }}</span>
           </div>
         </div>
@@ -296,7 +308,7 @@
           v-else
           class="verification-card__empty"
         >
-          У клиента ещё нет депозитов.
+          {{ text("admin.verifications.firstDeposit.empty", "The client has no deposits yet.") }}
         </div>
       </section>
     </template>
@@ -307,8 +319,12 @@
           <div class="verification-card__title-group">
             <UiIconPaymentDetail />
             <div>
-              <UiTextH5 class="verification-card__title">Реквизиты</UiTextH5>
-              <div class="verification-card__subtitle">Проверка реквизитов и приложенных документов.</div>
+              <UiTextH5 class="verification-card__title">
+                {{ text("admin.verifications.payout.title", "Payment details") }}
+              </UiTextH5>
+              <div class="verification-card__subtitle">
+                {{ text("admin.verifications.payout.subtitle", "Review payout details and attached documents.") }}
+              </div>
             </div>
           </div>
 
@@ -341,7 +357,11 @@
           v-if="payoutDetails.length === 0 && !isPayoutLoading"
           class="verification-card__empty"
         >
-          {{ payoutArchivedFilter === "archived" ? "Архивных реквизитов пока нет." : "Реквизитов для выплат пока нет." }}
+          {{
+            payoutArchivedFilter === "archived"
+              ? text("admin.verifications.payout.emptyArchived", "There are no archived payment details yet.")
+              : text("admin.verifications.payout.emptyActive", "There are no payout details yet.")
+          }}
         </div>
 
         <div
@@ -355,9 +375,9 @@
           >
             <div class="verification-payout-card__header">
               <div class="verification-payout-card__title-group">
-                <div class="verification-payout-card__title">{{ paymentDetail.name || "Реквизит без названия" }}</div>
+                <div class="verification-payout-card__title">{{ paymentDetail.name || text("admin.verifications.payout.untitled", "Untitled payment detail") }}</div>
                 <div class="verification-payout-card__subtitle">
-                  {{ paymentDetail.paymentSystemName || "Payment system" }}
+                  {{ paymentDetail.paymentSystemName || text("admin.verifications.payout.paymentSystem", "Payment system") }}
                   <span v-if="paymentDetail.updatedAt">· {{ paymentDetail.updatedAt }}</span>
                 </div>
               </div>
@@ -378,7 +398,7 @@
                 state="info--outline--small"
                 @click="paymentDetail.isArchived ? handleRestorePayoutDetail(paymentDetail.id) : handleArchivePayoutDetail(paymentDetail.id)"
               >
-                {{ paymentDetail.isArchived ? "Restore" : "Archive" }}
+                {{ paymentDetail.isArchived ? text("admin.verifications.payout.actions.restore", "Restore") : text("admin.verifications.payout.actions.archive", "Archive") }}
               </UiButtonDefault>
             </div>
 
@@ -401,7 +421,7 @@
                 v-if="paymentDetailLegacyEntries(paymentDetail).length"
                 class="verification-payout-card__legacy"
               >
-                <div class="verification-payout-card__legacy-title">Legacy</div>
+                <div class="verification-payout-card__legacy-title">{{ text("admin.verifications.payout.legacy", "Legacy") }}</div>
 
                 <div class="verification-payout-card__legacy-list">
                   <div
@@ -451,7 +471,7 @@
               v-if="paymentDetail.documents.length > 0"
               class="verification-payout-card__documents"
             >
-              <span class="verification-payout-card__documents-label">Documents</span>
+              <span class="verification-payout-card__documents-label">{{ text("admin.verifications.documents.title", "Documents") }}</span>
               <button
                 v-for="(paymentDetailDocument, documentIndex) in paymentDetail.documents"
                 :key="paymentDetail.id + ':' + paymentDetailDocument.path + ':' + documentIndex"
@@ -464,7 +484,7 @@
                 <img
                   v-if="paymentDetailDocumentPreviewMeta(paymentDetailDocument).type === 'image' && paymentDetailDocumentPreviewMeta(paymentDetailDocument).src"
                   :src="paymentDetailDocumentPreviewMeta(paymentDetailDocument).src"
-                  :alt="paymentDetailDocument.name || `Document #${documentIndex + 1}`"
+                  :alt="paymentDetailDocument.name || text('admin.verifications.documents.numberedPreviewAlt', 'Document #{number}', { number: documentIndex + 1 })"
                 />
                 <span
                   v-else
@@ -486,8 +506,12 @@
           <div class="verification-card__title-group">
             <UiIconDocuments />
             <div>
-              <UiTextH5 class="verification-card__title">Запросы на верификацию</UiTextH5>
-              <div class="verification-card__subtitle">Список запросов этого клиента. Необработанные всегда сверху.</div>
+              <UiTextH5 class="verification-card__title">
+                {{ text("admin.verifications.clientRequests.title", "Verification requests") }}
+              </UiTextH5>
+              <div class="verification-card__subtitle">
+                {{ text("admin.verifications.clientRequests.subtitle", "Review active client changes and the complete moderation history.") }}
+              </div>
             </div>
           </div>
 
@@ -505,14 +529,14 @@
           v-if="isRequestsLoading"
           class="verification-card__empty"
         >
-          Loading verification requests...
+          {{ text("admin.verifications.clientRequests.loading", "Loading verification requests...") }}
         </div>
 
         <div
           v-else-if="sortedClientRequestRows.length === 0"
           class="verification-card__empty"
         >
-          Для этого клиента запросов на верификацию пока нет.
+          {{ text("admin.verifications.clientRequests.empty", "This client has no verification requests yet.") }}
         </div>
 
         <div
@@ -564,7 +588,7 @@
                   v-else
                   class="verification-client-request-card__focus-muted"
                 >
-                  No new sections marked for review
+                  {{ text("admin.verifications.changes.none", "No active changes marked for review") }}
                 </span>
               </div>
 
@@ -578,14 +602,14 @@
                   <img
                     v-if="preview.type === 'image' && preview.src"
                     :src="preview.src"
-                    alt="Document preview"
+                    :alt="text('admin.verifications.documents.previewAlt', 'Document preview')"
                   />
                   <span
-                    v-else
-                    class="verification-file-badge"
-                    :class="`is-${preview.type}`"
-                  >
-                    {{ preview.label }}
+                  v-else
+                  class="verification-file-badge"
+                  :class="`is-${preview.type}`"
+                >
+                  {{ preview.label }}
                   </span>
                 </span>
 
@@ -598,16 +622,105 @@
                   <img
                     v-if="preview.type === 'image' && preview.src"
                     :src="preview.src"
-                    alt="Requisite preview"
+                    :alt="text('admin.verifications.payout.previewAlt', 'Payment detail preview')"
                   />
                   <span
                     v-else
                     class="verification-file-badge"
                     :class="`is-${preview.type}`"
                   >
-                    {{ preview.label }}
-                  </span>
+                  {{ preview.label }}
                 </span>
+              </span>
+            </div>
+
+              <div class="verification-client-request-history">
+                <div class="verification-client-request-history__header">
+                  <div>
+                    <strong>{{ text("admin.verifications.history.title", "Request history") }}</strong>
+                    <span>{{ text("admin.verifications.history.subtitle", "Newest actions are shown first.") }}</span>
+                  </div>
+                </div>
+
+                <div
+                  v-if="visibleVerificationHistoryRows.length === 0"
+                  class="verification-client-request-history__empty"
+                >
+                  {{ text("admin.verifications.history.empty", "No history yet.") }}
+                </div>
+
+                <div
+                  v-else
+                  class="verification-client-request-history__list"
+                >
+                  <article
+                    v-for="historyRow in visibleVerificationHistoryRows"
+                    :key="historyRow.id"
+                    class="verification-client-request-history__row"
+                  >
+                    <div class="verification-client-request-history__row-main">
+                      <span
+                        class="verification-inline-badge"
+                        :class="requestStateClass(historyRow.status)"
+                      >
+                        {{ statusText(historyRow.status) }}
+                      </span>
+                      <div>
+                        <strong>{{ historyRow.name }}</strong>
+                        <span>{{ historyActorText(historyRow) }} · {{ historyRow.date || "-" }}</span>
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="historyChangeRows(historyRow).length"
+                      class="verification-client-request-history__changes"
+                    >
+                      <div
+                        v-for="change in historyChangeRows(historyRow)"
+                        :key="`${historyRow.id}:${change.field}`"
+                        class="verification-client-request-history__change"
+                      >
+                        <span>{{ profileFieldLabel(change.field) }}</span>
+                        <strong>{{ formatHistoryValue(change.old) }} → {{ formatHistoryValue(change.new) }}</strong>
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="historyDocumentPreviews(historyRow).length"
+                      class="verification-client-request-history__documents"
+                    >
+                      <button
+                        v-for="preview in historyDocumentPreviews(historyRow)"
+                        :key="`${historyRow.id}:${preview.id}`"
+                        type="button"
+                        class="verification-client-request-history__document"
+                        @click="handleClientDocumentImage(preview.url)"
+                      >
+                        <img
+                          v-if="preview.preview.type === 'image' && preview.preview.src"
+                          :src="preview.preview.src"
+                          :alt="preview.label"
+                        />
+                        <span
+                          v-else
+                          class="verification-file-badge"
+                          :class="`is-${preview.preview.type}`"
+                        >
+                          {{ preview.preview.label }}
+                        </span>
+                      </button>
+                    </div>
+                  </article>
+
+                  <button
+                    v-if="hasMoreVerificationHistory"
+                    type="button"
+                    class="verification-client-request-history__load"
+                    @click="loadMoreVerificationHistory"
+                  >
+                    {{ text("admin.verifications.history.loadMore", "Load more") }}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -720,6 +833,26 @@ interface ClientVerificationRequestRow {
   updated_at_human: string | null;
 }
 
+interface VerificationHistoryRow {
+  id: string;
+  key: string;
+  name: string;
+  date: string;
+  status: VerificationStatus;
+  actor: {
+    id: string;
+    type: string;
+    name: string;
+  };
+  data: Record<string, any>;
+}
+
+interface VerificationHistoryChange {
+  field: string;
+  old: unknown;
+  new: unknown;
+}
+
 type VerificationPreviewKind = "image" | "pdf" | "text" | "file";
 
 interface VerificationPreviewMeta {
@@ -758,7 +891,7 @@ const adminAuthStore = useAdminAuthStore();
 const adminNotificationsStore = useAdminNotificationsStore();
 const route = useRoute();
 const toast = useToast();
-const { t } = useI18n({ useScope: "global" });
+const { t, te } = useI18n({ useScope: "global" });
 const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
 const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
 const VERIFICATION_NOTIFICATION_TYPE = "verification.request.created";
@@ -774,6 +907,8 @@ const documentsListRequestData = ref<VerificationDocumentItem[]>([]);
 const payoutDetails = ref<AdminPaymentDetailItem[]>([]);
 const firstDeposit = ref<PaymentRow | null>(null);
 const clientRequestRows = ref<ClientVerificationRequestRow[]>([]);
+const verificationHistoryRows = ref<VerificationHistoryRow[]>([]);
+const verificationHistoryVisibleCount = ref(10);
 const requestUpdatingState = reactive<Record<string, boolean>>({});
 const highlightedSection = ref<VerificationSectionTarget | null>(null);
 const profileSectionRef = ref<HTMLElement | null>(null);
@@ -797,7 +932,6 @@ const seenTabs = reactive<Record<VerificationTab, boolean>>({
   payout: false,
   requests: false,
 });
-let highlightTimer: ReturnType<typeof setTimeout> | null = null;
 
 const canUpdateVerifications = computed(
   () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-verifications")
@@ -809,6 +943,15 @@ const canUpdatePaymentDetails = computed(
     || adminAuthStore.hasPermission("update-client-payment-details")
     || adminAuthStore.hasPermission("update-clients")
 );
+
+const payoutArchivedFilterOptions = computed(() => [
+  { value: "active" as const, label: text("admin.verifications.payout.filters.active", "Active") },
+  { value: "archived" as const, label: text("admin.verifications.payout.filters.archived", "Archived") },
+  { value: "all" as const, label: text("admin.verifications.payout.filters.all", "All") },
+]);
+
+const text = (key: string, fallback: string, params: Record<string, unknown> = {}): string =>
+  te(key) ? String(t(key, params)) : fallback.replace(/\{(\w+)}/g, (_, name) => String(params[name] ?? ""));
 
 const normalizeVerificationStatus = (value: unknown): VerificationStatus => {
   if (typeof value !== "string") {
@@ -888,6 +1031,24 @@ const normalizeClientRequests = (payload: any): ClientVerificationRequestRow[] =
     requisites_review_count: Number(row?.requisites_review_count ?? 0),
     updated_at: row?.updated_at ? String(row.updated_at) : null,
     updated_at_human: row?.updated_at_human ? String(row.updated_at_human) : null,
+  }));
+};
+
+const normalizeVerificationHistoryRows = (payload: unknown): VerificationHistoryRow[] => {
+  const rows = Array.isArray(payload) ? payload : [];
+
+  return rows.map((row: any) => ({
+    id: String(row?.id ?? `${row?.key ?? "history"}-${row?.date ?? ""}`),
+    key: String(row?.key ?? ""),
+    name: String(row?.name ?? ""),
+    date: String(row?.date ?? ""),
+    status: normalizeVerificationStatus(row?.status),
+    actor: {
+      id: String(row?.actor?.id ?? ""),
+      type: String(row?.actor?.type ?? ""),
+      name: String(row?.actor?.name ?? ""),
+    },
+    data: row?.data && typeof row.data === "object" ? row.data : {},
   }));
 };
 
@@ -1181,6 +1342,8 @@ const loadVerificationData = async () => {
     const payloadData = verificationRequestDto?.data || {};
 
     Object.assign(verificationRequestData, initialData, payloadData);
+    verificationHistoryRows.value = normalizeVerificationHistoryRows(payloadData?.history);
+    verificationHistoryVisibleCount.value = Math.min(Math.max(verificationHistoryVisibleCount.value, 10), Math.max(verificationHistoryRows.value.length, 10));
 
     infoStatus.value = normalizeVerificationStatus(verificationRequestData?.info?.verification_status);
     infoComment.value = verificationRequestData?.info?.comment || "";
@@ -1326,7 +1489,7 @@ const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   if (requestHasProfileToReview(request)) {
     items.push({
       id: "profile",
-      label: "Check profile data",
+      label: text("admin.verifications.changes.profile", "Profile data changed"),
       section: "profile",
     });
   }
@@ -1334,7 +1497,9 @@ const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   if (requestHasDocumentsToReview(request)) {
     items.push({
       id: "documents",
-      label: `Check documents${request.documents_review_count ? ` (${request.documents_review_count})` : ""}`,
+      label: text("admin.verifications.changes.documents", "{count} document(s) uploaded", {
+        count: request.documents_review_count,
+      }),
       section: "documents",
     });
   }
@@ -1342,7 +1507,9 @@ const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   if (requestHasPayoutToReview(request)) {
     items.push({
       id: "payout",
-      label: `Check requisites${request.requisites_review_count ? ` (${request.requisites_review_count})` : ""}`,
+      label: text("admin.verifications.changes.requisites", "{count} payment detail(s) changed", {
+        count: request.requisites_review_count,
+      }),
       section: "payout",
     });
   }
@@ -1369,20 +1536,97 @@ const requestDocumentPreviews = (request: ClientVerificationRequestRow): Verific
 const requestPayoutPreviews = (request: ClientVerificationRequestRow): VerificationPreviewMeta[] =>
   requestHasPayoutToReview(request) ? currentRequestPayoutPreviews.value : [];
 
+const visibleVerificationHistoryRows = computed(() =>
+  verificationHistoryRows.value.slice(0, verificationHistoryVisibleCount.value)
+);
+
+const hasMoreVerificationHistory = computed(() =>
+  verificationHistoryRows.value.length > verificationHistoryVisibleCount.value
+);
+
+const loadMoreVerificationHistory = (): void => {
+  verificationHistoryVisibleCount.value += 10;
+};
+
+const historyChangeRows = (row: VerificationHistoryRow): VerificationHistoryChange[] => {
+  const changes = Array.isArray(row.data?.changes) ? row.data.changes : [];
+
+  return changes
+    .map((change: any) => ({
+      field: String(change?.field ?? ""),
+      old: change?.old ?? null,
+      new: change?.new ?? null,
+    }))
+    .filter(change => change.field !== "");
+};
+
+const historyDocumentPreviews = (row: VerificationHistoryRow): Array<{
+  id: string;
+  label: string;
+  url: string;
+  preview: VerificationPreviewMeta;
+}> => {
+  const documentIds = Array.isArray(row.data?.document_ids)
+    ? row.data.document_ids.map((id: unknown) => String(id ?? "")).filter(Boolean)
+    : [];
+
+  if (documentIds.length === 0) {
+    return [];
+  }
+
+  const idSet = new Set(documentIds);
+
+  return documentsListRequestData.value
+    .filter(document => idSet.has(document.id))
+    .map(document => ({
+      id: document.id,
+      label: document.name || document.document_data.number || document.id,
+      url: document.document_data.full_url,
+      preview: documentPreviewMeta(document),
+    }));
+};
+
+const profileFieldLabel = (field: string): string => {
+  const key = `admin.verifications.profileFields.${field}`;
+  return text(key, normalizePaymentLabel(field));
+};
+
+const formatHistoryValue = (value: unknown): string => {
+  const normalized = String(value ?? "").trim();
+  return normalized !== "" ? normalized : "-";
+};
+
+const historyActorText = (row: VerificationHistoryRow): string => {
+  const actorName = row.actor.name.trim();
+  if (actorName) {
+    return actorName;
+  }
+
+  if (row.actor.type === "admin") {
+    return text("admin.verifications.history.actorAdmin", "Admin");
+  }
+
+  if (row.actor.type === "client") {
+    return text("admin.verifications.history.actorClient", "Client");
+  }
+
+  return text("admin.verifications.history.actorSystem", "System");
+};
+
 const verificationTabs = computed(() => [
   {
     id: "client" as const,
-    label: "Общая верификация",
+    label: text("admin.verifications.tabs.client", "General verification"),
     needsAttention: hasPendingProfile.value || hasPendingDocuments.value || hasUnreadProfileSignals.value || hasUnreadDocumentsSignals.value,
   },
   {
     id: "payout" as const,
-    label: "Реквизиты",
+    label: text("admin.verifications.tabs.payout", "Payment details"),
     needsAttention: hasPendingPayout.value || hasUnreadPayoutSignals.value,
   },
   {
     id: "requests" as const,
-    label: "Запросы",
+    label: text("admin.verifications.tabs.requests", "Requests"),
     needsAttention: hasPendingRequests.value || hasUnreadRequestSignals.value,
   },
 ]);
@@ -1410,10 +1654,35 @@ const resolveSectionElement = (section: VerificationSectionTarget): HTMLElement 
   }
 };
 
+const isVerificationSectionStillPending = (section: VerificationSectionTarget): boolean => {
+  const request = activePendingRequest.value;
+
+  if (!request) {
+    return false;
+  }
+
+  switch (section) {
+    case "profile":
+      return requestHasProfileToReview(request);
+    case "documents":
+      return requestHasDocumentsToReview(request);
+    case "payout":
+      return requestHasPayoutToReview(request);
+  }
+};
+
+const clearResolvedHighlight = (): void => {
+  const section = highlightedSection.value;
+
+  if (section !== null && !isVerificationSectionStillPending(section)) {
+    highlightedSection.value = null;
+  }
+};
+
 const focusVerificationSection = (section: VerificationSectionTarget): void => {
-  if (highlightTimer) {
-    clearTimeout(highlightTimer);
-    highlightTimer = null;
+  if (clientRequestRows.value.length > 0 && !isVerificationSectionStillPending(section)) {
+    highlightedSection.value = null;
+    return;
   }
 
   highlightedSection.value = section;
@@ -1421,12 +1690,6 @@ const focusVerificationSection = (section: VerificationSectionTarget): void => {
     behavior: "smooth",
     block: "center",
   });
-
-  highlightTimer = setTimeout(() => {
-    if (highlightedSection.value === section) {
-      highlightedSection.value = null;
-    }
-  }, 2200);
 };
 
 const markRelevantVerificationNotificationsSeen = async (section: VerificationSectionTarget): Promise<void> => {
@@ -1576,7 +1839,7 @@ const handleVerificationDocuments = async (value: any) => {
       type: "documents",
       updatedStatus: { status: value.status, comment: value.comment },
     });
-    toast.success("Documents status updated!");
+    toast.success(text("admin.verifications.messages.documentsUpdated", "Documents status updated."));
     await loadVerificationData();
     await loadClientVerificationRequests();
   } finally {
@@ -1597,7 +1860,7 @@ const handleVerificationDocument = async (value: any, docId: string = "") => {
       type: "document",
       updatedStatus: { status: value.status, comment: value.comment },
     });
-    toast.success("Document status updated!");
+    toast.success(text("admin.verifications.messages.documentUpdated", "Document status updated."));
     await loadVerificationData();
     await loadClientVerificationRequests();
   } finally {
@@ -1617,7 +1880,7 @@ const handleVerificationProfile = async (value: any) => {
       type: "info",
       updatedStatus: { status: value.status, comment: value.comment },
     });
-    toast.success("Profile status updated!");
+    toast.success(text("admin.verifications.messages.profileUpdated", "Profile status updated."));
     await loadVerificationData();
     await loadClientVerificationRequests();
   } finally {
@@ -1668,7 +1931,7 @@ const handleVerificationPayoutDetail = async (value: any, paymentDetailId: strin
       status: nextStatus,
       comment: nextComment,
     });
-    toast.success("Payment details status updated!");
+    toast.success(text("admin.verifications.messages.payoutUpdated", "Payment details status updated."));
     payoutCommentOpenMap[paymentDetailId] = false;
     await loadPayoutVerificationData();
     await loadClientVerificationRequests();
@@ -1695,7 +1958,7 @@ const handleArchivePayoutDetail = async (paymentDetailId: string) => {
 
   try {
     await appCore.adminModules.clients.deletePaymentDetail(props.clientId, paymentDetailId);
-    toast.success("Payment detail archived!");
+    toast.success(text("admin.verifications.messages.payoutArchived", "Payment detail archived."));
     await loadPayoutVerificationData();
     await loadClientVerificationRequests();
   } finally {
@@ -1712,7 +1975,7 @@ const handleRestorePayoutDetail = async (paymentDetailId: string) => {
 
   try {
     await appCore.adminModules.clients.restorePaymentDetail(props.clientId, paymentDetailId);
-    toast.success("Payment detail restored!");
+    toast.success(text("admin.verifications.messages.payoutRestored", "Payment detail restored."));
     await loadPayoutVerificationData();
     await loadClientVerificationRequests();
   } finally {
@@ -1743,7 +2006,7 @@ const handleOpenPayoutDocument = async (paymentDetailId: string, documentIndex: 
   const paymentDetail = payoutDetails.value.find(item => item.id === paymentDetailId);
   const document = paymentDetail?.documents[documentIndex];
   if (!document?.path) {
-    toast.error("Документ не найден.");
+    toast.error(text("admin.verifications.errors.documentNotFound", "Document not found."));
     return;
   }
 
@@ -1766,7 +2029,7 @@ const handleOpenPayoutDocument = async (paymentDetailId: string, documentIndex: 
     const targetUrl = signedUrl || document.path;
     window.open(targetUrl, "_blank", "noopener,noreferrer");
   } catch {
-    toast.error("Не удалось открыть документ.");
+    toast.error(text("admin.verifications.errors.openDocument", "Failed to open document."));
   } finally {
     delete payoutDocumentLoadingMap[loadingKey];
   }
@@ -1784,10 +2047,10 @@ const handleRequestReviewUpdate = async (
       updatedStatus: { status: nextState, comment: "" },
     });
 
-    toast.success("Request status updated.");
-    await loadClientVerificationRequests();
+    toast.success(text("admin.verifications.messages.updated", "Request status updated."));
+    await Promise.all([loadVerificationData(), loadPayoutVerificationData(), loadClientVerificationRequests()]);
   } catch (error: any) {
-    toast.error(error?.response?.data?.message || "Failed to update request status.");
+    toast.error(error?.response?.data?.message || text("admin.verifications.errors.update", "Failed to update request status."));
   } finally {
     delete requestUpdatingState[requestId];
   }
@@ -1806,7 +2069,7 @@ const paymentDetailPrimaryEntries = (paymentDetail: AdminPaymentDetailItem): Arr
   return Object.entries(source)
     .map(([key, rawValue]) => ({
       key,
-      label: normalizePaymentLabel(key),
+      label: paymentFieldLabel(key),
       value: formatPaymentValue(rawValue),
     }))
     .filter(entry => entry.value !== "");
@@ -1826,27 +2089,27 @@ const paymentDetailLegacyEntries = (paymentDetail: AdminPaymentDetailItem): Arra
 
   const systemName = formatPaymentValue(paysystem?.name);
   if (systemName) {
-    rows.push({ key: "paysystem", label: "System", value: systemName });
+    rows.push({ key: "paysystem", label: text("admin.verifications.payout.legacyFields.system", "System"), value: systemName });
   }
 
   const legacyType = formatPaymentValue(legacyPayload.type);
   if (legacyType) {
-    rows.push({ key: "type", label: "Type", value: legacyType });
+    rows.push({ key: "type", label: text("admin.verifications.payout.legacyFields.type", "Type"), value: legacyType });
   }
 
   const legacyStatus = formatPaymentValue(legacyPayload.status);
   if (legacyStatus) {
-    rows.push({ key: "status", label: "Legacy status", value: legacyStatus });
+    rows.push({ key: "status", label: text("admin.verifications.payout.legacyFields.status", "Legacy status"), value: legacyStatus });
   }
 
   const legacyId = formatPaymentValue(legacyPayload.old_requisite_id);
   if (legacyId) {
-    rows.push({ key: "old_requisite_id", label: "Legacy ID", value: legacyId });
+    rows.push({ key: "old_requisite_id", label: text("admin.verifications.payout.legacyFields.id", "Legacy ID"), value: legacyId });
   }
 
   const legacyComment = formatPaymentValue(legacyPayload.comment);
   if (legacyComment) {
-    rows.push({ key: "comment", label: "Legacy comment", value: legacyComment });
+    rows.push({ key: "comment", label: text("admin.verifications.payout.legacyFields.comment", "Legacy comment"), value: legacyComment });
   }
 
   return rows;
@@ -1857,6 +2120,9 @@ const normalizePaymentLabel = (value: string): string =>
     .replace(/_/g, " ")
     .replace(/\b\w/g, char => char.toUpperCase())
     .trim();
+
+const paymentFieldLabel = (value: string): string =>
+  text(`admin.verifications.payout.fields.${value}`, normalizePaymentLabel(value));
 
 const formatPaymentValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -1900,30 +2166,41 @@ const paymentMethodName = (payment: PaymentRow | null): string => {
     String(payment.legacy_payment_system_name || "").trim()
     || String(payment.payment_system_name || "").trim()
     || String(payment.payment_gateway || "").trim()
-    || "Deposit"
+    || text("admin.verifications.firstDeposit.methodFallback", "Deposit")
   );
 };
 
 const paymentStatusText = (status: string): string => {
   const normalized = String(status || "").trim().toLowerCase();
   if (normalized === "approved" || normalized === "success" || normalized === "completed") {
-    return "Approved";
+    return text("admin.verifications.status.approved", "Approved");
   }
   if (normalized === "rejected" || normalized === "failed" || normalized === "cancelled") {
-    return "Rejected";
+    return text("admin.verifications.status.rejected", "Rejected");
   }
 
-  return "Pending";
+  return text("admin.verifications.status.pending", "Pending");
 };
 
 const requestStateText = (state: RequestReviewState): string => {
   switch (state) {
     case "approved":
-      return "Confirmed";
+      return text("admin.verifications.requestState.approved", "Confirmed");
     case "rejected":
-      return "Cancelled";
+      return text("admin.verifications.requestState.rejected", "Cancelled");
     default:
-      return "Unprocessed";
+      return text("admin.verifications.requestState.pending", "Unprocessed");
+  }
+};
+
+const statusText = (status: VerificationStatus): string => {
+  switch (status) {
+    case "approved":
+      return text("admin.verifications.status.approved", "Approved");
+    case "rejected":
+      return text("admin.verifications.status.rejected", "Rejected");
+    default:
+      return text("admin.verifications.status.pending", "Pending");
   }
 };
 
@@ -2008,6 +2285,15 @@ watch(
   }
 );
 
+watch(
+  () => [
+    hasPendingProfile.value,
+    hasPendingDocuments.value,
+    hasPendingPayout.value,
+  ],
+  clearResolvedHighlight
+);
+
 onMounted(async () => {
   activeVerificationTab.value = parseVerificationTabFromLocation();
 
@@ -2034,10 +2320,6 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  if (highlightTimer) {
-    clearTimeout(highlightTimer);
-  }
-
   useEventBus.off(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
   useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
 });
@@ -2552,6 +2834,116 @@ onBeforeUnmount(() => {
   color: var(--ui-text-secondary);
 }
 
+.verification-client-request-history {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-stroke-ui-light);
+}
+
+.verification-client-request-history__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.verification-client-request-history__header > div,
+.verification-client-request-history__row-main > div {
+  display: grid;
+  gap: 2px;
+}
+
+.verification-client-request-history__header strong,
+.verification-client-request-history__row-main strong {
+  color: var(--ui-text-main);
+  font-size: 0.82rem;
+}
+
+.verification-client-request-history__header span,
+.verification-client-request-history__row-main span {
+  color: var(--ui-text-secondary);
+  font-size: 0.72rem;
+}
+
+.verification-client-request-history__empty {
+  color: var(--ui-text-secondary);
+  font-size: 0.78rem;
+}
+
+.verification-client-request-history__list {
+  display: grid;
+  gap: 8px;
+}
+
+.verification-client-request-history__row {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
+}
+
+.verification-client-request-history__row-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.verification-client-request-history__changes {
+  display: grid;
+  gap: 6px;
+}
+
+.verification-client-request-history__change {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ui-text-secondary);
+  font-size: 0.76rem;
+}
+
+.verification-client-request-history__change strong {
+  color: var(--ui-text-main);
+  text-align: right;
+}
+
+.verification-client-request-history__documents {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.verification-client-request-history__document {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ui-background-panel) 78%, transparent);
+}
+
+.verification-client-request-history__document img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verification-client-request-history__load {
+  justify-self: center;
+  color: var(--ui-primary-main);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.verification-client-request-history__load:hover {
+  text-decoration: underline;
+}
+
 .verification-client-request-card.is-pending-row {
   border-color: rgba(233, 174, 0, 0.24);
 }
@@ -2616,8 +3008,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-const payoutArchivedFilterOptions = [
-  { value: "active" as const, label: "Active" },
-  { value: "archived" as const, label: "Archived" },
-  { value: "all" as const, label: "All" },
-];

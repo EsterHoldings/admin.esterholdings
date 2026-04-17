@@ -1,273 +1,216 @@
 <template>
   <div class="verification-queue-page">
-    <div class="verification-queue-page__stats">
-      <button
+    <section
+      class="verification-stat-grid"
+      :aria-label="text('admin.verifications.stats.ariaLabel', 'Verification request filters')"
+    >
+      <PrimeCard
         v-for="card in statCards"
         :key="card.id"
-        type="button"
         class="verification-stat-card"
         :class="{ 'is-active': requestStateFilter === card.filter }"
-        @click="handleRequestStateFilter(card.filter)"
       >
-        <span class="verification-stat-card__label">{{ card.label }}</span>
-        <span class="verification-stat-card__value">{{ card.value }}</span>
-      </button>
-    </div>
-
-    <div class="verification-queue-page__toolbar">
-      <UiInput
-        class="verification-queue-page__search"
-        :value="searchInput"
-        placeholder="Search by client, email or request ID"
-        @input="handleInputSearch"
-      >
-        <template #icon-left>
-          <UiIconSearch />
+        <template #content>
+          <button
+            type="button"
+            class="verification-stat-card__button"
+            @click="handleRequestStateFilter(card.filter)"
+          >
+            <span class="verification-stat-card__label">{{ card.label }}</span>
+            <span class="verification-stat-card__value">{{ card.value }}</span>
+            <span class="verification-stat-card__hint">{{ card.hint }}</span>
+          </button>
         </template>
-      </UiInput>
+      </PrimeCard>
+    </section>
 
-      <div class="verification-queue-page__toolbar-controls">
-        <UiSelect
-          class="verification-queue-page__sort"
-          :data="sortOptions"
-          :value="sortKey"
-          without-no-select
-          @change="handleSortChange"
-        >
-          <template #icon-left>
-            <UiIconSortBy />
-          </template>
-        </UiSelect>
+    <section class="verification-toolbar">
+      <span class="verification-toolbar__search">
+        <i class="pi pi-search" aria-hidden="true" />
+        <PrimeInputText
+          v-model="searchInput"
+          :placeholder="text('admin.verifications.searchPlaceholder', 'Search by client, email or request ID')"
+          fluid
+        />
+      </span>
 
-        <UiButtonDefault state="info--small" class="!w-[42px]" @click="handleRefreshAll">
-          <UiIconUpdate :spinning="isLoading" />
-        </UiButtonDefault>
-      </div>
-    </div>
+      <PrimeSelect
+        v-model="sortKey"
+        class="verification-toolbar__sort"
+        :options="sortOptions"
+        option-label="label"
+        option-value="value"
+        @update:model-value="handleSortChange"
+      />
+
+      <PrimeButton
+        class="verification-toolbar__refresh"
+        icon="pi pi-refresh"
+        rounded
+        :loading="isLoading"
+        :aria-label="text('admin.verifications.actions.refresh', 'Refresh')"
+        @click="handleRefreshAll"
+      />
+    </section>
 
     <div
       v-if="requestStateFilter !== 'all'"
-      class="verification-queue-page__active-filter"
+      class="verification-active-filter"
     >
-      <span>Filter: {{ requestStateText(requestStateFilter) }}</span>
-      <button type="button" @click="handleRequestStateFilter('all')">Reset</button>
+      <span>{{ text('admin.verifications.filters.active', 'Filter') }}: {{ requestStateText(requestStateFilter) }}</span>
+      <button type="button" @click="handleRequestStateFilter('all')">
+        {{ text('admin.verifications.filters.reset', 'Reset') }}
+      </button>
     </div>
 
-    <div
+    <section
       v-if="errorMessage"
-      class="verification-queue-page__state verification-queue-page__state--error"
+      class="verification-state verification-state--error"
     >
-      {{ errorMessage }}
-    </div>
+      <span>{{ errorMessage }}</span>
+      <PrimeButton
+        :label="text('admin.verifications.actions.retry', 'Retry')"
+        size="small"
+        severity="secondary"
+        outlined
+        @click="handleRefreshAll"
+      />
+    </section>
 
-    <div
+    <section
       v-else-if="isLoading && requestItems.length === 0"
-      class="verification-queue-page__state"
+      class="verification-skeleton-list"
     >
-      <UiIconSpinnerDefault />
-    </div>
+      <PrimeSkeleton
+        v-for="index in 5"
+        :key="`verification-skeleton-${index}`"
+        height="108px"
+        border-radius="20px"
+      />
+    </section>
 
-    <div
+    <section
       v-else-if="requestItems.length === 0"
-      class="verification-queue-page__state"
+      class="verification-state"
     >
-      No verification requests found.
-    </div>
+      {{ text('admin.verifications.empty.list', 'No verification requests found.') }}
+    </section>
 
-    <div
+    <section
       v-else
       class="verification-request-list"
     >
       <article
         v-for="requestItem in requestItems"
         :key="requestItem.id"
-        class="verification-request-row"
+        class="verification-request-card"
         :class="{
           'is-pending-row': requestItem.request_state === 'pending',
           'is-unread-notification': hasUnreadVerificationSignal(requestItem.user_id),
         }"
         @click="openClientVerification(requestItem)"
       >
-        <div class="verification-request-row__identity">
-          <UiImageCircle
-            :src="requestItem.user.photo_url || ''"
-            :two-chars="displayClientInitials(requestItem)"
-          />
+        <div class="verification-request-card__identity">
+          <div class="verification-request-card__avatar">
+            <img
+              v-if="requestItem.user.photo_url"
+              :src="requestItem.user.photo_url"
+              :alt="displayClientName(requestItem)"
+            />
+            <span v-else>{{ displayClientInitials(requestItem) }}</span>
+          </div>
 
-          <div class="verification-request-row__identity-meta">
-            <div class="verification-request-row__name-line">
-              <span class="verification-request-row__name">{{ displayClientName(requestItem) }}</span>
+          <div class="verification-request-card__main">
+            <div class="verification-request-card__title-row">
+              <h3>{{ displayClientName(requestItem) }}</h3>
               <span
-                class="verification-request-badge"
+                class="verification-status-line"
                 :class="requestStateClass(requestItem.request_state)"
               >
+                <i aria-hidden="true" />
                 {{ requestStateText(requestItem.request_state) }}
               </span>
-              <span
-                class="verification-request-badge verification-request-badge--overall"
-                :class="statusClass(requestItem.state)"
-              >
-                {{ overallStatusText(requestItem.state) }}
-              </span>
             </div>
 
-            <div class="verification-request-row__meta">
+            <div class="verification-request-card__meta">
               <span>{{ requestItem.user.email || "-" }}</span>
-              <span>· #{{ shortId(requestItem.id) }}</span>
-              <span>· {{ requestItem.updated_at_human || "-" }}</span>
+              <span>#{{ shortId(requestItem.id) }}</span>
+              <span>{{ formatUpdatedAt(requestItem) }}</span>
             </div>
 
-            <div class="verification-request-row__focus">
+            <div class="verification-request-card__changes">
               <template v-if="requestFocusItems(requestItem).length">
                 <button
                   v-for="item in requestFocusItems(requestItem)"
                   :key="`${requestItem.id}:${item.id}`"
                   type="button"
-                  class="verification-focus-link"
-                  :class="{ 'is-unread': hasUnreadVerificationSignal(requestItem.user_id, item.section) }"
+                  class="verification-change-chip"
+                  :class="[
+                    `is-${item.section}`,
+                    { 'is-unread': hasUnreadVerificationSignal(requestItem.user_id, item.section) },
+                  ]"
                   @click.stop="openClientVerification(requestItem, item.tab, item.section)"
                 >
-                  {{ item.label }}
+                  <i :class="item.icon" aria-hidden="true" />
+                  <span>{{ item.label }}</span>
                 </button>
               </template>
+
               <span
                 v-else
-                class="verification-request-row__focus-muted"
+                class="verification-request-card__no-changes"
               >
-                No new sections marked for review
+                {{ text('admin.verifications.changes.none', 'No active changes marked for review') }}
               </span>
             </div>
           </div>
         </div>
 
-        <div class="verification-request-row__summary">
-          <div class="verification-summary-card">
-            <div class="verification-summary-card__label">
-              <UiIconProfile />
-              <span>Profile</span>
-            </div>
-            <div
-              class="verification-summary-card__value"
-              :class="statusClass(detailState(requestItem.user_id).verification.info.verification_status)"
-            >
-              {{ statusText(detailState(requestItem.user_id).verification.info.verification_status) }}
-            </div>
-          </div>
-
-          <div class="verification-summary-card">
-            <div class="verification-summary-card__label">
-              <UiIconDocuments />
-              <span>Documents</span>
-            </div>
-            <div class="verification-summary-card__value">
-              {{ documentsSummary(detailState(requestItem.user_id)) }}
-            </div>
-            <div
-              v-if="documentPreviews(detailState(requestItem.user_id)).length"
-              class="verification-summary-card__previews"
-            >
-              <span
-                v-for="(preview, previewIndex) in documentPreviews(detailState(requestItem.user_id))"
-                :key="`${requestItem.id}:doc:${previewIndex}:${preview.src || preview.label}`"
-                class="verification-summary-card__preview"
-                :class="`is-${preview.type}`"
-              >
-                <img
-                  v-if="preview.type === 'image' && preview.src"
-                  :src="preview.src"
-                  alt="Document preview"
-                />
-                <span
-                  v-else
-                  class="verification-summary-card__preview-file"
-                  :class="`is-${preview.type}`"
-                >
-                  {{ preview.label }}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          <div class="verification-summary-card">
-            <div class="verification-summary-card__label">
-              <UiIconPaymentDetail />
-              <span>Requisites</span>
-            </div>
-            <div class="verification-summary-card__value">
-              {{ requisitesSummary(detailState(requestItem.user_id)) }}
-            </div>
-            <div
-              v-if="requisitePreviews(detailState(requestItem.user_id)).length"
-              class="verification-summary-card__previews"
-            >
-              <span
-                v-for="(preview, previewIndex) in requisitePreviews(detailState(requestItem.user_id))"
-                :key="`${requestItem.id}:requisite:${previewIndex}:${preview.src || preview.label}`"
-                class="verification-summary-card__preview"
-                :class="`is-${preview.type}`"
-              >
-                <img
-                  v-if="preview.type === 'image' && preview.src"
-                  :src="preview.src"
-                  alt="Requisite preview"
-                />
-                <span
-                  v-else
-                  class="verification-summary-card__preview-file"
-                  :class="`is-${preview.type}`"
-                >
-                  {{ preview.label }}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          <div class="verification-summary-card">
-            <div class="verification-summary-card__label">
-              <UiIconPaymentDetail />
-              <span>First payment</span>
-            </div>
-            <div
-              class="verification-summary-card__value"
-              :class="detailState(requestItem.user_id).firstDeposit ? 'is-approved' : 'is-pending'"
-            >
-              {{ firstPaymentSummary(detailState(requestItem.user_id)) }}
-            </div>
-            <div class="verification-summary-card__subvalue">
-              {{ paymentMethodName(detailState(requestItem.user_id).firstDeposit) }}
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="verification-request-row__actions"
-          @click.stop
-        >
-          <VerificationRequestStateActions
-            :state="requestItem.request_state"
-            :disabled="isUpdating(requestItem.id)"
-            @update-state="handleRequestReviewUpdate(requestItem, $event)"
-          />
-
-          <button
-            type="button"
-            class="verification-request-row__open"
-            :title="'Open client verification'"
-            @click.stop="openClientVerification(requestItem)"
+        <div class="verification-request-card__side">
+          <span
+            class="verification-status-line verification-status-line--overall"
+            :class="statusClass(requestItem.state)"
           >
-            Open
-          </button>
+            <i aria-hidden="true" />
+            {{ overallStatusText(requestItem.state) }}
+          </span>
+
+          <div
+            v-if="requestItem.request_state === 'pending'"
+            class="verification-request-card__actions"
+            @click.stop
+          >
+            <PrimeButton
+              :label="text('admin.verifications.actions.approveAll', 'Approve all')"
+              icon="pi pi-check"
+              size="small"
+              severity="success"
+              :loading="isUpdating(requestItem.id, 'approved')"
+              :disabled="isUpdating(requestItem.id)"
+              @click="handleRequestReviewUpdate(requestItem, 'approved')"
+            />
+            <PrimeButton
+              :label="text('admin.verifications.actions.rejectAll', 'Reject all')"
+              icon="pi pi-times"
+              size="small"
+              severity="danger"
+              outlined
+              :loading="isUpdating(requestItem.id, 'rejected')"
+              :disabled="isUpdating(requestItem.id)"
+              @click="handleRequestReviewUpdate(requestItem, 'rejected')"
+            />
+          </div>
         </div>
       </article>
-    </div>
+    </section>
 
-    <PaginationDefault
-      :isLoading="isLoading"
-      :perPage="perPage"
-      :page="page"
-      :totalRows="totalRows"
-      @perPageChange="handleChangePerPage"
-      @pageChange="handleChangePage"
+    <PrimePaginator
+      v-if="totalRows > 0"
+      :first="(page - 1) * perPage"
+      :rows="perPage"
+      :total-records="totalRows"
+      :rows-per-page-options="[5, 10, 20, 50]"
+      @page="handlePaginatorPage"
     />
   </div>
 </template>
@@ -275,26 +218,16 @@
 <script lang="ts" setup>
 import { useLocalePath, navigateTo } from "~/.nuxt/imports";
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
-import VerificationRequestStateActions from "~/components/block/verification/VerificationRequestStateActions.vue";
-import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
-import UiIconPaymentDetail from "~/components/ui/UiIconPaymentDetail.vue";
-import UiIconProfile from "~/components/ui/UiIconProfile.vue";
-import UiIconSearch from "~/components/ui/UiIconSearch.vue";
-import UiIconSortBy from "~/components/ui/UiIconSortBy.vue";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-import UiImageCircle from "~/components/ui/UiImageCircle.vue";
-import UiInput from "~/components/ui/UiInput.vue";
-import UiSelect from "~/components/ui/UiSelect.vue";
 
 type RequestReviewState = "pending" | "approved" | "rejected";
 type VerificationStatus = "pending" | "approved" | "rejected";
+type VerificationSectionTarget = "profile" | "documents" | "payout";
+type VerificationTabTarget = "client" | "payout" | "requests";
 
 interface VerificationRequestItem {
   id: string;
@@ -318,99 +251,19 @@ interface VerificationRequestItem {
   };
 }
 
-interface VerificationSectionData {
-  verification_status: VerificationStatus;
-  comment: string;
-}
-
-interface VerificationPayloadData {
-  info: VerificationSectionData;
-  documents: VerificationSectionData;
-}
-
-interface ClientPayload {
-  id: string;
-  first_name: string;
-  mid_name: string;
-  last_name: string;
-  email: string;
-  birthdate: string;
-  phone: string;
-  country: string;
-  state: string;
-  city: string;
-  address: string;
-  postal_code: string;
-  photo_url: string;
-}
-
-interface VerificationDocumentRow {
-  id: string;
-  name: string;
-  comment: string;
-  state: VerificationStatus;
-  updated_at: string;
-  document_data: {
-    number: string;
-    full_url: string;
-  };
-}
-
-interface PaymentDetailDocument {
-  name: string;
-  path: string;
-  preview_url: string;
-  previewUrl: string;
-}
-
-interface PaymentDetailRow {
-  id: string;
-  name: string;
-  status: VerificationStatus;
-  payment_system_name: string;
-  updated_at: string;
-  admin_comment: string;
-  documents: PaymentDetailDocument[];
-}
-
-interface PaymentRow {
-  id: string;
-  type: string;
-  status: string;
-  amount: number;
-  currency: string;
-  created_at: string;
-  payment_gateway: string;
-  payment_system_name: string;
-  legacy_payment_system_name: string;
-}
-
-type VerificationPreviewKind = "image" | "pdf" | "text" | "file";
-
-interface VerificationPreviewMeta {
-  type: VerificationPreviewKind;
-  src: string;
-  label: string;
-}
-
 interface AdminVerificationUnreadNotification {
   id: string;
   userId: string;
   section: VerificationSectionTarget;
 }
 
-interface DetailState {
-  isLoading: boolean;
-  loaded: boolean;
-  error: string;
-  user: ClientPayload | null;
-  verification: VerificationPayloadData;
-  documents: VerificationDocumentRow[];
-  paymentDetails: PaymentDetailRow[];
-  firstDeposit: PaymentRow | null;
+interface ReviewFocusItem {
+  id: VerificationSectionTarget;
+  label: string;
+  tab: VerificationTabTarget;
+  section: VerificationSectionTarget;
+  icon: string;
 }
-
-type VerificationSectionTarget = "profile" | "documents" | "payout";
 
 const emit = defineEmits<{
   (e: "loading", value: boolean): void;
@@ -419,12 +272,13 @@ const emit = defineEmits<{
 const appCore = useAppCore();
 const localePath = useLocalePath();
 const toast = useToast();
+const { t, te, locale } = useI18n({ useScope: "global" });
 const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
 const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
 const VERIFICATION_NOTIFICATION_TYPE = "verification.request.created";
 
 const page = ref(1);
-const perPage = ref(5);
+const perPage = ref(10);
 const totalRows = ref(0);
 const isLoading = ref(false);
 const errorMessage = ref("");
@@ -439,121 +293,51 @@ const summary = reactive<Record<string, number>>({
   approved: 0,
   rejected: 0,
 });
-const detailStates = reactive<Record<string, DetailState>>({});
-const updatingState = reactive<Record<string, boolean>>({});
+const updatingState = reactive<Record<string, RequestReviewState | "">>({});
 const unreadVerificationNotifications = ref<AdminVerificationUnreadNotification[]>([]);
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-const createDefaultVerificationSection = (): VerificationSectionData => ({
-  verification_status: "pending",
-  comment: "",
-});
+const text = (key: string, fallback: string, params: Record<string, unknown> = {}): string =>
+  te(key) ? String(t(key, params)) : fallback.replace(/\{(\w+)}/g, (_, name) => String(params[name] ?? ""));
 
-const createDefaultVerificationPayload = (): VerificationPayloadData => ({
-  info: createDefaultVerificationSection(),
-  documents: createDefaultVerificationSection(),
-});
-
-const createEmptyDetailState = (): DetailState => ({
-  isLoading: false,
-  loaded: false,
-  error: "",
-  user: null,
-  verification: createDefaultVerificationPayload(),
-  documents: [],
-  paymentDetails: [],
-  firstDeposit: null,
-});
-
-const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg", "avif"];
-const textExtensions = ["txt", "text", "md", "csv", "json", "xml", "log"];
-
-const extractFileExtension = (value: string): string => {
-  const normalized = String(value || "").split("?")[0].split("#")[0].trim().toLowerCase();
-  const segments = normalized.split(".");
-
-  return segments.length > 1 ? segments.pop() || "" : "";
-};
-
-const resolvePreviewKind = (source: {
-  src?: string;
-  path?: string;
-  mimeType?: string;
-  name?: string;
-}): VerificationPreviewKind => {
-  const mimeType = String(source.mimeType || "").trim().toLowerCase();
-
-  if (mimeType.startsWith("image/")) {
-    return "image";
-  }
-
-  if (mimeType.includes("pdf")) {
-    return "pdf";
-  }
-
-  if (mimeType.startsWith("text/") || mimeType.includes("json") || mimeType.includes("xml")) {
-    return "text";
-  }
-
-  const extension = extractFileExtension(source.src || source.path || source.name || "");
-
-  if (imageExtensions.includes(extension)) {
-    return "image";
-  }
-
-  if (extension === "pdf") {
-    return "pdf";
-  }
-
-  if (textExtensions.includes(extension)) {
-    return "text";
-  }
-
-  return "file";
-};
-
-const resolvePreviewLabel = (kind: VerificationPreviewKind): string => {
-  switch (kind) {
-    case "pdf":
-      return "PDF";
-    case "text":
-      return "TXT";
-    case "file":
-      return "FILE";
-    default:
-      return "IMG";
-  }
-};
-
-const buildPreviewMeta = (source: {
-  src?: string;
-  path?: string;
-  mimeType?: string;
-  name?: string;
-}): VerificationPreviewMeta => {
-  const type = resolvePreviewKind(source);
-
-  return {
-    type,
-    src: type === "image" ? String(source.src || source.path || "").trim() : "",
-    label: resolvePreviewLabel(type),
-  };
-};
-
-const sortOptions = [
-  { id: "updated_desc", value: "updated_desc", text: "Newest first" },
-  { id: "updated_asc", value: "updated_asc", text: "Oldest first" },
-  { id: "client_asc", value: "client_asc", text: "Client name A-Z" },
-  { id: "client_desc", value: "client_desc", text: "Client name Z-A" },
-  { id: "request_state", value: "request_state", text: "Request state" },
-];
+const sortOptions = computed(() => [
+  { value: "updated_desc", label: text("admin.verifications.sort.newest", "Newest updated first") },
+  { value: "updated_asc", label: text("admin.verifications.sort.oldest", "Oldest updated first") },
+  { value: "client_asc", label: text("admin.verifications.sort.clientAsc", "Client name A-Z") },
+  { value: "client_desc", label: text("admin.verifications.sort.clientDesc", "Client name Z-A") },
+  { value: "request_state", label: text("admin.verifications.sort.state", "Request state") },
+]);
 
 const statCards = computed(() => [
-  { id: "all", filter: "all" as const, label: "All", value: formatCount(summary.all) },
-  { id: "pending", filter: "pending" as const, label: "Unprocessed", value: formatCount(summary.pending) },
-  { id: "approved", filter: "approved" as const, label: "Confirmed", value: formatCount(summary.approved) },
-  { id: "rejected", filter: "rejected" as const, label: "Cancelled", value: formatCount(summary.rejected) },
+  {
+    id: "all",
+    filter: "all" as const,
+    label: text("admin.verifications.stats.all", "All"),
+    value: formatCount(summary.all),
+    hint: text("admin.verifications.stats.allHint", "All visible requests"),
+  },
+  {
+    id: "pending",
+    filter: "pending" as const,
+    label: text("admin.verifications.stats.pending", "Unprocessed"),
+    value: formatCount(summary.pending),
+    hint: text("admin.verifications.stats.pendingHint", "Require admin decision"),
+  },
+  {
+    id: "approved",
+    filter: "approved" as const,
+    label: text("admin.verifications.stats.approved", "Confirmed"),
+    value: formatCount(summary.approved),
+    hint: text("admin.verifications.stats.approvedHint", "Approved requests"),
+  },
+  {
+    id: "rejected",
+    filter: "rejected" as const,
+    label: text("admin.verifications.stats.rejected", "Cancelled"),
+    value: formatCount(summary.rejected),
+    hint: text("admin.verifications.stats.rejectedHint", "Rejected requests"),
+  },
 ]);
 
 const normalizeVerificationStatus = (value: unknown): VerificationStatus => {
@@ -572,14 +356,6 @@ const normalizeRequestReviewState = (value: unknown): RequestReviewState => {
   }
 
   return "pending";
-};
-
-const detailState = (userId: string): DetailState => {
-  if (!detailStates[userId]) {
-    detailStates[userId] = createEmptyDetailState();
-  }
-
-  return detailStates[userId];
 };
 
 const mapNotificationStepToSection = (value: unknown): VerificationSectionTarget => {
@@ -657,7 +433,13 @@ const loadUnreadVerificationNotifications = async (): Promise<void> => {
   }
 };
 
-const isUpdating = (requestId: string): boolean => Boolean(updatingState[requestId]);
+const isUpdating = (requestId: string, state?: RequestReviewState): boolean => {
+  if (!state) {
+    return Boolean(updatingState[requestId]);
+  }
+
+  return updatingState[requestId] === state;
+};
 
 const displayClientName = (requestItem: VerificationRequestItem): string => {
   const firstName = String(requestItem.user.first_name ?? "").trim();
@@ -681,122 +463,67 @@ const displayClientInitials = (requestItem: VerificationRequestItem): string => 
 
 const shortId = (value: string): string => String(value || "").replace(/-/g, "").slice(0, 10).toUpperCase();
 
-const formatCount = (value: number): string => new Intl.NumberFormat("en-US").format(Number(value || 0));
+const formatCount = (value: number): string => new Intl.NumberFormat(locale.value || "en").format(Number(value || 0));
+
+const formatDateTime = (value: string | null): string => {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value.replace(" ", "T"));
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(locale.value || "en", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+};
+
+const formatUpdatedAt = (requestItem: VerificationRequestItem): string =>
+  requestItem.updated_at ? formatDateTime(requestItem.updated_at) : (requestItem.updated_at_human || "-");
 
 const statusText = (status: VerificationStatus): string => {
   switch (status) {
     case "approved":
-      return "Approved";
+      return text("admin.verifications.status.approved", "Approved");
     case "rejected":
-      return "Rejected";
+      return text("admin.verifications.status.rejected", "Rejected");
     default:
-      return "Pending";
+      return text("admin.verifications.status.pending", "Pending");
   }
 };
 
 const overallStatusText = (status: VerificationStatus): string => {
   switch (status) {
     case "approved":
-      return "Overall approved";
+      return text("admin.verifications.overall.approved", "Overall approved");
     case "rejected":
-      return "Needs attention";
+      return text("admin.verifications.overall.rejected", "Needs attention");
     default:
-      return "In review";
+      return text("admin.verifications.overall.pending", "In review");
   }
 };
 
 const requestStateText = (state: "all" | RequestReviewState): string => {
   switch (state) {
     case "all":
-      return "All";
+      return text("admin.verifications.requestState.all", "All");
     case "approved":
-      return "Confirmed";
+      return text("admin.verifications.requestState.approved", "Confirmed");
     case "rejected":
-      return "Cancelled";
+      return text("admin.verifications.requestState.rejected", "Cancelled");
     default:
-      return "Unprocessed";
+      return text("admin.verifications.requestState.pending", "Unprocessed");
   }
 };
 
 const statusClass = (status: VerificationStatus): string => `is-${normalizeVerificationStatus(status)}`;
 const requestStateClass = (state: RequestReviewState): string => `is-${normalizeRequestReviewState(state)}`;
-
-const normalizeVerificationPayload = (payload: any): VerificationPayloadData => ({
-  info: {
-    verification_status: normalizeVerificationStatus(payload?.info?.verification_status),
-    comment: String(payload?.info?.comment ?? ""),
-  },
-  documents: {
-    verification_status: normalizeVerificationStatus(payload?.documents?.verification_status),
-    comment: String(payload?.documents?.comment ?? ""),
-  },
-});
-
-const normalizeUserPayload = (payload: any): ClientPayload => ({
-  id: String(payload?.id ?? ""),
-  first_name: String(payload?.first_name ?? ""),
-  mid_name: String(payload?.mid_name ?? ""),
-  last_name: String(payload?.last_name ?? ""),
-  email: String(payload?.email ?? ""),
-  birthdate: String(payload?.birthdate ?? ""),
-  phone: String(payload?.phone ?? ""),
-  country: String(payload?.country ?? ""),
-  state: String(payload?.state ?? ""),
-  city: String(payload?.city ?? ""),
-  address: String(payload?.address ?? ""),
-  postal_code: String(payload?.postal_code ?? ""),
-  photo_url: String(payload?.photo_url ?? payload?.photo_path ?? ""),
-});
-
-const normalizeVerificationDocuments = (payload: any): VerificationDocumentRow[] =>
-  Array.isArray(payload)
-    ? payload.map((row: any) => ({
-        id: String(row?.id ?? ""),
-        name: String(row?.name ?? ""),
-        comment: String(row?.comment ?? ""),
-        state: normalizeVerificationStatus(row?.state),
-        updated_at: String(row?.updated_at ?? ""),
-        document_data: {
-          number: String(row?.document_data?.number ?? ""),
-          full_url: String(row?.document_data?.full_url ?? ""),
-        },
-      }))
-    : [];
-
-const normalizePaymentDetails = (payload: any): PaymentDetailRow[] =>
-  Array.isArray(payload)
-    ? payload.map((row: any) => ({
-        id: String(row?.id ?? ""),
-        name: String(row?.name ?? ""),
-        status: normalizeVerificationStatus(row?.status),
-        payment_system_name: String(row?.payment_system_name ?? row?.payment_system?.name ?? ""),
-        updated_at: String(row?.updated_at ?? ""),
-        admin_comment: String(row?.admin_comment ?? ""),
-        documents: Array.isArray(row?.documents)
-          ? row.documents.map((document: any) => ({
-              name: String(document?.name ?? ""),
-              path: String(document?.path ?? ""),
-              preview_url: String(document?.preview_url ?? ""),
-              previewUrl: String(document?.previewUrl ?? ""),
-            }))
-          : [],
-      }))
-    : [];
-
-const normalizePayments = (payload: any): PaymentRow[] =>
-  Array.isArray(payload)
-    ? payload.map((row: any) => ({
-        id: String(row?.id ?? ""),
-        type: String(row?.type ?? ""),
-        status: String(row?.status ?? ""),
-        amount: Number(row?.amount ?? 0),
-        currency: String(row?.currency ?? "USD"),
-        created_at: String(row?.created_at ?? ""),
-        payment_gateway: String(row?.payment_gateway ?? ""),
-        payment_system_name: String(row?.payment_system_name ?? ""),
-        legacy_payment_system_name: String(row?.legacy_payment_system_name ?? ""),
-      }))
-    : [];
 
 const resolveSortPayload = (value: string): { orderBy: string; orderDirection: "asc" | "desc" } => {
   switch (value) {
@@ -862,95 +589,15 @@ const loadList = async (): Promise<void> => {
       approved: Number(payload?.summary?.approved ?? 0),
       rejected: Number(payload?.summary?.rejected ?? 0),
     });
-
-    void Promise.allSettled(requestItems.value.map(item => loadRequestDetailBundle(item)));
   } catch (error: any) {
     totalRows.value = 0;
     requestItems.value = [];
-    errorMessage.value = error?.response?.data?.message || "Failed to load verification requests.";
+    errorMessage.value = error?.response?.data?.message || text("admin.verifications.errors.load", "Failed to load verification requests.");
   } finally {
     isLoading.value = false;
     emit("loading", false);
   }
 };
-
-const loadRequestDetailBundle = async (requestItem: VerificationRequestItem, force = false): Promise<void> => {
-  const state = detailState(requestItem.user_id);
-  if ((state.loaded || state.isLoading) && !force) {
-    return;
-  }
-
-  state.isLoading = true;
-  state.error = "";
-
-  const [clientResult, verificationResult, documentsResult, paymentDetailsResult, paymentsResult] = await Promise.allSettled([
-    appCore.adminModules.clients.getById(requestItem.user_id),
-    appCore.adminModules.verificationRequests.get(requestItem.user_id),
-    appCore.adminModules.documents.get({ clientId: requestItem.user_id }),
-    appCore.adminModules.clients.getPaymentDetails(requestItem.user_id),
-    appCore.payments.get({
-      page: 1,
-      perPage: 1,
-      orderBy: "created_at",
-      orderDirection: "asc",
-      ["filters[user_id]"]: requestItem.user_id,
-      ["filters[type]"]: "deposit",
-    }),
-  ]);
-
-  try {
-    if (clientResult.status === "fulfilled") {
-      state.user = normalizeUserPayload(clientResult.value?.data?.data ?? {});
-    }
-
-    if (verificationResult.status === "fulfilled") {
-      const verificationRow = Array.isArray(verificationResult.value?.data?.data)
-        ? verificationResult.value.data.data[0]
-        : null;
-      state.verification = normalizeVerificationPayload(verificationRow?.data ?? {});
-    }
-
-    if (documentsResult.status === "fulfilled") {
-      state.documents = normalizeVerificationDocuments(documentsResult.value?.data?.data ?? []);
-    }
-
-    if (paymentDetailsResult.status === "fulfilled") {
-      state.paymentDetails = normalizePaymentDetails(paymentDetailsResult.value?.data?.data ?? []);
-    }
-
-    if (paymentsResult.status === "fulfilled") {
-      const paymentRows = normalizePayments(paymentsResult.value?.data?.data?.data ?? []);
-      state.firstDeposit = paymentRows[0] ?? null;
-    }
-
-    const firstRejected = [clientResult, verificationResult, documentsResult, paymentDetailsResult, paymentsResult]
-      .find(result => result.status === "rejected") as PromiseRejectedResult | undefined;
-
-    if (firstRejected) {
-      state.error = String((firstRejected.reason as any)?.response?.data?.message ?? "Some sections failed to load.");
-    }
-
-    state.loaded = true;
-  } finally {
-    state.isLoading = false;
-  }
-};
-
-const handleInputSearch = (value: string): void => {
-  searchInput.value = value;
-};
-
-watch(searchInput, value => {
-  if (searchTimer) {
-    clearTimeout(searchTimer);
-  }
-
-  searchTimer = setTimeout(async () => {
-    searchFilter.value = value.trim();
-    page.value = 1;
-    await loadList();
-  }, 350);
-});
 
 const handleRequestStateFilter = async (value: "all" | RequestReviewState): Promise<void> => {
   requestStateFilter.value = value;
@@ -964,22 +611,13 @@ const handleSortChange = async (value: string | null): Promise<void> => {
   await loadList();
 };
 
-const handleChangePerPage = async (value: number): Promise<void> => {
-  perPage.value = value;
-  page.value = 1;
-  await loadList();
-};
-
-const handleChangePage = async (value: number): Promise<void> => {
-  page.value = value;
+const handlePaginatorPage = async (event: { page: number; rows: number }): Promise<void> => {
+  page.value = Number(event.page || 0) + 1;
+  perPage.value = Number(event.rows || perPage.value);
   await loadList();
 };
 
 const handleRefreshAll = async (): Promise<void> => {
-  Object.keys(detailStates).forEach(key => {
-    detailStates[key].loaded = false;
-  });
-
   await Promise.all([loadList(), loadUnreadVerificationNotifications()]);
 };
 
@@ -987,7 +625,7 @@ const handleRequestReviewUpdate = async (
   requestItem: VerificationRequestItem,
   nextState: Exclude<RequestReviewState, "pending">
 ): Promise<void> => {
-  updatingState[requestItem.id] = true;
+  updatingState[requestItem.id] = nextState;
 
   try {
     await appCore.adminModules.verificationRequests.put(requestItem.id, {
@@ -995,138 +633,62 @@ const handleRequestReviewUpdate = async (
       updatedStatus: { status: nextState, comment: "" },
     });
 
-    toast.success("Request status updated.");
+    toast.success(text("admin.verifications.messages.updated", "Request status updated."));
     await loadList();
   } catch (error: any) {
-    toast.error(error?.response?.data?.message || "Failed to update request status.");
+    toast.error(error?.response?.data?.message || text("admin.verifications.errors.update", "Failed to update request status."));
   } finally {
     delete updatingState[requestItem.id];
   }
 };
 
-const requestHasProfileToReview = (requestItem: VerificationRequestItem): boolean =>
-  requestItem.profile_review_required;
+const requestFocusItems = (requestItem: VerificationRequestItem): ReviewFocusItem[] => {
+  if (requestItem.request_state !== "pending") {
+    return [];
+  }
 
-const requestHasDocumentsToReview = (requestItem: VerificationRequestItem): boolean =>
-  requestItem.documents_review_count > 0;
+  const items: ReviewFocusItem[] = [];
 
-const requestHasRequisitesToReview = (requestItem: VerificationRequestItem): boolean =>
-  requestItem.requisites_review_count > 0;
-
-const requestFocusItems = (requestItem: VerificationRequestItem): Array<{
-  id: VerificationSectionTarget;
-  label: string;
-  tab: "client" | "payout";
-  section: VerificationSectionTarget;
-}> => {
-  const items: Array<{
-    id: VerificationSectionTarget;
-    label: string;
-    tab: "client" | "payout";
-    section: VerificationSectionTarget;
-  }> = [];
-
-  if (requestHasProfileToReview(requestItem)) {
+  if (requestItem.profile_review_required) {
     items.push({
       id: "profile",
-      label: "Check profile data",
+      label: text("admin.verifications.changes.profile", "Profile data changed"),
       tab: "client",
       section: "profile",
+      icon: "pi pi-user-edit",
     });
   }
 
-  if (requestHasDocumentsToReview(requestItem)) {
+  if (requestItem.documents_review_count > 0) {
     items.push({
       id: "documents",
-      label: `Check documents${requestItem.documents_review_count ? ` (${requestItem.documents_review_count})` : ""}`,
+      label: text("admin.verifications.changes.documents", "{count} document(s) uploaded", {
+        count: requestItem.documents_review_count,
+      }),
       tab: "client",
       section: "documents",
+      icon: "pi pi-file",
     });
   }
 
-  if (requestHasRequisitesToReview(requestItem)) {
+  if (requestItem.requisites_review_count > 0) {
     items.push({
       id: "payout",
-      label: `Check requisites${requestItem.requisites_review_count ? ` (${requestItem.requisites_review_count})` : ""}`,
+      label: text("admin.verifications.changes.requisites", "{count} payment detail(s) changed", {
+        count: requestItem.requisites_review_count,
+      }),
       tab: "payout",
       section: "payout",
+      icon: "pi pi-credit-card",
     });
   }
 
   return items;
 };
 
-const documentsSummary = (state: DetailState): string => {
-  if (!state.loaded && state.isLoading) {
-    return "Loading";
-  }
-
-  if (state.documents.length === 0) {
-    return "No docs";
-  }
-
-  return `${state.documents.length} doc${state.documents.length > 1 ? "s" : ""}`;
-};
-
-const requisitesSummary = (state: DetailState): string => {
-  if (!state.loaded && state.isLoading) {
-    return "Loading";
-  }
-
-  if (state.paymentDetails.length === 0) {
-    return "No requisites";
-  }
-
-  return `${state.paymentDetails.length} item${state.paymentDetails.length > 1 ? "s" : ""}`;
-};
-
-const firstPaymentSummary = (state: DetailState): string => {
-  if (!state.loaded && state.isLoading) {
-    return "Checking";
-  }
-
-  return state.firstDeposit ? "Recorded" : "No deposit";
-};
-
-const documentPreviews = (state: DetailState): VerificationPreviewMeta[] =>
-  state.documents
-    .map(document =>
-      buildPreviewMeta({
-        src: document.document_data.full_url,
-        name: document.name || document.document_data.number,
-      })
-    )
-    .slice(0, 2);
-
-const resolvePaymentDetailPreview = (document: PaymentDetailDocument): VerificationPreviewMeta =>
-  buildPreviewMeta({
-    src: String(document.preview_url || document.previewUrl || "").trim(),
-    path: document.path,
-    name: document.name,
-  });
-
-const requisitePreviews = (state: DetailState): VerificationPreviewMeta[] =>
-  state.paymentDetails
-    .flatMap(paymentDetail => paymentDetail.documents)
-    .map(resolvePaymentDetailPreview)
-    .slice(0, 2);
-
-const paymentMethodName = (payment: PaymentRow | null): string => {
-  if (!payment) {
-    return "-";
-  }
-
-  return (
-    String(payment.legacy_payment_system_name || "").trim()
-    || String(payment.payment_system_name || "").trim()
-    || String(payment.payment_gateway || "").trim()
-    || "Deposit"
-  );
-};
-
 const resolvePrimaryReviewTarget = (
   requestItem: VerificationRequestItem
-): { tab: "client" | "payout"; section: VerificationSectionTarget | null } => {
+): { tab: VerificationTabTarget; section: VerificationSectionTarget | null } => {
   const firstFocusItem = requestFocusItems(requestItem)[0];
   if (firstFocusItem) {
     return {
@@ -1135,19 +697,15 @@ const resolvePrimaryReviewTarget = (
     };
   }
 
-  const shouldOpenPayout = requestHasRequisitesToReview(requestItem)
-    && !requestHasProfileToReview(requestItem)
-    && !requestHasDocumentsToReview(requestItem);
-
   return {
-    tab: shouldOpenPayout ? "payout" : "client",
-    section: shouldOpenPayout ? "payout" : null,
+    tab: "requests",
+    section: null,
   };
 };
 
 const openClientVerification = (
   requestItem: VerificationRequestItem,
-  tab?: "client" | "payout",
+  tab?: VerificationTabTarget,
   section?: VerificationSectionTarget | null,
 ): void => {
   const primaryTarget = resolvePrimaryReviewTarget(requestItem);
@@ -1183,6 +741,18 @@ const handleMarkedNotifications = (payload?: { ids?: string[] }): void => {
   removeUnreadVerificationNotifications(ids);
 };
 
+watch(searchInput, value => {
+  if (searchTimer) {
+    clearTimeout(searchTimer);
+  }
+
+  searchTimer = setTimeout(async () => {
+    searchFilter.value = value.trim();
+    page.value = 1;
+    await loadList();
+  }, 350);
+});
+
 onMounted(() => {
   useEventBus.on(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
   useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
@@ -1208,72 +778,94 @@ defineExpose({
 .verification-queue-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  width: 100%;
 }
 
-.verification-queue-page__stats {
+.verification-stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .verification-stat-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 78px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(73, 108, 222, 0.18);
-  background: linear-gradient(180deg, rgba(10, 21, 74, 0.9), rgba(7, 17, 62, 0.96));
-  color: var(--ui-text-main);
-  text-align: left;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .verification-stat-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(73, 108, 222, 0.34);
+  border-color: color-mix(in srgb, var(--ui-primary-main) 42%, var(--color-stroke-ui-light));
 }
 
 .verification-stat-card.is-active {
-  border-color: rgba(73, 108, 222, 0.7);
-  box-shadow: 0 0 0 1px rgba(73, 108, 222, 0.22);
+  border-color: var(--ui-primary-main);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 26%, transparent);
 }
 
-.verification-stat-card__label {
-  font-size: 0.8rem;
+.verification-stat-card__button {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-height: 96px;
+  padding: 14px;
+  text-align: left;
+  color: var(--ui-text-main);
+}
+
+.verification-stat-card__label,
+.verification-stat-card__hint {
+  font-size: 12px;
   color: var(--ui-text-secondary);
 }
 
 .verification-stat-card__value {
-  font-size: 1.45rem;
-  line-height: 1;
-  font-weight: 700;
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 
-.verification-queue-page__toolbar {
-  display: flex;
-  gap: 12px;
+.verification-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(190px, 260px) auto;
+  gap: 10px;
   align-items: center;
 }
 
-.verification-queue-page__search {
-  flex: 1 1 auto;
-}
-
-.verification-queue-page__toolbar-controls {
+.verification-toolbar__search {
+  position: relative;
   display: flex;
-  gap: 12px;
-  flex: 0 0 auto;
+  align-items: center;
 }
 
-.verification-queue-page__sort {
-  min-width: 220px;
+.verification-toolbar__search > i {
+  position: absolute;
+  left: 14px;
+  z-index: 1;
+  color: var(--ui-text-secondary);
 }
 
-.verification-queue-page__active-filter,
-.verification-queue-page__state {
+.verification-toolbar__search :deep(.p-inputtext) {
+  width: 100%;
+  padding-left: 40px;
+}
+
+.verification-toolbar__sort {
+  width: 100%;
+}
+
+.verification-toolbar__refresh {
+  width: 42px;
+  height: 42px;
+}
+
+.verification-active-filter,
+.verification-state {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1281,351 +873,260 @@ defineExpose({
   color: var(--ui-text-main);
 }
 
-.verification-queue-page__active-filter {
+.verification-active-filter {
   padding: 0 2px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  color: var(--ui-text-secondary);
+  font-size: 13px;
 }
 
-.verification-queue-page__active-filter button {
+.verification-active-filter button {
   color: var(--ui-primary-main);
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.verification-queue-page__state {
-  padding: 13px 15px;
-  border-radius: 14px;
-  border: 1px solid var(--color-stroke-ui-light);
-  background: rgba(8, 18, 66, 0.62);
+.verification-state {
   justify-content: center;
+  min-height: 120px;
+  padding: 18px;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
 }
 
-.verification-queue-page__state--error {
-  justify-content: flex-start;
+.verification-state--error {
+  justify-content: space-between;
 }
 
+.verification-skeleton-list,
 .verification-request-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
-.verification-request-row {
+.verification-request-card {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, 1.25fr) minmax(0, 1.6fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px;
   align-items: center;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(73, 108, 222, 0.16);
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 22px;
   background:
-    radial-gradient(circle at top right, rgba(41, 75, 196, 0.12), transparent 28%),
-    linear-gradient(180deg, rgba(9, 20, 73, 0.96), rgba(6, 16, 59, 0.98));
+    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 32%),
+    color-mix(in srgb, var(--ui-background-card) 92%, transparent);
   cursor: pointer;
   transition:
     transform 0.18s ease,
     border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    background-color 0.28s ease;
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-.verification-request-row:hover {
+.verification-request-card::after {
+  content: "";
+  position: absolute;
+  inset: -60% auto auto 12%;
+  width: 220px;
+  height: 220px;
+  background: linear-gradient(135deg, transparent, color-mix(in srgb, var(--ui-primary-main) 12%, transparent), transparent);
+  opacity: 0;
+  transform: rotate(18deg);
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.verification-request-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(73, 108, 222, 0.34);
-  box-shadow: 0 12px 32px rgba(3, 9, 34, 0.18);
+  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
+  box-shadow: 0 18px 42px color-mix(in srgb, #000000 12%, transparent);
 }
 
-.verification-request-row.is-pending-row {
-  border-color: rgba(233, 174, 0, 0.24);
+.verification-request-card:hover::after {
+  opacity: 1;
 }
 
-.verification-request-row.is-unread-notification {
-  border-color: rgba(87, 132, 255, 0.42);
-  box-shadow: 0 0 0 1px rgba(87, 132, 255, 0.18), 0 14px 36px rgba(16, 38, 120, 0.16);
+.verification-request-card.is-pending-row {
+  border-color: color-mix(in srgb, var(--ui-warning-main, #f59e0b) 35%, var(--color-stroke-ui-light));
 }
 
-.verification-request-row__identity {
+.verification-request-card.is-unread-notification {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 28%, transparent);
+}
+
+.verification-request-card__identity {
   display: flex;
-  align-items: flex-start;
   gap: 12px;
   min-width: 0;
 }
 
-.verification-request-row__identity-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.verification-request-row__name-line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.verification-request-row__name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--ui-text-main);
-}
-
-.verification-request-row__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: var(--ui-text-secondary);
-}
-
-.verification-request-row__focus {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.verification-request-row__focus-muted {
-  font-size: 0.78rem;
-  color: var(--ui-text-secondary);
-}
-
-.verification-focus-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: rgba(233, 174, 0, 0.12);
-  border: 1px solid rgba(233, 174, 0, 0.24);
-  color: #f1c24d;
-  font-size: 0.75rem;
-  font-weight: 600;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.verification-focus-link:hover {
-  transform: translateY(-1px);
-  background: rgba(233, 174, 0, 0.18);
-  border-color: rgba(233, 174, 0, 0.34);
-}
-
-.verification-focus-link.is-unread {
-  background: rgba(87, 132, 255, 0.14);
-  border-color: rgba(87, 132, 255, 0.32);
-  color: #b7cbff;
-}
-
-.verification-request-badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 0 9px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--ui-text-main);
-  font-size: 0.74rem;
-  font-weight: 600;
-}
-
-.verification-request-badge.is-pending {
-  background: rgba(233, 174, 0, 0.14);
-  border-color: rgba(233, 174, 0, 0.24);
-}
-
-.verification-request-badge.is-approved {
-  background: rgba(22, 163, 74, 0.16);
-  border-color: rgba(22, 163, 74, 0.28);
-}
-
-.verification-request-badge.is-rejected {
-  background: rgba(220, 38, 38, 0.16);
-  border-color: rgba(220, 38, 38, 0.28);
-}
-
-.verification-request-badge--overall {
-  opacity: 0.82;
-}
-
-.verification-request-row__summary {
+.verification-request-card__avatar {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  min-width: 0;
-}
-
-.verification-summary-card {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  min-height: 88px;
-  padding: 11px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.verification-summary-card__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.76rem;
-  color: var(--ui-text-secondary);
-}
-
-.verification-summary-card__label svg {
-  width: 12px;
-  height: 12px;
-}
-
-.verification-summary-card__value {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--ui-text-main);
-}
-
-.verification-summary-card__value.is-approved {
-  color: var(--ui-sticker-success);
-}
-
-.verification-summary-card__value.is-rejected {
-  color: var(--ui-sticker-danger);
-}
-
-.verification-summary-card__value.is-pending {
-  color: #e9ae00;
-}
-
-.verification-summary-card__subvalue {
-  font-size: 0.74rem;
-  color: var(--ui-text-secondary);
-  white-space: nowrap;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
   overflow: hidden;
-  text-overflow: ellipsis;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ui-primary-main), color-mix(in srgb, var(--ui-primary-main) 60%, #000000));
 }
 
-.verification-summary-card__previews {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: auto;
-}
-
-.verification-summary-card__preview {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.62rem;
-  color: var(--ui-text-secondary);
-}
-
-.verification-summary-card__preview.is-pdf {
-  border-color: rgba(220, 38, 38, 0.2);
-}
-
-.verification-summary-card__preview.is-text {
-  border-color: rgba(73, 108, 222, 0.22);
-}
-
-.verification-summary-card__preview img {
+.verification-request-card__avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.verification-summary-card__preview-file {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 100%;
-  min-height: 100%;
-  padding: 0 4px;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--ui-text-main);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-}
-
-.verification-summary-card__preview-file.is-pdf {
-  color: #ff8b8b;
-}
-
-.verification-summary-card__preview-file.is-text {
-  color: #8db5ff;
-}
-
-.verification-summary-card__preview-file.is-file {
-  color: var(--ui-text-secondary);
-}
-
-.verification-request-row__actions {
+.verification-request-card__main {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.verification-request-card__title-row {
+  display: flex;
   gap: 10px;
-}
-
-.verification-request-row__open {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: 84px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(73, 108, 222, 0.22);
-  background: rgba(73, 108, 222, 0.12);
+  flex-wrap: wrap;
+}
+
+.verification-request-card__title-row h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
   color: var(--ui-text-main);
-  font-size: 0.76rem;
-  font-weight: 600;
 }
 
-@media (max-width: 1320px) {
-  .verification-request-row {
-    grid-template-columns: 1fr;
-  }
-
-  .verification-request-row__actions {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+.verification-request-card__meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--ui-text-secondary);
+  font-size: 12px;
 }
 
-@media (max-width: 860px) {
-  .verification-queue-page__toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.verification-request-card__changes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-  .verification-queue-page__toolbar-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
+.verification-change-chip {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 999px;
+  color: var(--ui-text-main);
+  background: color-mix(in srgb, var(--ui-background-panel) 88%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    transform 0.18s ease;
+}
 
-  .verification-queue-page__sort {
-    min-width: 0;
-    flex: 1 1 auto;
-  }
+.verification-change-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--ui-primary-main);
+  background: color-mix(in srgb, var(--ui-primary-main) 12%, var(--ui-background-panel));
+}
 
-  .verification-request-row__summary {
+.verification-change-chip.is-unread {
+  border-color: var(--ui-primary-main);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 20%, transparent);
+}
+
+.verification-request-card__no-changes {
+  color: var(--ui-text-secondary);
+  font-size: 12px;
+}
+
+.verification-request-card__side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.verification-request-card__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.verification-status-line {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  color: var(--ui-text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.verification-status-line i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.verification-status-line.is-approved {
+  color: var(--ui-success-main, #22c55e);
+}
+
+.verification-status-line.is-rejected {
+  color: var(--ui-danger-main, #ef4444);
+}
+
+.verification-status-line.is-pending {
+  color: var(--ui-warning-main, #f59e0b);
+}
+
+.verification-status-line--overall {
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .verification-stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .verification-request-card {
+    grid-template-columns: 1fr;
+  }
+
+  .verification-request-card__side {
+    align-items: flex-start;
+  }
 }
 
-@media (max-width: 560px) {
-  .verification-request-row__summary {
+@media (max-width: 760px) {
+  .verification-stat-grid,
+  .verification-toolbar {
     grid-template-columns: 1fr;
+  }
+
+  .verification-request-card__identity {
+    flex-direction: column;
+  }
+
+  .verification-request-card__actions :deep(.p-button) {
+    width: 100%;
   }
 }
 </style>

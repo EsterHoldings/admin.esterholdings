@@ -1454,6 +1454,178 @@
         "placeholder": "Escribe un comentario...",
         "save": "Guardar",
         "close": "Cerrar"
+      },
+      "actions": {
+        "refresh": "Actualizar",
+        "retry": "Reintentar",
+        "approveAll": "Aprobar todo",
+        "rejectAll": "Rechazar todo"
+      },
+      "filters": {
+        "active": "Filtro",
+        "reset": "Restablecer"
+      },
+      "empty": {
+        "list": "No se encontraron solicitudes de verificación."
+      },
+      "sort": {
+        "newest": "Actualizadas más recientes",
+        "oldest": "Actualizadas más antiguas",
+        "clientAsc": "Cliente A-Z",
+        "clientDesc": "Cliente Z-A",
+        "state": "Estado de solicitud"
+      },
+      "stats": {
+        "all": "Todas",
+        "allHint": "Todas las solicitudes visibles",
+        "pending": "Sin procesar",
+        "pendingHint": "Requieren decisión del admin",
+        "approved": "Confirmadas",
+        "approvedHint": "Solicitudes aprobadas",
+        "rejected": "Canceladas",
+        "rejectedHint": "Solicitudes rechazadas",
+        "ariaLabel": "Verification request filters"
+      },
+      "changes": {
+        "none": "No hay cambios activos para revisar",
+        "profile": "Datos del perfil modificados",
+        "documents": "{count} documento(s) cargado(s)",
+        "requisites": "{count} dato(s) de pago modificados"
+      },
+      "status": {
+        "approved": "Aprobado",
+        "rejected": "Rechazado",
+        "pending": "Pendiente"
+      },
+      "overall": {
+        "approved": "Verificación aprobada",
+        "rejected": "Requiere atención",
+        "pending": "En revisión"
+      },
+      "requestState": {
+        "all": "Todas",
+        "approved": "Confirmada",
+        "rejected": "Cancelada",
+        "pending": "Sin procesar"
+      },
+      "messages": {
+        "updated": "Estado de solicitud actualizado.",
+        "documentsUpdated": "Documents status updated.",
+        "documentUpdated": "Document status updated.",
+        "profileUpdated": "Profile status updated.",
+        "payoutUpdated": "Payment details status updated.",
+        "payoutArchived": "Payment detail archived.",
+        "payoutRestored": "Payment detail restored."
+      },
+      "errors": {
+        "load": "No se pudieron cargar las solicitudes.",
+        "update": "No se pudo actualizar el estado.",
+        "documentNotFound": "Document not found.",
+        "openDocument": "Failed to open document."
+      },
+      "clientRequests": {
+        "title": "Solicitudes de verificación",
+        "subtitle": "Revise cambios activos del cliente y el historial completo.",
+        "loading": "Cargando solicitudes...",
+        "empty": "Este cliente aún no tiene solicitudes."
+      },
+      "history": {
+        "title": "Historial de solicitud",
+        "subtitle": "Las acciones nuevas se muestran primero.",
+        "empty": "Aún no hay historial.",
+        "loadMore": "Cargar más",
+        "actorAdmin": "Administrador",
+        "actorClient": "Cliente",
+        "actorSystem": "Sistema"
+      },
+      "tabs": {
+        "client": "Verificación general",
+        "payout": "Datos de pago",
+        "requests": "Solicitudes"
+      },
+      "profileFields": {
+        "first_name": "Nombre",
+        "last_name": "Apellido",
+        "mid_name": "Segundo nombre",
+        "birthdate": "Fecha de nacimiento",
+        "phone": "Teléfono",
+        "country": "País",
+        "state": "Estado / región",
+        "city": "Ciudad",
+        "address": "Dirección",
+        "postal_code": "Código postal",
+        "email": "Email"
+      },
+      "profile": {
+        "title": "Profile",
+        "subtitle": "Core client data used for profile verification."
+      },
+      "documents": {
+        "title": "Documents",
+        "subtitle": "Passport, ID and other documents uploaded by the client.",
+        "empty": "No documents uploaded.",
+        "previewAlt": "Document preview",
+        "numberedPreviewAlt": "Document #{number}",
+        "defaultName": "Document"
+      },
+      "firstDeposit": {
+        "title": "First deposit",
+        "subtitle": "Calculated from the actual first client deposit.",
+        "exists": "Deposit exists",
+        "missing": "No deposit yet",
+        "amount": "Amount",
+        "method": "Method",
+        "status": "Status",
+        "date": "Date",
+        "empty": "The client has no deposits yet.",
+        "methodFallback": "Deposit"
+      },
+      "payout": {
+        "title": "Payment details",
+        "subtitle": "Review payout details and attached documents.",
+        "emptyArchived": "There are no archived payment details yet.",
+        "emptyActive": "There are no payout details yet.",
+        "untitled": "Untitled payment detail",
+        "paymentSystem": "Payment system",
+        "legacy": "Legacy",
+        "previewAlt": "Payment detail preview",
+        "filters": {
+          "active": "Active",
+          "archived": "Archived",
+          "all": "All"
+        },
+        "actions": {
+          "restore": "Restore",
+          "archive": "Archive"
+        },
+        "legacyFields": {
+          "system": "System",
+          "type": "Type",
+          "status": "Legacy status",
+          "id": "Legacy ID",
+          "comment": "Legacy comment"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

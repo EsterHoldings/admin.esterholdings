@@ -148,3 +148,36 @@
     transparent
   );
 }
+
+.p-paginator {
+  gap: 6px;
+  color: var(--ui-text-main);
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+}
+
+.p-paginator .p-paginator-page,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  color: var(--ui-text-secondary);
+}
+
+.p-paginator .p-paginator-page.p-paginator-page-selected {
+  color: #ffffff;
+  background: var(--ui-primary-main);
+}
+
+.p-paginator .p-paginator-page:not(.p-paginator-page-selected):not(.p-disabled):hover,
+.p-paginator .p-paginator-first:not(.p-disabled):hover,
+.p-paginator .p-paginator-prev:not(.p-disabled):hover,
+.p-paginator .p-paginator-next:not(.p-disabled):hover,
+.p-paginator .p-paginator-last:not(.p-disabled):hover {
+  color: var(--ui-text-main);
+  background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+}

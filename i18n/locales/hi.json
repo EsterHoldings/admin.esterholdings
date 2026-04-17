@@ -1448,12 +1448,184 @@
         "title": "सत्यापन अनुरोध",
         "subtitle": "सत्यापन अनुरोधों की सूची"
       },
-      "searchPlaceholder": "सत्यापन अनुरोध खोजें...",
+      "searchPlaceholder": "क्लाइंट, ईमेल या अनुरोध ID से खोजें",
       "comment": {
         "label": "टिप्पणी",
-        "placeholder": "टिप्पणी लिखें...",
+        "placeholder": "टिप्पणी दर्ज करें...",
         "save": "सहेजें",
         "close": "बंद करें"
+      },
+      "actions": {
+        "refresh": "रीफ्रेश",
+        "retry": "फिर कोशिश करें",
+        "approveAll": "सभी स्वीकृत करें",
+        "rejectAll": "सभी अस्वीकार करें"
+      },
+      "filters": {
+        "active": "फ़िल्टर",
+        "reset": "रीसेट"
+      },
+      "empty": {
+        "list": "कोई सत्यापन अनुरोध नहीं मिला।"
+      },
+      "sort": {
+        "newest": "नए अपडेट पहले",
+        "oldest": "पुराने अपडेट पहले",
+        "clientAsc": "क्लाइंट नाम A-Z",
+        "clientDesc": "क्लाइंट नाम Z-A",
+        "state": "अनुरोध स्थिति"
+      },
+      "stats": {
+        "all": "सभी",
+        "allHint": "सभी दृश्यमान अनुरोध",
+        "pending": "अप्रसंस्कृत",
+        "pendingHint": "एडमिन निर्णय आवश्यक",
+        "approved": "स्वीकृत",
+        "approvedHint": "स्वीकृत अनुरोध",
+        "rejected": "अस्वीकृत",
+        "rejectedHint": "अस्वीकृत अनुरोध",
+        "ariaLabel": "सत्यापन अनुरोध फ़िल्टर"
+      },
+      "changes": {
+        "none": "समीक्षा के लिए कोई सक्रिय बदलाव नहीं",
+        "profile": "प्रोफ़ाइल डेटा बदला गया",
+        "documents": "{count} दस्तावेज़ अपलोड हुए",
+        "requisites": "{count} भुगतान विवरण बदले गए"
+      },
+      "status": {
+        "approved": "स्वीकृत",
+        "rejected": "अस्वीकृत",
+        "pending": "लंबित"
+      },
+      "overall": {
+        "approved": "कुल मिलाकर स्वीकृत",
+        "rejected": "ध्यान आवश्यक",
+        "pending": "समीक्षा में"
+      },
+      "requestState": {
+        "all": "सभी",
+        "approved": "स्वीकृत",
+        "rejected": "अस्वीकृत",
+        "pending": "अप्रसंस्कृत"
+      },
+      "messages": {
+        "updated": "अनुरोध स्थिति अपडेट हुई।",
+        "documentsUpdated": "दस्तावेज़ स्थिति अपडेट हुई।",
+        "documentUpdated": "दस्तावेज़ स्थिति अपडेट हुई।",
+        "profileUpdated": "प्रोफ़ाइल स्थिति अपडेट हुई।",
+        "payoutUpdated": "भुगतान विवरण स्थिति अपडेट हुई।",
+        "payoutArchived": "भुगतान विवरण आर्काइव किया गया।",
+        "payoutRestored": "भुगतान विवरण बहाल किया गया।"
+      },
+      "errors": {
+        "load": "सत्यापन अनुरोध लोड नहीं हो सके।",
+        "update": "अनुरोध स्थिति अपडेट नहीं हो सकी।",
+        "documentNotFound": "दस्तावेज़ नहीं मिला।",
+        "openDocument": "दस्तावेज़ नहीं खुल सका।"
+      },
+      "clientRequests": {
+        "title": "सत्यापन अनुरोध",
+        "subtitle": "क्लाइंट बदलाव और पूरी समीक्षा हिस्ट्री देखें।",
+        "loading": "सत्यापन अनुरोध लोड हो रहे हैं...",
+        "empty": "इस क्लाइंट के पास अभी कोई सत्यापन अनुरोध नहीं है।"
+      },
+      "history": {
+        "title": "अनुरोध इतिहास",
+        "subtitle": "नई कार्रवाइयाँ पहले दिखाई जाती हैं।",
+        "empty": "अभी कोई इतिहास नहीं।",
+        "loadMore": "और लोड करें",
+        "actorAdmin": "एडमिन",
+        "actorClient": "क्लाइंट",
+        "actorSystem": "सिस्टम"
+      },
+      "tabs": {
+        "client": "सामान्य सत्यापन",
+        "payout": "भुगतान विवरण",
+        "requests": "अनुरोध"
+      },
+      "profileFields": {
+        "first_name": "पहला नाम",
+        "last_name": "अंतिम नाम",
+        "mid_name": "मध्य नाम",
+        "birthdate": "जन्म तिथि",
+        "phone": "फोन",
+        "country": "देश",
+        "state": "राज्य / क्षेत्र",
+        "city": "शहर",
+        "address": "पता",
+        "postal_code": "पोस्टल कोड",
+        "email": "ईमेल"
+      },
+      "profile": {
+        "title": "प्रोफ़ाइल",
+        "subtitle": "प्रोफ़ाइल सत्यापन के लिए मुख्य क्लाइंट डेटा।"
+      },
+      "documents": {
+        "title": "दस्तावेज़",
+        "subtitle": "क्लाइंट द्वारा अपलोड पासपोर्ट, ID और अन्य दस्तावेज़।",
+        "empty": "कोई दस्तावेज़ अपलोड नहीं।",
+        "previewAlt": "दस्तावेज़ पूर्वावलोकन",
+        "numberedPreviewAlt": "दस्तावेज़ #{number}",
+        "defaultName": "दस्तावेज़"
+      },
+      "firstDeposit": {
+        "title": "पहला जमा",
+        "subtitle": "क्लाइंट के वास्तविक पहले जमा से गणना।",
+        "exists": "जमा मौजूद है",
+        "missing": "अभी कोई जमा नहीं",
+        "amount": "राशि",
+        "method": "तरीका",
+        "status": "स्थिति",
+        "date": "तारीख",
+        "empty": "क्लाइंट के पास अभी जमा नहीं हैं।",
+        "methodFallback": "जमा"
+      },
+      "payout": {
+        "title": "भुगतान विवरण",
+        "subtitle": "भुगतान विवरण और संलग्न दस्तावेज़ों की समीक्षा करें।",
+        "emptyArchived": "अभी कोई आर्काइव भुगतान विवरण नहीं।",
+        "emptyActive": "अभी कोई भुगतान विवरण नहीं।",
+        "untitled": "बिना शीर्षक भुगतान विवरण",
+        "paymentSystem": "भुगतान प्रणाली",
+        "legacy": "Legacy",
+        "previewAlt": "भुगतान विवरण पूर्वावलोकन",
+        "filters": {
+          "active": "सक्रिय",
+          "archived": "आर्काइव",
+          "all": "सभी"
+        },
+        "actions": {
+          "restore": "बहाल करें",
+          "archive": "आर्काइव करें"
+        },
+        "legacyFields": {
+          "system": "सिस्टम",
+          "type": "प्रकार",
+          "status": "Legacy स्थिति",
+          "id": "Legacy ID",
+          "comment": "Legacy टिप्पणी"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

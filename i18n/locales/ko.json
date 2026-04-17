@@ -1448,12 +1448,184 @@
         "title": "인증 요청",
         "subtitle": "인증 요청 목록"
       },
-      "searchPlaceholder": "인증 요청 검색...",
+      "searchPlaceholder": "고객, 이메일 또는 요청 ID로 검색",
       "comment": {
         "label": "댓글",
-        "placeholder": "댓글을 입력하세요...",
+        "placeholder": "댓글 입력...",
         "save": "저장",
         "close": "닫기"
+      },
+      "actions": {
+        "refresh": "새로고침",
+        "retry": "다시 시도",
+        "approveAll": "모두 승인",
+        "rejectAll": "모두 거절"
+      },
+      "filters": {
+        "active": "필터",
+        "reset": "초기화"
+      },
+      "empty": {
+        "list": "인증 요청이 없습니다."
+      },
+      "sort": {
+        "newest": "최신 업데이트순",
+        "oldest": "오래된 업데이트순",
+        "clientAsc": "고객명 A-Z",
+        "clientDesc": "고객명 Z-A",
+        "state": "요청 상태"
+      },
+      "stats": {
+        "all": "전체",
+        "allHint": "보이는 모든 요청",
+        "pending": "미처리",
+        "pendingHint": "관리자 결정 필요",
+        "approved": "확인됨",
+        "approvedHint": "승인된 요청",
+        "rejected": "거절됨",
+        "rejectedHint": "거절된 요청",
+        "ariaLabel": "인증 요청 필터"
+      },
+      "changes": {
+        "none": "검토할 활성 변경사항 없음",
+        "profile": "프로필 데이터 변경됨",
+        "documents": "문서 {count}개 업로드됨",
+        "requisites": "결제 정보 {count}개 변경됨"
+      },
+      "status": {
+        "approved": "승인됨",
+        "rejected": "거절됨",
+        "pending": "대기 중"
+      },
+      "overall": {
+        "approved": "전체 승인됨",
+        "rejected": "주의 필요",
+        "pending": "검토 중"
+      },
+      "requestState": {
+        "all": "전체",
+        "approved": "확인됨",
+        "rejected": "거절됨",
+        "pending": "미처리"
+      },
+      "messages": {
+        "updated": "요청 상태가 업데이트되었습니다.",
+        "documentsUpdated": "문서 상태가 업데이트되었습니다.",
+        "documentUpdated": "문서 상태가 업데이트되었습니다.",
+        "profileUpdated": "프로필 상태가 업데이트되었습니다.",
+        "payoutUpdated": "결제 정보 상태가 업데이트되었습니다.",
+        "payoutArchived": "결제 정보가 보관되었습니다.",
+        "payoutRestored": "결제 정보가 복원되었습니다."
+      },
+      "errors": {
+        "load": "인증 요청을 불러오지 못했습니다.",
+        "update": "요청 상태를 업데이트하지 못했습니다.",
+        "documentNotFound": "문서를 찾을 수 없습니다.",
+        "openDocument": "문서를 열 수 없습니다."
+      },
+      "clientRequests": {
+        "title": "인증 요청",
+        "subtitle": "활성 고객 변경사항과 전체 처리 기록을 검토합니다.",
+        "loading": "인증 요청 불러오는 중...",
+        "empty": "이 고객은 아직 인증 요청이 없습니다."
+      },
+      "history": {
+        "title": "요청 기록",
+        "subtitle": "최신 작업이 먼저 표시됩니다.",
+        "empty": "기록이 없습니다.",
+        "loadMore": "더 보기",
+        "actorAdmin": "관리자",
+        "actorClient": "고객",
+        "actorSystem": "시스템"
+      },
+      "tabs": {
+        "client": "일반 인증",
+        "payout": "결제 정보",
+        "requests": "요청"
+      },
+      "profileFields": {
+        "first_name": "이름",
+        "last_name": "성",
+        "mid_name": "중간 이름",
+        "birthdate": "생년월일",
+        "phone": "전화",
+        "country": "국가",
+        "state": "주 / 지역",
+        "city": "도시",
+        "address": "주소",
+        "postal_code": "우편번호",
+        "email": "이메일"
+      },
+      "profile": {
+        "title": "프로필",
+        "subtitle": "프로필 인증에 사용되는 고객 기본 데이터."
+      },
+      "documents": {
+        "title": "문서",
+        "subtitle": "고객이 업로드한 여권, 신분증 및 기타 문서.",
+        "empty": "업로드된 문서가 없습니다.",
+        "previewAlt": "문서 미리보기",
+        "numberedPreviewAlt": "문서 #{number}",
+        "defaultName": "문서"
+      },
+      "firstDeposit": {
+        "title": "첫 입금",
+        "subtitle": "고객의 실제 첫 입금 기준으로 계산됩니다.",
+        "exists": "입금 있음",
+        "missing": "입금 없음",
+        "amount": "금액",
+        "method": "방법",
+        "status": "상태",
+        "date": "날짜",
+        "empty": "고객은 아직 입금이 없습니다.",
+        "methodFallback": "입금"
+      },
+      "payout": {
+        "title": "결제 정보",
+        "subtitle": "결제 정보와 첨부 문서를 검토합니다.",
+        "emptyArchived": "보관된 결제 정보가 없습니다.",
+        "emptyActive": "결제 정보가 없습니다.",
+        "untitled": "제목 없는 결제 정보",
+        "paymentSystem": "결제 시스템",
+        "legacy": "Legacy",
+        "previewAlt": "결제 정보 미리보기",
+        "filters": {
+          "active": "활성",
+          "archived": "보관됨",
+          "all": "전체"
+        },
+        "actions": {
+          "restore": "복원",
+          "archive": "보관"
+        },
+        "legacyFields": {
+          "system": "시스템",
+          "type": "유형",
+          "status": "Legacy 상태",
+          "id": "Legacy ID",
+          "comment": "Legacy 댓글"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {

@@ -1448,12 +1448,184 @@
         "title": "验证请求",
         "subtitle": "验证请求列表"
       },
-      "searchPlaceholder": "搜索验证请求...",
+      "searchPlaceholder": "按客户、邮箱或请求 ID 搜索",
       "comment": {
-        "label": "备注",
-        "placeholder": "输入备注...",
+        "label": "评论",
+        "placeholder": "输入评论...",
         "save": "保存",
         "close": "关闭"
+      },
+      "actions": {
+        "refresh": "刷新",
+        "retry": "重试",
+        "approveAll": "全部批准",
+        "rejectAll": "全部拒绝"
+      },
+      "filters": {
+        "active": "筛选",
+        "reset": "重置"
+      },
+      "empty": {
+        "list": "未找到验证请求。"
+      },
+      "sort": {
+        "newest": "最新更新优先",
+        "oldest": "最早更新优先",
+        "clientAsc": "客户名称 A-Z",
+        "clientDesc": "客户名称 Z-A",
+        "state": "请求状态"
+      },
+      "stats": {
+        "all": "全部",
+        "allHint": "所有可见请求",
+        "pending": "未处理",
+        "pendingHint": "需要管理员决定",
+        "approved": "已确认",
+        "approvedHint": "已批准请求",
+        "rejected": "已拒绝",
+        "rejectedHint": "已拒绝请求",
+        "ariaLabel": "验证请求筛选器"
+      },
+      "changes": {
+        "none": "没有待审核的有效变更",
+        "profile": "资料已更改",
+        "documents": "已上传 {count} 个文档",
+        "requisites": "已更改 {count} 个付款资料"
+      },
+      "status": {
+        "approved": "已批准",
+        "rejected": "已拒绝",
+        "pending": "待处理"
+      },
+      "overall": {
+        "approved": "总体已批准",
+        "rejected": "需要关注",
+        "pending": "审核中"
+      },
+      "requestState": {
+        "all": "全部",
+        "approved": "已确认",
+        "rejected": "已拒绝",
+        "pending": "未处理"
+      },
+      "messages": {
+        "updated": "请求状态已更新。",
+        "documentsUpdated": "文档状态已更新。",
+        "documentUpdated": "文档状态已更新。",
+        "profileUpdated": "资料状态已更新。",
+        "payoutUpdated": "付款资料状态已更新。",
+        "payoutArchived": "付款资料已归档。",
+        "payoutRestored": "付款资料已恢复。"
+      },
+      "errors": {
+        "load": "无法加载验证请求。",
+        "update": "无法更新请求状态。",
+        "documentNotFound": "未找到文档。",
+        "openDocument": "无法打开文档。"
+      },
+      "clientRequests": {
+        "title": "验证请求",
+        "subtitle": "审核客户变更和完整处理历史。",
+        "loading": "正在加载验证请求...",
+        "empty": "该客户还没有验证请求。"
+      },
+      "history": {
+        "title": "请求历史",
+        "subtitle": "最新操作优先显示。",
+        "empty": "暂无历史。",
+        "loadMore": "加载更多",
+        "actorAdmin": "管理员",
+        "actorClient": "客户",
+        "actorSystem": "系统"
+      },
+      "tabs": {
+        "client": "常规验证",
+        "payout": "付款资料",
+        "requests": "请求"
+      },
+      "profileFields": {
+        "first_name": "名",
+        "last_name": "姓",
+        "mid_name": "中间名",
+        "birthdate": "出生日期",
+        "phone": "电话",
+        "country": "国家",
+        "state": "州 / 地区",
+        "city": "城市",
+        "address": "地址",
+        "postal_code": "邮编",
+        "email": "邮箱"
+      },
+      "profile": {
+        "title": "资料",
+        "subtitle": "用于资料验证的客户核心数据。"
+      },
+      "documents": {
+        "title": "文档",
+        "subtitle": "客户上传的护照、身份证和其他文档。",
+        "empty": "未上传文档。",
+        "previewAlt": "文档预览",
+        "numberedPreviewAlt": "文档 #{number}",
+        "defaultName": "文档"
+      },
+      "firstDeposit": {
+        "title": "首次入金",
+        "subtitle": "根据客户实际首次入金计算。",
+        "exists": "已有入金",
+        "missing": "暂无入金",
+        "amount": "金额",
+        "method": "方式",
+        "status": "状态",
+        "date": "日期",
+        "empty": "客户还没有入金。",
+        "methodFallback": "入金"
+      },
+      "payout": {
+        "title": "付款资料",
+        "subtitle": "审核付款资料和附件文档。",
+        "emptyArchived": "暂无已归档付款资料。",
+        "emptyActive": "暂无付款资料。",
+        "untitled": "未命名付款资料",
+        "paymentSystem": "支付系统",
+        "legacy": "Legacy",
+        "previewAlt": "付款资料预览",
+        "filters": {
+          "active": "有效",
+          "archived": "已归档",
+          "all": "全部"
+        },
+        "actions": {
+          "restore": "恢复",
+          "archive": "归档"
+        },
+        "legacyFields": {
+          "system": "系统",
+          "type": "类型",
+          "status": "Legacy 状态",
+          "id": "Legacy ID",
+          "comment": "Legacy 评论"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "address": "Address",
+          "iban": "IBAN",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "swift": "SWIFT",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "holder_name": "Holder name",
+          "holderName": "Holder name",
+          "email": "Email",
+          "phone": "Phone",
+          "network": "Network",
+          "currency": "Currency",
+          "comment": "Comment"
+        }
       }
     },
     "dashboard": {
