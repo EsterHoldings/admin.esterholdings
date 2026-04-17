@@ -25,7 +25,7 @@
             <div
               class="page"
               :key="route.fullPath">
-              <UiContainer>
+              <UiContainer :fluid="isDashboardRoute">
                 <slot />
               </UiContainer>
             </div>
@@ -106,6 +106,15 @@
     const startIdx = currentLocale && segments[0]?.toLowerCase() === currentLocale ? 1 : 0;
     const visibleSegments = segments.slice(startIdx);
     return visibleSegments.join("/") !== "dashboard";
+  });
+
+  const isDashboardRoute = computed(() => {
+    const segments = route.path.split("/").filter(Boolean);
+    const currentLocale = locale.value?.toLowerCase?.();
+    const startIdx = currentLocale && segments[0]?.toLowerCase() === currentLocale ? 1 : 0;
+    const visibleSegments = segments.slice(startIdx);
+
+    return visibleSegments.join("/") === "dashboard";
   });
 
   watch(

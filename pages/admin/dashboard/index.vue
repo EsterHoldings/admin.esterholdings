@@ -18,10 +18,10 @@
       </div>
 
       <div class="admin-dashboard__header-actions">
-        <PrimeTag
-          class="admin-dashboard__live-tag"
-          severity="info"
-          :value="resolveText('admin.dashboard.autoRefresh', 'Live updates every 30 seconds')" />
+        <span class="dashboard-inline-status dashboard-inline-status--info">
+          <span class="dashboard-inline-status__dot" />
+          <span>{{ resolveText("admin.dashboard.autoRefresh", "Live updates every 30 seconds") }}</span>
+        </span>
         <span class="admin-dashboard__updated-at">{{ lastUpdatedText }}</span>
         <PrimeButton
           icon="pi pi-refresh"
@@ -299,7 +299,7 @@
                   :category-keys="onlineCategoryKeys"
                   :series="onlineSeries"
                   :y-axes="onlineAxes"
-                  :height="300"
+                  :height="360"
                   enable-zoom
                   :tooltip-formatter="formatOnlineTooltip"
                   @range-selected="handleOnlineRangeSelected" />
@@ -379,7 +379,7 @@
                 <AdminMetricChart
                   :categories="registrationLabels"
                   :series="registrationSeries"
-                  :height="270" />
+                  :height="320" />
               </div>
             </div>
           </template>
@@ -405,9 +405,7 @@
                   </p>
                 </div>
 
-                <PrimeTag
-                  severity="info"
-                  :value="formatNumber(topOnlineClients.length)" />
+                <span class="dashboard-list-card__count">{{ formatNumber(topOnlineClients.length) }}</span>
               </div>
 
               <div
@@ -438,13 +436,18 @@
                     </span>
                   </span>
 
-                  <PrimeTag
-                    :severity="user.is_online ? 'success' : 'secondary'"
-                    :value="
-                      user.is_online
-                        ? resolveText('admin.dashboard.status.online', 'Online')
-                        : resolveText('admin.dashboard.status.offline', 'Offline')
-                    " />
+                  <span
+                    class="dashboard-inline-status"
+                    :class="user.is_online ? 'dashboard-inline-status--success' : 'dashboard-inline-status--muted'">
+                    <span class="dashboard-inline-status__dot" />
+                    <span>
+                      {{
+                        user.is_online
+                          ? resolveText("admin.dashboard.status.online", "Online")
+                          : resolveText("admin.dashboard.status.offline", "Offline")
+                      }}
+                    </span>
+                  </span>
                 </button>
               </div>
             </div>
@@ -469,9 +472,7 @@
                   </p>
                 </div>
 
-                <PrimeTag
-                  severity="secondary"
-                  :value="formatNumber(recentUsers.length)" />
+                <span class="dashboard-list-card__count">{{ formatNumber(recentUsers.length) }}</span>
               </div>
 
               <div
@@ -499,9 +500,12 @@
                     </span>
                   </span>
 
-                  <PrimeTag
-                    :severity="resolveUserTagSeverity(user.status)"
-                    :value="resolveUserStatusText(user.status)" />
+                  <span
+                    class="dashboard-inline-status"
+                    :class="`dashboard-inline-status--${resolveUserStatusTone(user.status)}`">
+                    <span class="dashboard-inline-status__dot" />
+                    <span>{{ resolveUserStatusText(user.status) }}</span>
+                  </span>
                 </button>
               </div>
             </div>
@@ -709,8 +713,41 @@
     return `${sign}${normalized.toFixed(2)}% ${resolveText("admin.dashboard.hints.previousPeriod", "vs prev period")}`;
   }
 
+  function formatDurationPart(value: number, unitKey: string, fallback: string): string {
+    return `${formatNumber(value)} ${resolveText(unitKey, fallback)}`;
+  }
+
+  function formatSecondsDuration(value: number | string | null | undefined): string {
+    const totalSeconds = Math.max(0, Math.round(Number(value ?? 0)));
+    const daySeconds = 86_400;
+    const hourSeconds = 3_600;
+    const minuteSeconds = 60;
+    const days = Math.floor(totalSeconds / daySeconds);
+    const hours = Math.floor((totalSeconds % daySeconds) / hourSeconds);
+    const minutes = Math.floor((totalSeconds % hourSeconds) / minuteSeconds);
+    const seconds = totalSeconds % minuteSeconds;
+    const parts: string[] = [];
+
+    if (days > 0) {
+      parts.push(formatDurationPart(days, "admin.dashboard.units.daysShort", "d"));
+    }
+    if (hours > 0 && parts.length < 2) {
+      parts.push(formatDurationPart(hours, "admin.dashboard.units.hoursShort", "h"));
+    }
+    if (minutes > 0 && parts.length < 2) {
+      parts.push(formatDurationPart(minutes, "admin.dashboard.units.minutesShort", "min"));
+    }
+    if (parts.length === 0) {
+      return seconds > 0
+        ? formatDurationPart(1, "admin.dashboard.units.minutesShort", "min")
+        : formatDurationPart(0, "admin.dashboard.units.minutesShort", "min");
+    }
+
+    return parts.join(" ");
+  }
+
   function formatHours(value: number | string | null | undefined): string {
-    return `${Number(value ?? 0).toFixed(2)} ${resolveText("admin.dashboard.units.hoursShort", "h")}`;
+    return formatSecondsDuration(Number(value ?? 0) * 3_600);
   }
 
   function formatDateTime(value?: string | null): string {
@@ -780,10 +817,10 @@
     updateDashboardFilter(section, key, toDateFilterValue(value));
   }
 
-  function resolveUserTagSeverity(status: string): "success" | "danger" | "warn" {
+  function resolveUserStatusTone(status: string): "success" | "danger" | "warning" {
     if (status === "active") return "success";
     if (status === "blocked") return "danger";
-    return "warn";
+    return "warning";
   }
 
   function resolveUserStatusText(status: string): string {
@@ -1334,14 +1371,11 @@
   const onlineSeries = computed(() => [
     {
       name: resolveText("admin.dashboard.series.onlineHours", "Online hours"),
-      data: (dashboard.value?.charts?.online?.points ?? []).map((point: any) =>
-        Number((Number(point.value ?? 0) / 3600).toFixed(2))
-      ),
+      data: (dashboard.value?.charts?.online?.points ?? []).map((point: any) => Number(point.value ?? 0)),
       color: resolveCssVar("--ui-primary-main", "#719edf"),
       area: true,
       type: "line" as const,
       yAxisIndex: 0,
-      suffix: ` ${resolveText("admin.dashboard.units.hoursShort", "h")}`,
     },
     {
       name: resolveText("admin.dashboard.series.onlineClients", "Clients online"),
@@ -1354,8 +1388,8 @@
   const onlineAxes = computed(() => [
     {
       name: resolveText("admin.dashboard.series.onlineHours", "Online hours"),
-      suffix: ` ${resolveText("admin.dashboard.units.hoursShort", "h")}`,
       position: "left" as const,
+      formatter: (value: number) => formatSecondsDuration(value),
     },
     {
       name: resolveText("admin.dashboard.series.onlineClients", "Clients online"),
@@ -1374,7 +1408,6 @@
       users.length > 0
         ? users
             .map((user: any) => {
-              const hours = Number(user.total_online_hours ?? 0).toFixed(2);
               const label = user.name || user.email || user.user_id;
               const clientUrl = localePath(`/clients/${user.user_id}`);
 
@@ -1383,9 +1416,10 @@
                   <a class="admin-chart-tooltip__user-link" href="${clientUrl}">
                     ${label}
                   </a>
-                  <span>${hours} ${resolveText("admin.dashboard.units.hoursShort", "h")} · ${Number(
-                    user.sessions_count ?? 0
-                  )} ${resolveText("admin.dashboard.labels.sessionsShort", "sessions")}</span>
+                  <span>${formatHours(user.total_online_hours)} · ${Number(user.sessions_count ?? 0)} ${resolveText(
+                    "admin.dashboard.labels.sessionsShort",
+                    "sessions"
+                  )}</span>
                 </div>
               `;
             })
@@ -1400,10 +1434,7 @@
         <div class="admin-chart-tooltip__title">${category}</div>
         <div class="admin-chart-tooltip__row">
           <span>${resolveText("admin.dashboard.tooltip.totalHours", "Total hours")}</span>
-          <strong>${Number((Number(point.value ?? 0) / 3600).toFixed(2))} ${resolveText(
-            "admin.dashboard.units.hoursShort",
-            "h"
-          )}</strong>
+          <strong>${formatSecondsDuration(point.value ?? 0)}</strong>
         </div>
         <div class="admin-chart-tooltip__row">
           <span>${resolveText("admin.dashboard.tooltip.uniqueClients", "Unique clients")}</span>
@@ -1462,11 +1493,18 @@
 
 <style lang="scss" scoped>
   .admin-dashboard {
+    --dashboard-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
+    --dashboard-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
+    --dashboard-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+    --dashboard-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 20%, transparent);
+
     position: relative;
+    width: 100%;
+    max-width: none;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 18px;
+    gap: 12px;
+    padding: clamp(12px, 1.35vw, 22px);
     color: var(--ui-text-main);
     animation: dashboard-enter 0.32s ease both;
   }
@@ -1488,10 +1526,10 @@
   }
 
   .admin-dashboard__header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
   }
 
   .admin-dashboard__heading {
@@ -1501,34 +1539,31 @@
   .admin-dashboard__title {
     margin: 0;
     color: var(--ui-text-main);
-    font-size: clamp(24px, 2.2vw, 34px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+    font-size: clamp(24px, 2.1vw, 36px);
+    font-weight: 850;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
   }
 
   .admin-dashboard__subtitle {
-    max-width: 760px;
-    margin: 7px 0 0;
+    max-width: 900px;
+    margin: 6px 0 0;
     color: var(--ui-text-secondary);
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   .admin-dashboard__header-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 9px;
     min-width: 0;
-  }
-
-  .admin-dashboard__live-tag {
-    white-space: nowrap;
+    flex-wrap: wrap;
   }
 
   .admin-dashboard__updated-at {
-    max-width: 260px;
+    max-width: 280px;
     color: var(--ui-text-secondary);
     font-size: 12px;
     line-height: 1.35;
@@ -1537,8 +1572,8 @@
 
   .admin-dashboard__summary-grid {
     display: grid;
-    grid-template-columns: repeat(6, minmax(150px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+    gap: 10px;
   }
 
   .admin-dashboard__summary-link {
@@ -1554,41 +1589,87 @@
 
   .dashboard-summary-card,
   .dashboard-panel-card {
+    position: relative;
+    isolation: isolate;
     overflow: hidden;
     height: 100%;
-    border-radius: 20px;
-  }
-
-  .dashboard-summary-card {
-    position: relative;
+    border: 1px solid var(--dashboard-glass-border);
+    border-radius: 22px;
+    background:
+      radial-gradient(
+        circle at 16% 0%,
+        color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 10%, transparent),
+        transparent 38%
+      ),
+      linear-gradient(145deg, var(--dashboard-glass-bg), var(--dashboard-glass-bg-strong));
+    box-shadow: var(--dashboard-glass-shadow);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
     transition:
       transform 0.18s ease,
-      box-shadow 0.18s ease,
-      border-color 0.18s ease;
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .dashboard-summary-card :deep(.p-card-body),
+  .dashboard-panel-card :deep(.p-card-body) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dashboard-summary-card::after,
+  .dashboard-panel-card::after {
+    content: "";
+    position: absolute;
+    inset: -30% auto -30% -52%;
+    z-index: 0;
+    width: 46%;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 13%, transparent), transparent);
+    opacity: 0;
+    transform: rotate(12deg) translateX(-35%);
   }
 
   .dashboard-summary-card::before {
     content: "";
     position: absolute;
     inset: 0 0 auto;
-    height: 3px;
-    background: var(--summary-accent, var(--ui-primary-main));
+    z-index: 1;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--summary-accent, var(--ui-primary-main)),
+      color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 24%, transparent)
+    );
+  }
+
+  .admin-dashboard__summary-link:hover .dashboard-summary-card,
+  .dashboard-panel-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 34%, var(--color-stroke-ui-light));
+    box-shadow: 0 22px 68px color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 12%, #000000 20%);
+  }
+
+  .admin-dashboard__summary-link:hover .dashboard-summary-card::after,
+  .dashboard-panel-card:hover::after {
+    animation: dashboard-glass-glint 1.1s ease both;
   }
 
   .dashboard-summary-card__body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 13px;
-    min-height: 124px;
-    padding: 15px;
+    gap: 12px;
+    min-height: 116px;
+    padding: 13px;
   }
 
   .dashboard-summary-card__top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
   }
 
   .dashboard-summary-card__copy {
@@ -1610,48 +1691,42 @@
 
   .dashboard-summary-card__label {
     font-size: 11px;
-    font-weight: 700;
-    line-height: 1.35;
-    letter-spacing: 0.02em;
+    font-weight: 760;
+    line-height: 1.3;
+    letter-spacing: 0.015em;
   }
 
   .dashboard-summary-card__value {
     color: var(--ui-text-main);
-    font-size: clamp(22px, 2vw, 30px);
-    font-weight: 850;
-    line-height: 1;
-    letter-spacing: -0.03em;
+    font-size: clamp(24px, 2.1vw, 34px);
+    font-weight: 880;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
     word-break: break-word;
   }
 
   .dashboard-summary-card__hint {
-    min-height: 31px;
+    min-height: 28px;
     font-size: 11px;
-    font-weight: 600;
-    line-height: 1.4;
+    font-weight: 650;
+    line-height: 1.35;
   }
 
   .dashboard-summary-card__icon-wrap {
-    width: 40px;
-    height: 40px;
-    flex: 0 0 40px;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
+    border-radius: 13px;
     color: var(--summary-accent, var(--ui-primary-main));
-    background: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 14%, transparent);
+    background: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 13%, transparent);
   }
 
   .dashboard-summary-card__icon {
-    width: 19px;
-    height: 19px;
-  }
-
-  .admin-dashboard__summary-link:hover .dashboard-summary-card {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 36%, var(--color-stroke-ui-light));
-    box-shadow: 0 18px 38px color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 14%, transparent);
+    width: 18px;
+    height: 18px;
   }
 
   .dashboard-summary-card--primary {
@@ -1680,23 +1755,28 @@
 
   .admin-dashboard__charts {
     display: grid;
-    grid-template-columns: minmax(0, 1.22fr) minmax(360px, 0.78fr);
-    gap: 14px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
     align-items: stretch;
   }
 
   .admin-dashboard__panels {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 12px;
   }
 
   .dashboard-chart-card,
   .dashboard-list-card {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 16px;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .dashboard-list-card {
+    gap: 9px;
+    padding: 11px;
   }
 
   .dashboard-chart-card__header,
@@ -1704,7 +1784,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
-    gap: 14px;
+    gap: 12px;
   }
 
   .dashboard-chart-card__heading,
@@ -1712,7 +1792,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
   }
 
   .dashboard-chart-card__title,
@@ -1720,8 +1800,8 @@
     margin: 0;
     color: var(--ui-text-main);
     font-size: 17px;
-    font-weight: 800;
-    line-height: 1.18;
+    font-weight: 820;
+    line-height: 1.16;
     letter-spacing: -0.02em;
   }
 
@@ -1729,7 +1809,7 @@
   .dashboard-list-card__subtitle {
     margin: 0;
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.42;
   }
 
   .dashboard-chart-card__presets {
@@ -1737,73 +1817,86 @@
     align-items: center;
     justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 7px;
+    gap: 6px;
   }
 
   .dashboard-chart-card__filters {
     display: grid;
-    gap: 9px;
+    gap: 8px;
+    align-items: end;
   }
 
   .dashboard-chart-card__filters--online {
-    grid-template-columns: repeat(6, minmax(116px, 1fr));
+    grid-template-columns: repeat(6, minmax(112px, 1fr));
   }
 
   .dashboard-chart-card__filters--compact {
-    grid-template-columns: repeat(3, minmax(130px, 1fr));
+    grid-template-columns: repeat(3, minmax(128px, 1fr));
   }
 
   .dashboard-chart-card__filters--skeleton {
-    grid-template-columns: repeat(6, minmax(116px, 1fr));
+    grid-template-columns: repeat(6, minmax(112px, 1fr));
   }
 
   .admin-dashboard__filter {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 10px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
   .admin-dashboard__filter-label {
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 850;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
   .dashboard-chart-card__chart {
-    min-height: 300px;
-    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 76%, transparent);
+    min-height: 320px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 62%, transparent);
     border-radius: 18px;
-    background: radial-gradient(
-      circle at 18% 0%,
-      color-mix(in srgb, var(--ui-primary-main) 10%, transparent),
-      transparent 34%
-    );
+    background:
+      radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--ui-primary-main) 9%, transparent), transparent 32%),
+      color-mix(in srgb, var(--ui-background-card) 46%, transparent);
+  }
+
+  .dashboard-list-card__count {
+    min-width: 30px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 9px;
+    border-radius: 999px;
+    color: var(--ui-primary-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 11%, transparent);
+    font-size: 12px;
+    font-weight: 820;
   }
 
   .dashboard-list-card__rows {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 7px;
   }
 
   .dashboard-row-link {
     width: 100%;
-    min-height: 62px;
+    min-height: 50px;
     display: grid;
-    grid-template-columns: 38px minmax(0, 1fr) auto;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 12px;
-    padding: 11px 12px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 16px;
+    gap: 10px;
+    padding: 8px 9px;
+    border: 1px solid transparent;
+    border-radius: 15px;
     appearance: none;
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
     cursor: pointer;
     transition:
       transform 0.18s ease,
@@ -1813,27 +1906,27 @@
   }
 
   .dashboard-row-link:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
-    background: color-mix(in srgb, var(--ui-primary-main) 6%, var(--ui-background-card));
-    box-shadow: 0 12px 26px color-mix(in srgb, #000000 11%, transparent);
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-card));
+    box-shadow: 0 10px 24px color-mix(in srgb, #000000 12%, transparent);
   }
 
   .dashboard-row-link__avatar {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 13px;
+    border-radius: 12px;
     color: var(--ui-text-invert);
     background: linear-gradient(
       135deg,
       var(--ui-primary-main),
       color-mix(in srgb, var(--ui-primary-main) 45%, var(--ui-primary-accent))
     );
-    font-size: 12px;
-    font-weight: 800;
+    font-size: 11px;
+    font-weight: 850;
     letter-spacing: 0.04em;
   }
 
@@ -1841,7 +1934,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     text-align: left;
   }
 
@@ -1849,8 +1942,8 @@
     overflow: hidden;
     color: var(--ui-text-main);
     font-size: 13px;
-    font-weight: 800;
-    line-height: 1.25;
+    font-weight: 820;
+    line-height: 1.22;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -1858,21 +1951,64 @@
   .dashboard-row-link__meta {
     overflow: hidden;
     font-size: 11px;
-    font-weight: 600;
-    line-height: 1.35;
+    font-weight: 620;
+    line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
+  .dashboard-inline-status {
+    --status-color: var(--ui-text-secondary);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    color: var(--status-color);
+    font-size: 12px;
+    font-weight: 760;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .dashboard-inline-status__dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 999px;
+    background: var(--status-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
+  }
+
+  .dashboard-inline-status--info {
+    --status-color: var(--color-info);
+  }
+
+  .dashboard-inline-status--success {
+    --status-color: var(--color-success);
+  }
+
+  .dashboard-inline-status--warning {
+    --status-color: var(--color-warning);
+  }
+
+  .dashboard-inline-status--danger {
+    --status-color: var(--color-danger);
+  }
+
+  .dashboard-inline-status--muted {
+    --status-color: var(--ui-text-secondary);
+  }
+
   .dashboard-empty-state {
-    min-height: 176px;
+    min-height: 132px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 16px;
     border: 1px dashed var(--color-stroke-ui-light);
-    border-radius: 18px;
-    background: color-mix(in srgb, var(--ui-background-card) 78%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
     font-size: 13px;
     font-weight: 650;
     text-align: center;
@@ -1939,17 +2075,21 @@
     }
   }
 
-  @media (max-width: 1500px) {
-    .admin-dashboard__summary-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  @keyframes dashboard-glass-glint {
+    0% {
+      opacity: 0;
+      transform: rotate(12deg) translateX(-45%);
     }
-
-    .admin-dashboard__charts {
-      grid-template-columns: 1fr;
+    35% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(12deg) translateX(330%);
     }
   }
 
-  @media (max-width: 1120px) {
+  @media (max-width: 1180px) {
     .admin-dashboard__summary-grid,
     .admin-dashboard__panels {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1965,12 +2105,13 @@
     .admin-dashboard__header,
     .dashboard-chart-card__header,
     .dashboard-list-card__header {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
     }
 
     .admin-dashboard__header-actions {
       justify-content: flex-start;
-      flex-wrap: wrap;
     }
 
     .admin-dashboard__updated-at {
@@ -1983,10 +2124,11 @@
     }
 
     .dashboard-row-link {
-      grid-template-columns: 38px minmax(0, 1fr);
+      grid-template-columns: 34px minmax(0, 1fr);
+      align-items: start;
     }
 
-    .dashboard-row-link :deep(.p-tag) {
+    .dashboard-row-link .dashboard-inline-status {
       grid-column: 2;
       justify-self: start;
     }
@@ -1994,7 +2136,7 @@
 
   @media (max-width: 640px) {
     .admin-dashboard {
-      padding: 14px;
+      padding: 12px;
     }
 
     .admin-dashboard__summary-grid,
@@ -2005,9 +2147,16 @@
       grid-template-columns: 1fr;
     }
 
-    .dashboard-chart-card,
+    .dashboard-chart-card {
+      padding: 12px;
+    }
+
     .dashboard-list-card {
-      padding: 14px;
+      padding: 10px;
+    }
+
+    .dashboard-chart-card__chart {
+      min-height: 300px;
     }
   }
 </style>
