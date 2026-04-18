@@ -1,21 +1,23 @@
-import { defineNuxtPlugin, useRoute, useRuntimeConfig } from "nuxt/app";
+import { defineNuxtPlugin, useRoute } from "nuxt/app";
 import { watch } from "vue";
 import useAppCore from "~/composables/useAppCore";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 const SESSION_KEY = "admin_presence_session_id";
-const HEARTBEAT_INTERVAL_MS = 15000;
+const HEARTBEAT_INTERVAL_MS = 45000;
+const PRESENCE_TTL_SECONDS = 120;
+const MIN_PING_INTERVAL_MS = 30000;
 
-export default defineNuxtPlugin(nuxtApp => {
+export default defineNuxtPlugin(() => {
   if (!process.client) return;
 
   const appCore = useAppCore();
   const authStore = useAdminAuthStore();
   const route = useRoute();
-  const runtimeConfig = useRuntimeConfig();
 
   let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   let isSending = false;
+  let lastPingAt = 0;
 
   const resolveSessionId = () => {
     const stored = sessionStorage.getItem(SESSION_KEY);
@@ -43,13 +45,17 @@ export default defineNuxtPlugin(nuxtApp => {
 
   const ping = async (active = true) => {
     if (!authStore.isAuthenticated || isSending) return;
+    if (active && Date.now() - lastPingAt < MIN_PING_INTERVAL_MS) return;
 
     isSending = true;
+    if (active) {
+      lastPingAt = Date.now();
+    }
 
     try {
       const response = await appCore.adminModules.profile.presencePing({
         active,
-        ttl_seconds: 30,
+        ttl_seconds: PRESENCE_TTL_SECONDS,
         session_id: resolveSessionId(),
         path: route.fullPath,
       });
@@ -59,41 +65,6 @@ export default defineNuxtPlugin(nuxtApp => {
       console.error("Admin presence ping failed", error);
     } finally {
       isSending = false;
-    }
-  };
-
-  const leave = async () => {
-    if (!authStore.isAuthenticated) return;
-
-    try {
-      const response = await appCore.adminModules.profile.presenceLeave({
-        session_id: resolveSessionId(),
-      });
-
-      updatePresenceState(response);
-    } catch (error) {
-      console.error("Admin presence leave failed", error);
-    }
-  };
-
-  const leaveWithKeepAlive = () => {
-    if (!authStore.isAuthenticated || !authStore.accessToken) return;
-
-    try {
-      void fetch(`${runtimeConfig.public.baseApi}/admin/profile/presence`, {
-        method: "DELETE",
-        keepalive: true,
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${authStore.accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          session_id: resolveSessionId(),
-        }),
-      });
-    } catch (error) {
-      console.error("Admin presence keepalive leave failed", error);
     }
   };
 
@@ -115,15 +86,16 @@ export default defineNuxtPlugin(nuxtApp => {
 
   const handleVisibilityChange = () => {
     if (document.hidden) {
-      void leave();
+      stopHeartbeat();
       return;
     }
 
+    startHeartbeat();
     void ping(true);
   };
 
   const handlePageHide = () => {
-    leaveWithKeepAlive();
+    stopHeartbeat();
   };
 
   const handleOnline = () => {
@@ -135,6 +107,7 @@ export default defineNuxtPlugin(nuxtApp => {
     isAuthenticated => {
       if (!isAuthenticated) {
         stopHeartbeat();
+        lastPingAt = 0;
         return;
       }
 

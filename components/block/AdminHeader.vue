@@ -254,8 +254,9 @@
     tone: NotificationTone;
   };
 
-  const NOTIFICATIONS_POLL_MS = 10000;
-  const NOTIFICATIONS_REALTIME_RETRY_MS = 5000;
+  const NOTIFICATIONS_POLL_MS = 120000;
+  const NOTIFICATIONS_REALTIME_RETRY_MS = 30000;
+  const NOTIFICATIONS_RESUME_SYNC_MIN_INTERVAL_MS = 60000;
   const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
   const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
   const NOTIFICATION_EVENT_NAMES = [
@@ -311,6 +312,7 @@
   let notificationsRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
   let notificationsPollTimer: ReturnType<typeof setInterval> | null = null;
   let notificationsResumeListenersAttached = false;
+  let lastNotificationsResumeSyncAt = 0;
 
   const isThemeLight = computed(() => themeStore.currentTheme !== "dark");
   const canViewProfile = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-profile"));
@@ -761,6 +763,13 @@
     }
   };
 
+  const isNotificationsSocketConnected = () => {
+    const echoClient = resolveEchoClient();
+    const state = String(echoClient?.connector?.pusher?.connection?.state ?? "");
+
+    return state === "connected";
+  };
+
   const handleRealtimeNotification = async (payload: any) => {
     const normalized = normalizeNotification(payload?.notification ?? null);
     if (!normalized) return;
@@ -910,8 +919,10 @@
     notificationsPollTimer = setInterval(async () => {
       if (!hasAccessToken()) return;
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      if (isNotificationsSocketConnected()) return;
 
-      const newUnreadItems = await loadNotifications({ showToastsForNew: true });
+      const canToastNewItems = notificationsLoaded.value;
+      const newUnreadItems = await loadNotifications({ showToastsForNew: canToastNewItems });
       if (isOpen.value && newUnreadItems.length > 0) {
         await markAllRead();
         return;
@@ -1010,10 +1021,18 @@
       return;
     }
 
-    await Promise.all([
-      loadNotifications({ showToastsForNew }),
-      loadUnreadSummary(),
-    ]);
+    const now = Date.now();
+    if (now - lastNotificationsResumeSyncAt < NOTIFICATIONS_RESUME_SYNC_MIN_INTERVAL_MS) {
+      return;
+    }
+
+    lastNotificationsResumeSyncAt = now;
+
+    if (isOpen.value || !isNotificationsSocketConnected()) {
+      await loadNotifications({ showToastsForNew: showToastsForNew && notificationsLoaded.value });
+    } else {
+      await loadUnreadSummary();
+    }
 
     if (isOpen.value && unreadCount.value > 0) {
       await markAllRead();
@@ -1088,7 +1107,6 @@
         return;
       }
 
-      await loadNotifications();
       await loadUnreadSummary();
       await markCurrentSectionNotificationsSeen();
       const adminId = String(adminAuthStore.user?.id ?? "").trim();

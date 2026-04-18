@@ -38,7 +38,7 @@ export function useTicketPresence(ticketId: number, currentUserIsAdmin: boolean)
 
         await ping()
 
-        intervalId = setInterval(ping, 15000)
+        intervalId = setInterval(ping, 30000)
     })
 
     onBeforeUnmount(async () => {

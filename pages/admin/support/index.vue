@@ -490,8 +490,8 @@
   const orderDirection = ref(ORDER_DIRECTION_DESC);
   const currentRowActiveOptions = ref<number | null>(null);
   const VIEW_MODE_STORAGE_KEY = "admin_support_view_mode";
-  const ADMIN_SUPPORT_LIST_REFRESH_MS = 20000;
-  const SUPPORT_REALTIME_RETRY_MS = 5000;
+  const ADMIN_SUPPORT_LIST_REFRESH_MS = 60000;
+  const SUPPORT_REALTIME_RETRY_MS = 30000;
   const viewMode = ref<"table" | "cards" | "full">("table");
   const isMobileViewport = ref(false);
   const viewOptions = [

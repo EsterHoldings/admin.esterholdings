@@ -1197,7 +1197,7 @@
   const MAX_PENDING_ATTACHMENTS = 10;
   const UPLOAD_REQUEST_TIMEOUT_MS = 15 * 60 * 1000;
   const PENDING_MESSAGE_MATCH_WINDOW_MS = 2 * 60 * 1000;
-  const SUPPORT_PRESENCE_HEARTBEAT_MS = 5000;
+  const SUPPORT_PRESENCE_HEARTBEAT_MS = 30000;
   const VIEWER_SWIPE_THRESHOLD = 52;
   const VIEWER_MAX_VERTICAL_DRIFT = 120;
   const resolveText = (key: string, fallback: string): string => {
@@ -3525,12 +3525,12 @@
       }
 
       const now = Date.now();
-      const syncInterval = socketState === "connected" ? 4000 : 2000;
+      const syncInterval = socketState === "connected" ? Number.POSITIVE_INFINITY : 30000;
       if (now - lastRealtimeSyncAt < syncInterval) return;
       lastRealtimeSyncAt = now;
 
       void syncLatestMessagesFromServer();
-    }, 2000);
+    }, 15000);
   };
 
   const stopRealtimeFallbackSync = () => {

@@ -404,9 +404,9 @@
   const ORDER_DIRECTION_ASC = "asc";
   const ORDER_DIRECTION_DESC = "desc";
   const VIEW_MODE_STORAGE_KEY = "adminClientsViewMode";
-  const ONLINE_REFRESH_INTERVAL_MS = 5_000;
-  const ONLINE_REALTIME_SYNC_DEBOUNCE_MS = 200;
-  const ONLINE_REALTIME_RETRY_INTERVAL_MS = 5_000;
+  const ONLINE_REFRESH_INTERVAL_MS = 60_000;
+  const ONLINE_REALTIME_SYNC_DEBOUNCE_MS = 1000;
+  const ONLINE_REALTIME_RETRY_INTERVAL_MS = 30_000;
   const DEFAULT_PER_PAGE = 6;
   const DEFAULT_PAGE = 1;
   const DEFAULT_ORDER_BY = "created_at";
@@ -1647,6 +1647,8 @@
     if (!isClientsIndexRoute.value || pollingTimer) return;
 
     pollingTimer = setInterval(() => {
+      if (isRealtimeConnected()) return;
+
       loadData({ silent: true }).catch(() => {});
       loadStats(true).catch(() => {});
     }, ONLINE_REFRESH_INTERVAL_MS);
@@ -1782,6 +1784,12 @@
     return null;
   };
 
+  const isRealtimeConnected = () => {
+    const echoClient = resolveEchoClient();
+
+    return String(echoClient?.connector?.pusher?.connection?.state ?? "") === "connected";
+  };
+
   const reconnectRealtimeSocketTransport = () => {
     const echoClient = resolveEchoClient();
     const pusher = echoClient?.connector?.pusher;
@@ -1868,7 +1876,10 @@
       reconnectRealtimeSocketTransport();
       bindRealtimeSocketStateListener();
       connectRealtime();
-      scheduleOnlineSync();
+
+      if (!isRealtimeConnected()) {
+        scheduleOnlineSync();
+      }
     }, ONLINE_REALTIME_RETRY_INTERVAL_MS);
   };
 

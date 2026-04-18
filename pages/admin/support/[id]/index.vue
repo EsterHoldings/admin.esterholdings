@@ -2273,7 +2273,7 @@
     participantsPresencePollTimer = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       void refreshParticipantsFromTicket();
-    }, 5000);
+    }, 30000);
   };
 
   const handleSupportPresenceUpdated = (payload?: any) => {

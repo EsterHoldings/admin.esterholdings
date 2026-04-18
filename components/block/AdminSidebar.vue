@@ -59,8 +59,9 @@
   const localePath = useLocalePath();
   const themeStore = useThemeStore();
   const supportUnreadCount = ref(0);
-  const SUPPORT_BADGE_REFRESH_MS = 3000;
-  const SUPPORT_REALTIME_RETRY_MS = 5000;
+  const SUPPORT_BADGE_REFRESH_MS = 120000;
+  const SUPPORT_REALTIME_RETRY_MS = 30000;
+  const SUPPORT_RESUME_SYNC_MIN_INTERVAL_MS = 60000;
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_ACTIVE_TICKET_CHANGED_EVENT = "support-active-ticket-changed";
   const route = useRoute();
@@ -83,6 +84,7 @@
   let supportRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
   let supportSocketStateHandler: ((states: any) => void) | null = null;
   let supportResumeListenersAttached = false;
+  let lastSupportUnreadSyncAt = 0;
 
   const handleClickLogout = async () => {
     await adminAuthStore.authLogout();
@@ -97,6 +99,8 @@
       supportUnreadCount.value = 0;
       return;
     }
+
+    lastSupportUnreadSyncAt = Date.now();
 
     try {
       const response = await appCore.adminModules.tickets.getUnreadSummary();
@@ -121,6 +125,7 @@
     if (supportBadgeTimer) return;
 
     supportBadgeTimer = setInterval(() => {
+      if (isSupportSocketConnected()) return;
       loadSupportUnreadCount().catch(() => {});
     }, SUPPORT_BADGE_REFRESH_MS);
   };
@@ -403,6 +408,13 @@
     }
   };
 
+  const isSupportSocketConnected = () => {
+    const echoClient = resolveEchoClient();
+    const state = String(echoClient?.connector?.pusher?.connection?.state ?? "");
+
+    return state === "connected";
+  };
+
   const connectSupportRealtime = () => {
     if (!canReadSupportUnread.value) return;
     const echoClient = resolveEchoClient();
@@ -484,7 +496,9 @@
       reconnectSupportSocketTransport();
       bindSupportSocketStateListener();
       connectSupportRealtime();
-      loadSupportUnreadCount().catch(() => {});
+      if (!isSupportSocketConnected()) {
+        loadSupportUnreadCount().catch(() => {});
+      }
     }, SUPPORT_REALTIME_RETRY_MS);
   };
 
@@ -500,6 +514,11 @@
     reconnectSupportSocketTransport();
     bindSupportSocketStateListener();
     connectSupportRealtime();
+
+    const now = Date.now();
+    if (now - lastSupportUnreadSyncAt < SUPPORT_RESUME_SYNC_MIN_INTERVAL_MS) return;
+    lastSupportUnreadSyncAt = now;
+
     loadSupportUnreadCount().catch(() => {});
   };
 

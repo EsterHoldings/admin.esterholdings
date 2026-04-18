@@ -54,7 +54,9 @@
   const appCore = useAppCore();
   const { locale } = useI18n({ useScope: "global" });
   const addCurrentLocaleToPath = (path = "") => `/${locale.value}/${path}`;
-  const SUPPORT_BADGE_REFRESH_MS = 10000;
+  const SUPPORT_BADGE_REFRESH_MS = 120000;
+  const SUPPORT_REALTIME_RETRY_MS = 30000;
+  const SUPPORT_RESUME_SYNC_MIN_INTERVAL_MS = 60000;
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const { $echo } = useNuxtApp() as { $echo?: any };
 
@@ -64,6 +66,8 @@
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;
   let supportRealtimeChannel: any = null;
+  let supportRealtimeRetryTimer: ReturnType<typeof setInterval> | null = null;
+  let lastSupportUnreadSyncAt = 0;
   const notifications = reactive([
     { type: "info", message: "Test info notification message", wasRead: false },
     { type: "warning", message: "Test warning notification message", wasRead: false },
@@ -93,16 +97,21 @@
 
   const loadSupportUnreadCount = async () => {
     try {
+      lastSupportUnreadSyncAt = Date.now();
       const response = await appCore.tickets.getUnreadSummary();
       const count = Number(response?.data?.data?.unread_messages_count ?? response?.data?.unread_messages_count ?? 0);
       supportUnreadCount.value = Number.isFinite(count) ? Math.max(0, count) : 0;
     } catch {}
   };
 
+  const isSupportRealtimeConnected = () => Boolean($echo?.connector?.pusher?.connection?.state === "connected");
+
   const startSupportBadgeRefresh = () => {
     if (supportBadgeTimer) return;
 
     supportBadgeTimer = setInterval(() => {
+      if (isSupportRealtimeConnected()) return;
+
       loadSupportUnreadCount().catch(() => {});
     }, SUPPORT_BADGE_REFRESH_MS);
   };
@@ -136,17 +145,50 @@
     supportRealtimeChannel = null;
   };
 
+  const startSupportRealtimeRetry = () => {
+    if (!$echo || supportRealtimeRetryTimer) return;
+
+    supportRealtimeRetryTimer = setInterval(() => {
+      if (isSupportRealtimeConnected()) return;
+
+      disconnectSupportRealtime();
+      connectSupportRealtime();
+      loadSupportUnreadCount().catch(() => {});
+    }, SUPPORT_REALTIME_RETRY_MS);
+  };
+
+  const stopSupportRealtimeRetry = () => {
+    if (!supportRealtimeRetryTimer) return;
+
+    clearInterval(supportRealtimeRetryTimer);
+    supportRealtimeRetryTimer = null;
+  };
+
+  const syncSupportUnreadAfterResume = () => {
+    const now = Date.now();
+
+    if (now - lastSupportUnreadSyncAt < SUPPORT_RESUME_SYNC_MIN_INTERVAL_MS) return;
+
+    loadSupportUnreadCount().catch(() => {});
+  };
+
   onMounted(async () => {
     await loadSupportUnreadCount();
     useEventBus.on(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     startSupportBadgeRefresh();
     connectSupportRealtime();
+    startSupportRealtimeRetry();
+    window.addEventListener("focus", syncSupportUnreadAfterResume);
+    document.addEventListener("visibilitychange", syncSupportUnreadAfterResume);
   });
 
   onBeforeUnmount(() => {
     useEventBus.off(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     stopSupportBadgeRefresh();
+    stopSupportRealtimeRetry();
     disconnectSupportRealtime();
+    window.removeEventListener("focus", syncSupportUnreadAfterResume);
+    document.removeEventListener("visibilitychange", syncSupportUnreadAfterResume);
     if (supportUnreadRafId !== null) {
       window.cancelAnimationFrame(supportUnreadRafId);
       supportUnreadRafId = null;
