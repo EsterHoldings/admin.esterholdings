@@ -1480,7 +1480,9 @@
           "emailVerifiedAt": "Email verified at",
           "phone": "Phone",
           "createdAt": "Created at",
-          "blockedAt": "Blocked at"
+          "blockedAt": "Blocked at",
+          "contactSection": "Contact et accès",
+          "addressSection": "Adresse"
         },
         "history": {
           "title": "Visit history",
@@ -1493,7 +1495,8 @@
             "mobile": "Mobile",
             "tablet": "Tablet",
             "desktop": "Desktop"
-          }
+          },
+          "locationNotProvided": "Données géographiques non fournies"
         },
         "actions": {
           "saving": "Saving...",
@@ -1515,6 +1518,26 @@
           "authLinkMissing": "Cabinet auth link is missing.",
           "impersonationStarted": "Cabinet window opened. Signing in as client.",
           "impersonationFailed": "Failed to sign in as client."
+        },
+        "verification": {
+          "title": "Vérification",
+          "description": "Statut actuel de modération du profil et des documents.",
+          "profileData": "Données du profil",
+          "documents": "Documents d’identité"
+        },
+        "documents": {
+          "title": "Documents",
+          "none": "0 importé",
+          "count": "{count} importés",
+          "empty": "Aucun document d’identité n’a encore été importé.",
+          "defaultName": "Document"
+        },
+        "status": {
+          "pending": "En attente",
+          "approved": "Approuvé",
+          "rejected": "Rejeté",
+          "processing": "En traitement",
+          "failed": "Échec"
         }
       },
       "metrics": {

@@ -1480,7 +1480,9 @@
           "emailVerifiedAt": "Email verified at",
           "phone": "Phone",
           "createdAt": "Created at",
-          "blockedAt": "Blocked at"
+          "blockedAt": "Blocked at",
+          "contactSection": "פרטי קשר וגישה",
+          "addressSection": "כתובת"
         },
         "history": {
           "title": "Visit history",
@@ -1493,7 +1495,8 @@
             "mobile": "Mobile",
             "tablet": "Tablet",
             "desktop": "Desktop"
-          }
+          },
+          "locationNotProvided": "נתוני Geo לא סופקו"
         },
         "actions": {
           "saving": "Saving...",
@@ -1515,6 +1518,26 @@
           "authLinkMissing": "Cabinet auth link is missing.",
           "impersonationStarted": "Cabinet window opened. Signing in as client.",
           "impersonationFailed": "Failed to sign in as client."
+        },
+        "verification": {
+          "title": "אימות",
+          "description": "סטטוס בדיקת הפרופיל והמסמכים הנוכחי.",
+          "profileData": "נתוני פרופיל",
+          "documents": "מסמכי זיהוי"
+        },
+        "documents": {
+          "title": "מסמכים",
+          "none": "0 הועלו",
+          "count": "{count} הועלו",
+          "empty": "עדיין לא הועלו מסמכי זיהוי.",
+          "defaultName": "מסמך"
+        },
+        "status": {
+          "pending": "ממתין",
+          "approved": "אושר",
+          "rejected": "נדחה",
+          "processing": "בעיבוד",
+          "failed": "נכשל"
         }
       },
       "metrics": {

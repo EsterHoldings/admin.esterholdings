@@ -1824,7 +1824,9 @@
           "emailVerifiedAt": "Email підтверджено",
           "phone": "Телефон",
           "createdAt": "Створено",
-          "blockedAt": "Заблоковано"
+          "blockedAt": "Заблоковано",
+          "contactSection": "Контакти та доступ",
+          "addressSection": "Адреса"
         },
         "history": {
           "title": "Історія відвідувань",
@@ -1837,7 +1839,8 @@
             "mobile": "Мобільний пристрій",
             "tablet": "Планшет",
             "desktop": "Десктоп"
-          }
+          },
+          "locationNotProvided": "Geo-дані не передано"
         },
         "actions": {
           "saving": "Зберігаємо...",
@@ -1859,6 +1862,26 @@
           "authLinkMissing": "Посилання авторизації в кабінет відсутнє.",
           "impersonationStarted": "Вікно кабінету відкрито. Виконується вхід під клієнтом.",
           "impersonationFailed": "Не вдалося увійти в кабінет клієнта."
+        },
+        "verification": {
+          "title": "Верифікація",
+          "description": "Поточний статус модерації профілю та документів.",
+          "profileData": "Дані профілю",
+          "documents": "Документи особи"
+        },
+        "documents": {
+          "title": "Документи",
+          "none": "0 завантажено",
+          "count": "{count} завантажено",
+          "empty": "Документи особи ще не завантажені.",
+          "defaultName": "Документ"
+        },
+        "status": {
+          "pending": "У процесі",
+          "approved": "Підтверджено",
+          "rejected": "Відхилено",
+          "processing": "Обробляється",
+          "failed": "Помилка"
         }
       },
       "metrics": {

@@ -1480,7 +1480,9 @@
           "emailVerifiedAt": "Email verified at",
           "phone": "Phone",
           "createdAt": "Created at",
-          "blockedAt": "Blocked at"
+          "blockedAt": "Blocked at",
+          "contactSection": "연락처 및 접근",
+          "addressSection": "주소"
         },
         "history": {
           "title": "Visit history",
@@ -1493,7 +1495,8 @@
             "mobile": "Mobile",
             "tablet": "Tablet",
             "desktop": "Desktop"
-          }
+          },
+          "locationNotProvided": "위치 데이터가 제공되지 않음"
         },
         "actions": {
           "saving": "Saving...",
@@ -1515,6 +1518,26 @@
           "authLinkMissing": "Cabinet auth link is missing.",
           "impersonationStarted": "Cabinet window opened. Signing in as client.",
           "impersonationFailed": "Failed to sign in as client."
+        },
+        "verification": {
+          "title": "인증",
+          "description": "프로필 및 문서 검토의 현재 상태입니다.",
+          "profileData": "프로필 데이터",
+          "documents": "신원 확인 문서"
+        },
+        "documents": {
+          "title": "문서",
+          "none": "0개 업로드됨",
+          "count": "{count}개 업로드됨",
+          "empty": "아직 신원 확인 문서가 업로드되지 않았습니다.",
+          "defaultName": "문서"
+        },
+        "status": {
+          "pending": "대기 중",
+          "approved": "승인됨",
+          "rejected": "거부됨",
+          "processing": "처리 중",
+          "failed": "실패"
         }
       },
       "metrics": {

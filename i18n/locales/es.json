@@ -1480,7 +1480,9 @@
           "emailVerifiedAt": "Email verificado el",
           "phone": "Teléfono",
           "createdAt": "Creado el",
-          "blockedAt": "Bloqueado el"
+          "blockedAt": "Bloqueado el",
+          "contactSection": "Contacto y acceso",
+          "addressSection": "Dirección"
         },
         "history": {
           "title": "Historial de visitas",
@@ -1493,7 +1495,8 @@
             "mobile": "Móvil",
             "tablet": "Tablet",
             "desktop": "Escritorio"
-          }
+          },
+          "locationNotProvided": "Datos geo no proporcionados"
         },
         "actions": {
           "saving": "Guardando...",
@@ -1515,6 +1518,26 @@
           "authLinkMissing": "Falta el enlace de acceso al gabinete.",
           "impersonationStarted": "Ventana del gabinete abierta. Entrando como cliente.",
           "impersonationFailed": "No se pudo entrar como cliente."
+        },
+        "verification": {
+          "title": "Verificación",
+          "description": "Estado actual de moderación del perfil y documentos.",
+          "profileData": "Datos del perfil",
+          "documents": "Documentos de identidad"
+        },
+        "documents": {
+          "title": "Documentos",
+          "none": "0 cargados",
+          "count": "{count} cargados",
+          "empty": "Aún no se han cargado documentos de identidad.",
+          "defaultName": "Documento"
+        },
+        "status": {
+          "pending": "Pendiente",
+          "approved": "Aprobado",
+          "rejected": "Rechazado",
+          "processing": "Procesando",
+          "failed": "Error"
         }
       },
       "metrics": {

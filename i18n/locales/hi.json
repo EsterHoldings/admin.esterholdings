@@ -1480,7 +1480,9 @@
           "emailVerifiedAt": "Email verified at",
           "phone": "Phone",
           "createdAt": "Created at",
-          "blockedAt": "Blocked at"
+          "blockedAt": "Blocked at",
+          "contactSection": "संपर्क और पहुंच",
+          "addressSection": "पता"
         },
         "history": {
           "title": "Visit history",
@@ -1493,7 +1495,8 @@
             "mobile": "Mobile",
             "tablet": "Tablet",
             "desktop": "Desktop"
-          }
+          },
+          "locationNotProvided": "Geo डेटा प्रदान नहीं किया गया"
         },
         "actions": {
           "saving": "Saving...",
@@ -1515,6 +1518,26 @@
           "authLinkMissing": "Cabinet auth link is missing.",
           "impersonationStarted": "Cabinet window opened. Signing in as client.",
           "impersonationFailed": "Failed to sign in as client."
+        },
+        "verification": {
+          "title": "सत्यापन",
+          "description": "प्रोफ़ाइल और दस्तावेज़ मॉडरेशन की वर्तमान स्थिति।",
+          "profileData": "प्रोफ़ाइल डेटा",
+          "documents": "पहचान दस्तावेज़"
+        },
+        "documents": {
+          "title": "दस्तावेज़",
+          "none": "0 अपलोड",
+          "count": "{count} अपलोड",
+          "empty": "अभी तक कोई पहचान दस्तावेज़ अपलोड नहीं किया गया है।",
+          "defaultName": "दस्तावेज़"
+        },
+        "status": {
+          "pending": "लंबित",
+          "approved": "स्वीकृत",
+          "rejected": "अस्वीकृत",
+          "processing": "प्रोसेस हो रहा है",
+          "failed": "विफल"
         }
       },
       "metrics": {

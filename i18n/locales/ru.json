@@ -1829,7 +1829,9 @@
           "emailVerifiedAt": "Email подтвержден",
           "phone": "Телефон",
           "createdAt": "Создан",
-          "blockedAt": "Заблокирован"
+          "blockedAt": "Заблокирован",
+          "contactSection": "Контакты и доступ",
+          "addressSection": "Адрес"
         },
         "history": {
           "title": "История посещений",
@@ -1842,7 +1844,8 @@
             "mobile": "Мобильное устройство",
             "tablet": "Планшет",
             "desktop": "Десктоп"
-          }
+          },
+          "locationNotProvided": "Geo-данные не переданы"
         },
         "actions": {
           "saving": "Сохраняем...",
@@ -1864,6 +1867,26 @@
           "authLinkMissing": "Ссылка авторизации в кабинет отсутствует.",
           "impersonationStarted": "Окно кабинета открыто. Выполняется вход под клиентом.",
           "impersonationFailed": "Не удалось войти в кабинет клиента."
+        },
+        "verification": {
+          "title": "Верификация",
+          "description": "Текущий статус модерации профиля и документов.",
+          "profileData": "Данные профиля",
+          "documents": "Документы личности"
+        },
+        "documents": {
+          "title": "Документы",
+          "none": "0 загружено",
+          "count": "{count} загружено",
+          "empty": "Документы личности еще не загружены.",
+          "defaultName": "Документ"
+        },
+        "status": {
+          "pending": "В процессе",
+          "approved": "Подтверждено",
+          "rejected": "Отклонено",
+          "processing": "Обрабатывается",
+          "failed": "Ошибка"
         }
       },
       "metrics": {

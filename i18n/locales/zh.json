@@ -1480,7 +1480,9 @@
           "emailVerifiedAt": "Email verified at",
           "phone": "Phone",
           "createdAt": "Created at",
-          "blockedAt": "Blocked at"
+          "blockedAt": "Blocked at",
+          "contactSection": "联系方式和访问权限",
+          "addressSection": "地址"
         },
         "history": {
           "title": "Visit history",
@@ -1493,7 +1495,8 @@
             "mobile": "Mobile",
             "tablet": "Tablet",
             "desktop": "Desktop"
-          }
+          },
+          "locationNotProvided": "未提供地理数据"
         },
         "actions": {
           "saving": "Saving...",
@@ -1515,6 +1518,26 @@
           "authLinkMissing": "Cabinet auth link is missing.",
           "impersonationStarted": "Cabinet window opened. Signing in as client.",
           "impersonationFailed": "Failed to sign in as client."
+        },
+        "verification": {
+          "title": "验证",
+          "description": "当前资料和文件审核状态。",
+          "profileData": "个人资料",
+          "documents": "身份证明文件"
+        },
+        "documents": {
+          "title": "文件",
+          "none": "已上传 0 个",
+          "count": "已上传 {count} 个",
+          "empty": "尚未上传身份证明文件。",
+          "defaultName": "文件"
+        },
+        "status": {
+          "pending": "待处理",
+          "approved": "已批准",
+          "rejected": "已拒绝",
+          "processing": "处理中",
+          "failed": "失败"
         }
       },
       "metrics": {
