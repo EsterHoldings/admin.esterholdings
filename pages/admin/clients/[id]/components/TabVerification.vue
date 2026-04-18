@@ -2996,7 +2996,7 @@ onBeforeUnmount(() => {
 
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  //overflow: hidden;
   height: 100%;
   border: 1px solid var(--verification-glass-border);
   border-radius: 22px;
