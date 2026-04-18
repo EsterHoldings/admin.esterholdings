@@ -1852,6 +1852,11 @@
           "payoutTitle": "Les coordonnées de paiement nécessitent une vérification",
           "payoutDescription": "Le client a envoyé ou mis à jour des coordonnées de paiement.",
           "historyDescription": "Activité de vérification enregistrée."
+        },
+        "filters": {
+          "all": "Tout",
+          "allHint": "Tous les éléments de vérification visibles",
+          "statusAll": "Tout"
         }
       },
       "historyKeys": {

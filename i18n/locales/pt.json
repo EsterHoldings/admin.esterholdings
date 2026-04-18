@@ -1852,6 +1852,11 @@
           "payoutTitle": "Dados de pagamento exigem revisão",
           "payoutDescription": "O cliente enviou ou atualizou dados de pagamento.",
           "historyDescription": "Atividade de verificação registrada."
+        },
+        "filters": {
+          "all": "Tudo",
+          "allHint": "Todos os registros de revisão visíveis",
+          "statusAll": "Tudo"
         }
       },
       "historyKeys": {

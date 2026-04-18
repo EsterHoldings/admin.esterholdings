@@ -42,7 +42,15 @@
         v-for="card in verificationSummaryCards"
         :key="card.id"
         class="verification-summary-card"
-        :class="`verification-summary-card--${card.kind}`">
+        :class="[
+          `verification-summary-card--${card.kind}`,
+          { 'is-active': activeTimelineSectionFilter === card.filter },
+        ]"
+        role="button"
+        tabindex="0"
+        @click="setTimelineSectionFilter(card.filter)"
+        @keydown.enter.prevent="setTimelineSectionFilter(card.filter)"
+        @keydown.space.prevent="setTimelineSectionFilter(card.filter)">
         <template #content>
           <div class="verification-summary-card__body">
             <span class="verification-summary-card__label">{{ card.label }}</span>
@@ -51,6 +59,21 @@
           </div>
         </template>
       </PrimeCard>
+    </div>
+
+    <div class="verification-filter-strip">
+      <PrimeButton
+        v-for="option in timelineStatusFilterOptions"
+        :key="option.value"
+        type="button"
+        size="small"
+        :icon="option.icon"
+        :label="option.label"
+        :outlined="activeTimelineStatusFilter !== option.value"
+        :severity="option.severity"
+        class="verification-status-filter-button"
+        :class="{ 'is-active': activeTimelineStatusFilter === option.value }"
+        @click="setTimelineStatusFilter(option.value)" />
     </div>
 
     <div class="client-verification__anchors" aria-hidden="true">
@@ -139,16 +162,29 @@
                   </span>
                 </div>
 
-                <PrimeSelect
+                <div
                   v-if="item.actionable"
-                  class="verification-action-select"
-                  :model-value="null"
-                  :options="verificationActionOptions"
-                  option-label="label"
-                  option-value="value"
-                  :placeholder="text('admin.verifications.actions.chooseDecision', 'Choose decision')"
-                  :disabled="isTimelineItemUpdating(item) || isRequestUpdating(item.requestId)"
-                  @update:model-value="value => handleTimelineDecisionSelect(item, value)" />
+                  class="verification-decision-group"
+                  role="group"
+                  :aria-label="text('admin.verifications.actions.chooseDecision', 'Choose decision')">
+                  <PrimeButton
+                    type="button"
+                    size="small"
+                    icon="pi pi-check"
+                    :label="text('admin.verifications.actions.approve', 'Approve')"
+                    severity="success"
+                    :loading="isTimelineItemUpdating(item)"
+                    :disabled="isTimelineItemUpdating(item) || isRequestUpdating(item.requestId)"
+                    @click="handleTimelineDecisionClick(item, 'approved')" />
+                  <PrimeButton
+                    type="button"
+                    size="small"
+                    icon="pi pi-times"
+                    :label="text('admin.verifications.actions.reject', 'Reject')"
+                    severity="danger"
+                    :disabled="isTimelineItemUpdating(item) || isRequestUpdating(item.requestId)"
+                    @click="handleTimelineDecisionClick(item, 'rejected')" />
+                </div>
               </div>
             </div>
 
@@ -244,6 +280,8 @@ type VerificationSectionTarget = "profile" | "documents" | "payout";
 type VerificationStatus = "approved" | "pending" | "rejected";
 type RequestReviewState = "pending" | "approved" | "rejected";
 type AdminPaymentDetailStatus = "approved" | "pending" | "rejected";
+type VerificationTimelineSectionFilter = "all" | VerificationTimelineKind | "history";
+type VerificationTimelineStatusFilter = "all" | VerificationStatus;
 
 interface VerificationSection {
   verification_status: string;
@@ -433,6 +471,8 @@ const verificationHistoryVisibleCount = ref(10);
 const requestUpdatingState = reactive<Record<string, boolean>>({});
 const timelineUpdatingState = reactive<Record<string, boolean>>({});
 const highlightedSection = ref<VerificationSectionTarget | null>(null);
+const activeTimelineSectionFilter = ref<VerificationTimelineSectionFilter>("all");
+const activeTimelineStatusFilter = ref<VerificationTimelineStatusFilter>("all");
 const profileSectionRef = ref<HTMLElement | null>(null);
 const documentsSectionRef = ref<HTMLElement | null>(null);
 const payoutSectionRef = ref<HTMLElement | null>(null);
@@ -1003,49 +1043,45 @@ const pendingPayoutDetails = computed(() =>
 const isAnyLoading = computed(() => isLoading.value || isPayoutLoading.value || isRequestsLoading.value);
 const isInitialTimelineLoading = computed(() => isAnyLoading.value && verificationHistoryRows.value.length === 0 && clientRequestRows.value.length === 0);
 
-const verificationSummaryCards = computed(() => [
+const timelineStatusFilterOptions = computed<Array<{
+  value: VerificationTimelineStatusFilter;
+  label: string;
+  icon: string;
+  severity: "secondary" | "warn" | "success" | "danger";
+}>>(() => [
   {
-    id: "pending_profile",
-    kind: hasPendingProfile.value ? "warning" : "success",
-    label: text("admin.verifications.clientTimeline.summary.profile", "Profile changes"),
-    value: hasPendingProfile.value ? "1" : "0",
-    hint: hasPendingProfile.value
-      ? text("admin.verifications.clientTimeline.summary.pending", "Waiting for review")
-      : text("admin.verifications.clientTimeline.summary.clear", "No pending changes"),
+    value: "all",
+    label: text("admin.verifications.clientTimeline.filters.statusAll", "All"),
+    icon: "pi pi-list",
+    severity: "secondary",
   },
   {
-    id: "pending_documents",
-    kind: pendingDocuments.value.length > 0 ? "warning" : "success",
-    label: text("admin.verifications.clientTimeline.summary.documents", "Documents"),
-    value: String(pendingDocuments.value.length),
-    hint: text("admin.verifications.clientTimeline.summary.pendingDocuments", "Documents waiting for moderation"),
+    value: "pending",
+    label: text("admin.verifications.status.pending", "Pending"),
+    icon: "pi pi-clock",
+    severity: "warn",
   },
-  {
-    id: "pending_payout",
-    kind: pendingPayoutDetails.value.length > 0 ? "warning" : "success",
-    label: text("admin.verifications.clientTimeline.summary.paymentDetails", "Payment details"),
-    value: String(pendingPayoutDetails.value.length),
-    hint: text("admin.verifications.clientTimeline.summary.pendingPaymentDetails", "Payment details waiting for moderation"),
-  },
-  {
-    id: "history",
-    kind: "info",
-    label: text("admin.verifications.clientTimeline.summary.history", "History records"),
-    value: String(verificationHistoryRows.value.length),
-    hint: text("admin.verifications.clientTimeline.summary.historyHint", "Newest records are shown first"),
-  },
-]);
-
-const verificationActionOptions = computed(() => [
   {
     value: "approved",
     label: text("admin.verifications.actions.approve", "Approve"),
+    icon: "pi pi-check",
+    severity: "success",
   },
   {
     value: "rejected",
     label: text("admin.verifications.actions.reject", "Reject"),
+    icon: "pi pi-times",
+    severity: "danger",
   },
 ]);
+
+const setTimelineSectionFilter = (filter: VerificationTimelineSectionFilter): void => {
+  activeTimelineSectionFilter.value = filter;
+};
+
+const setTimelineStatusFilter = (filter: VerificationTimelineStatusFilter): void => {
+  activeTimelineStatusFilter.value = filter;
+};
 
 const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   id: VerificationSectionTarget;
@@ -1178,6 +1214,31 @@ const parseTimelineDate = (value: string | null | undefined): number => {
   const year = rawYear.length === 2 ? `20${rawYear}` : rawYear;
 
   return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)).getTime();
+};
+
+const hiddenVerificationHistoryKeys = new Set([
+  "email_verification_sent",
+  "step_status_auto_synced",
+  "step_status_updated",
+  "step_status_reset",
+  "step_comment_cleared",
+]);
+
+const visibleHistoryActorTypes = new Set(["admin", "client"]);
+
+const shouldShowVerificationHistoryRow = (row: VerificationHistoryRow): boolean => {
+  const key = row.key.trim().toLowerCase();
+  const actorType = row.actor.type.trim().toLowerCase();
+
+  if (!visibleHistoryActorTypes.has(actorType)) {
+    return false;
+  }
+
+  if (hiddenVerificationHistoryKeys.has(key) || key.startsWith("step_")) {
+    return false;
+  }
+
+  return true;
 };
 
 const timelineKindFromHistoryKey = (key: string): VerificationTimelineKind => {
@@ -1431,7 +1492,7 @@ const pendingTimelineItems = computed<VerificationTimelineItem[]>(() => {
 });
 
 const historyTimelineItems = computed<VerificationTimelineItem[]>(() =>
-  verificationHistoryRows.value.map(row => {
+  verificationHistoryRows.value.filter(shouldShowVerificationHistoryRow).map(row => {
     const kind = timelineKindFromHistoryKey(row.key);
     const section = timelineSectionFromKind(kind);
 
@@ -1459,11 +1520,84 @@ const historyTimelineItems = computed<VerificationTimelineItem[]>(() =>
   })
 );
 
-const visibleVerificationTimelineItems = computed(() =>
+const timelineSectionMatches = (item: VerificationTimelineItem, filter: VerificationTimelineSectionFilter): boolean => {
+  if (filter === "all") {
+    return true;
+  }
+
+  if (filter === "history") {
+    return item.id.startsWith("history-");
+  }
+
+  return item.kind === filter;
+};
+
+const timelineStatusMatches = (item: VerificationTimelineItem, filter: VerificationTimelineStatusFilter): boolean =>
+  filter === "all" || item.status === filter;
+
+const rawVerificationTimelineItems = computed(() =>
   [
     ...pendingTimelineItems.value,
     ...historyTimelineItems.value.slice(0, verificationHistoryVisibleCount.value),
   ].sort((left, right) => right.sortTime - left.sortTime)
+);
+
+const verificationSummaryCards = computed(() => {
+  const rawItems = rawVerificationTimelineItems.value;
+  const countBySection = (filter: VerificationTimelineSectionFilter): number =>
+    rawItems.filter(item => timelineSectionMatches(item, filter)).length;
+
+  return [
+    {
+      id: "all",
+      filter: "all" as const,
+      kind: hasPendingRequests.value ? "warning" : "info",
+      label: text("admin.verifications.clientTimeline.filters.all", "All"),
+      value: String(rawItems.length),
+      hint: text("admin.verifications.clientTimeline.filters.allHint", "All visible review records"),
+    },
+    {
+      id: "pending_profile",
+      filter: "profile" as const,
+      kind: hasPendingProfile.value ? "warning" : "success",
+      label: text("admin.verifications.clientTimeline.summary.profile", "Profile changes"),
+      value: String(countBySection("profile")),
+      hint: hasPendingProfile.value
+        ? text("admin.verifications.clientTimeline.summary.pending", "Waiting for review")
+        : text("admin.verifications.clientTimeline.summary.clear", "No pending changes"),
+    },
+    {
+      id: "pending_documents",
+      filter: "documents" as const,
+      kind: pendingDocuments.value.length > 0 ? "warning" : "success",
+      label: text("admin.verifications.clientTimeline.summary.documents", "Documents"),
+      value: String(countBySection("documents")),
+      hint: text("admin.verifications.clientTimeline.summary.pendingDocuments", "Documents waiting for moderation"),
+    },
+    {
+      id: "pending_payout",
+      filter: "payout" as const,
+      kind: pendingPayoutDetails.value.length > 0 ? "warning" : "success",
+      label: text("admin.verifications.clientTimeline.summary.paymentDetails", "Payment details"),
+      value: String(countBySection("payout")),
+      hint: text("admin.verifications.clientTimeline.summary.pendingPaymentDetails", "Payment details waiting for moderation"),
+    },
+    {
+      id: "history",
+      filter: "history" as const,
+      kind: "info",
+      label: text("admin.verifications.clientTimeline.summary.history", "History records"),
+      value: String(historyTimelineItems.value.length),
+      hint: text("admin.verifications.clientTimeline.summary.historyHint", "Newest records are shown first"),
+    },
+  ];
+});
+
+const visibleVerificationTimelineItems = computed(() =>
+  rawVerificationTimelineItems.value.filter(item =>
+    timelineSectionMatches(item, activeTimelineSectionFilter.value)
+    && timelineStatusMatches(item, activeTimelineStatusFilter.value)
+  )
 );
 
 const hasMoreVerificationTimeline = computed(() =>
@@ -1716,12 +1850,11 @@ const handleTimelineItemAction = async (item: VerificationTimelineItem, status: 
   }
 };
 
-const handleTimelineDecisionSelect = (item: VerificationTimelineItem, value: unknown): void => {
-  if (value !== "approved" && value !== "rejected") {
-    return;
-  }
-
-  void handleTimelineItemAction(item, value);
+const handleTimelineDecisionClick = (
+  item: VerificationTimelineItem,
+  status: Exclude<VerificationStatus, "pending">
+): void => {
+  void handleTimelineItemAction(item, status);
 };
 
 const openTimelineDocument = async (document: VerificationTimelineDocument): Promise<void> => {
@@ -3022,7 +3155,7 @@ onBeforeUnmount(() => {
 
 .client-verification__summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -3033,7 +3166,7 @@ onBeforeUnmount(() => {
 
   position: relative;
   isolation: isolate;
-  //overflow: hidden;
+  overflow: hidden;
   height: 100%;
   border: 1px solid var(--verification-glass-border);
   border-radius: 22px;
@@ -3064,26 +3197,37 @@ onBeforeUnmount(() => {
 .verification-empty-card::after {
   content: "";
   position: absolute;
-  inset: -34% auto -34% -56%;
+  inset: -44% auto -44% -58%;
   z-index: 0;
-  width: 38%;
+  width: 30%;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
-  filter: blur(8px);
+  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 4%, transparent), transparent);
+  filter: blur(16px);
   opacity: 0;
-  transform: rotate(12deg) translateX(-35%);
+  transform: rotate(10deg) translateX(-40%);
 }
 
 .verification-summary-card:hover,
 .verification-timeline-card:hover {
-  transform: translateY(-1px);
+  transform: translateY(-0.5px);
   border-color: color-mix(in srgb, var(--verification-accent) 24%, var(--color-stroke-ui-light));
   box-shadow: 0 18px 52px color-mix(in srgb, var(--verification-accent) 7%, #000000 17%);
 }
 
 .verification-summary-card:hover::after,
 .verification-timeline-card:hover::after {
-  animation: verification-glass-glint 1.1s ease both;
+  animation: verification-glass-glint 1.65s ease both;
+}
+
+.verification-summary-card {
+  cursor: pointer;
+}
+
+.verification-summary-card.is-active {
+  border-color: color-mix(in srgb, var(--verification-accent) 54%, var(--color-stroke-ui-light));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--verification-accent) 14%, transparent),
+    0 18px 54px color-mix(in srgb, var(--verification-accent) 8%, #000000 16%);
 }
 
 .verification-summary-card--warning,
@@ -3106,12 +3250,12 @@ onBeforeUnmount(() => {
 }
 
 .verification-summary-card__body {
-  min-height: 112px;
+  min-height: 104px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 9px;
-  padding: 13px;
+  padding: 12px;
 }
 
 .verification-summary-card__label,
@@ -3129,10 +3273,36 @@ onBeforeUnmount(() => {
 
 .verification-summary-card__value {
   color: var(--ui-text-main);
-  font-size: clamp(26px, 2vw, 34px);
+  font-size: clamp(24px, 1.8vw, 32px);
   font-weight: 880;
   line-height: 0.98;
   letter-spacing: -0.04em;
+}
+
+.verification-filter-strip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid var(--verification-glass-border);
+  border-radius: 16px;
+  background:
+    linear-gradient(145deg, var(--verification-glass-bg), var(--verification-glass-bg-strong));
+  box-shadow: var(--verification-glass-shadow);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  overflow-x: auto;
+}
+
+.verification-status-filter-button {
+  min-height: 32px;
+  border-radius: 12px !important;
+  white-space: nowrap;
+}
+
+.verification-status-filter-button.is-active {
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
 }
 
 .client-verification__anchors {
@@ -3164,31 +3334,31 @@ onBeforeUnmount(() => {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 13px;
+  gap: 10px;
+  padding: 12px;
 }
 
 .verification-timeline-card__top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, auto);
+  grid-template-columns: minmax(0, 1fr) max-content;
   gap: 11px;
   align-items: flex-start;
 }
 
 .verification-timeline-card__identity {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 11px;
-  align-items: flex-start;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
   min-width: 0;
 }
 
 .verification-timeline-card__icon {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  border-radius: 15px;
+  border-radius: 13px;
   color: var(--verification-accent);
   background: color-mix(in srgb, var(--verification-accent) 13%, transparent);
 }
@@ -3213,7 +3383,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 7px;
 }
 
 .verification-timeline-card__status {
@@ -3221,19 +3391,22 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
 }
 
-.verification-action-select {
-  width: 180px;
+.verification-decision-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ui-background-card) 44%, transparent);
 }
 
-.verification-action-select :deep(.p-select) {
-  min-height: 34px;
-  border-radius: 12px;
-}
-
-.verification-action-select :deep(.p-select-label) {
-  padding-block: 7px;
-  font-size: 12px;
-  font-weight: 760;
+.verification-decision-group :deep(.p-button) {
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 820;
 }
 
 .verification-timeline-card__main p {
@@ -3491,14 +3664,14 @@ onBeforeUnmount(() => {
 @keyframes verification-glass-glint {
   0% {
     opacity: 0;
-    transform: rotate(12deg) translateX(-45%);
+    transform: rotate(10deg) translateX(-50%);
   }
   35% {
-    opacity: 0.28;
+    opacity: 0.16;
   }
   100% {
     opacity: 0;
-    transform: rotate(12deg) translateX(280%);
+    transform: rotate(10deg) translateX(330%);
   }
 }
 
@@ -3529,8 +3702,12 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 
-  .verification-action-select {
-    width: min(100%, 240px);
+  .verification-decision-group {
+    width: 100%;
+  }
+
+  .verification-decision-group :deep(.p-button) {
+    flex: 1 1 0;
   }
 
   .client-verification__header-actions {
@@ -3554,6 +3731,10 @@ onBeforeUnmount(() => {
   .client-verification__summary-grid,
   .verification-field-grid {
     grid-template-columns: 1fr;
+  }
+
+  .verification-filter-strip {
+    width: 100%;
   }
 
   .verification-timeline-card__top {

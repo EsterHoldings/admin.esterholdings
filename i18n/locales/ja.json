@@ -1852,6 +1852,11 @@
           "payoutTitle": "支払い詳細の審査が必要です",
           "payoutDescription": "クライアントが支払い詳細を送信または更新しました。",
           "historyDescription": "記録された認証アクティビティ。"
+        },
+        "filters": {
+          "all": "すべて",
+          "allHint": "表示中のすべての審査レコード",
+          "statusAll": "すべて"
         }
       },
       "historyKeys": {

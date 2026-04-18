@@ -2201,6 +2201,11 @@
           "payoutTitle": "Payment detail requires review",
           "payoutDescription": "Client submitted or updated payment details.",
           "historyDescription": "Recorded verification activity."
+        },
+        "filters": {
+          "all": "All",
+          "allHint": "All visible review records",
+          "statusAll": "All"
         }
       },
       "historyKeys": {

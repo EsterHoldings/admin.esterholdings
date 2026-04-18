@@ -1852,6 +1852,11 @@
           "payoutTitle": "भुगतान विवरण की समीक्षा चाहिए",
           "payoutDescription": "ग्राहक ने भुगतान विवरण भेजे या अपडेट किए.",
           "historyDescription": "रिकॉर्ड की गई सत्यापन गतिविधि."
+        },
+        "filters": {
+          "all": "सभी",
+          "allHint": "सभी दिखाई देने वाले समीक्षा रिकॉर्ड",
+          "statusAll": "सभी"
         }
       },
       "historyKeys": {

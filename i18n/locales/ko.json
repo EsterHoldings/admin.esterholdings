@@ -1852,6 +1852,11 @@
           "payoutTitle": "결제 정보 심사가 필요합니다",
           "payoutDescription": "고객이 결제 정보를 제출하거나 업데이트했습니다.",
           "historyDescription": "기록된 인증 활동입니다."
+        },
+        "filters": {
+          "all": "전체",
+          "allHint": "표시되는 모든 심사 기록",
+          "statusAll": "전체"
         }
       },
       "historyKeys": {

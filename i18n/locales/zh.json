@@ -1852,6 +1852,11 @@
           "payoutTitle": "付款详情需要审核",
           "payoutDescription": "客户提交或更新了付款详情。",
           "historyDescription": "已记录的验证活动。"
+        },
+        "filters": {
+          "all": "全部",
+          "allHint": "所有可见审核记录",
+          "statusAll": "全部"
         }
       },
       "historyKeys": {

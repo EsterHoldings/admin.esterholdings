@@ -1852,6 +1852,11 @@
           "payoutTitle": "פרטי התשלום דורשים בדיקה",
           "payoutDescription": "הלקוח שלח או עדכן פרטי תשלום.",
           "historyDescription": "פעילות אימות מתועדת."
+        },
+        "filters": {
+          "all": "הכול",
+          "allHint": "כל רשומות הבדיקה הגלויות",
+          "statusAll": "הכול"
         }
       },
       "historyKeys": {

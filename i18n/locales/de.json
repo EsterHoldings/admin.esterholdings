@@ -1852,6 +1852,11 @@
           "payoutTitle": "Zahlungsdaten benötigen Prüfung",
           "payoutDescription": "Der Kunde hat Zahlungsdaten gesendet oder aktualisiert.",
           "historyDescription": "Aufgezeichnete Verifizierungsaktivität."
+        },
+        "filters": {
+          "all": "Alle",
+          "allHint": "Alle sichtbaren Prüfeinträge",
+          "statusAll": "Alle"
         }
       },
       "historyKeys": {

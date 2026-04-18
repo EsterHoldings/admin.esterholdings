@@ -1852,6 +1852,11 @@
           "payoutTitle": "Ödeme bilgileri inceleme gerektiriyor",
           "payoutDescription": "Müşteri ödeme bilgilerini gönderdi veya güncelledi.",
           "historyDescription": "Kaydedilmiş doğrulama etkinliği."
+        },
+        "filters": {
+          "all": "Tümü",
+          "allHint": "Görünen tüm inceleme kayıtları",
+          "statusAll": "Tümü"
         }
       },
       "historyKeys": {
