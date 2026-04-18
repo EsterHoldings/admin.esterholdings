@@ -113,13 +113,24 @@
         <template #content>
           <div class="verification-timeline-card__inner">
             <div class="verification-timeline-card__top">
-              <div class="verification-timeline-card__icon">
-                <i :class="item.icon" />
+              <div class="verification-timeline-card__identity">
+                <div class="verification-timeline-card__icon">
+                  <i :class="item.icon" />
+                </div>
+
+                <div class="verification-timeline-card__main">
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.description }}</p>
+                  <div class="verification-timeline-card__meta">
+                    <span>{{ item.actor }}</span>
+                    <span>{{ item.date || "-" }}</span>
+                    <span v-if="item.requestId">#{{ shortId(item.requestId) }}</span>
+                  </div>
+                </div>
               </div>
 
-              <div class="verification-timeline-card__main">
-                <div class="verification-timeline-card__headline">
-                  <h3>{{ item.title }}</h3>
+              <div class="verification-timeline-card__review">
+                <div class="verification-timeline-card__status">
                   <span
                     class="verification-inline-status"
                     :class="`verification-inline-status--${item.status}`">
@@ -127,12 +138,17 @@
                     <span>{{ item.statusText }}</span>
                   </span>
                 </div>
-                <p>{{ item.description }}</p>
-                <div class="verification-timeline-card__meta">
-                  <span>{{ item.actor }}</span>
-                  <span>{{ item.date || "-" }}</span>
-                  <span v-if="item.requestId">#{{ shortId(item.requestId) }}</span>
-                </div>
+
+                <PrimeSelect
+                  v-if="item.actionable"
+                  class="verification-action-select"
+                  :model-value="null"
+                  :options="verificationActionOptions"
+                  option-label="label"
+                  option-value="value"
+                  :placeholder="text('admin.verifications.actions.chooseDecision', 'Choose decision')"
+                  :disabled="isTimelineItemUpdating(item) || isRequestUpdating(item.requestId)"
+                  @update:model-value="value => handleTimelineDecisionSelect(item, value)" />
               </div>
             </div>
 
@@ -186,26 +202,6 @@
               </button>
             </div>
 
-            <div
-              v-if="item.actionable"
-              class="verification-timeline-card__actions">
-              <PrimeButton
-                icon="pi pi-check"
-                :label="text('admin.verifications.actions.approve', 'Approve')"
-                size="small"
-                :loading="isTimelineItemUpdating(item)"
-                :disabled="isTimelineItemUpdating(item)"
-                @click="handleTimelineItemAction(item, 'approved')" />
-              <PrimeButton
-                icon="pi pi-times"
-                :label="text('admin.verifications.actions.reject', 'Reject')"
-                size="small"
-                severity="danger"
-                outlined
-                :loading="isTimelineItemUpdating(item)"
-                :disabled="isTimelineItemUpdating(item)"
-                @click="handleTimelineItemAction(item, 'rejected')" />
-            </div>
           </div>
         </template>
       </PrimeCard>
@@ -1040,6 +1036,17 @@ const verificationSummaryCards = computed(() => [
   },
 ]);
 
+const verificationActionOptions = computed(() => [
+  {
+    value: "approved",
+    label: text("admin.verifications.actions.approve", "Approve"),
+  },
+  {
+    value: "rejected",
+    label: text("admin.verifications.actions.reject", "Reject"),
+  },
+]);
+
 const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
   id: VerificationSectionTarget;
   label: string;
@@ -1660,7 +1667,32 @@ const getTimelineUpdateKey = (item: VerificationTimelineItem): string => `${item
 const isTimelineItemUpdating = (item: VerificationTimelineItem): boolean =>
   Boolean(timelineUpdatingState[getTimelineUpdateKey(item)]);
 
-const handleTimelineItemAction = async (item: VerificationTimelineItem, status: VerificationStatus): Promise<void> => {
+const finalizeRequestAfterTimelineAction = async (
+  requestId: string,
+  preferredState: Exclude<RequestReviewState, "pending">
+): Promise<void> => {
+  const normalizedRequestId = String(requestId || "").trim();
+  if (normalizedRequestId === "" || pendingTimelineItems.value.length > 0) {
+    return;
+  }
+
+  requestUpdatingState[normalizedRequestId] = true;
+
+  try {
+    await appCore.adminModules.verificationRequests.put(normalizedRequestId, {
+      type: "request",
+      updatedStatus: { status: preferredState, comment: "" },
+    });
+
+    await Promise.all([loadVerificationData(), loadPayoutVerificationData(), loadClientVerificationRequests()]);
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || text("admin.verifications.errors.update", "Failed to update request status."));
+  } finally {
+    delete requestUpdatingState[normalizedRequestId];
+  }
+};
+
+const handleTimelineItemAction = async (item: VerificationTimelineItem, status: Exclude<VerificationStatus, "pending">): Promise<void> => {
   if (!item.actionable || item.actionType === null) {
     return;
   }
@@ -1671,20 +1703,25 @@ const handleTimelineItemAction = async (item: VerificationTimelineItem, status: 
   try {
     if (item.actionType === "profile") {
       await handleVerificationProfile({ status, comment: "" });
-      return;
-    }
-
-    if (item.actionType === "document") {
+    } else if (item.actionType === "document") {
       await handleVerificationDocument({ status, comment: "" }, item.actionId);
-      return;
-    }
-
-    if (item.actionType === "payout") {
+    } else if (item.actionType === "payout") {
       await handleVerificationPayoutDetail({ status, comment: "" }, item.actionId);
     }
+
+    await nextTick();
+    await finalizeRequestAfterTimelineAction(item.requestId, status);
   } finally {
     delete timelineUpdatingState[updateKey];
   }
+};
+
+const handleTimelineDecisionSelect = (item: VerificationTimelineItem, value: unknown): void => {
+  if (value !== "approved" && value !== "rejected") {
+    return;
+  }
+
+  void handleTimelineItemAction(item, value);
 };
 
 const openTimelineDocument = async (document: VerificationTimelineDocument): Promise<void> => {
@@ -3027,20 +3064,21 @@ onBeforeUnmount(() => {
 .verification-empty-card::after {
   content: "";
   position: absolute;
-  inset: -30% auto -30% -52%;
+  inset: -34% auto -34% -56%;
   z-index: 0;
-  width: 46%;
+  width: 38%;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 13%, transparent), transparent);
+  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
+  filter: blur(8px);
   opacity: 0;
   transform: rotate(12deg) translateX(-35%);
 }
 
 .verification-summary-card:hover,
 .verification-timeline-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--verification-accent) 34%, var(--color-stroke-ui-light));
-  box-shadow: 0 22px 68px color-mix(in srgb, var(--verification-accent) 12%, #000000 20%);
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--verification-accent) 24%, var(--color-stroke-ui-light));
+  box-shadow: 0 18px 52px color-mix(in srgb, var(--verification-accent) 7%, #000000 17%);
 }
 
 .verification-summary-card:hover::after,
@@ -3132,9 +3170,17 @@ onBeforeUnmount(() => {
 
 .verification-timeline-card__top {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, auto);
+  gap: 11px;
+  align-items: flex-start;
+}
+
+.verification-timeline-card__identity {
+  display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 11px;
   align-items: flex-start;
+  min-width: 0;
 }
 
 .verification-timeline-card__icon {
@@ -3154,20 +3200,40 @@ onBeforeUnmount(() => {
   gap: 5px;
 }
 
-.verification-timeline-card__headline {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.verification-timeline-card__headline h3 {
+.verification-timeline-card__main h3 {
   margin: 0;
   color: var(--ui-text-main);
   font-size: 16px;
   font-weight: 840;
   line-height: 1.18;
   letter-spacing: -0.02em;
+}
+
+.verification-timeline-card__review {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.verification-timeline-card__status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.verification-action-select {
+  width: 180px;
+}
+
+.verification-action-select :deep(.p-select) {
+  min-height: 34px;
+  border-radius: 12px;
+}
+
+.verification-action-select :deep(.p-select-label) {
+  padding-block: 7px;
+  font-size: 12px;
+  font-weight: 760;
 }
 
 .verification-timeline-card__main p {
@@ -3381,15 +3447,6 @@ onBeforeUnmount(() => {
   color: var(--ui-text-secondary);
 }
 
-.verification-timeline-card__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding-top: 4px;
-}
-
 .verification-empty-card__body {
   min-height: 260px;
   display: flex;
@@ -3437,11 +3494,11 @@ onBeforeUnmount(() => {
     transform: rotate(12deg) translateX(-45%);
   }
   35% {
-    opacity: 0.8;
+    opacity: 0.28;
   }
   100% {
     opacity: 0;
-    transform: rotate(12deg) translateX(330%);
+    transform: rotate(12deg) translateX(280%);
   }
 }
 
@@ -3454,13 +3511,26 @@ onBeforeUnmount(() => {
 
 @media (max-width: 820px) {
   .client-verification__header,
-  .verification-timeline-card__headline {
+  .verification-timeline-card__top {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .client-verification__header {
     display: flex;
+  }
+
+  .verification-timeline-card__top {
+    display: flex;
+  }
+
+  .verification-timeline-card__review {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .verification-action-select {
+    width: min(100%, 240px);
   }
 
   .client-verification__header-actions {
@@ -3487,6 +3557,10 @@ onBeforeUnmount(() => {
   }
 
   .verification-timeline-card__top {
+    grid-template-columns: 1fr;
+  }
+
+  .verification-timeline-card__identity {
     grid-template-columns: 1fr;
   }
 

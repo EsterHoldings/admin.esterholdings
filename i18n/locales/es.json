@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "Métricas",
         "verification": "Verificación",
-        "referrals": "Referidos"
+        "referrals": "Referidos",
+        "accounts": "Cuentas",
+        "paymentDetails": "Datos de pago"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Cronología de moderación del perfil, documentos y datos de pago.",
         "referrals": "Red de referidos y recompensas del cliente.",
         "settings": "Soporte del cliente y configuración del gabinete.",
-        "security": "Controles de contraseña y autenticación de dos factores."
+        "security": "Controles de contraseña y autenticación de dos factores.",
+        "accounts": "Cuentas MT propiedad de este cliente.",
+        "paymentDetails": "Datos de retiro y estado de moderación."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "Actualizar"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "Buscar por número o tipo de cuenta",
+        "favorite": "Favorita",
+        "emptyTitle": "Aún no hay cuentas",
+        "emptySubtitle": "Las cuentas MT del cliente aparecerán aquí después de crearse.",
+        "columns": {
+          "balance": "Balance",
+          "leverage": "Apalancamiento",
+          "paymentType": "Tipo de pago",
+          "createdAt": "Creado"
+        },
+        "summary": {
+          "total": "Total de cuentas",
+          "totalHint": "Todas las cuentas MT de este cliente",
+          "balance": "Balance visible",
+          "balanceHint": "Suma de las cuentas cargadas en esta página",
+          "favorite": "Favoritas",
+          "favoriteHint": "Cuentas favoritas en la página actual"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "Aún no hay datos de pago",
+        "emptySubtitle": "Los datos de pago del cliente aparecerán aquí tras enviarlos.",
+        "documentAlt": "Documento de datos de pago",
+        "adminComment": "Comentario del administrador",
+        "filters": {
+          "active": "Activos",
+          "archived": "Archivados",
+          "all": "Todos"
+        },
+        "columns": {
+          "updatedAt": "Actualizado"
+        },
+        "summary": {
+          "total": "Total de datos",
+          "totalHint": "Datos de pago en el filtro seleccionado",
+          "approved": "Aprobados",
+          "approvedHint": "Listos para retiros",
+          "pending": "Pendientes",
+          "pendingHint": "Esperando moderación",
+          "rejected": "Rechazados",
+          "rejectedHint": "Rechazados por el administrador"
+        },
+        "fields": {
+          "recipient_address": "Dirección del destinatario",
+          "recipientAddress": "Dirección del destinatario",
+          "wallet": "Billetera",
+          "wallet_address": "Dirección de billetera",
+          "walletAddress": "Dirección de billetera",
+          "card_number": "Número de tarjeta",
+          "cardNumber": "Número de tarjeta",
+          "account_number": "Número de cuenta",
+          "accountNumber": "Número de cuenta",
+          "bank_name": "Nombre del banco",
+          "bankName": "Nombre del banco",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "Email",
+          "phone": "Teléfono"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "Aprobar todo",
         "rejectAll": "Rechazar todo",
         "approve": "Aprobar",
-        "reject": "Rechazar"
+        "reject": "Rechazar",
+        "chooseDecision": "Elegir decisión"
       },
       "filters": {
         "active": "Filtro",

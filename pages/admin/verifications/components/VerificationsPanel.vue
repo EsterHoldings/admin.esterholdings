@@ -776,6 +776,11 @@ defineExpose({
 
 <style lang="scss" scoped>
 .verification-queue-page {
+  --verification-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
+  --verification-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
+  --verification-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+  --verification-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 18%, transparent);
+
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -789,25 +794,62 @@ defineExpose({
 }
 
 .verification-stat-card {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
   cursor: pointer;
+  border: 1px solid var(--verification-glass-border);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 9%, transparent), transparent 38%),
+    linear-gradient(145deg, var(--verification-glass-bg), var(--verification-glass-bg-strong));
+  box-shadow: var(--verification-glass-shadow);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
   transition:
     transform 0.18s ease,
     border-color 0.18s ease,
     box-shadow 0.18s ease;
 }
 
+.verification-stat-card :deep(.p-card-body),
+.verification-stat-card :deep(.p-card-content) {
+  padding: 0;
+}
+
+.verification-stat-card::after {
+  content: "";
+  position: absolute;
+  inset: -34% auto -34% -56%;
+  z-index: 0;
+  width: 38%;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
+  filter: blur(8px);
+  opacity: 0;
+  transform: rotate(12deg) translateX(-35%);
+}
+
 .verification-stat-card:hover {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--ui-primary-main) 42%, var(--color-stroke-ui-light));
+  border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
+  box-shadow: 0 18px 52px color-mix(in srgb, var(--ui-primary-main) 7%, #000000 17%);
+}
+
+.verification-stat-card:hover::after {
+  animation: verification-queue-glint 1.45s ease both;
 }
 
 .verification-stat-card.is-active {
   border-color: var(--ui-primary-main);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 26%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 22%, transparent),
+    var(--verification-glass-shadow);
 }
 
 .verification-stat-card__button {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 8px;
   width: 100%;
@@ -835,6 +877,13 @@ defineExpose({
   grid-template-columns: minmax(220px, 1fr) minmax(190px, 260px) auto;
   gap: 10px;
   align-items: center;
+  padding: 10px;
+  border: 1px solid var(--verification-glass-border);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--ui-background-panel) 82%, transparent);
+  box-shadow: 0 12px 34px color-mix(in srgb, #000000 8%, transparent);
+  backdrop-filter: blur(18px) saturate(128%);
+  -webkit-backdrop-filter: blur(18px) saturate(128%);
 }
 
 .verification-toolbar__search {
@@ -912,11 +961,14 @@ defineExpose({
   align-items: center;
   padding: 14px;
   overflow: hidden;
-  border: 1px solid var(--color-stroke-ui-light);
+  border: 1px solid var(--verification-glass-border);
   border-radius: 22px;
   background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 32%),
-    color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-main) 8%, transparent), transparent 32%),
+    linear-gradient(145deg, var(--verification-glass-bg), var(--verification-glass-bg-strong));
+  box-shadow: 0 14px 42px color-mix(in srgb, #000000 10%, transparent);
+  backdrop-filter: blur(20px) saturate(132%);
+  -webkit-backdrop-filter: blur(20px) saturate(132%);
   cursor: pointer;
   transition:
     transform 0.18s ease,
@@ -928,24 +980,23 @@ defineExpose({
 .verification-request-card::after {
   content: "";
   position: absolute;
-  inset: -60% auto auto 12%;
-  width: 220px;
-  height: 220px;
-  background: linear-gradient(135deg, transparent, color-mix(in srgb, var(--ui-primary-main) 12%, transparent), transparent);
+  inset: -35% auto -35% -55%;
+  width: 38%;
+  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
+  filter: blur(8px);
   opacity: 0;
-  transform: rotate(18deg);
-  transition: opacity 0.2s ease;
+  transform: rotate(12deg) translateX(-35%);
   pointer-events: none;
 }
 
 .verification-request-card:hover {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
-  box-shadow: 0 18px 42px color-mix(in srgb, #000000 12%, transparent);
+  border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
+  box-shadow: 0 18px 52px color-mix(in srgb, var(--ui-primary-main) 7%, #000000 17%);
 }
 
 .verification-request-card:hover::after {
-  opacity: 1;
+  animation: verification-queue-glint 1.45s ease both;
 }
 
 .verification-request-card.is-pending-row {
@@ -1028,13 +1079,27 @@ defineExpose({
   border: 1px solid var(--color-stroke-ui-light);
   border-radius: 999px;
   color: var(--ui-text-main);
-  background: color-mix(in srgb, var(--ui-background-panel) 88%, transparent);
+  background: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
   font-size: 12px;
   font-weight: 700;
   transition:
     border-color 0.18s ease,
     background-color 0.18s ease,
     transform 0.18s ease;
+}
+
+@keyframes verification-queue-glint {
+  0% {
+    opacity: 0;
+    transform: rotate(12deg) translateX(-45%);
+  }
+  35% {
+    opacity: 0.24;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(12deg) translateX(280%);
+  }
 }
 
 .verification-change-chip:hover {

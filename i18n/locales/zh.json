@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "指标",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "账户",
+        "paymentDetails": "付款详情"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "该客户的 MT 账户。",
+        "paymentDetails": "提现信息及其审核状态。"
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "刷新"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "按账户号码或类型搜索",
+        "favorite": "收藏",
+        "emptyTitle": "暂无账户",
+        "emptySubtitle": "客户的 MT 账户创建后会显示在这里。",
+        "columns": {
+          "balance": "余额",
+          "leverage": "杠杆",
+          "paymentType": "付款类型",
+          "createdAt": "创建时间"
+        },
+        "summary": {
+          "total": "账户总数",
+          "totalHint": "该客户的所有 MT 账户",
+          "balance": "当前显示余额",
+          "balanceHint": "此页面已加载账户的余额总和",
+          "favorite": "收藏",
+          "favoriteHint": "当前页面的收藏账户"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "暂无付款详情",
+        "emptySubtitle": "客户提交付款详情后会显示在这里。",
+        "documentAlt": "付款详情文件",
+        "adminComment": "管理员备注",
+        "filters": {
+          "active": "启用",
+          "archived": "已归档",
+          "all": "全部"
+        },
+        "columns": {
+          "updatedAt": "更新时间"
+        },
+        "summary": {
+          "total": "详情总数",
+          "totalHint": "所选筛选条件中的付款详情",
+          "approved": "已批准",
+          "approvedHint": "可用于提现",
+          "pending": "待处理",
+          "pendingHint": "等待审核",
+          "rejected": "已拒绝",
+          "rejectedHint": "管理员已拒绝"
+        },
+        "fields": {
+          "recipient_address": "收款地址",
+          "recipientAddress": "收款地址",
+          "wallet": "钱包",
+          "wallet_address": "钱包地址",
+          "walletAddress": "钱包地址",
+          "card_number": "银行卡号",
+          "cardNumber": "银行卡号",
+          "account_number": "账户号码",
+          "accountNumber": "账户号码",
+          "bank_name": "银行名称",
+          "bankName": "银行名称",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "邮箱",
+          "phone": "电话"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "全部批准",
         "rejectAll": "全部拒绝",
         "approve": "批准",
-        "reject": "拒绝"
+        "reject": "拒绝",
+        "chooseDecision": "选择决定"
       },
       "filters": {
         "active": "筛选",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "管理员",
         "actorClient": "客户",
         "actorSystem": "系统",
-        "generic": "Verification activity"
+        "generic": "验证活动"
       },
       "tabs": {
         "client": "常规验证",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "验证时间线",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "资料、文件和付款详情的每次更改都会作为单独审核项显示。",
+        "hasPending": "等待审核",
+        "noPending": "没有待审核项",
+        "emptyTitle": "暂无验证活动",
+        "emptySubtitle": "客户更改和管理员操作将显示在这里。",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "资料更改",
+          "documents": "文件",
+          "paymentDetails": "付款详情",
+          "history": "历史记录",
+          "pending": "等待审核",
+          "clear": "没有待处理更改",
+          "pendingDocuments": "等待审核的文件",
+          "pendingPaymentDetails": "等待审核的付款详情",
+          "historyHint": "最新记录优先显示"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "资料需要审核",
+          "profileDescription": "客户更改了资料。批准以保留，或拒绝以回滚记录的更改。",
+          "documentTitle": "文件需要审核",
+          "documentDescription": "客户上传了用于身份验证的文件。",
+          "payoutTitle": "付款详情需要审核",
+          "payoutDescription": "客户提交或更新了付款详情。",
+          "historyDescription": "已记录的验证活动。"
         }
       },
       "historyKeys": {

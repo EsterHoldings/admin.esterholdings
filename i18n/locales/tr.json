@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "Metrikler",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "Hesaplar",
+        "paymentDetails": "Ödeme bilgileri"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "Bu müşteriye ait MT hesapları.",
+        "paymentDetails": "Para çekme bilgileri ve moderasyon durumu."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "Yenile"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "Hesap numarası veya türüne göre ara",
+        "favorite": "Favori",
+        "emptyTitle": "Henüz hesap yok",
+        "emptySubtitle": "Müşterinin MT hesapları oluşturulduktan sonra burada görünür.",
+        "columns": {
+          "balance": "Bakiye",
+          "leverage": "Kaldıraç",
+          "paymentType": "Ödeme türü",
+          "createdAt": "Oluşturulma"
+        },
+        "summary": {
+          "total": "Toplam hesap",
+          "totalHint": "Bu müşteriye ait tüm MT hesapları",
+          "balance": "Görünen bakiye",
+          "balanceHint": "Bu sayfada yüklenen hesapların toplamı",
+          "favorite": "Favoriler",
+          "favoriteHint": "Geçerli sayfadaki favori hesaplar"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "Henüz ödeme bilgisi yok",
+        "emptySubtitle": "Müşterinin ödeme bilgileri gönderildikten sonra burada görünür.",
+        "documentAlt": "Ödeme bilgisi belgesi",
+        "adminComment": "Admin yorumu",
+        "filters": {
+          "active": "Aktif",
+          "archived": "Arşivli",
+          "all": "Tümü"
+        },
+        "columns": {
+          "updatedAt": "Güncellenme"
+        },
+        "summary": {
+          "total": "Toplam bilgi",
+          "totalHint": "Seçili filtredeki ödeme bilgileri",
+          "approved": "Onaylandı",
+          "approvedHint": "Para çekme için hazır",
+          "pending": "Beklemede",
+          "pendingHint": "Moderasyon bekliyor",
+          "rejected": "Reddedildi",
+          "rejectedHint": "Admin tarafından reddedildi"
+        },
+        "fields": {
+          "recipient_address": "Alıcı adresi",
+          "recipientAddress": "Alıcı adresi",
+          "wallet": "Cüzdan",
+          "wallet_address": "Cüzdan adresi",
+          "walletAddress": "Cüzdan adresi",
+          "card_number": "Kart numarası",
+          "cardNumber": "Kart numarası",
+          "account_number": "Hesap numarası",
+          "accountNumber": "Hesap numarası",
+          "bank_name": "Banka adı",
+          "bankName": "Banka adı",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "E-posta",
+          "phone": "Telefon"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "Tümünü onayla",
         "rejectAll": "Tümünü reddet",
         "approve": "Onayla",
-        "reject": "Reddet"
+        "reject": "Reddet",
+        "chooseDecision": "Karar seç"
       },
       "filters": {
         "active": "Filtre",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "Admin",
         "actorClient": "Müşteri",
         "actorSystem": "Sistem",
-        "generic": "Verification activity"
+        "generic": "Doğrulama etkinliği"
       },
       "tabs": {
         "client": "Genel doğrulama",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "Doğrulama zaman çizelgesi",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "Profil, belge ve ödeme bilgileriyle ilgili her değişiklik ayrı bir inceleme öğesi olarak gösterilir.",
+        "hasPending": "İnceleme bekliyor",
+        "noPending": "Bekleyen inceleme yok",
+        "emptyTitle": "Henüz doğrulama etkinliği yok",
+        "emptySubtitle": "Müşteri değişiklikleri ve admin işlemleri burada görünür.",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "Profil değişiklikleri",
+          "documents": "Belgeler",
+          "paymentDetails": "Ödeme bilgileri",
+          "history": "Geçmiş kayıtları",
+          "pending": "İnceleme bekliyor",
+          "clear": "Bekleyen değişiklik yok",
+          "pendingDocuments": "Belgeler moderasyon bekliyor",
+          "pendingPaymentDetails": "Ödeme bilgileri moderasyon bekliyor",
+          "historyHint": "En yeni kayıtlar önce gösterilir"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "Profil verileri inceleme gerektiriyor",
+          "profileDescription": "Müşteri profil verilerini değiştirdi. Saklamak için onaylayın veya kayıtlı değişiklikleri geri almak için reddedin.",
+          "documentTitle": "Belge inceleme gerektiriyor",
+          "documentDescription": "Müşteri kimlik doğrulaması için belge yükledi.",
+          "payoutTitle": "Ödeme bilgileri inceleme gerektiriyor",
+          "payoutDescription": "Müşteri ödeme bilgilerini gönderdi veya güncelledi.",
+          "historyDescription": "Kaydedilmiş doğrulama etkinliği."
         }
       },
       "historyKeys": {

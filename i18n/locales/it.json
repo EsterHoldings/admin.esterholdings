@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "Metriche",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "Conti",
+        "paymentDetails": "Dati di pagamento"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "Conti MT di questo cliente.",
+        "paymentDetails": "Dati di prelievo e relativo stato di moderazione."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "Aggiorna"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "Cerca per numero o tipo di conto",
+        "favorite": "Preferito",
+        "emptyTitle": "Nessun conto ancora",
+        "emptySubtitle": "I conti MT del cliente appariranno qui dopo la creazione.",
+        "columns": {
+          "balance": "Saldo",
+          "leverage": "Leva",
+          "paymentType": "Tipo pagamento",
+          "createdAt": "Creato il"
+        },
+        "summary": {
+          "total": "Totale conti",
+          "totalHint": "Tutti i conti MT di questo cliente",
+          "balance": "Saldo visibile",
+          "balanceHint": "Somma dei conti caricati in questa pagina",
+          "favorite": "Preferiti",
+          "favoriteHint": "Conti preferiti nella pagina corrente"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "Nessun dato di pagamento",
+        "emptySubtitle": "I dati di pagamento del cliente appariranno qui dopo l’invio.",
+        "documentAlt": "Documento dati di pagamento",
+        "adminComment": "Commento admin",
+        "filters": {
+          "active": "Attivi",
+          "archived": "Archiviati",
+          "all": "Tutti"
+        },
+        "columns": {
+          "updatedAt": "Aggiornato il"
+        },
+        "summary": {
+          "total": "Totale dati",
+          "totalHint": "Dati di pagamento nel filtro selezionato",
+          "approved": "Approvati",
+          "approvedHint": "Pronti per i prelievi",
+          "pending": "In attesa",
+          "pendingHint": "In attesa di moderazione",
+          "rejected": "Rifiutati",
+          "rejectedHint": "Rifiutati dall’admin"
+        },
+        "fields": {
+          "recipient_address": "Indirizzo destinatario",
+          "recipientAddress": "Indirizzo destinatario",
+          "wallet": "Wallet",
+          "wallet_address": "Indirizzo wallet",
+          "walletAddress": "Indirizzo wallet",
+          "card_number": "Numero carta",
+          "cardNumber": "Numero carta",
+          "account_number": "Numero conto",
+          "accountNumber": "Numero conto",
+          "bank_name": "Nome banca",
+          "bankName": "Nome banca",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "Email",
+          "phone": "Telefono"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "Approva tutto",
         "rejectAll": "Rifiuta tutto",
         "approve": "Approva",
-        "reject": "Rifiuta"
+        "reject": "Rifiuta",
+        "chooseDecision": "Scegli decisione"
       },
       "filters": {
         "active": "Filtro",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "Admin",
         "actorClient": "Cliente",
         "actorSystem": "Sistema",
-        "generic": "Verification activity"
+        "generic": "Attività di verifica"
       },
       "tabs": {
         "client": "Verifica generale",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "Cronologia verifica",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "Ogni modifica a profilo, documenti e dati di pagamento viene mostrata come elemento di revisione separato.",
+        "hasPending": "Revisione in attesa",
+        "noPending": "Nessuna revisione in attesa",
+        "emptyTitle": "Nessuna attività di verifica",
+        "emptySubtitle": "Le modifiche del cliente e le azioni admin appariranno qui.",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "Modifiche profilo",
+          "documents": "Documenti",
+          "paymentDetails": "Dati di pagamento",
+          "history": "Record cronologia",
+          "pending": "In attesa di revisione",
+          "clear": "Nessuna modifica in attesa",
+          "pendingDocuments": "Documenti in attesa di moderazione",
+          "pendingPaymentDetails": "Dati di pagamento in attesa di moderazione",
+          "historyHint": "I record più recenti sono mostrati per primi"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "I dati del profilo richiedono revisione",
+          "profileDescription": "Il cliente ha modificato i dati del profilo. Approva per mantenerli o rifiuta per annullare le modifiche registrate.",
+          "documentTitle": "Il documento richiede revisione",
+          "documentDescription": "Il cliente ha caricato un documento per la verifica dell’identità.",
+          "payoutTitle": "I dati di pagamento richiedono revisione",
+          "payoutDescription": "Il cliente ha inviato o aggiornato dati di pagamento.",
+          "historyDescription": "Attività di verifica registrata."
         }
       },
       "historyKeys": {

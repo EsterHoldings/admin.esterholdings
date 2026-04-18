@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "メトリクス",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "口座",
+        "paymentDetails": "支払い詳細"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "このクライアントのMT口座。",
+        "paymentDetails": "出金先情報と審査ステータス。"
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "更新"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "口座番号または種類で検索",
+        "favorite": "お気に入り",
+        "emptyTitle": "口座はまだありません",
+        "emptySubtitle": "作成後、クライアントのMT口座がここに表示されます。",
+        "columns": {
+          "balance": "残高",
+          "leverage": "レバレッジ",
+          "paymentType": "支払いタイプ",
+          "createdAt": "作成日"
+        },
+        "summary": {
+          "total": "口座合計",
+          "totalHint": "このクライアントのすべてのMT口座",
+          "balance": "表示中の残高",
+          "balanceHint": "このページで読み込まれた口座の合計",
+          "favorite": "お気に入り",
+          "favoriteHint": "現在のページのお気に入り口座"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "支払い詳細はまだありません",
+        "emptySubtitle": "送信後、クライアントの支払い詳細がここに表示されます。",
+        "documentAlt": "支払い詳細の書類",
+        "adminComment": "管理者コメント",
+        "filters": {
+          "active": "有効",
+          "archived": "アーカイブ済み",
+          "all": "すべて"
+        },
+        "columns": {
+          "updatedAt": "更新日"
+        },
+        "summary": {
+          "total": "詳細合計",
+          "totalHint": "選択中フィルターの支払い詳細",
+          "approved": "承認済み",
+          "approvedHint": "出金可能",
+          "pending": "保留中",
+          "pendingHint": "審査待ち",
+          "rejected": "却下済み",
+          "rejectedHint": "管理者が却下"
+        },
+        "fields": {
+          "recipient_address": "受取人住所",
+          "recipientAddress": "受取人住所",
+          "wallet": "ウォレット",
+          "wallet_address": "ウォレットアドレス",
+          "walletAddress": "ウォレットアドレス",
+          "card_number": "カード番号",
+          "cardNumber": "カード番号",
+          "account_number": "口座番号",
+          "accountNumber": "口座番号",
+          "bank_name": "銀行名",
+          "bankName": "銀行名",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "メール",
+          "phone": "電話"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "すべて承認",
         "rejectAll": "すべて拒否",
         "approve": "承認",
-        "reject": "却下"
+        "reject": "却下",
+        "chooseDecision": "判定を選択"
       },
       "filters": {
         "active": "フィルター",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "管理者",
         "actorClient": "顧客",
         "actorSystem": "システム",
-        "generic": "Verification activity"
+        "generic": "認証アクティビティ"
       },
       "tabs": {
         "client": "一般確認",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "認証タイムライン",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "プロフィール、書類、支払い詳細の各変更は個別の審査項目として表示されます。",
+        "hasPending": "審査待ち",
+        "noPending": "審査待ちはありません",
+        "emptyTitle": "認証アクティビティはまだありません",
+        "emptySubtitle": "クライアントの変更と管理者アクションがここに表示されます。",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "プロフィール変更",
+          "documents": "書類",
+          "paymentDetails": "支払い詳細",
+          "history": "履歴レコード",
+          "pending": "審査待ち",
+          "clear": "保留中の変更なし",
+          "pendingDocuments": "審査待ちの書類",
+          "pendingPaymentDetails": "審査待ちの支払い詳細",
+          "historyHint": "新しいレコードが先に表示されます"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "プロフィールデータの審査が必要です",
+          "profileDescription": "クライアントがプロフィールデータを変更しました。保持する場合は承認し、記録された変更を戻す場合は却下してください。",
+          "documentTitle": "書類の審査が必要です",
+          "documentDescription": "クライアントが本人確認用の書類をアップロードしました。",
+          "payoutTitle": "支払い詳細の審査が必要です",
+          "payoutDescription": "クライアントが支払い詳細を送信または更新しました。",
+          "historyDescription": "記録された認証アクティビティ。"
         }
       },
       "historyKeys": {

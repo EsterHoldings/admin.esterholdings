@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "지표",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "계정",
+        "paymentDetails": "결제 정보"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "이 고객의 MT 계정입니다.",
+        "paymentDetails": "출금 정보와 심사 상태입니다."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "새로고침"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "계정 번호 또는 유형으로 검색",
+        "favorite": "즐겨찾기",
+        "emptyTitle": "아직 계정이 없습니다",
+        "emptySubtitle": "생성 후 고객 MT 계정이 여기에 표시됩니다.",
+        "columns": {
+          "balance": "잔액",
+          "leverage": "레버리지",
+          "paymentType": "결제 유형",
+          "createdAt": "생성일"
+        },
+        "summary": {
+          "total": "총 계정",
+          "totalHint": "이 고객의 모든 MT 계정",
+          "balance": "표시 잔액",
+          "balanceHint": "이 페이지에 로드된 계정의 합계",
+          "favorite": "즐겨찾기",
+          "favoriteHint": "현재 페이지의 즐겨찾기 계정"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "아직 결제 정보가 없습니다",
+        "emptySubtitle": "제출 후 고객 결제 정보가 여기에 표시됩니다.",
+        "documentAlt": "결제 정보 문서",
+        "adminComment": "관리자 댓글",
+        "filters": {
+          "active": "활성",
+          "archived": "보관됨",
+          "all": "전체"
+        },
+        "columns": {
+          "updatedAt": "업데이트일"
+        },
+        "summary": {
+          "total": "총 정보",
+          "totalHint": "선택한 필터의 결제 정보",
+          "approved": "승인됨",
+          "approvedHint": "출금 가능",
+          "pending": "대기 중",
+          "pendingHint": "심사 대기 중",
+          "rejected": "거절됨",
+          "rejectedHint": "관리자가 거절함"
+        },
+        "fields": {
+          "recipient_address": "수취인 주소",
+          "recipientAddress": "수취인 주소",
+          "wallet": "지갑",
+          "wallet_address": "지갑 주소",
+          "walletAddress": "지갑 주소",
+          "card_number": "카드 번호",
+          "cardNumber": "카드 번호",
+          "account_number": "계좌 번호",
+          "accountNumber": "계좌 번호",
+          "bank_name": "은행명",
+          "bankName": "은행명",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "이메일",
+          "phone": "전화"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "모두 승인",
         "rejectAll": "모두 거절",
         "approve": "승인",
-        "reject": "거절"
+        "reject": "거절",
+        "chooseDecision": "결정 선택"
       },
       "filters": {
         "active": "필터",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "관리자",
         "actorClient": "고객",
         "actorSystem": "시스템",
-        "generic": "Verification activity"
+        "generic": "인증 활동"
       },
       "tabs": {
         "client": "일반 인증",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "인증 타임라인",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "프로필, 문서, 결제 정보의 각 변경 사항은 별도 심사 항목으로 표시됩니다.",
+        "hasPending": "심사 대기",
+        "noPending": "대기 중인 심사 없음",
+        "emptyTitle": "아직 인증 활동이 없습니다",
+        "emptySubtitle": "고객 변경 사항과 관리자 작업이 여기에 표시됩니다.",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "프로필 변경",
+          "documents": "문서",
+          "paymentDetails": "결제 정보",
+          "history": "이력 기록",
+          "pending": "심사 대기 중",
+          "clear": "대기 중인 변경 없음",
+          "pendingDocuments": "심사 대기 중인 문서",
+          "pendingPaymentDetails": "심사 대기 중인 결제 정보",
+          "historyHint": "최신 기록이 먼저 표시됩니다"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "프로필 데이터 심사가 필요합니다",
+          "profileDescription": "고객이 프로필 데이터를 변경했습니다. 유지하려면 승인하고 기록된 변경을 되돌리려면 거절하세요.",
+          "documentTitle": "문서 심사가 필요합니다",
+          "documentDescription": "고객이 신원 확인용 문서를 업로드했습니다.",
+          "payoutTitle": "결제 정보 심사가 필요합니다",
+          "payoutDescription": "고객이 결제 정보를 제출하거나 업데이트했습니다.",
+          "historyDescription": "기록된 인증 활동입니다."
         }
       },
       "historyKeys": {

@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "מדדים",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "חשבונות",
+        "paymentDetails": "פרטי תשלום"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "חשבונות MT של הלקוח.",
+        "paymentDetails": "פרטי משיכה ומצב הבדיקה שלהם."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "רענון"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "חיפוש לפי מספר חשבון או סוג",
+        "favorite": "מועדף",
+        "emptyTitle": "אין חשבונות עדיין",
+        "emptySubtitle": "חשבונות MT של הלקוח יופיעו כאן לאחר יצירה.",
+        "columns": {
+          "balance": "יתרה",
+          "leverage": "מינוף",
+          "paymentType": "סוג תשלום",
+          "createdAt": "נוצר בתאריך"
+        },
+        "summary": {
+          "total": "סה״כ חשבונות",
+          "totalHint": "כל חשבונות ה-MT של הלקוח",
+          "balance": "יתרה מוצגת",
+          "balanceHint": "סכום החשבונות שנטענו בעמוד זה",
+          "favorite": "מועדפים",
+          "favoriteHint": "חשבונות מועדפים בעמוד הנוכחי"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "אין פרטי תשלום עדיין",
+        "emptySubtitle": "פרטי התשלום של הלקוח יופיעו כאן לאחר שליחה.",
+        "documentAlt": "מסמך פרטי תשלום",
+        "adminComment": "הערת מנהל",
+        "filters": {
+          "active": "פעילים",
+          "archived": "בארכיון",
+          "all": "הכול"
+        },
+        "columns": {
+          "updatedAt": "עודכן בתאריך"
+        },
+        "summary": {
+          "total": "סה״כ פרטים",
+          "totalHint": "פרטי תשלום במסנן הנבחר",
+          "approved": "מאושרים",
+          "approvedHint": "מוכנים למשיכות",
+          "pending": "בהמתנה",
+          "pendingHint": "ממתינים לבדיקה",
+          "rejected": "נדחו",
+          "rejectedHint": "נדחו על ידי מנהל"
+        },
+        "fields": {
+          "recipient_address": "כתובת נמען",
+          "recipientAddress": "כתובת נמען",
+          "wallet": "ארנק",
+          "wallet_address": "כתובת ארנק",
+          "walletAddress": "כתובת ארנק",
+          "card_number": "מספר כרטיס",
+          "cardNumber": "מספר כרטיס",
+          "account_number": "מספר חשבון",
+          "accountNumber": "מספר חשבון",
+          "bank_name": "שם בנק",
+          "bankName": "שם בנק",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "אימייל",
+          "phone": "טלפון"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "אשר הכל",
         "rejectAll": "דחה הכל",
         "approve": "אשר",
-        "reject": "דחה"
+        "reject": "דחה",
+        "chooseDecision": "בחר החלטה"
       },
       "filters": {
         "active": "מסנן",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "מנהל",
         "actorClient": "לקוח",
         "actorSystem": "מערכת",
-        "generic": "Verification activity"
+        "generic": "פעילות אימות"
       },
       "tabs": {
         "client": "אימות כללי",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "ציר זמן אימות",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "כל שינוי בפרופיל, במסמכים ובפרטי התשלום מוצג כפריט בדיקה נפרד.",
+        "hasPending": "ממתין לבדיקה",
+        "noPending": "אין בדיקה ממתינה",
+        "emptyTitle": "אין פעילות אימות עדיין",
+        "emptySubtitle": "שינויי לקוח ופעולות מנהל יופיעו כאן.",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "שינויי פרופיל",
+          "documents": "מסמכים",
+          "paymentDetails": "פרטי תשלום",
+          "history": "רשומות היסטוריה",
+          "pending": "ממתין לבדיקה",
+          "clear": "אין שינויים ממתינים",
+          "pendingDocuments": "מסמכים ממתינים לבדיקה",
+          "pendingPaymentDetails": "פרטי תשלום ממתינים לבדיקה",
+          "historyHint": "הרשומות החדשות מוצגות ראשונות"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "נתוני הפרופיל דורשים בדיקה",
+          "profileDescription": "הלקוח שינה נתוני פרופיל. אשר כדי לשמור או דחה כדי להחזיר את השינויים המתועדים.",
+          "documentTitle": "המסמך דורש בדיקה",
+          "documentDescription": "הלקוח העלה מסמך לאימות זהות.",
+          "payoutTitle": "פרטי התשלום דורשים בדיקה",
+          "payoutDescription": "הלקוח שלח או עדכן פרטי תשלום.",
+          "historyDescription": "פעילות אימות מתועדת."
         }
       },
       "historyKeys": {

@@ -1396,7 +1396,9 @@
         "kyc": "KYC",
         "metrics": "मेट्रिक्स",
         "verification": "Verification",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "accounts": "खाते",
+        "paymentDetails": "भुगतान विवरण"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1459,10 +1461,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "इस ग्राहक के MT खाते.",
+        "paymentDetails": "निकासी विवरण और उनकी मॉडरेशन स्थिति."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "रीफ़्रेश"
       },
       "kyc": {
         "profile": {
@@ -1570,6 +1575,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "खाता नंबर या प्रकार से खोजें",
+        "favorite": "पसंदीदा",
+        "emptyTitle": "अभी कोई खाता नहीं",
+        "emptySubtitle": "बनने के बाद ग्राहक के MT खाते यहां दिखेंगे.",
+        "columns": {
+          "balance": "बैलेंस",
+          "leverage": "लेवरेज",
+          "paymentType": "भुगतान प्रकार",
+          "createdAt": "बनाया गया"
+        },
+        "summary": {
+          "total": "कुल खाते",
+          "totalHint": "इस ग्राहक के सभी MT खाते",
+          "balance": "दिखाया गया बैलेंस",
+          "balanceHint": "इस पेज पर लोड किए गए खातों का योग",
+          "favorite": "पसंदीदा",
+          "favoriteHint": "मौजूदा पेज के पसंदीदा खाते"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "अभी कोई भुगतान विवरण नहीं",
+        "emptySubtitle": "भेजे जाने के बाद ग्राहक के भुगतान विवरण यहां दिखेंगे.",
+        "documentAlt": "भुगतान विवरण दस्तावेज़",
+        "adminComment": "एडमिन टिप्पणी",
+        "filters": {
+          "active": "सक्रिय",
+          "archived": "आर्काइव",
+          "all": "सभी"
+        },
+        "columns": {
+          "updatedAt": "अपडेट किया गया"
+        },
+        "summary": {
+          "total": "कुल विवरण",
+          "totalHint": "चुने गए फ़िल्टर में भुगतान विवरण",
+          "approved": "स्वीकृत",
+          "approvedHint": "निकासी के लिए तैयार",
+          "pending": "लंबित",
+          "pendingHint": "मॉडरेशन की प्रतीक्षा में",
+          "rejected": "अस्वीकृत",
+          "rejectedHint": "एडमिन द्वारा अस्वीकृत"
+        },
+        "fields": {
+          "recipient_address": "प्राप्तकर्ता पता",
+          "recipientAddress": "प्राप्तकर्ता पता",
+          "wallet": "वॉलेट",
+          "wallet_address": "वॉलेट पता",
+          "walletAddress": "वॉलेट पता",
+          "card_number": "कार्ड नंबर",
+          "cardNumber": "कार्ड नंबर",
+          "account_number": "खाता नंबर",
+          "accountNumber": "खाता नंबर",
+          "bank_name": "बैंक नाम",
+          "bankName": "बैंक नाम",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "ईमेल",
+          "phone": "फ़ोन"
+        }
       }
     },
     "verifications": {
@@ -1590,7 +1656,8 @@
         "approveAll": "सभी स्वीकृत करें",
         "rejectAll": "सभी अस्वीकार करें",
         "approve": "स्वीकृत करें",
-        "reject": "अस्वीकार करें"
+        "reject": "अस्वीकार करें",
+        "chooseDecision": "निर्णय चुनें"
       },
       "filters": {
         "active": "फ़िल्टर",
@@ -1668,7 +1735,7 @@
         "actorAdmin": "एडमिन",
         "actorClient": "क्लाइंट",
         "actorSystem": "सिस्टम",
-        "generic": "Verification activity"
+        "generic": "सत्यापन गतिविधि"
       },
       "tabs": {
         "client": "सामान्य सत्यापन",
@@ -1761,30 +1828,30 @@
       },
       "clientTimeline": {
         "title": "सत्यापन टाइमलाइन",
-        "subtitle": "Every profile, document and payment-detail change is shown as a separate review item.",
-        "hasPending": "Pending review",
-        "noPending": "No pending review",
-        "emptyTitle": "No verification activity yet",
-        "emptySubtitle": "Client changes and admin actions will appear here.",
+        "subtitle": "प्रोफ़ाइल, दस्तावेज़ और भुगतान विवरण में हर बदलाव अलग समीक्षा आइटम के रूप में दिखता है.",
+        "hasPending": "समीक्षा लंबित",
+        "noPending": "कोई लंबित समीक्षा नहीं",
+        "emptyTitle": "अभी कोई सत्यापन गतिविधि नहीं",
+        "emptySubtitle": "ग्राहक बदलाव और एडमिन कार्रवाई यहां दिखेंगी.",
         "summary": {
-          "profile": "Profile changes",
-          "documents": "Documents",
-          "paymentDetails": "Payment details",
-          "history": "History records",
-          "pending": "Waiting for review",
-          "clear": "No pending changes",
-          "pendingDocuments": "Documents waiting for moderation",
-          "pendingPaymentDetails": "Payment details waiting for moderation",
-          "historyHint": "Newest records are shown first"
+          "profile": "प्रोफ़ाइल बदलाव",
+          "documents": "दस्तावेज़",
+          "paymentDetails": "भुगतान विवरण",
+          "history": "इतिहास रिकॉर्ड",
+          "pending": "समीक्षा की प्रतीक्षा",
+          "clear": "कोई लंबित बदलाव नहीं",
+          "pendingDocuments": "दस्तावेज़ मॉडरेशन की प्रतीक्षा में",
+          "pendingPaymentDetails": "भुगतान विवरण मॉडरेशन की प्रतीक्षा में",
+          "historyHint": "नए रिकॉर्ड पहले दिखाए जाते हैं"
         },
         "items": {
-          "profileTitle": "Profile data requires review",
-          "profileDescription": "Client changed profile data. Approve to keep it or reject to roll back logged changes.",
-          "documentTitle": "Document requires review",
-          "documentDescription": "Client uploaded a document for identity verification.",
-          "payoutTitle": "Payment detail requires review",
-          "payoutDescription": "Client submitted or updated payment details.",
-          "historyDescription": "Recorded verification activity."
+          "profileTitle": "प्रोफ़ाइल डेटा की समीक्षा चाहिए",
+          "profileDescription": "ग्राहक ने प्रोफ़ाइल डेटा बदला है. रखने के लिए स्वीकृत करें या लॉग किए गए बदलाव वापस करने के लिए अस्वीकृत करें.",
+          "documentTitle": "दस्तावेज़ की समीक्षा चाहिए",
+          "documentDescription": "ग्राहक ने पहचान सत्यापन के लिए दस्तावेज़ अपलोड किया.",
+          "payoutTitle": "भुगतान विवरण की समीक्षा चाहिए",
+          "payoutDescription": "ग्राहक ने भुगतान विवरण भेजे या अपडेट किए.",
+          "historyDescription": "रिकॉर्ड की गई सत्यापन गतिविधि."
         }
       },
       "historyKeys": {

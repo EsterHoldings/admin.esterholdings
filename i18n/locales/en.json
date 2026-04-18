@@ -1662,7 +1662,9 @@
         "settings": "Settings",
         "security": "Security",
         "kyc": "KYC",
-        "metrics": "Metrics"
+        "metrics": "Metrics",
+        "accounts": "Accounts",
+        "paymentDetails": "Payment details"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1808,10 +1810,13 @@
         "verification": "Moderation timeline for profile, documents and payment details.",
         "referrals": "Referral network and rewards for this client.",
         "settings": "Client support and cabinet configuration.",
-        "security": "Password and two-factor authentication controls."
+        "security": "Password and two-factor authentication controls.",
+        "accounts": "MT accounts owned by this client.",
+        "paymentDetails": "Withdrawal requisites and their moderation state."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "Refresh"
       },
       "kyc": {
         "profile": {
@@ -1919,6 +1924,67 @@
           "hoursShort": "h",
           "minutesShort": "m"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "Search by account number or type",
+        "favorite": "Favorite",
+        "emptyTitle": "No accounts yet",
+        "emptySubtitle": "Client MT accounts will appear here after creation.",
+        "columns": {
+          "balance": "Balance",
+          "leverage": "Leverage",
+          "paymentType": "Payment type",
+          "createdAt": "Created at"
+        },
+        "summary": {
+          "total": "Total accounts",
+          "totalHint": "All MT accounts owned by this client",
+          "balance": "Visible balance",
+          "balanceHint": "Sum of accounts loaded on this page",
+          "favorite": "Favorites",
+          "favoriteHint": "Favorite accounts in current page"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "No payment details yet",
+        "emptySubtitle": "Client payment details will appear here after submission.",
+        "documentAlt": "Payment detail document",
+        "adminComment": "Admin comment",
+        "filters": {
+          "active": "Active",
+          "archived": "Archived",
+          "all": "All"
+        },
+        "columns": {
+          "updatedAt": "Updated at"
+        },
+        "summary": {
+          "total": "Total requisites",
+          "totalHint": "Payment details in selected filter",
+          "approved": "Approved",
+          "approvedHint": "Ready for withdrawals",
+          "pending": "Pending",
+          "pendingHint": "Waiting for moderation",
+          "rejected": "Rejected",
+          "rejectedHint": "Rejected by admin"
+        },
+        "fields": {
+          "recipient_address": "Recipient address",
+          "recipientAddress": "Recipient address",
+          "wallet": "Wallet",
+          "wallet_address": "Wallet address",
+          "walletAddress": "Wallet address",
+          "card_number": "Card number",
+          "cardNumber": "Card number",
+          "account_number": "Account number",
+          "accountNumber": "Account number",
+          "bank_name": "Bank name",
+          "bankName": "Bank name",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "Email",
+          "phone": "Phone"
+        }
       }
     },
     "verifications": {
@@ -1939,7 +2005,8 @@
         "approveAll": "Approve all",
         "rejectAll": "Reject all",
         "approve": "Approve",
-        "reject": "Reject"
+        "reject": "Reject",
+        "chooseDecision": "Choose decision"
       },
       "filters": {
         "active": "Filter",

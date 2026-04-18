@@ -1604,7 +1604,9 @@
         "settings": "Настройки",
         "security": "Безопасность",
         "kyc": "KYC",
-        "metrics": "Метрики"
+        "metrics": "Метрики",
+        "accounts": "Счета",
+        "paymentDetails": "Платежные реквизиты"
       },
       "supportMode": {
         "label": "Режим поддержки",
@@ -1808,10 +1810,13 @@
         "verification": "История модерации профиля, документов и платежных реквизитов.",
         "referrals": "Реферальная сеть и вознаграждения клиента.",
         "settings": "Поддержка клиента и настройки кабинета.",
-        "security": "Пароль и управление двухфакторной аутентификацией."
+        "security": "Пароль и управление двухфакторной аутентификацией.",
+        "accounts": "MT-счета, которые принадлежат этому клиенту.",
+        "paymentDetails": "Реквизиты для вывода и их статус модерации."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "Обновить"
       },
       "kyc": {
         "profile": {
@@ -1919,6 +1924,67 @@
           "hoursShort": "ч",
           "minutesShort": "м"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "Поиск по номеру счета или типу",
+        "favorite": "Избранный",
+        "emptyTitle": "Счетов пока нет",
+        "emptySubtitle": "MT-счета клиента появятся здесь после создания.",
+        "columns": {
+          "balance": "Баланс",
+          "leverage": "Плечо",
+          "paymentType": "Тип платежа",
+          "createdAt": "Создано"
+        },
+        "summary": {
+          "total": "Всего счетов",
+          "totalHint": "Все MT-счета этого клиента",
+          "balance": "Баланс на странице",
+          "balanceHint": "Сумма счетов, загруженных на этой странице",
+          "favorite": "Избранные",
+          "favoriteHint": "Избранные счета на текущей странице"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "Платежных реквизитов пока нет",
+        "emptySubtitle": "Реквизиты клиента появятся здесь после отправки.",
+        "documentAlt": "Документ платежного реквизита",
+        "adminComment": "Комментарий администратора",
+        "filters": {
+          "active": "Активные",
+          "archived": "Архивные",
+          "all": "Все"
+        },
+        "columns": {
+          "updatedAt": "Обновлено"
+        },
+        "summary": {
+          "total": "Всего реквизитов",
+          "totalHint": "Реквизиты в выбранном фильтре",
+          "approved": "Подтверждено",
+          "approvedHint": "Готовы для вывода",
+          "pending": "Ожидают",
+          "pendingHint": "Ожидают модерации",
+          "rejected": "Отклонено",
+          "rejectedHint": "Отклонены администратором"
+        },
+        "fields": {
+          "recipient_address": "Адрес получателя",
+          "recipientAddress": "Адрес получателя",
+          "wallet": "Кошелек",
+          "wallet_address": "Адрес кошелька",
+          "walletAddress": "Адрес кошелька",
+          "card_number": "Номер карты",
+          "cardNumber": "Номер карты",
+          "account_number": "Номер счета",
+          "accountNumber": "Номер счета",
+          "bank_name": "Название банка",
+          "bankName": "Название банка",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "Email",
+          "phone": "Телефон"
+        }
       }
     },
     "verifications": {
@@ -1939,7 +2005,8 @@
         "approveAll": "Подтвердить все",
         "rejectAll": "Отклонить все",
         "approve": "Подтвердить",
-        "reject": "Отклонить"
+        "reject": "Отклонить",
+        "chooseDecision": "Выберите решение"
       },
       "filters": {
         "active": "Фильтр",

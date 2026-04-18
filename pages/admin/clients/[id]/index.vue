@@ -84,8 +84,10 @@
   import { useRoute } from "vue-router";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
+  import TabAccounts from "~/pages/admin/clients/[id]/components/TabAccounts.vue";
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
   import TabMetrics from "~/pages/admin/clients/[id]/components/TabMetrics.vue";
+  import TabPaymentDetails from "~/pages/admin/clients/[id]/components/TabPaymentDetails.vue";
   import TabReferrals from "~/pages/admin/clients/[id]/components/TabReferrals.vue";
   import TabSecurity from "~/pages/admin/clients/[id]/components/TabSecurity.vue";
   import TabSettings from "~/pages/admin/clients/[id]/components/TabSettings.vue";
@@ -146,6 +148,16 @@
       adminAuthStore.hasPermission("update-client-payment-details") ||
       adminAuthStore.hasPermission("delete-client-payment-details")
   );
+  const canViewClientAccounts = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-accounts")
+  );
+  const canViewClientPaymentDetails = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("view-client-payment-details") ||
+      adminAuthStore.hasPermission("update-client-payment-details") ||
+      adminAuthStore.hasPermission("delete-client-payment-details")
+  );
   const canViewClientReferrals = computed(
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-referrals")
   );
@@ -194,6 +206,24 @@
           description: resolveText("admin.clients.tabsDescription.verification", "Moderation timeline for profile, documents and payment details."),
           icon: "pi pi-verified",
           component: TabVerification,
+        }]
+      : []),
+    ...(canViewClientAccounts.value
+      ? [{
+          id: "accounts",
+          label: resolveText("admin.clients.tabs.accounts", "Accounts"),
+          description: resolveText("admin.clients.tabsDescription.accounts", "MT accounts owned by this client."),
+          icon: "pi pi-wallet",
+          component: TabAccounts,
+        }]
+      : []),
+    ...(canViewClientPaymentDetails.value
+      ? [{
+          id: "payment-details",
+          label: resolveText("admin.clients.tabs.paymentDetails", "Payment details"),
+          description: resolveText("admin.clients.tabsDescription.paymentDetails", "Withdrawal requisites and their moderation state."),
+          icon: "pi pi-credit-card",
+          component: TabPaymentDetails,
         }]
       : []),
     ...(canViewClientReferrals.value

@@ -1657,7 +1657,9 @@
         "settings": "Налаштування",
         "security": "Безпека",
         "kyc": "KYC",
-        "metrics": "Метрики"
+        "metrics": "Метрики",
+        "accounts": "Рахунки",
+        "paymentDetails": "Платіжні реквізити"
       },
       "supportMode": {
         "label": "Режим підтримки",
@@ -1803,10 +1805,13 @@
         "verification": "Історія модерації профілю, документів і платіжних реквізитів.",
         "referrals": "Реферальна мережа та винагороди клієнта.",
         "settings": "Підтримка клієнта та налаштування кабінету.",
-        "security": "Пароль і керування двофакторною автентифікацією."
+        "security": "Пароль і керування двофакторною автентифікацією.",
+        "accounts": "MT-рахунки, які належать цьому клієнту.",
+        "paymentDetails": "Реквізити для виведення та їхній статус модерації."
       },
       "common": {
-        "emptyValue": "-"
+        "emptyValue": "-",
+        "refresh": "Оновити"
       },
       "kyc": {
         "profile": {
@@ -1914,6 +1919,67 @@
           "hoursShort": "год",
           "minutesShort": "хв"
         }
+      },
+      "accounts": {
+        "searchPlaceholder": "Пошук за номером рахунку або типом",
+        "favorite": "Обраний",
+        "emptyTitle": "Рахунків ще немає",
+        "emptySubtitle": "MT-рахунки клієнта зʼявляться тут після створення.",
+        "columns": {
+          "balance": "Баланс",
+          "leverage": "Плече",
+          "paymentType": "Тип платежу",
+          "createdAt": "Створено"
+        },
+        "summary": {
+          "total": "Усього рахунків",
+          "totalHint": "Усі MT-рахунки цього клієнта",
+          "balance": "Баланс на сторінці",
+          "balanceHint": "Сума рахунків, завантажених на цій сторінці",
+          "favorite": "Обрані",
+          "favoriteHint": "Обрані рахунки на поточній сторінці"
+        }
+      },
+      "paymentDetails": {
+        "emptyTitle": "Платіжних реквізитів ще немає",
+        "emptySubtitle": "Реквізити клієнта зʼявляться тут після надсилання.",
+        "documentAlt": "Документ платіжного реквізиту",
+        "adminComment": "Коментар адміністратора",
+        "filters": {
+          "active": "Активні",
+          "archived": "Архівні",
+          "all": "Усі"
+        },
+        "columns": {
+          "updatedAt": "Оновлено"
+        },
+        "summary": {
+          "total": "Усього реквізитів",
+          "totalHint": "Реквізити в обраному фільтрі",
+          "approved": "Підтверджено",
+          "approvedHint": "Готові для виведення",
+          "pending": "Очікують",
+          "pendingHint": "Очікують модерації",
+          "rejected": "Відхилено",
+          "rejectedHint": "Відхилені адміністратором"
+        },
+        "fields": {
+          "recipient_address": "Адреса отримувача",
+          "recipientAddress": "Адреса отримувача",
+          "wallet": "Гаманець",
+          "wallet_address": "Адреса гаманця",
+          "walletAddress": "Адреса гаманця",
+          "card_number": "Номер картки",
+          "cardNumber": "Номер картки",
+          "account_number": "Номер рахунку",
+          "accountNumber": "Номер рахунку",
+          "bank_name": "Назва банку",
+          "bankName": "Назва банку",
+          "iban": "IBAN",
+          "swift": "SWIFT",
+          "email": "Email",
+          "phone": "Телефон"
+        }
       }
     },
     "verifications": {
@@ -1934,7 +2000,8 @@
         "approveAll": "Підтвердити все",
         "rejectAll": "Відхилити все",
         "approve": "Підтвердити",
-        "reject": "Відхилити"
+        "reject": "Відхилити",
+        "chooseDecision": "Оберіть рішення"
       },
       "filters": {
         "active": "Фільтр",
