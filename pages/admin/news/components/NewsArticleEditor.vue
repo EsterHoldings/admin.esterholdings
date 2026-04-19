@@ -1,324 +1,308 @@
 <template>
-  <div class="news-editor">
-    <aside class="news-editor__tabs">
-      <TabsAsList
-        :tabsList="editorTabs"
-        :activeTabIndex="activeTabIndex"
-        @selectTab="handleSelectTab" />
-    </aside>
+  <div
+    class="news-editor"
+    :class="{ 'news-editor--busy': isSaving || isArchiving }">
+    <div class="news-editor__header">
+      <div class="news-editor__heading">
+        <PrimeButton
+          size="small"
+          severity="secondary"
+          text
+          icon="pi pi-arrow-left"
+          :label="t('admin.news.editor.back', 'Back to News')"
+          @click="goBack" />
 
-    <section class="news-editor__panel">
-      <div class="news-editor__header">
-        <div class="news-editor__header-copy">
-          <button
-            type="button"
-            class="news-editor__back"
-            @click="goBack">
-            {{ t("admin.news.editor.back", "Back to News") }}
-          </button>
+        <h1 class="news-editor__title">{{ form.title || t("admin.news.editor.untitled", "Untitled article") }}</h1>
+        <p class="news-editor__subtitle">
+          {{
+            t(
+              "admin.news.editor.pageSubtitle",
+              "Use the article and SEO tabs to prepare the draft for publication."
+            )
+          }}
+        </p>
 
-          <div class="news-editor__eyebrow">{{ t("admin.news.editor.label", "Article Editor") }}</div>
-          <h2 class="news-editor__title">{{ form.title || t("admin.news.editor.untitled", "Untitled article") }}</h2>
-          <div class="news-editor__meta">
-            <span
-              class="news-editor__status-pill"
-              :data-status="article?.effective_status || form.status">
-              {{ statusLabel(article?.effective_status || form.status) }}
-            </span>
-            <span class="news-editor__status-pill">{{ form.locale.toUpperCase() }}</span>
-            <span class="news-editor__status-pill">{{ formatDate(article?.updated_at || null, true) }}</span>
-          </div>
+        <div class="news-editor__meta">
+          <PrimeTag
+            :value="statusLabel(article?.effective_status || form.status)"
+            :severity="statusSeverity(article?.effective_status || form.status)" />
+          <PrimeTag
+            :value="form.locale.toUpperCase()"
+            severity="secondary" />
+          <span>{{ formatDate(article?.updated_at || null, true) }}</span>
         </div>
+      </div>
 
-        <div class="news-editor__actions">
-          <UiButtonDefault
-            state="info--outline"
-            @click="isPreviewOpen = true">
-            <template #icon-left>
-              <UiIconEye />
+      <div class="news-editor__actions">
+        <PrimeButton
+          severity="secondary"
+          outlined
+          icon="pi pi-eye"
+          :label="t('admin.news.actions.preview', 'Preview')"
+          @click="isPreviewOpen = true" />
+        <PrimeButton
+          v-if="canDelete"
+          severity="danger"
+          outlined
+          icon="pi pi-archive"
+          :label="t('admin.news.actions.archive', 'Archive')"
+          :loading="isArchiving"
+          @click="handleArchive" />
+        <PrimeButton
+          v-if="canUpdate"
+          severity="secondary"
+          outlined
+          :label="t('admin.news.actions.saveDraft', 'Save Draft')"
+          :loading="isSaving"
+          @click="persistArticle('draft')" />
+        <PrimeButton
+          v-if="canUpdate"
+          severity="info"
+          :label="t('admin.news.actions.schedule', 'Schedule')"
+          :loading="isSaving"
+          @click="persistArticle('scheduled')" />
+        <PrimeButton
+          v-if="canUpdate"
+          icon="pi pi-send"
+          :label="t('admin.news.actions.publishNow', 'Publish Now')"
+          :loading="isSaving"
+          @click="persistArticle('published')" />
+      </div>
+    </div>
+
+    <div
+      v-if="isLoading"
+      class="news-editor__skeleton">
+      <PrimeSkeleton
+        v-for="item in 6"
+        :key="item"
+        height="72px"
+        border-radius="18px" />
+    </div>
+
+    <div
+      v-else-if="!article"
+      class="news-editor-empty">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ t("admin.news.messages.loadOneFailed", "Failed to load article.") }}</span>
+    </div>
+
+    <PrimeTabs
+      v-else
+      v-model:value="activeTab"
+      class="news-editor__tabs">
+      <PrimeTabList>
+        <PrimeTab value="content">
+          <i class="pi pi-file-edit"></i>
+          <span>{{ t("admin.news.editor.articleTab", "Article") }}</span>
+        </PrimeTab>
+        <PrimeTab value="seo">
+          <i class="pi pi-search"></i>
+          <span>{{ t("admin.news.editor.seoTab", "SEO") }}</span>
+        </PrimeTab>
+      </PrimeTabList>
+
+      <PrimeTabPanels>
+        <PrimeTabPanel value="content">
+          <PrimeCard class="news-editor-card">
+            <template #content>
+              <div class="news-editor-card__head">
+                <h2>{{ t("admin.news.editor.articleTab", "Article") }}</h2>
+                <p>
+                  {{
+                    t(
+                      "admin.news.editor.articleSubtitle",
+                      "Control title, slug, content, media and publication timing from one wide workspace."
+                    )
+                  }}
+                </p>
+              </div>
+
+              <div class="news-editor-form-grid">
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.fields.title", "Title") }}</span>
+                  <PrimeInputText
+                    v-model="form.title"
+                    :placeholder="t('admin.news.placeholders.title', 'Market outlook: what traders watch today')" />
+                </label>
+
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.fields.locale", "Language") }}</span>
+                  <PrimeSelect
+                    v-model="form.locale"
+                    :options="localeOptions"
+                    option-label="label"
+                    option-value="value" />
+                </label>
+
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.fields.slug", "Slug") }}</span>
+                  <PrimeInputText
+                    v-model="form.slug"
+                    :placeholder="t('admin.news.placeholders.slug', 'market-outlook')" />
+                </label>
+
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.fields.publishedAt", "Publication date") }}</span>
+                  <PrimeDatePicker
+                    v-model="publishedAtDate"
+                    show-time
+                    hour-format="24"
+                    fluid />
+                </label>
+
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.fields.excerpt", "Excerpt") }}</span>
+                  <PrimeTextarea
+                    v-model="form.excerpt"
+                    rows="3"
+                    auto-resize
+                    :placeholder="t('admin.news.placeholders.excerpt', 'Short article summary for cards and previews')" />
+                </label>
+
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.fields.content", "Content") }}</span>
+                  <PrimeTextarea
+                    v-model="form.content"
+                    rows="18"
+                    class="news-editor__content-input"
+                    :placeholder="
+                      t('admin.news.placeholders.content', 'The article body will appear here in markdown format')
+                    " />
+                </label>
+
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.fields.coverImage", "Cover image URL") }}</span>
+                  <PrimeInputText
+                    v-model="form.cover_image_url"
+                    :placeholder="t('admin.news.placeholders.coverImage', 'https://example.com/image.jpg')" />
+                </label>
+
+                <div
+                  v-if="form.cover_image_url"
+                  class="news-editor__cover">
+                  <img
+                    :src="form.cover_image_url"
+                    alt="cover preview"
+                    class="news-editor__cover-image" />
+                </div>
+
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.fields.galleryImages", "Gallery images") }}</span>
+                  <PrimeTextarea
+                    v-model="galleryImagesInput"
+                    rows="5"
+                    :placeholder="t('admin.news.placeholders.galleryImages', 'One URL per line')" />
+                </label>
+
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.fields.videoLinks", "Video links") }}</span>
+                  <PrimeTextarea
+                    v-model="videoLinksInput"
+                    rows="5"
+                    :placeholder="t('admin.news.placeholders.videoLinks', 'One URL per line')" />
+                </label>
+              </div>
             </template>
-            {{ t("admin.news.actions.preview", "Preview") }}
-          </UiButtonDefault>
+          </PrimeCard>
+        </PrimeTabPanel>
 
-          <UiButtonDefault
-            v-if="canDelete"
-            state="danger--outline"
-            :disabled="isArchiving"
-            @click="handleArchive">
-            {{ t("admin.news.actions.archive", "Archive") }}
-          </UiButtonDefault>
+        <PrimeTabPanel value="seo">
+          <PrimeCard class="news-editor-card">
+            <template #content>
+              <div class="news-editor-card__head">
+                <h2>{{ t("admin.news.seoTitle", "SEO settings") }}</h2>
+                <p>
+                  {{
+                    t(
+                      "admin.news.editor.seoSubtitle",
+                      "Tune metadata, canonical URLs and social cards without mixing them into the article form."
+                    )
+                  }}
+                </p>
+              </div>
 
-          <UiButtonDefault
-            v-if="canUpdate"
-            state="secondary"
-            :disabled="isSaving"
-            @click="persistArticle('draft')">
-            {{ t("admin.news.actions.saveDraft", "Save Draft") }}
-          </UiButtonDefault>
+              <div class="news-editor-form-grid">
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.metaTitle", "Meta title") }}</span>
+                  <PrimeInputText v-model="seo.meta_title" />
+                </label>
 
-          <UiButtonDefault
-            v-if="canUpdate"
-            state="success"
-            :disabled="isSaving"
-            @click="persistArticle('published')">
-            {{ t("admin.news.actions.publishNow", "Publish Now") }}
-          </UiButtonDefault>
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.metaDescription", "Meta description") }}</span>
+                  <PrimeTextarea
+                    v-model="seo.meta_description"
+                    rows="3"
+                    auto-resize />
+                </label>
 
-          <UiButtonDefault
-            v-if="canUpdate"
-            state="info"
-            :disabled="isSaving"
-            @click="persistArticle('scheduled')">
-            {{ t("admin.news.actions.schedule", "Schedule") }}
-          </UiButtonDefault>
-        </div>
-      </div>
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.metaKeywords", "Meta keywords") }}</span>
+                  <PrimeInputText
+                    v-model="metaKeywordsInput"
+                    :placeholder="t('admin.news.placeholders.metaKeywords', 'forex, market outlook, ECB')" />
+                </label>
 
-      <div
-        v-if="isLoading"
-        class="news-editor__state">
-        <UiIconSpinnerDefault />
-      </div>
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.seo.canonicalUrl", "Canonical URL") }}</span>
+                  <PrimeInputText v-model="seo.canonical_url" />
+                </label>
 
-      <div
-        v-else-if="!article"
-        class="news-editor__state">
-        <UiIconNews />
-        <span>{{ t("admin.news.messages.loadOneFailed", "Failed to load article.") }}</span>
-      </div>
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.seo.robots", "Robots") }}</span>
+                  <PrimeInputText
+                    v-model="seo.robots"
+                    :placeholder="t('admin.news.placeholders.robots', 'index,follow')" />
+                </label>
 
-      <div
-        v-else
-        class="news-editor__content">
-        <div
-          v-if="activeTab === 'content'"
-          class="news-editor__card">
-          <div class="news-editor__section">
-            <div class="news-editor__section-title">{{ t("admin.news.editor.articleTab", "Article") }}</div>
-            <div class="news-editor__section-subtitle">
-              {{
-                t(
-                  "admin.news.editor.articleSubtitle",
-                  "Control title, slug, content, media and publication timing from one wide workspace."
-                )
-              }}
-            </div>
-          </div>
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.seo.schemaType", "Schema type") }}</span>
+                  <PrimeInputText
+                    v-model="seo.schema_type"
+                    :placeholder="t('admin.news.placeholders.schemaType', 'NewsArticle')" />
+                </label>
 
-          <div class="news-editor__grid">
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.fields.title", "Title") }}</span>
-              <input
-                v-model="form.title"
-                type="text"
-                class="news-editor__input"
-                :placeholder="t('admin.news.placeholders.title', 'Generated title will appear here')" />
-            </label>
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.seo.ogTitle", "Open Graph title") }}</span>
+                  <PrimeInputText v-model="seo.og_title" />
+                </label>
 
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.fields.locale", "Language") }}</span>
-              <select
-                v-model="form.locale"
-                class="news-editor__select">
-                <option value="en">EN</option>
-                <option value="ru">RU</option>
-                <option value="uk">UK</option>
-              </select>
-            </label>
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.ogDescription", "Open Graph description") }}</span>
+                  <PrimeTextarea
+                    v-model="seo.og_description"
+                    rows="3"
+                    auto-resize />
+                </label>
 
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.fields.slug", "Slug") }}</span>
-              <input
-                v-model="form.slug"
-                type="text"
-                class="news-editor__input"
-                :placeholder="t('admin.news.placeholders.slug', 'news-slug')" />
-            </label>
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.ogImageUrl", "Open Graph image") }}</span>
+                  <PrimeInputText v-model="seo.og_image_url" />
+                </label>
 
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.fields.excerpt", "Excerpt") }}</span>
-              <textarea
-                v-model="form.excerpt"
-                rows="4"
-                class="news-editor__textarea"
-                :placeholder="t('admin.news.placeholders.excerpt', 'Short article summary for cards and previews')" />
-            </label>
+                <label class="news-editor-field">
+                  <span>{{ t("admin.news.seo.twitterTitle", "Twitter title") }}</span>
+                  <PrimeInputText v-model="seo.twitter_title" />
+                </label>
 
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.fields.content", "Content") }}</span>
-              <textarea
-                v-model="form.content"
-                rows="18"
-                class="news-editor__textarea news-editor__textarea--content"
-                :placeholder="
-                  t('admin.news.placeholders.content', 'The article body will appear here in markdown format')
-                " />
-            </label>
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.twitterDescription", "Twitter description") }}</span>
+                  <PrimeTextarea
+                    v-model="seo.twitter_description"
+                    rows="3"
+                    auto-resize />
+                </label>
 
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.fields.coverImage", "Cover image URL") }}</span>
-              <input
-                v-model="form.cover_image_url"
-                type="text"
-                class="news-editor__input"
-                :placeholder="t('admin.news.placeholders.coverImage', 'https://...')" />
-            </label>
-
-            <div
-              v-if="form.cover_image_url"
-              class="news-editor__cover">
-              <img
-                :src="form.cover_image_url"
-                alt="cover preview"
-                class="news-editor__cover-image" />
-            </div>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.fields.galleryImages", "Gallery images") }}</span>
-              <textarea
-                v-model="galleryImagesInput"
-                rows="6"
-                class="news-editor__textarea"
-                :placeholder="t('admin.news.placeholders.galleryImages', 'One URL per line')" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.fields.videoLinks", "Video links") }}</span>
-              <textarea
-                v-model="videoLinksInput"
-                rows="6"
-                class="news-editor__textarea"
-                :placeholder="t('admin.news.placeholders.videoLinks', 'One URL per line')" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.fields.publishedAt", "Publication date") }}</span>
-              <input
-                v-model="publishedAtInput"
-                type="datetime-local"
-                class="news-editor__input" />
-            </label>
-          </div>
-        </div>
-
-        <div
-          v-else
-          class="news-editor__card">
-          <div class="news-editor__section">
-            <div class="news-editor__section-title">{{ t("admin.news.seoTitle", "SEO settings") }}</div>
-            <div class="news-editor__section-subtitle">
-              {{
-                t(
-                  "admin.news.editor.seoSubtitle",
-                  "Tune metadata, canonical URLs and social cards without mixing them into the article form."
-                )
-              }}
-            </div>
-          </div>
-
-          <div class="news-editor__grid">
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.metaTitle", "Meta title") }}</span>
-              <input
-                v-model="seo.meta_title"
-                type="text"
-                class="news-editor__input" />
-            </label>
-
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.metaDescription", "Meta description") }}</span>
-              <textarea
-                v-model="seo.meta_description"
-                rows="4"
-                class="news-editor__textarea" />
-            </label>
-
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.metaKeywords", "Meta keywords") }}</span>
-              <input
-                v-model="metaKeywordsInput"
-                type="text"
-                class="news-editor__input"
-                :placeholder="t('admin.news.placeholders.metaKeywords', 'forex, market outlook, ECB')" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.seo.canonicalUrl", "Canonical URL") }}</span>
-              <input
-                v-model="seo.canonical_url"
-                type="text"
-                class="news-editor__input" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.seo.robots", "Robots") }}</span>
-              <input
-                v-model="seo.robots"
-                type="text"
-                class="news-editor__input"
-                :placeholder="t('admin.news.placeholders.robots', 'index,follow')" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.seo.schemaType", "Schema type") }}</span>
-              <input
-                v-model="seo.schema_type"
-                type="text"
-                class="news-editor__input"
-                :placeholder="t('admin.news.placeholders.schemaType', 'NewsArticle')" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.seo.ogTitle", "Open Graph title") }}</span>
-              <input
-                v-model="seo.og_title"
-                type="text"
-                class="news-editor__input" />
-            </label>
-
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.ogDescription", "Open Graph description") }}</span>
-              <textarea
-                v-model="seo.og_description"
-                rows="4"
-                class="news-editor__textarea" />
-            </label>
-
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.ogImageUrl", "Open Graph image") }}</span>
-              <input
-                v-model="seo.og_image_url"
-                type="text"
-                class="news-editor__input" />
-            </label>
-
-            <label class="news-editor__field">
-              <span>{{ t("admin.news.seo.twitterTitle", "Twitter title") }}</span>
-              <input
-                v-model="seo.twitter_title"
-                type="text"
-                class="news-editor__input" />
-            </label>
-
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.twitterDescription", "Twitter description") }}</span>
-              <textarea
-                v-model="seo.twitter_description"
-                rows="4"
-                class="news-editor__textarea" />
-            </label>
-
-            <label class="news-editor__field news-editor__field--full">
-              <span>{{ t("admin.news.seo.twitterImageUrl", "Twitter image") }}</span>
-              <input
-                v-model="seo.twitter_image_url"
-                type="text"
-                class="news-editor__input" />
-            </label>
-          </div>
-        </div>
-      </div>
-    </section>
+                <label class="news-editor-field news-editor-field--full">
+                  <span>{{ t("admin.news.seo.twitterImageUrl", "Twitter image") }}</span>
+                  <PrimeInputText v-model="seo.twitter_image_url" />
+                </label>
+              </div>
+            </template>
+          </PrimeCard>
+        </PrimeTabPanel>
+      </PrimeTabPanels>
+    </PrimeTabs>
 
     <NewsPreviewModal
       v-model="isPreviewOpen"
@@ -333,11 +317,6 @@
   import { navigateTo, useLocalePath } from "~/.nuxt/imports";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
-  import TabsAsList from "~/components/block/tabs/TabsAsList.vue";
-  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-  import UiIconEye from "~/components/ui/UiIconEye.vue";
-  import UiIconNews from "~/components/ui/UiIconNews.vue";
-  import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
   import useAppCore from "~/composables/useAppCore";
   import type {
     AdminNewsArticle,
@@ -403,12 +382,33 @@
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-news")
   );
 
-  const editorTabs = computed(() => [
-    { label: t("admin.news.editor.articleTab", "Article") },
-    { label: t("admin.news.editor.seoTab", "SEO") },
+  const localeOptions = computed(() => [
+    { label: "English", value: "en" },
+    { label: "Русский", value: "ru" },
+    { label: "Українська", value: "uk" },
+    { label: "Deutsch", value: "de" },
+    { label: "Español", value: "es" },
+    { label: "Français", value: "fr" },
+    { label: "Italiano", value: "it" },
+    { label: "Português", value: "pt" },
+    { label: "Türkçe", value: "tr" },
+    { label: "עברית", value: "he" },
+    { label: "हिन्दी", value: "hi" },
+    { label: "日本語", value: "ja" },
+    { label: "한국어", value: "ko" },
+    { label: "中文", value: "zh" },
   ]);
 
-  const activeTabIndex = computed(() => (activeTab.value === "content" ? 0 : 1));
+  const publishedAtDate = computed<Date | null>({
+    get() {
+      if (!publishedAtInput.value) return null;
+      const date = new Date(publishedAtInput.value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    },
+    set(value) {
+      publishedAtInput.value = value ? toDatetimeLocalValue(value.toISOString()) : "";
+    },
+  });
 
   const previewPayload = computed<AdminNewsArticle | null>(() => {
     if (!article.value) {
@@ -431,10 +431,6 @@
       published_at: publishedAtInput.value ? new Date(publishedAtInput.value).toISOString() : null,
     };
   });
-
-  function handleSelectTab(index: number): void {
-    activeTab.value = index === 0 ? "content" : "seo";
-  }
 
   function applySeo(value: NewsSeoPayload | null | undefined): void {
     seo.meta_title = value?.meta_title || "";
@@ -576,6 +572,14 @@
     );
   }
 
+  function statusSeverity(status: string): "success" | "info" | "warn" | "danger" | "secondary" {
+    if (status === "published") return "success";
+    if (status === "scheduled") return "warn";
+    if (status === "archived") return "danger";
+    if (status === "draft") return "info";
+    return "secondary";
+  }
+
   function formatDate(value: string | null | undefined, withTime = false): string {
     if (!value) {
       return t("admin.news.noDate", "No date");
@@ -633,50 +637,31 @@
 
 <style scoped lang="scss">
   .news-editor {
-    display: grid;
-    grid-template-columns: 240px minmax(0, 1fr);
-    gap: 24px;
-    min-height: calc(100vh - 190px);
+    --news-editor-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
+    --news-editor-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
+    --news-editor-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+    --news-editor-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 20%, transparent);
 
-    @media (max-width: 1180px) {
-      grid-template-columns: 1fr;
-      min-height: auto;
-    }
-  }
-
-  .news-editor__tabs,
-  .news-editor__panel {
-    min-width: 0;
-  }
-
-  .news-editor__tabs {
-    padding: 18px;
-    border-radius: 24px;
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    background: linear-gradient(180deg, rgba(11, 20, 61, 0.95), rgba(8, 15, 44, 0.95));
-    height: fit-content;
-    position: sticky;
-    top: 12px;
-
-    @media (max-width: 1180px) {
-      position: static;
-    }
-  }
-
-  .news-editor__panel,
-  .news-editor__card {
-    border-radius: 24px;
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    background: linear-gradient(180deg, rgba(11, 20, 61, 0.95), rgba(8, 15, 44, 0.95));
-    color: var(--ui-text-main);
-    box-shadow: 0 24px 70px rgba(7, 12, 38, 0.24);
-  }
-
-  .news-editor__panel {
+    position: relative;
+    width: 100%;
+    max-width: none;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 24px;
+    gap: 12px;
+    padding: clamp(12px, 1.35vw, 22px);
+    color: var(--ui-text-main);
+    animation: news-editor-enter 0.28s ease both;
+  }
+
+  .news-editor--busy::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 24px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ui-primary-main) 7%, transparent), transparent);
+    animation: news-editor-sheen 1.35s ease infinite;
   }
 
   .news-editor__header,
@@ -690,143 +675,174 @@
   .news-editor__header {
     justify-content: space-between;
     align-items: flex-start;
-    gap: 18px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
-  .news-editor__header-copy {
+  .news-editor__heading {
     min-width: 0;
-  }
-
-  .news-editor__back {
-    margin-bottom: 12px;
-    color: rgba(185, 198, 255, 0.78);
-    text-decoration: underline;
-  }
-
-  .news-editor__eyebrow {
-    font-size: 0.76rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: rgba(185, 198, 255, 0.74);
   }
 
   .news-editor__title {
     margin: 8px 0 0;
-    color: #fff;
-    font-size: clamp(1.4rem, 2vw, 2.2rem);
-    line-height: 1.1;
+    color: var(--ui-text-main);
+    font-size: clamp(24px, 2.1vw, 36px);
+    font-weight: 850;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  .news-editor__subtitle,
+  .news-editor__meta,
+  .news-editor-card__head p {
+    color: var(--ui-text-secondary);
+  }
+
+  .news-editor__subtitle,
+  .news-editor-card__head p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
   }
 
   .news-editor__meta {
-    margin-top: 14px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+
+  .news-editor__actions {
+    justify-content: flex-end;
     flex-wrap: wrap;
   }
 
-  .news-editor__status-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 34px;
-    padding: 0 14px;
-    border-radius: 999px;
-    font-size: 0.82rem;
-    color: rgba(238, 242, 255, 0.92);
-    border: 1px solid rgba(126, 145, 255, 0.18);
-    background: rgba(255, 255, 255, 0.04);
+  .news-editor__skeleton {
+    display: grid;
+    gap: 10px;
   }
 
-  .news-editor__card {
-    padding: 22px;
+  .news-editor-empty,
+  .news-editor-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--news-editor-glass-border);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 38%),
+      linear-gradient(145deg, var(--news-editor-glass-bg), var(--news-editor-glass-bg-strong));
+    box-shadow: var(--news-editor-glass-shadow);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
   }
 
-  .news-editor__section {
-    margin-bottom: 18px;
+  .news-editor-card :deep(.p-card-body) {
+    padding: 0;
   }
 
-  .news-editor__section-title {
-    color: #fff;
-    font-size: 1.08rem;
-    font-weight: 700;
+  .news-editor-card :deep(.p-card-content) {
+    padding: 14px;
   }
 
-  .news-editor__section-subtitle {
-    margin-top: 8px;
-    color: rgba(199, 208, 255, 0.72);
-    line-height: 1.6;
-  }
-
-  .news-editor__state {
-    min-height: 420px;
+  .news-editor-empty {
+    min-height: 360px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    color: rgba(199, 208, 255, 0.72);
+    gap: 10px;
+    color: var(--ui-text-secondary);
     text-align: center;
   }
 
-  .news-editor__grid {
+  .news-editor-empty i {
+    color: var(--ui-primary-main);
+    font-size: 28px;
+  }
+
+  .news-editor__tabs {
+    :deep(.p-tablist),
+    :deep(.p-tabpanels) {
+      background: transparent;
+    }
+
+    :deep(.p-tablist-tab-list) {
+      gap: 8px;
+      border: 0;
+      background: transparent;
+    }
+
+    :deep(.p-tab) {
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid var(--news-editor-glass-border);
+      border-radius: 999px;
+      color: var(--ui-text-secondary);
+      background: var(--news-editor-glass-bg);
+      font-weight: 750;
+    }
+
+    :deep(.p-tab-active) {
+      color: #ffffff;
+      border-color: color-mix(in srgb, var(--ui-primary-main) 48%, var(--color-stroke-ui-light));
+      background: var(--ui-primary-main);
+    }
+
+    :deep(.p-tabpanels) {
+      padding: 12px 0 0;
+    }
+  }
+
+  .news-editor-card__head {
+    margin-bottom: 14px;
+  }
+
+  .news-editor-card__head h2 {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: clamp(19px, 1.5vw, 26px);
+    font-weight: 840;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  .news-editor-form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-
-    @media (max-width: 920px) {
-      grid-template-columns: 1fr;
-    }
+    gap: 12px;
   }
 
-  .news-editor__field {
+  .news-editor-field {
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-
-    span {
-      color: rgba(199, 208, 255, 0.72);
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+    gap: 6px;
+    color: var(--ui-text-main);
+    font-size: 12px;
+    font-weight: 780;
   }
 
-  .news-editor__field--full,
+  .news-editor-field--full,
   .news-editor__cover {
     grid-column: 1 / -1;
   }
 
-  .news-editor__input,
-  .news-editor__select,
-  .news-editor__textarea {
+  .news-editor__content-input {
     width: 100%;
-    border-radius: 16px;
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    background: rgba(255, 255, 255, 0.035);
-    color: var(--ui-text-main);
-    outline: none;
-  }
 
-  .news-editor__input,
-  .news-editor__select {
-    min-height: 48px;
-    padding: 0 16px;
-  }
-
-  .news-editor__textarea {
-    padding: 16px;
-    line-height: 1.65;
-    resize: vertical;
-  }
-
-  .news-editor__textarea--content {
-    min-height: 360px;
+    :deep(textarea) {
+      min-height: 390px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
   }
 
   .news-editor__cover {
     overflow: hidden;
     border-radius: 20px;
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--news-editor-glass-border);
+    background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
   }
 
   .news-editor__cover-image {
@@ -834,5 +850,46 @@
     width: 100%;
     max-height: 360px;
     object-fit: cover;
+  }
+
+  @keyframes news-editor-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes news-editor-sheen {
+    from {
+      transform: translateX(-70%);
+    }
+    to {
+      transform: translateX(70%);
+    }
+  }
+
+  @media (max-width: 920px) {
+    .news-editor-form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .news-editor__header,
+    .news-editor__actions {
+      width: 100%;
+    }
+
+    .news-editor__actions :deep(.p-button) {
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .news-editor {
+      padding: 10px;
+    }
   }
 </style>

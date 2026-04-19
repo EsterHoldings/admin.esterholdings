@@ -18,23 +18,18 @@
             </div>
 
             <div class="news-preview__actions">
-              <UiButtonDefault
+              <PrimeButton
                 v-if="showEditButton && article.id"
-                state="success"
-                @click="$emit('edit', article.id)">
-                <template #icon-left>
-                  <UiIconEdit />
-                </template>
-                {{ t("admin.news.actions.editArticle", "Edit Article") }}
-              </UiButtonDefault>
+                icon="pi pi-pencil"
+                :label="t('admin.news.actions.editArticle', 'Edit Article')"
+                @click="$emit('edit', article.id)" />
 
-              <UiButtonDefault
-                state="info--small"
-                @click="$emit('update:modelValue', false)">
-                <template #icon-left>
-                  <UiIconEyeClose />
-                </template>
-              </UiButtonDefault>
+              <PrimeButton
+                severity="secondary"
+                text
+                rounded
+                icon="pi pi-times"
+                @click="$emit('update:modelValue', false)" />
             </div>
           </div>
 
@@ -128,9 +123,6 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import { useI18n } from "vue-i18n";
-  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-  import UiIconEdit from "~/components/ui/UiIconEdit.vue";
-  import UiIconEyeClose from "~/components/ui/UiIconEyeClose.vue";
   import type { AdminNewsArticle } from "~/composables/core/modules/news/news.types";
 
   const props = withDefaults(
@@ -184,7 +176,7 @@
     position: fixed;
     inset: 0;
     z-index: 1200;
-    background: rgba(5, 9, 30, 0.78);
+    background: color-mix(in srgb, var(--ui-background-main) 76%, transparent);
     backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
@@ -193,6 +185,10 @@
   }
 
   .news-preview__dialog {
+    --news-preview-glass-bg: color-mix(in srgb, var(--ui-background-card) 78%, transparent);
+    --news-preview-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 88%, transparent);
+    --news-preview-glass-border: color-mix(in srgb, var(--ui-primary-main) 18%, var(--color-stroke-ui-light));
+
     width: min(1400px, 100%);
     max-height: min(92vh, 1100px);
     display: flex;
@@ -200,9 +196,11 @@
     gap: 20px;
     padding: 28px;
     border-radius: 28px;
-    border: 1px solid rgba(126, 145, 255, 0.2);
-    background: linear-gradient(180deg, rgba(11, 20, 61, 0.98), rgba(8, 15, 44, 0.98));
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
+    border: 1px solid var(--news-preview-glass-border);
+    background:
+      radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 36%),
+      linear-gradient(145deg, var(--news-preview-glass-bg), var(--news-preview-glass-bg-strong));
+    box-shadow: 0 30px 80px color-mix(in srgb, #000000 28%, transparent);
     color: var(--ui-text-main);
   }
 
@@ -229,12 +227,12 @@
     font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: rgba(185, 198, 255, 0.74);
+    color: var(--ui-text-secondary);
   }
 
   .news-preview__title {
     margin: 8px 0 0;
-    color: #fff;
+    color: var(--ui-text-main);
     font-size: clamp(1.7rem, 2.3vw, 2.45rem);
     line-height: 1.08;
   }
@@ -250,9 +248,9 @@
     min-height: 34px;
     padding: 0 14px;
     border-radius: 999px;
-    border: 1px solid rgba(126, 145, 255, 0.18);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(229, 235, 255, 0.92);
+    border: 1px solid var(--news-preview-glass-border);
+    background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
+    color: var(--ui-text-main);
     font-size: 0.85rem;
   }
 
@@ -292,15 +290,15 @@
   .news-preview__cover {
     max-height: 360px;
     border-radius: 20px;
-    border: 1px solid rgba(126, 145, 255, 0.18);
+    border: 1px solid var(--news-preview-glass-border);
   }
 
   .news-preview__excerpt {
     padding: 18px 20px;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    color: rgba(229, 235, 255, 0.9);
+    background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
+    border: 1px solid var(--news-preview-glass-border);
+    color: var(--ui-text-main);
     font-size: 1rem;
     line-height: 1.65;
   }
@@ -309,9 +307,9 @@
     white-space: pre-wrap;
     padding: 22px;
     border-radius: 22px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    color: rgba(238, 242, 255, 0.92);
+    background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
+    border: 1px solid var(--news-preview-glass-border);
+    color: var(--ui-text-main);
     line-height: 1.78;
     font-size: 1rem;
   }
@@ -325,8 +323,8 @@
   .news-preview__gallery-item {
     overflow: hidden;
     border-radius: 18px;
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--news-preview-glass-border);
+    background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
   }
 
   .news-preview__gallery-image {
@@ -341,13 +339,13 @@
 
   .news-preview__side-card {
     border-radius: 20px;
-    border: 1px solid rgba(126, 145, 255, 0.14);
-    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--news-preview-glass-border);
+    background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
     padding: 18px;
   }
 
   .news-preview__side-title {
-    color: #fff;
+    color: var(--ui-text-main);
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 14px;
@@ -366,7 +364,7 @@
   }
 
   .news-preview__empty {
-    color: rgba(199, 208, 255, 0.72);
+    color: var(--ui-text-secondary);
     line-height: 1.55;
   }
 
@@ -375,7 +373,7 @@
     align-items: flex-start;
     gap: 6px;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(126, 145, 255, 0.1);
+    border-bottom: 1px solid var(--news-preview-glass-border);
 
     &:last-child {
       border-bottom: none;
@@ -383,14 +381,14 @@
     }
 
     span {
-      color: rgba(199, 208, 255, 0.72);
+      color: var(--ui-text-secondary);
       font-size: 0.84rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
 
     strong {
-      color: rgba(238, 242, 255, 0.92);
+      color: var(--ui-text-main);
       font-size: 0.95rem;
       line-height: 1.5;
       word-break: break-word;

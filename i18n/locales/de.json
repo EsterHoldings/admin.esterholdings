@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "Empfängeradresse"
       }
+    },
+    "news": {
+      "title": "News-Arbeitsbereich",
+      "subtitle": "Verwalten Sie alle Nachrichten an einem Ort: Beiträge filtern, manuell erstellen, GPT-Entwürfe vorbereiten, Vorschau öffnen und SEO bearbeiten.",
+      "tabs": {
+        "library": "Alle News",
+        "draft": "Neuer Entwurf",
+        "manual": "Neuer Beitrag",
+        "gpt": "GPT-Entwurf"
+      },
+      "views": {
+        "list": "Liste",
+        "grid": "Kacheln",
+        "table": "Tabelle"
+      },
+      "columns": {
+        "article": "Artikel",
+        "status": "Status",
+        "locale": "Sprache",
+        "updated": "Aktualisiert",
+        "actions": "Aktionen"
+      },
+      "library": {
+        "label": "News-Bibliothek",
+        "title": "Alle Beiträge",
+        "subtitle": "Filtern Sie veröffentlichte, unveröffentlichte und geplante Beiträge, öffnen Sie die Vorschau oder bearbeiten Sie den Artikel.",
+        "empty": "Für die gewählten Filter wurden keine Beiträge gefunden."
+      },
+      "manual": {
+        "title": "Beitrag manuell erstellen",
+        "subtitle": "Füllen Sie Artikel, Medien und SEO-Daten direkt aus. Speichern Sie als Entwurf, veröffentlichen Sie sofort oder planen Sie die Veröffentlichung."
+      },
+      "chatWorkspace": {
+        "label": "GPT-Entwurf",
+        "title": "Neuen Entwurf erstellen",
+        "subtitleNew": "Beschreiben Sie die Nachricht in normaler Sprache. GPT erstellt einen Artikelentwurf mit Inhalt, Medien und SEO-Daten.",
+        "subtitleExisting": "Schreiben Sie weiter an GPT, um den Entwurf zu ändern. Der aktuelle Artikel bleibt im Kontext.",
+        "empty": "Noch kein Entwurf. Beginnen Sie mit Thema, Ton, Medien und Blickwinkel.",
+        "hintNew": "Die erste Nachricht erstellt einen neuen Entwurf. Danach wird derselbe Artikel weiter verbessert.",
+        "hintExisting": "Bitten Sie GPT, Titel, Einleitung, Struktur, Medien oder SEO zu ändern.",
+        "previewHint": "Vollständige Vorschau des aktuellen Entwurfs öffnen."
+      },
+      "preview": {
+        "label": "Vorschau",
+        "videoLinks": "Videolinks",
+        "noVideos": "Keine Videolinks hinzugefügt.",
+        "seo": "SEO-Übersicht"
+      },
+      "editor": {
+        "pageTitle": "News-Editor",
+        "pageSubtitle": "Bereiten Sie Artikel und SEO in getrennten Tabs vor, ohne alles in eine enge Spalte zu pressen.",
+        "label": "Artikel-Editor",
+        "back": "Zurück zu News",
+        "untitled": "Unbenannter Artikel",
+        "articleTab": "Artikel",
+        "articleSubtitle": "Titel, Slug, Inhalt, Medien und Veröffentlichungszeit in einem breiten Arbeitsbereich bearbeiten.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Metadaten, Canonical-URL und Social-Cards separat konfigurieren."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Beispiel: Erstelle ein Marktupdate zur EZB-Sitzung mit neutralem Ton, einem Titelbild und vollständigem SEO.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "Alle",
+        "allLanguages": "Alle Sprachen",
+        "draft": "Entwürfe",
+        "scheduled": "Geplant",
+        "published": "Veröffentlicht",
+        "archived": "Archiviert"
+      },
+      "filterHints": {
+        "all": "Alle Status anzeigen",
+        "draft": "Für Kunden nicht sichtbare Entwürfe",
+        "scheduled": "Für spätere Veröffentlichung geplant",
+        "published": "Öffentlich sichtbare Beiträge",
+        "archived": "Aus öffentlichen Listen ausgeblendet"
+      },
+      "statuses": {
+        "draft": "Entwurf",
+        "scheduled": "Geplant",
+        "published": "Veröffentlicht",
+        "archived": "Archiviert"
+      },
+      "roles": {
+        "assistant": "GPT-Redakteur",
+        "user": "Sie"
+      },
+      "phases": {
+        "analyzing": "Anfrage wird analysiert",
+        "writing": "Artikelentwurf wird geschrieben",
+        "seo": "SEO-Daten werden vorbereitet",
+        "finalizing": "News-Ausgabe wird finalisiert"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Nach Titel, Slug oder Auszug suchen",
+        "locale": "Sprache",
+        "generateImages": "Bilder",
+        "includeVideoLinks": "Videos",
+        "status": "Status",
+        "title": "Titel",
+        "slug": "Slug",
+        "publishedAt": "Veröffentlichungsdatum",
+        "excerpt": "Auszug",
+        "content": "Inhalt",
+        "coverImage": "URL des Titelbilds",
+        "galleryImages": "Galeriebilder",
+        "videoLinks": "Videolinks"
+      },
+      "placeholders": {
+        "title": "Marktausblick: worauf Trader heute achten",
+        "slug": "market-outlook",
+        "excerpt": "Kurze Zusammenfassung für Karten und Vorschau",
+        "content": "Schreiben Sie den Artikeltext hier",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "Eine Bild-URL pro Zeile",
+        "videoLinks": "Eine Video-URL pro Zeile",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "Beitrag erstellen",
+        "createDraft": "Entwurf erstellen",
+        "saveDraft": "Entwurf speichern",
+        "publishNow": "Jetzt veröffentlichen",
+        "schedule": "Planen",
+        "preview": "Vorschau",
+        "editArticle": "Artikel bearbeiten",
+        "reset": "Zurücksetzen",
+        "archive": "Archivieren",
+        "delete": "Löschen",
+        "generating": "Wird generiert...",
+        "send": "An GPT senden"
+      },
+      "seo": {
+        "metaTitle": "Meta-Titel",
+        "metaDescription": "Meta-Beschreibung",
+        "metaKeywords": "Meta-Keywords",
+        "canonicalUrl": "Canonical-URL",
+        "robots": "Robots",
+        "schemaType": "Schema-Typ",
+        "ogTitle": "Open-Graph-Titel",
+        "ogDescription": "Open-Graph-Beschreibung",
+        "ogImageUrl": "Open-Graph-Bild",
+        "twitterTitle": "Twitter-Titel",
+        "twitterDescription": "Twitter-Beschreibung",
+        "twitterImageUrl": "Twitter-Bild"
+      },
+      "messages": {
+        "generated": "Entwurf erfolgreich erstellt.",
+        "created": "Nachrichtenartikel erstellt.",
+        "saved": "Nachrichtenartikel gespeichert.",
+        "deleted": "Nachrichtenartikel gelöscht.",
+        "loadFailed": "Nachrichten konnten nicht geladen werden.",
+        "loadOneFailed": "Entwurf konnte nicht geladen werden.",
+        "editorRequired": "Titel und Inhalt sind erforderlich.",
+        "scheduleRequired": "Wählen Sie zuerst Datum und Uhrzeit der Veröffentlichung.",
+        "promptRequired": "Schreiben Sie zuerst eine GPT-Anfrage.",
+        "saveFailed": "Artikel konnte nicht gespeichert werden.",
+        "deleteFailed": "Artikel konnte nicht gelöscht werden.",
+        "generateFailed": "Entwurf konnte nicht generiert werden."
+      },
+      "noDate": "Kein Datum"
     }
   },
   "support": {

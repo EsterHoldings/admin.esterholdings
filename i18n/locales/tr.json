@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "Alıcı adresi"
       }
+    },
+    "news": {
+      "title": "Haber çalışma alanı",
+      "subtitle": "Tüm haber akışını tek yerden yönetin: yazıları filtreleyin, manuel oluşturun, GPT taslakları hazırlayın, önizleyin ve SEO düzenleyin.",
+      "tabs": {
+        "library": "Tüm haberler",
+        "draft": "Yeni taslak",
+        "manual": "Yeni yazı",
+        "gpt": "GPT taslağı"
+      },
+      "views": {
+        "list": "Liste",
+        "grid": "Kartlar",
+        "table": "Tablo"
+      },
+      "columns": {
+        "article": "Makale",
+        "status": "Durum",
+        "locale": "Dil",
+        "updated": "Güncellendi",
+        "actions": "İşlemler"
+      },
+      "library": {
+        "label": "Haber kütüphanesi",
+        "title": "Tüm yazılar",
+        "subtitle": "Yayınlanmış, yayınlanmamış ve planlanmış yazıları filtreleyin, içeriği önizleyin veya düzenlemeye geçin.",
+        "empty": "Seçilen filtrelere uygun yazı bulunamadı."
+      },
+      "manual": {
+        "title": "Yazıyı manuel oluştur",
+        "subtitle": "Makale, medya ve SEO verilerini doğrudan doldurun. Taslak olarak kaydedin, hemen yayınlayın veya yayını planlayın."
+      },
+      "chatWorkspace": {
+        "label": "GPT taslağı",
+        "title": "Yeni taslak oluştur",
+        "subtitleNew": "Haberi doğal dille anlatın; GPT içerik, görseller ve SEO metadatalarıyla bir taslak hazırlasın.",
+        "subtitleExisting": "Taslağı değiştirmek için GPT ile konuşmaya devam edin. Mevcut makale durumu bağlamda kalır.",
+        "empty": "Henüz taslak yok. Konu, ton, medya ve açı ile başlayın.",
+        "hintNew": "İlk mesaj yeni bir taslak oluşturur. Sonrasında aynı sohbet aynı makaleyi geliştirir.",
+        "hintExisting": "GPT’den başlığı değiştirmesini, girişi kısaltmasını, görsel eklemesini veya SEO’yu iyileştirmesini isteyin.",
+        "previewHint": "Mevcut taslağın tam önizlemesini aç."
+      },
+      "preview": {
+        "label": "Önizleme",
+        "videoLinks": "Video bağlantıları",
+        "noVideos": "Video bağlantısı eklenmedi.",
+        "seo": "SEO özeti"
+      },
+      "editor": {
+        "pageTitle": "Haber editörü",
+        "pageSubtitle": "Taslağı dar bir sütuna sıkıştırmadan makale ve SEO sekmelerinde hazırlayın.",
+        "label": "Makale editörü",
+        "back": "Haberlere dön",
+        "untitled": "Başlıksız makale",
+        "articleTab": "Makale",
+        "articleSubtitle": "Başlık, slug, içerik, medya ve yayın zamanını geniş bir çalışma alanında yönetin.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Metadata, canonical URL ve sosyal kartları ayrı ayrı ayarlayın."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Örnek: ECB toplantısı hakkında tarafsız tonlu, kapak görselli ve tam SEO’lu bir piyasa güncellemesi oluştur.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "Tümü",
+        "allLanguages": "Tüm diller",
+        "draft": "Taslaklar",
+        "scheduled": "Planlanan",
+        "published": "Yayınlanan",
+        "archived": "Arşivlenen"
+      },
+      "filterHints": {
+        "all": "Tüm durumlar",
+        "draft": "Müşterilere görünmeyen taslaklar",
+        "scheduled": "Gelecekte yayınlanmak üzere planlananlar",
+        "published": "Yayındaki herkese açık yazılar",
+        "archived": "Herkese açık listelerden gizlenenler"
+      },
+      "statuses": {
+        "draft": "Taslak",
+        "scheduled": "Planlandı",
+        "published": "Yayında",
+        "archived": "Arşivlendi"
+      },
+      "roles": {
+        "assistant": "GPT editörü",
+        "user": "Siz"
+      },
+      "phases": {
+        "analyzing": "İstek analiz ediliyor",
+        "writing": "Makale taslağı yazılıyor",
+        "seo": "SEO metadataları hazırlanıyor",
+        "finalizing": "Haber çıktısı tamamlanıyor"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Başlık, slug veya özetle ara",
+        "locale": "Dil",
+        "generateImages": "Görseller",
+        "includeVideoLinks": "Videolar",
+        "status": "Durum",
+        "title": "Başlık",
+        "slug": "Slug",
+        "publishedAt": "Yayın tarihi",
+        "excerpt": "Özet",
+        "content": "İçerik",
+        "coverImage": "Kapak görseli URL’si",
+        "galleryImages": "Galeri görselleri",
+        "videoLinks": "Video bağlantıları"
+      },
+      "placeholders": {
+        "title": "Piyasa görünümü: traderlar bugün neyi izliyor",
+        "slug": "market-outlook",
+        "excerpt": "Kartlar ve önizlemeler için kısa özet",
+        "content": "Makale metnini buraya yazın",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "Her satıra bir görsel URL’si",
+        "videoLinks": "Her satıra bir video URL’si",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "Yazı oluştur",
+        "createDraft": "Taslak oluştur",
+        "saveDraft": "Taslağı kaydet",
+        "publishNow": "Şimdi yayınla",
+        "schedule": "Planla",
+        "preview": "Önizle",
+        "editArticle": "Makaleyi düzenle",
+        "reset": "Sıfırla",
+        "archive": "Arşivle",
+        "delete": "Sil",
+        "generating": "Oluşturuluyor...",
+        "send": "GPT’ye gönder"
+      },
+      "seo": {
+        "metaTitle": "Meta başlık",
+        "metaDescription": "Meta açıklama",
+        "metaKeywords": "Meta anahtar kelimeler",
+        "canonicalUrl": "Canonical URL",
+        "robots": "Robots",
+        "schemaType": "Schema türü",
+        "ogTitle": "Open Graph başlığı",
+        "ogDescription": "Open Graph açıklaması",
+        "ogImageUrl": "Open Graph görseli",
+        "twitterTitle": "Twitter başlığı",
+        "twitterDescription": "Twitter açıklaması",
+        "twitterImageUrl": "Twitter görseli"
+      },
+      "messages": {
+        "generated": "Taslak başarıyla oluşturuldu.",
+        "created": "Haber makalesi oluşturuldu.",
+        "saved": "Haber makalesi kaydedildi.",
+        "deleted": "Haber makalesi silindi.",
+        "loadFailed": "Haberler yüklenemedi.",
+        "loadOneFailed": "Taslak yüklenemedi.",
+        "editorRequired": "Başlık ve içerik zorunludur.",
+        "scheduleRequired": "Önce yayın tarihi ve saatini seçin.",
+        "promptRequired": "Önce GPT için bir istek yazın.",
+        "saveFailed": "Makale kaydedilemedi.",
+        "deleteFailed": "Makale silinemedi.",
+        "generateFailed": "Taslak oluşturulamadı."
+      },
+      "noDate": "Tarih yok"
     }
   },
   "support": {

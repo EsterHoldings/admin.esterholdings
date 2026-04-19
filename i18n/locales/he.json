@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "כתובת הנמען"
       }
+    },
+    "news": {
+      "title": "מרחב עבודה לחדשות",
+      "subtitle": "נהל את כל מערכת החדשות במקום אחד: סינון פוסטים, יצירה ידנית, טיוטות GPT, תצוגה מקדימה ועריכת SEO.",
+      "tabs": {
+        "library": "כל החדשות",
+        "draft": "טיוטה חדשה",
+        "manual": "פוסט חדש",
+        "gpt": "טיוטת GPT"
+      },
+      "views": {
+        "list": "רשימה",
+        "grid": "כרטיסים",
+        "table": "טבלה"
+      },
+      "columns": {
+        "article": "מאמר",
+        "status": "סטטוס",
+        "locale": "שפה",
+        "updated": "עודכן",
+        "actions": "פעולות"
+      },
+      "library": {
+        "label": "ספריית חדשות",
+        "title": "כל הפוסטים",
+        "subtitle": "סנן פוסטים שפורסמו, לא פורסמו או מתוזמנים, פתח תצוגה מקדימה או עבור לעריכה.",
+        "empty": "לא נמצאו פוסטים עבור המסננים שנבחרו."
+      },
+      "manual": {
+        "title": "צור פוסט ידנית",
+        "subtitle": "מלא ישירות את המאמר, המדיה ונתוני ה-SEO. שמור כטיוטה, פרסם מיד או תזמן פרסום."
+      },
+      "chatWorkspace": {
+        "label": "טיוטת GPT",
+        "title": "צור טיוטה חדשה",
+        "subtitleNew": "תאר את החדשה בשפה טבעית ו-GPT יכין טיוטה עם תוכן, ויזואליות ומטא-דאטה SEO.",
+        "subtitleExisting": "המשך לדבר עם GPT כדי לעצב מחדש את הטיוטה. מצב המאמר הנוכחי נשמר בהקשר.",
+        "empty": "אין עדיין טיוטה. התחל עם נושא, טון, מדיה וזווית.",
+        "hintNew": "ההודעה הראשונה יוצרת טיוטה חדשה. לאחר מכן אותו צ’אט ממשיך לשפר את אותו מאמר.",
+        "hintExisting": "בקש מ-GPT לשנות כותרת, לקצר פתיחה, להוסיף תמונות או לשפר SEO.",
+        "previewHint": "פתח תצוגה מקדימה מלאה של הטיוטה הנוכחית."
+      },
+      "preview": {
+        "label": "תצוגה מקדימה",
+        "videoLinks": "קישורי וידאו",
+        "noVideos": "לא צורפו קישורי וידאו.",
+        "seo": "תקציר SEO"
+      },
+      "editor": {
+        "pageTitle": "עורך חדשות",
+        "pageSubtitle": "השתמש בלשוניות מאמר ו-SEO כדי להכין טיוטה בלי לדחוס הכל לעמודה צרה.",
+        "label": "עורך מאמר",
+        "back": "חזרה לחדשות",
+        "untitled": "מאמר ללא כותרת",
+        "articleTab": "מאמר",
+        "articleSubtitle": "נהל כותרת, slug, תוכן, מדיה וזמן פרסום במרחב רחב.",
+        "seoTab": "SEO",
+        "seoSubtitle": "כוון מטא-דאטה, URL קנוני וכרטיסים חברתיים בנפרד."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "דוגמה: צור עדכון שוק על פגישת ה-ECB בטון ניטרלי, עם תמונת שער ו-SEO מלא.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "הכול",
+        "allLanguages": "כל השפות",
+        "draft": "טיוטות",
+        "scheduled": "מתוזמנים",
+        "published": "פורסמו",
+        "archived": "בארכיון"
+      },
+      "filterHints": {
+        "all": "כל המצבים",
+        "draft": "טיוטות שאינן גלויות ללקוחות",
+        "scheduled": "ממתינים לפרסום עתידי",
+        "published": "פוסטים ציבוריים פעילים",
+        "archived": "מוסתרים מרשימות ציבוריות"
+      },
+      "statuses": {
+        "draft": "טיוטה",
+        "scheduled": "מתוזמן",
+        "published": "פורסם",
+        "archived": "בארכיון"
+      },
+      "roles": {
+        "assistant": "עורך GPT",
+        "user": "אתה"
+      },
+      "phases": {
+        "analyzing": "מנתח את הבקשה",
+        "writing": "כותב את טיוטת המאמר",
+        "seo": "מכין מטא-דאטה SEO",
+        "finalizing": "מסיים את פלט החדשות"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "חפש לפי כותרת, slug או תקציר",
+        "locale": "שפה",
+        "generateImages": "תמונות",
+        "includeVideoLinks": "וידאו",
+        "status": "סטטוס",
+        "title": "כותרת",
+        "slug": "Slug",
+        "publishedAt": "תאריך פרסום",
+        "excerpt": "תקציר",
+        "content": "תוכן",
+        "coverImage": "URL תמונת שער",
+        "galleryImages": "תמונות גלריה",
+        "videoLinks": "קישורי וידאו"
+      },
+      "placeholders": {
+        "title": "תחזית שוק: מה סוחרים עוקבים היום",
+        "slug": "market-outlook",
+        "excerpt": "תקציר קצר לכרטיסים ותצוגות מקדימות",
+        "content": "כתוב כאן את גוף המאמר",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "URL תמונה אחד בכל שורה",
+        "videoLinks": "URL וידאו אחד בכל שורה",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "צור פוסט",
+        "createDraft": "צור טיוטה",
+        "saveDraft": "שמור טיוטה",
+        "publishNow": "פרסם עכשיו",
+        "schedule": "תזמן",
+        "preview": "תצוגה מקדימה",
+        "editArticle": "ערוך מאמר",
+        "reset": "איפוס",
+        "archive": "ארכיון",
+        "delete": "מחק",
+        "generating": "יוצר...",
+        "send": "שלח ל-GPT"
+      },
+      "seo": {
+        "metaTitle": "כותרת Meta",
+        "metaDescription": "תיאור Meta",
+        "metaKeywords": "מילות מפתח Meta",
+        "canonicalUrl": "URL קנוני",
+        "robots": "Robots",
+        "schemaType": "סוג Schema",
+        "ogTitle": "כותרת Open Graph",
+        "ogDescription": "תיאור Open Graph",
+        "ogImageUrl": "תמונת Open Graph",
+        "twitterTitle": "כותרת Twitter",
+        "twitterDescription": "תיאור Twitter",
+        "twitterImageUrl": "תמונת Twitter"
+      },
+      "messages": {
+        "generated": "הטיוטה נוצרה בהצלחה.",
+        "created": "מאמר החדשות נוצר.",
+        "saved": "מאמר החדשות נשמר.",
+        "deleted": "מאמר החדשות נמחק.",
+        "loadFailed": "טעינת החדשות נכשלה.",
+        "loadOneFailed": "טעינת הטיוטה נכשלה.",
+        "editorRequired": "כותרת ותוכן הם שדות חובה.",
+        "scheduleRequired": "בחר קודם תאריך ושעת פרסום.",
+        "promptRequired": "כתוב קודם בקשה ל-GPT.",
+        "saveFailed": "שמירת המאמר נכשלה.",
+        "deleteFailed": "מחיקת המאמר נכשלה.",
+        "generateFailed": "יצירת הטיוטה נכשלה."
+      },
+      "noDate": "אין תאריך"
     }
   },
   "support": {

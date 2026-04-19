@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "收款地址"
       }
+    },
+    "news": {
+      "title": "新闻工作区",
+      "subtitle": "在一个页面管理全部新闻：筛选文章、手动创建、用 GPT 生成草稿、预览并编辑 SEO。",
+      "tabs": {
+        "library": "全部新闻",
+        "draft": "新草稿",
+        "manual": "新建文章",
+        "gpt": "GPT 草稿"
+      },
+      "views": {
+        "list": "列表",
+        "grid": "卡片",
+        "table": "表格"
+      },
+      "columns": {
+        "article": "文章",
+        "status": "状态",
+        "locale": "语言",
+        "updated": "更新时间",
+        "actions": "操作"
+      },
+      "library": {
+        "label": "新闻库",
+        "title": "全部文章",
+        "subtitle": "筛选已发布、未发布和计划发布的文章，查看预览或进入编辑。",
+        "empty": "没有找到符合当前筛选条件的文章。"
+      },
+      "manual": {
+        "title": "手动创建文章",
+        "subtitle": "直接填写文章、媒体和 SEO 数据。可保存草稿、立即发布或定时发布。"
+      },
+      "chatWorkspace": {
+        "label": "GPT 草稿",
+        "title": "创建新草稿",
+        "subtitleNew": "用自然语言描述新闻，GPT 会生成包含内容、视觉素材和 SEO 元数据的草稿。",
+        "subtitleExisting": "继续与 GPT 对话来调整草稿。当前文章状态会保留在上下文中。",
+        "empty": "还没有草稿。请先输入主题、语气、媒体需求和角度。",
+        "hintNew": "第一条消息会创建新草稿，之后同一聊天会继续优化同一篇文章。",
+        "hintExisting": "可以让 GPT 修改标题、缩短导语、添加图片、改变角度或优化 SEO。",
+        "previewHint": "打开当前草稿的完整预览。"
+      },
+      "preview": {
+        "label": "预览",
+        "videoLinks": "视频链接",
+        "noVideos": "未添加视频链接。",
+        "seo": "SEO 摘要"
+      },
+      "editor": {
+        "pageTitle": "新闻编辑器",
+        "pageSubtitle": "使用文章和 SEO 标签页准备草稿，避免把所有内容挤在一个狭窄栏中。",
+        "label": "文章编辑器",
+        "back": "返回新闻",
+        "untitled": "未命名文章",
+        "articleTab": "文章",
+        "articleSubtitle": "在宽屏工作区管理标题、slug、内容、媒体和发布时间。",
+        "seoTab": "SEO",
+        "seoSubtitle": "单独配置元数据、规范链接和社交卡片。"
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "示例：创建一篇关于欧洲央行会议的市场更新，使用中性语气，添加一张封面图并填写完整 SEO。",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "全部",
+        "allLanguages": "所有语言",
+        "draft": "草稿",
+        "scheduled": "计划发布",
+        "published": "已发布",
+        "archived": "已归档"
+      },
+      "filterHints": {
+        "all": "所有状态",
+        "draft": "客户不可见的草稿",
+        "scheduled": "等待未来发布",
+        "published": "公开显示的文章",
+        "archived": "从公开列表中隐藏"
+      },
+      "statuses": {
+        "draft": "草稿",
+        "scheduled": "计划中",
+        "published": "已发布",
+        "archived": "已归档"
+      },
+      "roles": {
+        "assistant": "GPT 编辑",
+        "user": "你"
+      },
+      "phases": {
+        "analyzing": "正在分析请求",
+        "writing": "正在撰写文章草稿",
+        "seo": "正在准备 SEO 元数据",
+        "finalizing": "正在完成新闻输出"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "按标题、slug 或摘要搜索",
+        "locale": "语言",
+        "generateImages": "图片",
+        "includeVideoLinks": "视频",
+        "status": "状态",
+        "title": "标题",
+        "slug": "Slug",
+        "publishedAt": "发布日期",
+        "excerpt": "摘要",
+        "content": "内容",
+        "coverImage": "封面图片 URL",
+        "galleryImages": "图库图片",
+        "videoLinks": "视频链接"
+      },
+      "placeholders": {
+        "title": "市场展望：交易者今天关注什么",
+        "slug": "market-outlook",
+        "excerpt": "用于卡片和预览的简短摘要",
+        "content": "在此编写文章正文",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "每行一个图片 URL",
+        "videoLinks": "每行一个视频 URL",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "创建文章",
+        "createDraft": "创建草稿",
+        "saveDraft": "保存草稿",
+        "publishNow": "立即发布",
+        "schedule": "定时发布",
+        "preview": "预览",
+        "editArticle": "编辑文章",
+        "reset": "重置",
+        "archive": "归档",
+        "delete": "删除",
+        "generating": "生成中...",
+        "send": "发送给 GPT"
+      },
+      "seo": {
+        "metaTitle": "Meta 标题",
+        "metaDescription": "Meta 描述",
+        "metaKeywords": "Meta 关键词",
+        "canonicalUrl": "规范 URL",
+        "robots": "Robots",
+        "schemaType": "Schema 类型",
+        "ogTitle": "Open Graph 标题",
+        "ogDescription": "Open Graph 描述",
+        "ogImageUrl": "Open Graph 图片",
+        "twitterTitle": "Twitter 标题",
+        "twitterDescription": "Twitter 描述",
+        "twitterImageUrl": "Twitter 图片"
+      },
+      "messages": {
+        "generated": "草稿已成功生成。",
+        "created": "新闻文章已创建。",
+        "saved": "新闻文章已保存。",
+        "deleted": "新闻文章已删除。",
+        "loadFailed": "无法加载新闻文章。",
+        "loadOneFailed": "无法加载草稿。",
+        "editorRequired": "标题和内容为必填项。",
+        "scheduleRequired": "请先选择发布日期和时间。",
+        "promptRequired": "请先输入 GPT 请求。",
+        "saveFailed": "无法保存文章。",
+        "deleteFailed": "无法删除文章。",
+        "generateFailed": "无法生成草稿。"
+      },
+      "noDate": "无日期"
     }
   },
   "support": {

@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "Endereço do destinatário"
       }
+    },
+    "news": {
+      "title": "Área de notícias",
+      "subtitle": "Gerencie toda a redação em um só lugar: filtre publicações, crie manualmente, gere rascunhos com GPT, visualize e edite SEO.",
+      "tabs": {
+        "library": "Todas as notícias",
+        "draft": "Novo rascunho",
+        "manual": "Nova publicação",
+        "gpt": "Rascunho GPT"
+      },
+      "views": {
+        "list": "Lista",
+        "grid": "Cartões",
+        "table": "Tabela"
+      },
+      "columns": {
+        "article": "Artigo",
+        "status": "Status",
+        "locale": "Idioma",
+        "updated": "Atualizado",
+        "actions": "Ações"
+      },
+      "library": {
+        "label": "Biblioteca de notícias",
+        "title": "Todas as publicações",
+        "subtitle": "Filtre publicações publicadas, não publicadas e agendadas, visualize o conteúdo ou edite o artigo.",
+        "empty": "Nenhuma publicação encontrada para os filtros selecionados."
+      },
+      "manual": {
+        "title": "Criar publicação manualmente",
+        "subtitle": "Preencha artigo, mídia e dados de SEO diretamente. Salve como rascunho, publique agora ou agende a publicação."
+      },
+      "chatWorkspace": {
+        "label": "Rascunho GPT",
+        "title": "Criar novo rascunho",
+        "subtitleNew": "Descreva a notícia em linguagem natural e o GPT criará um rascunho com conteúdo, imagens e metadados de SEO.",
+        "subtitleExisting": "Continue conversando com o GPT para ajustar o rascunho. O estado atual do artigo permanece no contexto.",
+        "empty": "Ainda não há rascunho. Comece com tema, tom, mídia e abordagem.",
+        "hintNew": "A primeira mensagem cria um novo rascunho. Depois, o mesmo chat continua refinando o artigo.",
+        "hintExisting": "Peça ao GPT para alterar o título, reduzir a introdução, adicionar imagens ou melhorar o SEO.",
+        "previewHint": "Abrir a visualização completa do rascunho atual."
+      },
+      "preview": {
+        "label": "Pré-visualização",
+        "videoLinks": "Links de vídeo",
+        "noVideos": "Nenhum link de vídeo anexado.",
+        "seo": "Resumo de SEO"
+      },
+      "editor": {
+        "pageTitle": "Editor de notícias",
+        "pageSubtitle": "Use as abas Artigo e SEO para preparar o rascunho sem misturar tudo em uma coluna estreita.",
+        "label": "Editor de artigo",
+        "back": "Voltar para notícias",
+        "untitled": "Artigo sem título",
+        "articleTab": "Artigo",
+        "articleSubtitle": "Controle título, slug, conteúdo, mídia e data de publicação em uma área ampla.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Ajuste metadados, URL canônica e cartões sociais separadamente."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Exemplo: crie uma atualização de mercado sobre a reunião do BCE, com tom neutro, uma imagem principal e SEO completo.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "Tudo",
+        "allLanguages": "Todos os idiomas",
+        "draft": "Rascunhos",
+        "scheduled": "Agendadas",
+        "published": "Publicadas",
+        "archived": "Arquivadas"
+      },
+      "filterHints": {
+        "all": "Todos os estados",
+        "draft": "Rascunhos não visíveis para clientes",
+        "scheduled": "Na fila para publicação futura",
+        "published": "Publicações visíveis ao público",
+        "archived": "Ocultas das listas públicas"
+      },
+      "statuses": {
+        "draft": "Rascunho",
+        "scheduled": "Agendada",
+        "published": "Publicada",
+        "archived": "Arquivada"
+      },
+      "roles": {
+        "assistant": "Editor GPT",
+        "user": "Você"
+      },
+      "phases": {
+        "analyzing": "Analisando a solicitação",
+        "writing": "Escrevendo o rascunho",
+        "seo": "Preparando metadados de SEO",
+        "finalizing": "Finalizando a saída de notícias"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Buscar por título, slug ou resumo",
+        "locale": "Idioma",
+        "generateImages": "Imagens",
+        "includeVideoLinks": "Vídeos",
+        "status": "Status",
+        "title": "Título",
+        "slug": "Slug",
+        "publishedAt": "Data de publicação",
+        "excerpt": "Resumo",
+        "content": "Conteúdo",
+        "coverImage": "URL da imagem principal",
+        "galleryImages": "Imagens da galeria",
+        "videoLinks": "Links de vídeo"
+      },
+      "placeholders": {
+        "title": "Perspectiva de mercado: o que os traders acompanham hoje",
+        "slug": "market-outlook",
+        "excerpt": "Resumo curto para cartões e pré-visualizações",
+        "content": "Escreva aqui o corpo do artigo",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "Uma URL de imagem por linha",
+        "videoLinks": "Uma URL de vídeo por linha",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "Criar publicação",
+        "createDraft": "Criar rascunho",
+        "saveDraft": "Salvar rascunho",
+        "publishNow": "Publicar agora",
+        "schedule": "Agendar",
+        "preview": "Pré-visualizar",
+        "editArticle": "Editar artigo",
+        "reset": "Redefinir",
+        "archive": "Arquivar",
+        "delete": "Excluir",
+        "generating": "Gerando...",
+        "send": "Enviar ao GPT"
+      },
+      "seo": {
+        "metaTitle": "Meta título",
+        "metaDescription": "Meta descrição",
+        "metaKeywords": "Meta palavras-chave",
+        "canonicalUrl": "URL canônica",
+        "robots": "Robots",
+        "schemaType": "Tipo de schema",
+        "ogTitle": "Título Open Graph",
+        "ogDescription": "Descrição Open Graph",
+        "ogImageUrl": "Imagem Open Graph",
+        "twitterTitle": "Título Twitter",
+        "twitterDescription": "Descrição Twitter",
+        "twitterImageUrl": "Imagem Twitter"
+      },
+      "messages": {
+        "generated": "Rascunho gerado com sucesso.",
+        "created": "Artigo de notícias criado.",
+        "saved": "Artigo de notícias salvo.",
+        "deleted": "Artigo de notícias excluído.",
+        "loadFailed": "Não foi possível carregar as notícias.",
+        "loadOneFailed": "Não foi possível carregar o rascunho.",
+        "editorRequired": "Título e conteúdo são obrigatórios.",
+        "scheduleRequired": "Escolha primeiro a data e hora de publicação.",
+        "promptRequired": "Escreva primeiro uma solicitação para o GPT.",
+        "saveFailed": "Não foi possível salvar o artigo.",
+        "deleteFailed": "Não foi possível excluir o artigo.",
+        "generateFailed": "Não foi possível gerar o rascunho."
+      },
+      "noDate": "Sem data"
     }
   },
   "support": {

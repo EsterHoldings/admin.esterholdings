@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "Adresse du bénéficiaire"
       }
+    },
+    "news": {
+      "title": "Espace actualités",
+      "subtitle": "Gérez toute la rédaction depuis un seul écran : filtrez les articles, créez manuellement, générez des brouillons avec GPT, prévisualisez et ajustez le SEO.",
+      "tabs": {
+        "library": "Toutes les actualités",
+        "draft": "Nouveau brouillon",
+        "manual": "Nouvel article",
+        "gpt": "Brouillon GPT"
+      },
+      "views": {
+        "list": "Liste",
+        "grid": "Cartes",
+        "table": "Tableau"
+      },
+      "columns": {
+        "article": "Article",
+        "status": "Statut",
+        "locale": "Langue",
+        "updated": "Mis à jour",
+        "actions": "Actions"
+      },
+      "library": {
+        "label": "Bibliothèque d’actualités",
+        "title": "Tous les articles",
+        "subtitle": "Filtrez les articles publiés, non publiés et programmés, prévisualisez le contenu ou passez à l’édition.",
+        "empty": "Aucun article trouvé avec les filtres sélectionnés."
+      },
+      "manual": {
+        "title": "Créer un article manuellement",
+        "subtitle": "Renseignez directement l’article, les médias et les données SEO. Enregistrez en brouillon, publiez maintenant ou programmez la publication."
+      },
+      "chatWorkspace": {
+        "label": "Brouillon GPT",
+        "title": "Créer un nouveau brouillon",
+        "subtitleNew": "Décrivez le sujet en langage naturel et GPT préparera un brouillon avec contenu, visuels et métadonnées SEO.",
+        "subtitleExisting": "Continuez à parler avec GPT pour modifier le brouillon. L’état actuel de l’article reste dans le contexte.",
+        "empty": "Aucun brouillon pour le moment. Commencez par le sujet, le ton, les médias et l’angle.",
+        "hintNew": "Le premier message crée un nouveau brouillon. Ensuite, le même chat affine le même article.",
+        "hintExisting": "Demandez à GPT de modifier le titre, raccourcir l’introduction, ajouter des visuels ou améliorer le SEO.",
+        "previewHint": "Ouvrir la prévisualisation complète du brouillon actuel."
+      },
+      "preview": {
+        "label": "Aperçu",
+        "videoLinks": "Liens vidéo",
+        "noVideos": "Aucun lien vidéo ajouté.",
+        "seo": "Aperçu SEO"
+      },
+      "editor": {
+        "pageTitle": "Éditeur d’actualités",
+        "pageSubtitle": "Utilisez les onglets Article et SEO pour préparer le brouillon sans tout mélanger dans une colonne étroite.",
+        "label": "Éditeur d’article",
+        "back": "Retour aux actualités",
+        "untitled": "Article sans titre",
+        "articleTab": "Article",
+        "articleSubtitle": "Gérez le titre, le slug, le contenu, les médias et la date de publication depuis un espace large.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Ajustez les métadonnées, l’URL canonique et les cartes sociales séparément."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Exemple : créez une mise à jour de marché sur la réunion de la BCE, avec un ton neutre, une image principale et un SEO complet.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "Tout",
+        "allLanguages": "Toutes les langues",
+        "draft": "Brouillons",
+        "scheduled": "Programmés",
+        "published": "Publiés",
+        "archived": "Archivés"
+      },
+      "filterHints": {
+        "all": "Tous les états",
+        "draft": "Brouillons invisibles aux clients",
+        "scheduled": "Planifiés pour une publication future",
+        "published": "Articles publics",
+        "archived": "Masqués des listes publiques"
+      },
+      "statuses": {
+        "draft": "Brouillon",
+        "scheduled": "Programmé",
+        "published": "Publié",
+        "archived": "Archivé"
+      },
+      "roles": {
+        "assistant": "Éditeur GPT",
+        "user": "Vous"
+      },
+      "phases": {
+        "analyzing": "Analyse de la demande",
+        "writing": "Rédaction du brouillon",
+        "seo": "Préparation des métadonnées SEO",
+        "finalizing": "Finalisation de la sortie news"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Rechercher par titre, slug ou résumé",
+        "locale": "Langue",
+        "generateImages": "Images",
+        "includeVideoLinks": "Vidéos",
+        "status": "Statut",
+        "title": "Titre",
+        "slug": "Slug",
+        "publishedAt": "Date de publication",
+        "excerpt": "Résumé",
+        "content": "Contenu",
+        "coverImage": "URL de l’image principale",
+        "galleryImages": "Images de galerie",
+        "videoLinks": "Liens vidéo"
+      },
+      "placeholders": {
+        "title": "Perspectives de marché : ce que les traders surveillent aujourd’hui",
+        "slug": "market-outlook",
+        "excerpt": "Résumé court pour les cartes et aperçus",
+        "content": "Rédigez ici le corps de l’article",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "Une URL d’image par ligne",
+        "videoLinks": "Une URL vidéo par ligne",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "Créer un article",
+        "createDraft": "Créer un brouillon",
+        "saveDraft": "Enregistrer le brouillon",
+        "publishNow": "Publier maintenant",
+        "schedule": "Programmer",
+        "preview": "Aperçu",
+        "editArticle": "Modifier l’article",
+        "reset": "Réinitialiser",
+        "archive": "Archiver",
+        "delete": "Supprimer",
+        "generating": "Génération...",
+        "send": "Envoyer à GPT"
+      },
+      "seo": {
+        "metaTitle": "Méta-titre",
+        "metaDescription": "Méta-description",
+        "metaKeywords": "Méta-mots-clés",
+        "canonicalUrl": "URL canonique",
+        "robots": "Robots",
+        "schemaType": "Type de schema",
+        "ogTitle": "Titre Open Graph",
+        "ogDescription": "Description Open Graph",
+        "ogImageUrl": "Image Open Graph",
+        "twitterTitle": "Titre Twitter",
+        "twitterDescription": "Description Twitter",
+        "twitterImageUrl": "Image Twitter"
+      },
+      "messages": {
+        "generated": "Brouillon généré avec succès.",
+        "created": "Article créé.",
+        "saved": "Article enregistré.",
+        "deleted": "Article supprimé.",
+        "loadFailed": "Impossible de charger les actualités.",
+        "loadOneFailed": "Impossible de charger le brouillon.",
+        "editorRequired": "Le titre et le contenu sont obligatoires.",
+        "scheduleRequired": "Choisissez d’abord la date et l’heure de publication.",
+        "promptRequired": "Écrivez d’abord une demande pour GPT.",
+        "saveFailed": "Impossible d’enregistrer l’article.",
+        "deleteFailed": "Impossible de supprimer l’article.",
+        "generateFailed": "Impossible de générer le brouillon."
+      },
+      "noDate": "Aucune date"
     }
   },
   "support": {

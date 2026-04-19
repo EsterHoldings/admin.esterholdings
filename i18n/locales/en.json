@@ -1233,7 +1233,9 @@
       "subtitle": "Manage the full newsroom from one place: browse every article, start a GPT draft in chat, preview the result and jump into full editing.",
       "tabs": {
         "library": "All News",
-        "draft": "New Draft"
+        "draft": "New Draft",
+        "manual": "New post",
+        "gpt": "GPT draft"
       },
       "views": {
         "list": "List",
@@ -1249,9 +1251,13 @@
       },
       "library": {
         "label": "News Library",
-        "title": "All News",
-        "subtitle": "Switch between draft, published and archived articles, preview them, and open the full editor when needed.",
-        "empty": "No articles found for the current filter."
+        "title": "All posts",
+        "subtitle": "Filter published, unpublished and scheduled posts, preview content and jump into editing.",
+        "empty": "No posts found for the selected filters."
+      },
+      "manual": {
+        "title": "Create post manually",
+        "subtitle": "Fill the article, media and SEO data directly. Save as draft, publish immediately or schedule publication."
       },
       "chatWorkspace": {
         "label": "GPT Draft",
@@ -1301,10 +1307,18 @@
       "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
       "filters": {
         "all": "All",
+        "allLanguages": "All languages",
         "draft": "Drafts",
         "scheduled": "Scheduled",
         "published": "Published",
         "archived": "Archived"
+      },
+      "filterHints": {
+        "all": "Every post state",
+        "draft": "Drafts not visible to clients",
+        "scheduled": "Queued for future publication",
+        "published": "Live public posts",
+        "archived": "Hidden from public lists"
       },
       "statuses": {
         "draft": "Draft",
@@ -1333,6 +1347,7 @@
         "locale": "Language",
         "generateImages": "Images",
         "includeVideoLinks": "Videos",
+        "status": "Status",
         "title": "Title",
         "slug": "Slug",
         "publishedAt": "Publication date",
@@ -1355,12 +1370,14 @@
         "schemaType": "NewsArticle"
       },
       "actions": {
+        "createPost": "Create post",
         "createDraft": "Create Draft",
         "saveDraft": "Save Draft",
         "publishNow": "Publish Now",
         "schedule": "Schedule",
         "preview": "Preview",
         "editArticle": "Edit Article",
+        "reset": "Reset",
         "archive": "Archive",
         "delete": "Delete",
         "generating": "Generating...",
@@ -1382,6 +1399,7 @@
       },
       "messages": {
         "generated": "Draft generated successfully.",
+        "created": "News article created.",
         "saved": "News article saved.",
         "deleted": "News article deleted.",
         "loadFailed": "Failed to load news articles.",

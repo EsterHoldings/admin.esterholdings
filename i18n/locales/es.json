@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "Dirección del destinatario"
       }
+    },
+    "news": {
+      "title": "Área de noticias",
+      "subtitle": "Gestiona toda la redacción desde un solo lugar: filtra publicaciones, crea artículos manualmente, genera borradores con GPT, previsualiza y edita el SEO.",
+      "tabs": {
+        "library": "Todas las noticias",
+        "draft": "Nuevo borrador",
+        "manual": "Nueva publicación",
+        "gpt": "Borrador GPT"
+      },
+      "views": {
+        "list": "Lista",
+        "grid": "Tarjetas",
+        "table": "Tabla"
+      },
+      "columns": {
+        "article": "Artículo",
+        "status": "Estado",
+        "locale": "Idioma",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "library": {
+        "label": "Biblioteca de noticias",
+        "title": "Todas las publicaciones",
+        "subtitle": "Filtra publicaciones publicadas, no publicadas y programadas, abre la vista previa o edita el artículo.",
+        "empty": "No se encontraron publicaciones para los filtros seleccionados."
+      },
+      "manual": {
+        "title": "Crear publicación manualmente",
+        "subtitle": "Completa el artículo, los medios y los datos SEO directamente. Guarda como borrador, publica ahora o programa la publicación."
+      },
+      "chatWorkspace": {
+        "label": "Borrador GPT",
+        "title": "Crear nuevo borrador",
+        "subtitleNew": "Describe la noticia en lenguaje natural y GPT preparará un borrador con contenido, recursos visuales y metadatos SEO.",
+        "subtitleExisting": "Sigue hablando con GPT para ajustar el borrador. El estado actual del artículo se mantiene en contexto.",
+        "empty": "Todavía no hay borrador. Empieza con un tema, tono, recursos y enfoque.",
+        "hintNew": "El primer mensaje crea un nuevo borrador. Después, el mismo chat seguirá mejorando ese artículo.",
+        "hintExisting": "Pide a GPT que cambie el título, reduzca la introducción, añada imágenes, cambie el enfoque o mejore el SEO.",
+        "previewHint": "Abrir la vista previa completa del borrador actual."
+      },
+      "preview": {
+        "label": "Vista previa",
+        "videoLinks": "Enlaces de vídeo",
+        "noVideos": "No hay enlaces de vídeo adjuntos.",
+        "seo": "Resumen SEO"
+      },
+      "editor": {
+        "pageTitle": "Editor de noticias",
+        "pageSubtitle": "Usa las pestañas de artículo y SEO para preparar el borrador sin mezclarlo todo en una columna estrecha.",
+        "label": "Editor de artículos",
+        "back": "Volver a noticias",
+        "untitled": "Artículo sin título",
+        "articleTab": "Artículo",
+        "articleSubtitle": "Controla título, slug, contenido, medios y fecha de publicación desde un espacio amplio.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Configura metadatos, URL canónica y tarjetas sociales por separado."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Ejemplo: Crea una actualización de mercado sobre la reunión del BCE, con tono neutral, una imagen principal y SEO completo.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "Todo",
+        "allLanguages": "Todos los idiomas",
+        "draft": "Borradores",
+        "scheduled": "Programadas",
+        "published": "Publicadas",
+        "archived": "Archivadas"
+      },
+      "filterHints": {
+        "all": "Todos los estados",
+        "draft": "Borradores no visibles para clientes",
+        "scheduled": "En cola para publicación futura",
+        "published": "Publicaciones visibles públicamente",
+        "archived": "Ocultas de las listas públicas"
+      },
+      "statuses": {
+        "draft": "Borrador",
+        "scheduled": "Programada",
+        "published": "Publicada",
+        "archived": "Archivada"
+      },
+      "roles": {
+        "assistant": "Editor GPT",
+        "user": "Tú"
+      },
+      "phases": {
+        "analyzing": "Analizando la solicitud",
+        "writing": "Escribiendo el borrador",
+        "seo": "Preparando metadatos SEO",
+        "finalizing": "Finalizando la salida de noticias"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Buscar por título, slug o resumen",
+        "locale": "Idioma",
+        "generateImages": "Imágenes",
+        "includeVideoLinks": "Vídeos",
+        "status": "Estado",
+        "title": "Título",
+        "slug": "Slug",
+        "publishedAt": "Fecha de publicación",
+        "excerpt": "Resumen",
+        "content": "Contenido",
+        "coverImage": "URL de imagen principal",
+        "galleryImages": "Imágenes de galería",
+        "videoLinks": "Enlaces de vídeo"
+      },
+      "placeholders": {
+        "title": "Perspectiva del mercado: qué observan hoy los traders",
+        "slug": "market-outlook",
+        "excerpt": "Resumen corto para tarjetas y vistas previas",
+        "content": "Escribe aquí el cuerpo del artículo",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "Una URL de imagen por línea",
+        "videoLinks": "Una URL de vídeo por línea",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "Crear publicación",
+        "createDraft": "Crear borrador",
+        "saveDraft": "Guardar borrador",
+        "publishNow": "Publicar ahora",
+        "schedule": "Programar",
+        "preview": "Vista previa",
+        "editArticle": "Editar artículo",
+        "reset": "Restablecer",
+        "archive": "Archivar",
+        "delete": "Eliminar",
+        "generating": "Generando...",
+        "send": "Enviar a GPT"
+      },
+      "seo": {
+        "metaTitle": "Meta título",
+        "metaDescription": "Meta descripción",
+        "metaKeywords": "Meta palabras clave",
+        "canonicalUrl": "URL canónica",
+        "robots": "Robots",
+        "schemaType": "Tipo de schema",
+        "ogTitle": "Título Open Graph",
+        "ogDescription": "Descripción Open Graph",
+        "ogImageUrl": "Imagen Open Graph",
+        "twitterTitle": "Título de Twitter",
+        "twitterDescription": "Descripción de Twitter",
+        "twitterImageUrl": "Imagen de Twitter"
+      },
+      "messages": {
+        "generated": "Borrador generado correctamente.",
+        "created": "Artículo de noticias creado.",
+        "saved": "Artículo de noticias guardado.",
+        "deleted": "Artículo de noticias eliminado.",
+        "loadFailed": "No se pudieron cargar las noticias.",
+        "loadOneFailed": "No se pudo cargar el borrador.",
+        "editorRequired": "El título y el contenido son obligatorios.",
+        "scheduleRequired": "Primero selecciona fecha y hora de publicación.",
+        "promptRequired": "Escribe primero una solicitud para GPT.",
+        "saveFailed": "No se pudo guardar el artículo.",
+        "deleteFailed": "No se pudo eliminar el artículo.",
+        "generateFailed": "No se pudo generar el borrador."
+      },
+      "noDate": "Sin fecha"
     }
   },
   "support": {

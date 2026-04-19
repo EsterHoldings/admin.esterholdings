@@ -2269,6 +2269,191 @@
       "paymentDetailFields": {
         "recipientAddress": "Indirizzo del destinatario"
       }
+    },
+    "news": {
+      "title": "Area notizie",
+      "subtitle": "Gestisci tutta la redazione da un unico punto: filtra i post, crea manualmente, genera bozze con GPT, apri l’anteprima e modifica la SEO.",
+      "tabs": {
+        "library": "Tutte le notizie",
+        "draft": "Nuova bozza",
+        "manual": "Nuovo post",
+        "gpt": "Bozza GPT"
+      },
+      "views": {
+        "list": "Lista",
+        "grid": "Schede",
+        "table": "Tabella"
+      },
+      "columns": {
+        "article": "Articolo",
+        "status": "Stato",
+        "locale": "Lingua",
+        "updated": "Aggiornato",
+        "actions": "Azioni"
+      },
+      "library": {
+        "label": "Archivio notizie",
+        "title": "Tutti i post",
+        "subtitle": "Filtra post pubblicati, non pubblicati e programmati, visualizza l’anteprima o passa alla modifica.",
+        "empty": "Nessun post trovato per i filtri selezionati."
+      },
+      "manual": {
+        "title": "Crea post manualmente",
+        "subtitle": "Compila direttamente articolo, media e dati SEO. Salva come bozza, pubblica subito o programma la pubblicazione."
+      },
+      "chatWorkspace": {
+        "label": "Bozza GPT",
+        "title": "Crea una nuova bozza",
+        "subtitleNew": "Descrivi la notizia in linguaggio naturale e GPT preparerà una bozza con contenuti, immagini e metadati SEO.",
+        "subtitleExisting": "Continua a parlare con GPT per modificare la bozza. Lo stato attuale dell’articolo resta nel contesto.",
+        "empty": "Non c’è ancora una bozza. Inizia con argomento, tono, media e taglio.",
+        "hintNew": "Il primo messaggio crea una nuova bozza. Poi la stessa chat continuerà a perfezionare l’articolo.",
+        "hintExisting": "Chiedi a GPT di modificare il titolo, accorciare l’introduzione, aggiungere immagini o migliorare la SEO.",
+        "previewHint": "Apri l’anteprima completa della bozza corrente."
+      },
+      "preview": {
+        "label": "Anteprima",
+        "videoLinks": "Link video",
+        "noVideos": "Nessun link video allegato.",
+        "seo": "Riepilogo SEO"
+      },
+      "editor": {
+        "pageTitle": "Editor notizie",
+        "pageSubtitle": "Usa le schede Articolo e SEO per preparare la bozza senza comprimere tutto in una colonna stretta.",
+        "label": "Editor articolo",
+        "back": "Torna alle notizie",
+        "untitled": "Articolo senza titolo",
+        "articleTab": "Articolo",
+        "articleSubtitle": "Gestisci titolo, slug, contenuto, media e data di pubblicazione da un’area ampia.",
+        "seoTab": "SEO",
+        "seoSubtitle": "Configura metadati, URL canonico e schede social separatamente."
+      },
+      "sidebarLabel": "Draft library",
+      "sidebarTitle": "News drafts",
+      "testMode": "Test mode uses the OpenAI key configured on the server.",
+      "listEmpty": "No news articles found yet.",
+      "workspaceDraft": "Draft workspace",
+      "workspaceNew": "New conversation",
+      "workspaceSubtitle": "Keep editing the same draft through chat or manual fields.",
+      "workspaceSubtitleNew": "Describe the story you need, and the assistant will prepare copy, visuals and SEO.",
+      "emptyTitle": "Start with a prompt and GPT will build the first draft",
+      "chatTitle": "Editorial chat",
+      "chatSubtitle": "Ask for a new article or request changes to the current draft.",
+      "chatEmpty": "No messages yet. Ask GPT to generate your first news draft.",
+      "chatPlaceholder": "Esempio: crea un aggiornamento di mercato sulla riunione BCE, con tono neutro, un’immagine principale e SEO completo.",
+      "chatHintExisting": "This message will revise the current draft and keep the latest manual edits in context.",
+      "chatHintNew": "The first message will create a new draft and open it immediately.",
+      "editorTitle": "Draft editor",
+      "editorSubtitle": "You can edit the article manually at any point, then continue the conversation.",
+      "seoTitle": "SEO settings",
+      "seoSubtitle": "Manage metadata, social cards and indexing fields in full.",
+      "filters": {
+        "all": "Tutti",
+        "allLanguages": "Tutte le lingue",
+        "draft": "Bozze",
+        "scheduled": "Programmati",
+        "published": "Pubblicati",
+        "archived": "Archiviati"
+      },
+      "filterHints": {
+        "all": "Tutti gli stati",
+        "draft": "Bozze non visibili ai clienti",
+        "scheduled": "In coda per pubblicazione futura",
+        "published": "Post pubblici",
+        "archived": "Nascosti dagli elenchi pubblici"
+      },
+      "statuses": {
+        "draft": "Bozza",
+        "scheduled": "Programmato",
+        "published": "Pubblicato",
+        "archived": "Archiviato"
+      },
+      "roles": {
+        "assistant": "Editor GPT",
+        "user": "Tu"
+      },
+      "phases": {
+        "analyzing": "Analisi della richiesta",
+        "writing": "Scrittura della bozza",
+        "seo": "Preparazione dei metadati SEO",
+        "finalizing": "Finalizzazione dell’output news"
+      },
+      "tones": {
+        "professional": "Professional",
+        "neutral": "Neutral",
+        "promotional": "Promotional",
+        "analytical": "Analytical"
+      },
+      "fields": {
+        "search": "Cerca per titolo, slug o estratto",
+        "locale": "Lingua",
+        "generateImages": "Immagini",
+        "includeVideoLinks": "Video",
+        "status": "Stato",
+        "title": "Titolo",
+        "slug": "Slug",
+        "publishedAt": "Data di pubblicazione",
+        "excerpt": "Estratto",
+        "content": "Contenuto",
+        "coverImage": "URL immagine principale",
+        "galleryImages": "Immagini galleria",
+        "videoLinks": "Link video"
+      },
+      "placeholders": {
+        "title": "Prospettive di mercato: cosa osservano oggi i trader",
+        "slug": "market-outlook",
+        "excerpt": "Breve riepilogo per schede e anteprime",
+        "content": "Scrivi qui il corpo dell’articolo",
+        "coverImage": "https://example.com/image.jpg",
+        "galleryImages": "Un URL immagine per riga",
+        "videoLinks": "Un URL video per riga",
+        "metaKeywords": "forex, market outlook, ECB",
+        "robots": "index,follow",
+        "schemaType": "NewsArticle"
+      },
+      "actions": {
+        "createPost": "Crea post",
+        "createDraft": "Crea bozza",
+        "saveDraft": "Salva bozza",
+        "publishNow": "Pubblica ora",
+        "schedule": "Programma",
+        "preview": "Anteprima",
+        "editArticle": "Modifica articolo",
+        "reset": "Reimposta",
+        "archive": "Archivia",
+        "delete": "Elimina",
+        "generating": "Generazione...",
+        "send": "Invia a GPT"
+      },
+      "seo": {
+        "metaTitle": "Meta titolo",
+        "metaDescription": "Meta descrizione",
+        "metaKeywords": "Meta keyword",
+        "canonicalUrl": "URL canonico",
+        "robots": "Robots",
+        "schemaType": "Tipo schema",
+        "ogTitle": "Titolo Open Graph",
+        "ogDescription": "Descrizione Open Graph",
+        "ogImageUrl": "Immagine Open Graph",
+        "twitterTitle": "Titolo Twitter",
+        "twitterDescription": "Descrizione Twitter",
+        "twitterImageUrl": "Immagine Twitter"
+      },
+      "messages": {
+        "generated": "Bozza generata correttamente.",
+        "created": "Articolo creato.",
+        "saved": "Articolo salvato.",
+        "deleted": "Articolo eliminato.",
+        "loadFailed": "Impossibile caricare le notizie.",
+        "loadOneFailed": "Impossibile caricare la bozza.",
+        "editorRequired": "Titolo e contenuto sono obbligatori.",
+        "scheduleRequired": "Seleziona prima data e ora di pubblicazione.",
+        "promptRequired": "Scrivi prima una richiesta per GPT.",
+        "saveFailed": "Impossibile salvare l’articolo.",
+        "deleteFailed": "Impossibile eliminare l’articolo.",
+        "generateFailed": "Impossibile generare la bozza."
+      },
+      "noDate": "Nessuna data"
     }
   },
   "support": {
