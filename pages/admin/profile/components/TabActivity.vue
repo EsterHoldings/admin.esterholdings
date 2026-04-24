@@ -1,6 +1,6 @@
 <template>
   <div class="admin-profile-tab-space admin-profile-activity">
-    <PanelDefault class="admin-profile-activity__toolbar">
+    <section class="admin-profile-activity__toolbar">
       <div class="admin-profile-activity__presets">
         <button
           v-for="preset in metricRangePresets"
@@ -90,10 +90,10 @@
           {{ resolveText("admin.profile.actions.refresh", "Refresh") }}
         </UiButtonDefault>
       </div>
-    </PanelDefault>
+    </section>
 
     <div class="admin-profile-activity__summary-grid">
-      <PanelDefault
+      <div
         v-for="card in summaryCards"
         :key="card.id"
         class="admin-profile-activity__summary-card"
@@ -101,11 +101,11 @@
         <UiTextSmall class="admin-profile-activity__summary-label">{{ card.label }}</UiTextSmall>
         <UiTextH5 class="admin-profile-activity__summary-value">{{ card.value }}</UiTextH5>
         <UiTextSmall class="admin-profile-activity__summary-hint">{{ card.hint }}</UiTextSmall>
-      </PanelDefault>
+      </div>
     </div>
 
     <div class="admin-profile-activity__main-grid">
-      <PanelDefault class="admin-profile-activity__panel">
+      <section class="admin-profile-activity__panel">
         <div class="admin-profile-activity__panel-header">
           <div>
             <UiTextH5 class="admin-profile-activity__panel-title">
@@ -129,9 +129,9 @@
           :yAxes="chartAxes"
           :height="320"
         />
-      </PanelDefault>
+      </section>
 
-      <PanelDefault class="admin-profile-activity__panel">
+      <section class="admin-profile-activity__panel">
         <div class="admin-profile-activity__panel-header">
           <div>
             <UiTextH5 class="admin-profile-activity__panel-title">
@@ -209,10 +209,10 @@
             </div>
           </div>
         </div>
-      </PanelDefault>
+      </section>
     </div>
 
-    <PanelDefault class="admin-profile-activity__panel">
+    <section class="admin-profile-activity__panel">
       <div class="admin-profile-activity__panel-header">
         <div>
           <UiTextH5 class="admin-profile-activity__panel-title">
@@ -296,7 +296,7 @@
           </button>
         </div>
       </div>
-    </PanelDefault>
+    </section>
   </div>
 </template>
 
@@ -306,7 +306,6 @@
   import { useToast } from "vue-toastification";
 
   import AdminMetricChart from "~/components/block/charts/AdminMetricChart.vue";
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiInput from "~/components/ui/UiInput.vue";
   import UiSelect from "~/components/ui/UiSelect.vue";
@@ -617,7 +616,12 @@
   .admin-profile-activity__toolbar,
   .admin-profile-activity__summary-card,
   .admin-profile-activity__panel {
-    padding: 18px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    background:
+      radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--ui-primary-main) 6%, transparent), transparent 34%),
+      color-mix(in srgb, var(--ui-background-panel) 78%, transparent);
   }
 
   .admin-profile-activity__toolbar {
@@ -658,10 +662,10 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 12px;
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    padding: 10px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ui-background-card) 66%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 8%, var(--color-stroke-ui-light));
   }
 
   .admin-profile-activity__filter-label,
@@ -717,9 +721,9 @@
 
   .admin-profile-activity__breakdown-block {
     border-radius: 16px;
-    padding: 16px;
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    padding: 14px;
+    background: color-mix(in srgb, var(--ui-background-card) 58%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 8%, var(--color-stroke-ui-light));
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -760,10 +764,10 @@
   }
 
   .admin-profile-activity__session-card {
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-radius: 18px;
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 8%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 56%, transparent);
     display: flex;
     flex-direction: column;
     gap: 10px;

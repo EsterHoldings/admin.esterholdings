@@ -1,7 +1,7 @@
 <template>
   <div class="admin-profile-security">
     <div class="admin-profile-security__top-grid">
-      <PanelDefault class="admin-profile-security__panel admin-profile-security__panel--password">
+      <section class="admin-profile-security__panel admin-profile-security__panel--password">
         <div class="admin-profile-security__panel-header">
           <div>
             <UiTextH5 class="admin-profile-security__panel-title">
@@ -64,9 +64,9 @@
             {{ resolveText("admin.profile.actions.updatePassword", "Update password") }}
           </UiButtonDefault>
         </div>
-      </PanelDefault>
+      </section>
 
-      <PanelDefault class="admin-profile-security__panel admin-profile-security__panel--recovery">
+      <section class="admin-profile-security__panel admin-profile-security__panel--recovery">
         <div class="admin-profile-security__panel-header">
           <div>
             <UiTextH5 class="admin-profile-security__panel-title">
@@ -105,10 +105,10 @@
             {{ resolveText("admin.profile.actions.sendGeneratedPassword", "Generate and send password") }}
           </UiButtonDefault>
         </div>
-      </PanelDefault>
+      </section>
     </div>
 
-    <PanelDefault class="admin-profile-security__panel">
+    <section class="admin-profile-security__panel">
       <div class="admin-profile-security__panel-header">
         <div>
           <UiTextH5 class="admin-profile-security__panel-title">
@@ -194,7 +194,7 @@
           </div>
         </div>
       </div>
-    </PanelDefault>
+    </section>
   </div>
 </template>
 
@@ -203,7 +203,6 @@
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
 
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiBadge from "~/components/ui/UiBadge.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiFormControl from "~/components/ui/UiFormControl.vue";
@@ -447,11 +446,15 @@
   }
 
   .admin-profile-security__panel {
-    padding: 22px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)), rgba(7, 18, 53, 0.26);
+    gap: 18px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    background:
+      radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-main) 6%, transparent), transparent 36%),
+      color-mix(in srgb, var(--ui-background-panel) 78%, transparent);
   }
 
   .admin-profile-security__panel--recovery {
@@ -485,18 +488,9 @@
   }
 
   .admin-profile-security__field-card {
-    padding: 14px 14px 10px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease;
-  }
-
-  .admin-profile-security__field-card:hover {
-    border-color: rgba(113, 158, 223, 0.18);
-    background: rgba(255, 255, 255, 0.045);
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
   .admin-profile-security__field-card :deep(.ui-form-control__label) {
@@ -517,11 +511,10 @@
     align-items: stretch;
     justify-content: space-between;
     gap: 16px;
-    padding: 20px;
-    border-radius: 22px;
-    background: rgba(7, 18, 53, 0.38);
-    border: 1px solid rgba(255, 173, 66, 0.12);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--ui-background-card) 56%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-warning) 12%, var(--color-stroke-ui-light));
   }
 
   .admin-profile-security__recovery-meta {
@@ -573,10 +566,10 @@
     flex-direction: column;
     gap: 18px;
     justify-content: center;
-    padding: 20px;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--ui-background-card) 52%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 8%, var(--color-stroke-ui-light));
   }
 
   .admin-profile-security__two-factor-actions {

@@ -1,132 +1,132 @@
 <template>
   <div class="admin-detail">
     <div class="admin-detail__header">
-      <div class="admin-detail__identity">
-        <div class="admin-detail__avatar">
-          <img
-            v-if="profile?.photo_url"
-            :src="profile.photo_url"
-            :alt="profileDisplayName"
-          />
-          <span v-else>{{ profile?.initials || "AD" }}</span>
+      <div class="admin-detail__hero">
+        <div class="admin-detail__identity">
+          <div class="admin-detail__avatar">
+            <img
+              v-if="profile?.photo_url"
+              :src="profile.photo_url"
+              :alt="profileDisplayName"
+            />
+            <span v-else>{{ profile?.initials || "AD" }}</span>
+          </div>
+
+          <div class="admin-detail__heading">
+            <h1 class="admin-detail__title">{{ profileDisplayName }}</h1>
+            <p class="admin-detail__subtitle">{{ profile?.email || "—" }}</p>
+
+            <div
+              v-if="roleNames.length > 0"
+              class="admin-detail__roles"
+            >
+              <span
+                v-for="roleName in roleNames"
+                :key="roleName"
+                class="admin-detail__role-pill"
+              >
+                {{ roleName }}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div class="admin-detail__heading">
-          <h1 class="admin-detail__title">{{ profileDisplayName }}</h1>
-          <p class="admin-detail__subtitle">{{ profile?.email || "—" }}</p>
-
+        <div class="admin-detail__header-side">
           <div
-            v-if="roleNames.length > 0"
-            class="admin-detail__roles"
+            class="admin-detail__status"
+            :class="profile?.is_online ? 'is-online' : 'is-offline'"
           >
-            <span
-              v-for="roleName in roleNames"
-              :key="roleName"
-              class="admin-detail__role-pill"
-            >
-              {{ roleName }}
-            </span>
+            <span class="admin-detail__status-dot" />
+            <span>{{ presenceLabel }}</span>
           </div>
+
+          <PrimeButton
+            class="admin-detail__refresh"
+            icon="pi pi-refresh"
+            :label="resolveText('admin.profile.actions.refresh', 'Refresh')"
+            outlined
+            :loading="isLoading"
+            @click="loadProfile"
+          />
         </div>
       </div>
 
-      <div class="admin-detail__header-side">
-        <div
-          class="admin-detail__status"
-          :class="profile?.is_online ? 'is-online' : 'is-offline'"
-        >
-          <span class="admin-detail__status-dot" />
-          <span>{{ presenceLabel }}</span>
+      <div class="admin-detail__summary-strip">
+        <div class="admin-detail__summary-item">
+          <span class="admin-detail__summary-label">
+            {{ resolveText("admin.profile.summary.nickname", "Nickname") }}
+          </span>
+          <strong class="admin-detail__summary-value">{{ profile?.nickname || "—" }}</strong>
         </div>
 
-        <div class="admin-detail__summary-grid">
-          <div class="admin-detail__summary-card">
-            <span class="admin-detail__summary-label">
-              {{ resolveText("admin.profile.summary.nickname", "Nickname") }}
-            </span>
-            <strong class="admin-detail__summary-value">{{ profile?.nickname || "—" }}</strong>
-          </div>
-
-          <div class="admin-detail__summary-card">
-            <span class="admin-detail__summary-label">
-              {{ resolveText("admin.profile.summary.twoFactor", "2FA") }}
-            </span>
-            <strong class="admin-detail__summary-value">
-              {{
-                profile?.two_factor_enabled
-                  ? resolveText("admin.profile.security.twoFactor.enabled", "Enabled")
-                  : resolveText("admin.profile.security.twoFactor.disabled", "Disabled")
-              }}
-            </strong>
-          </div>
-
-          <div class="admin-detail__summary-card">
-            <span class="admin-detail__summary-label">
-              {{ resolveText("admin.profile.summary.lastSeen", "Last seen") }}
-            </span>
-            <strong class="admin-detail__summary-value">{{ presenceMeta }}</strong>
-          </div>
+        <div class="admin-detail__summary-item">
+          <span class="admin-detail__summary-label">
+            {{ resolveText("admin.profile.summary.twoFactor", "2FA") }}
+          </span>
+          <strong class="admin-detail__summary-value">
+            {{
+              profile?.two_factor_enabled
+                ? resolveText("admin.profile.security.twoFactor.enabled", "Enabled")
+                : resolveText("admin.profile.security.twoFactor.disabled", "Disabled")
+            }}
+          </strong>
         </div>
 
-        <PrimeButton
-          class="admin-detail__refresh"
-          icon="pi pi-refresh"
-          :label="resolveText('admin.profile.actions.refresh', 'Refresh')"
-          outlined
-          :loading="isLoading"
-          @click="loadProfile"
-        />
+        <div class="admin-detail__summary-item">
+          <span class="admin-detail__summary-label">
+            {{ resolveText("admin.profile.summary.lastSeen", "Last seen") }}
+          </span>
+          <strong class="admin-detail__summary-value">{{ presenceMeta }}</strong>
+        </div>
       </div>
     </div>
 
-    <PrimeCard class="admin-detail-card">
-      <template #content>
-        <div class="admin-detail__layout">
-          <aside class="admin-detail__nav">
-            <PrimeButton
-              v-for="tab in tabsList"
-              :key="tab.id"
-              type="button"
-              class="admin-detail__nav-button"
-              :class="{ 'is-active': activeTabKey === tab.id }"
-              :icon="tab.icon"
-              :label="tab.label"
-              text
-              @click="handleActiveTab(tab.id)"
-            />
-          </aside>
+    <section class="admin-detail-card">
+      <div class="admin-detail__layout">
+        <aside class="admin-detail__nav">
+          <PrimeButton
+            v-for="tab in tabsList"
+            :key="tab.id"
+            type="button"
+            class="admin-detail__nav-button"
+            :class="{ 'is-active': activeTabKey === tab.id }"
+            :icon="tab.icon"
+            :label="tab.label"
+            text
+            @click="handleActiveTab(tab.id)"
+          />
+        </aside>
 
-          <main class="admin-detail__content">
-            <div class="admin-detail__content-header">
-              <div>
-                <h2>{{ activeTab?.label }}</h2>
-                <p>{{ activeTab?.description }}</p>
-              </div>
+        <main class="admin-detail__content">
+          <div class="admin-detail__content-header">
+            <div>
+              <h2>{{ activeTab?.label }}</h2>
+              <p>{{ activeTab?.description }}</p>
             </div>
+          </div>
 
-            <Transition
-              enter-active-class="transition ease-out duration-150"
-              enter-from-class="opacity-0 translate-y-2"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition ease-in duration-100"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 -translate-y-1"
-              mode="out-in"
-            >
-              <component
-                :is="activeTab?.component"
-                :key="activeTab?.id || activeTabKey"
-                :profileData="profile"
-                :isLoading="isLoading"
-                :profileScope="profileScope"
-                @profile-updated="handleProfileUpdated"
-                @profile-refresh="loadProfile"
-              />
-            </Transition>
-          </main>
-        </div>
-      </template>
-    </PrimeCard>
+          <Transition
+            enter-active-class="transition ease-out duration-150"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-100"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-1"
+            mode="out-in"
+          >
+            <component
+              :is="activeTab?.component"
+              :key="activeTab?.id || activeTabKey"
+              :profileData="profile"
+              :isLoading="isLoading"
+              :profileScope="profileScope"
+              @profile-updated="handleProfileUpdated"
+              @profile-refresh="loadProfile"
+            />
+          </Transition>
+        </main>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -409,10 +409,16 @@
   }
 
   .admin-detail__header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
-    gap: 14px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .admin-detail__hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
   }
 
   .admin-detail__identity {
@@ -488,9 +494,8 @@
 
   .admin-detail__header-side {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
   }
 
   .admin-detail__status {
@@ -518,19 +523,19 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
   }
 
-  .admin-detail__summary-grid {
+  .admin-detail__summary-strip {
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-left: 72px;
   }
 
-  .admin-detail__summary-card {
+  .admin-detail__summary-item {
     min-width: 0;
-    padding: 10px 12px;
-    border-radius: 14px;
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
-    background: color-mix(in srgb, var(--ui-background-card) 60%, transparent);
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .admin-detail__summary-label {
@@ -545,7 +550,6 @@
 
   .admin-detail__summary-value {
     display: block;
-    margin-top: 4px;
     color: var(--ui-text-main);
     font-size: 13px;
     line-height: 1.45;
@@ -560,19 +564,14 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border: 1px solid var(--admin-glass-border);
-    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 12%, var(--color-stroke-ui-light));
+    border-radius: 20px;
     background:
-      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 38%),
+      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 8%, transparent), transparent 38%),
       linear-gradient(145deg, var(--admin-glass-bg), var(--admin-glass-bg-strong));
-    box-shadow: var(--admin-glass-shadow);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-  }
-
-  .admin-detail-card :deep(.p-card-body),
-  .admin-detail-card :deep(.p-card-content) {
-    padding: 0;
+    box-shadow: 0 14px 38px color-mix(in srgb, #000000 12%, transparent);
+    backdrop-filter: blur(18px) saturate(128%);
+    -webkit-backdrop-filter: blur(18px) saturate(128%);
   }
 
   .admin-detail-card::after {
@@ -582,7 +581,7 @@
     z-index: 0;
     width: 46%;
     pointer-events: none;
-    background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 11%, transparent), transparent);
+    background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
     opacity: 0;
     transform: rotate(12deg) translateX(-35%);
   }
@@ -596,14 +595,14 @@
     z-index: 1;
     display: grid;
     grid-template-columns: 220px minmax(0, 1fr);
-    min-height: 600px;
+    min-height: 560px;
   }
 
   .admin-detail__nav {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 8px;
+    padding: 8px 8px 8px 10px;
     border-right: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
   }
 
@@ -642,7 +641,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 12px 12px 10px;
     border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
   }
 
@@ -675,12 +674,18 @@
   }
 
   @media (max-width: 1200px) {
-    .admin-detail__header {
-      grid-template-columns: 1fr;
+    .admin-detail__hero {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     .admin-detail__header-side {
-      align-items: stretch;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .admin-detail__summary-strip {
+      padding-left: 0;
     }
   }
 
@@ -710,8 +715,13 @@
       align-items: flex-start;
     }
 
-    .admin-detail__summary-grid {
-      grid-template-columns: 1fr;
+    .admin-detail__hero {
+      gap: 12px;
+    }
+
+    .admin-detail__summary-strip {
+      gap: 12px;
+      padding-left: 0;
     }
   }
 

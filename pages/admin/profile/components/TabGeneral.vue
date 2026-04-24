@@ -263,6 +263,7 @@
   import UiTextH5 from "~/components/ui/UiTextH5.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
   import useAppCore from "~/composables/useAppCore";
+  import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   const PHOTO_MAX_SIZE = 5 * 1024 * 1024;
   const PHOTO_PATH = "admin-profile-photos";
@@ -288,6 +289,7 @@
   const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
 
   const fileInputRef = ref<HTMLInputElement | null>(null);
   const selectedFile = ref<File | null>(null);
@@ -435,7 +437,11 @@
   const canLoadMorePhotoHistory = computed(
     () => visiblePhotoHistory.value.length < photoHistory.value.length
   );
-  const isReadOnly = computed(() => props.profileScope === "admin");
+  const targetAdminId = computed(() => String(props.profileData?.id ?? "").trim());
+  const canEditProfile = computed(
+    () => props.profileScope === "self" || adminAuthStore.hasRole("super-admin")
+  );
+  const isReadOnly = computed(() => !canEditProfile.value);
 
   const avatarUrl = computed(() => selectedPreviewUrl.value || props.profileData?.photo_url || "");
   const selectedFileName = computed(() => selectedFile.value?.name || "");
@@ -515,7 +521,10 @@
     resetErrors();
 
     try {
-      const response = await appCore.adminModules.profile.updateProfile({ ...formData });
+      const response =
+        props.profileScope === "self"
+          ? await appCore.adminModules.profile.updateProfile({ ...formData })
+          : await appCore.admins.updateProfile(targetAdminId.value, { ...formData });
       const payload = response?.data?.data ?? null;
 
       emit("profile-updated", payload);
@@ -566,7 +575,10 @@
         },
       });
 
-      const response = await appCore.adminModules.profile.uploadPhoto({ key: presignPayload.key });
+      const response =
+        props.profileScope === "self"
+          ? await appCore.adminModules.profile.uploadPhoto({ key: presignPayload.key })
+          : await appCore.admins.uploadPhoto(targetAdminId.value, { key: presignPayload.key });
       emit("profile-updated", response?.data?.data ?? null);
 
       toast.success(
@@ -598,7 +610,10 @@
     busyPhotoAction.value = "select";
 
     try {
-      const response = await appCore.adminModules.profile.selectPhoto(photoId);
+      const response =
+        props.profileScope === "self"
+          ? await appCore.adminModules.profile.selectPhoto(photoId)
+          : await appCore.admins.selectPhoto(targetAdminId.value, photoId);
       emit("profile-updated", response?.data?.data ?? null);
       toast.success(
         response?.data?.message ??
@@ -635,7 +650,10 @@
     busyPhotoAction.value = "delete";
 
     try {
-      const response = await appCore.adminModules.profile.deletePhoto(photoId);
+      const response =
+        props.profileScope === "self"
+          ? await appCore.adminModules.profile.deletePhoto(photoId)
+          : await appCore.admins.deletePhoto(targetAdminId.value, photoId);
       emit("profile-updated", response?.data?.data ?? null);
       toast.success(
         response?.data?.message ??
@@ -668,8 +686,8 @@
 
 <style scoped lang="scss">
   .admin-profile-general {
-    display: grid;
-    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.4fr);
+    display: flex;
+    flex-direction: column;
     gap: 16px;
   }
 
@@ -678,21 +696,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 16px;
-    border-radius: 20px;
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 14%, var(--color-stroke-ui-light));
-    background:
-      radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--ui-primary-main) 8%, transparent), transparent 36%),
-      color-mix(in srgb, var(--ui-background-panel) 84%, transparent);
-    box-shadow: 0 14px 34px color-mix(in srgb, #000000 10%, transparent);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
-  }
-
-  .admin-profile-general__photo-panel {
-    position: sticky;
-    top: 20px;
-    align-self: start;
+    padding: 14px 0 0;
   }
 
   .admin-profile-general__panel-header,
@@ -707,6 +711,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
   }
 
   .admin-profile-general__panel-title {
@@ -780,7 +786,8 @@
   }
 
   .admin-profile-general__photo-main {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: flex-start;
     gap: 14px;
     padding: 12px 0;
@@ -839,6 +846,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+    padding-top: 4px;
   }
 
   .admin-profile-general__photo-actions :deep(button) {
@@ -871,7 +879,6 @@
     flex-direction: column;
     gap: 12px;
     padding-top: 12px;
-    border-top: 1px solid rgba(113, 158, 223, 0.12);
   }
 
   .admin-profile-general__empty-state {
@@ -917,8 +924,8 @@
     gap: 10px;
     padding: 10px;
     border-radius: 16px;
-    background: color-mix(in srgb, var(--ui-background-card) 54%, transparent);
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 34%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 8%, var(--color-stroke-ui-light));
     transition:
       transform 0.2s ease,
       border-color 0.2s ease,
@@ -963,7 +970,7 @@
   .admin-profile-general__form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 12px;
+    gap: 12px 18px;
   }
 
   .admin-profile-general__field-card {
@@ -983,6 +990,11 @@
     gap: 6px;
   }
 
+  .admin-profile-general__field-card :deep(.ui-input),
+  .admin-profile-general__field-card :deep(.ui-select__button) {
+    background: color-mix(in srgb, var(--ui-background-card) 42%, transparent);
+  }
+
   .admin-profile-general__form-actions {
     display: flex;
     justify-content: flex-end;
@@ -991,16 +1003,6 @@
 
   .admin-profile-general__form-actions :deep(button) {
     min-width: 200px;
-  }
-
-  @media (max-width: 1120px) {
-    .admin-profile-general {
-      grid-template-columns: 1fr;
-    }
-
-    .admin-profile-general__photo-panel {
-      position: static;
-    }
   }
 
   @media (max-width: 720px) {

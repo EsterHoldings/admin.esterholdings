@@ -20,6 +20,22 @@ export class AdminsModule implements BasicModuleInterface {
         return await this.adminsService.getActivity(id, params);
     }
 
+    async updateProfile(id:any, data:object = {}): Promise<any> {
+        return await this.adminsService.updateProfile(id, data);
+    }
+
+    async uploadPhoto(id:any, data:object = {}): Promise<any> {
+        return await this.adminsService.uploadPhoto(id, data);
+    }
+
+    async selectPhoto(id:any, photoHistoryId:string): Promise<any> {
+        return await this.adminsService.selectPhoto(id, photoHistoryId);
+    }
+
+    async deletePhoto(id:any, photoHistoryId:string): Promise<any> {
+        return await this.adminsService.deletePhoto(id, photoHistoryId);
+    }
+
     async post(data:any): Promise<any> {
         return await this.adminsService.post(data);
     }

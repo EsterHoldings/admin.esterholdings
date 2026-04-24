@@ -17,6 +17,22 @@ export class AdminsService {
     return await this.useApi.get(`/admins/${id}/activity`, params);
   }
 
+  async updateProfile(id:any, data:object = {}):Promise<any> {
+    return await this.useApi.patch(`/admins/${id}/profile`, data);
+  }
+
+  async uploadPhoto(id:any, data:object = {}):Promise<any> {
+    return await this.useApi.post(`/admins/${id}/profile/photo`, data);
+  }
+
+  async selectPhoto(id:any, photoHistoryId:string):Promise<any> {
+    return await this.useApi.post(`/admins/${id}/profile/photos/${photoHistoryId}/select`);
+  }
+
+  async deletePhoto(id:any, photoHistoryId:string):Promise<any> {
+    return await this.useApi.delete(`/admins/${id}/profile/photos/${photoHistoryId}`);
+  }
+
   async post(data:object = {}):Promise<any> {
     return await this.useApi.post("/admins", data);
   }

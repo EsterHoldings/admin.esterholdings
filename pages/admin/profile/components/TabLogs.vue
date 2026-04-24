@@ -1,7 +1,7 @@
 <template>
   <div class="admin-profile-tab-space admin-profile-logs">
     <div class="admin-profile-logs__summary-grid">
-      <PanelDefault class="admin-profile-logs__summary-card">
+      <section class="admin-profile-logs__summary-card">
         <UiTextSmall class="admin-profile-logs__summary-label">
           {{ resolveText("admin.profile.logs.summary.actions", "Admin actions") }}
         </UiTextSmall>
@@ -14,9 +14,9 @@
             )
           }}
         </UiTextSmall>
-      </PanelDefault>
+      </section>
 
-      <PanelDefault class="admin-profile-logs__summary-card">
+      <section class="admin-profile-logs__summary-card">
         <UiTextSmall class="admin-profile-logs__summary-label">
           {{ resolveText("admin.profile.logs.summary.chatConnections", "Chat connections") }}
         </UiTextSmall>
@@ -29,11 +29,11 @@
             )
           }}
         </UiTextSmall>
-      </PanelDefault>
+      </section>
     </div>
 
     <div class="admin-profile-logs__panels">
-      <PanelDefault class="admin-profile-logs__panel">
+      <section class="admin-profile-logs__panel">
         <div class="admin-profile-logs__panel-header">
           <div>
             <UiTextH5 class="admin-profile-logs__panel-title">
@@ -111,9 +111,9 @@
             </button>
           </div>
         </div>
-      </PanelDefault>
+      </section>
 
-      <PanelDefault class="admin-profile-logs__panel">
+      <section class="admin-profile-logs__panel">
         <div class="admin-profile-logs__panel-header">
           <div>
             <UiTextH5 class="admin-profile-logs__panel-title">
@@ -185,7 +185,7 @@
             </button>
           </div>
         </div>
-      </PanelDefault>
+      </section>
     </div>
   </div>
 </template>
@@ -195,7 +195,6 @@
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
 
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiTextH5 from "~/components/ui/UiTextH5.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
@@ -306,7 +305,12 @@
 
   .admin-profile-logs__summary-card,
   .admin-profile-logs__panel {
-    padding: 18px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    background:
+      radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--ui-primary-main) 6%, transparent), transparent 34%),
+      color-mix(in srgb, var(--ui-background-panel) 78%, transparent);
   }
 
   .admin-profile-logs__summary-card {
@@ -360,10 +364,10 @@
   }
 
   .admin-profile-logs__card {
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-radius: 18px;
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 8%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 58%, transparent);
     display: flex;
     flex-direction: column;
     gap: 10px;
