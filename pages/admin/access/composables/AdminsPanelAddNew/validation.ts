@@ -4,8 +4,8 @@ import { formData } from ".";
 
 export const validatorAdminForm: any = useValidation(formData, {
     nickname: ["required"],
-    email: ["unique:admins,email", "required", "isEmail", "min:3", "max:20"],
-    password: ["required", "min:3", "max:20"],
+    email: ["unique:admins,email", "required", "isEmail", "min:3", "max:190"],
+    password: ["required", "min:8", "max:120"],
     roles: ["required"],
 });
 
