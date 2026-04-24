@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-profile-general">
-    <PanelDefault class="admin-profile-general__photo-panel">
+  <div class="admin-profile-general admin-profile-tab-space">
+    <section class="admin-profile-general__photo-panel">
       <div class="admin-profile-general__photo-hero">
         <div class="admin-profile-general__panel-header">
           <div>
@@ -193,9 +193,9 @@
           </div>
         </div>
       </div>
-    </PanelDefault>
+    </section>
 
-    <PanelDefault class="admin-profile-general__details-panel">
+    <section class="admin-profile-general__details-panel">
       <div class="admin-profile-general__panel-header">
         <div>
           <UiTextH5 class="admin-profile-general__panel-title">
@@ -245,7 +245,7 @@
           {{ resolveText("admin.profile.actions.save", "Save changes") }}
         </UiButtonDefault>
       </div>
-    </PanelDefault>
+    </section>
   </div>
 </template>
 
@@ -255,7 +255,6 @@
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
 
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
   import UiBadge from "~/components/ui/UiBadge.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiFormControl from "~/components/ui/UiFormControl.vue";
@@ -670,31 +669,30 @@
 <style scoped lang="scss">
   .admin-profile-general {
     display: grid;
-    grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.35fr);
-    gap: 22px;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.4fr);
+    gap: 16px;
   }
 
   .admin-profile-general__photo-panel,
   .admin-profile-general__details-panel {
-    padding: 22px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 14%, var(--color-stroke-ui-light));
+    background:
+      radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--ui-primary-main) 8%, transparent), transparent 36%),
+      color-mix(in srgb, var(--ui-background-panel) 84%, transparent);
+    box-shadow: 0 14px 34px color-mix(in srgb, #000000 10%, transparent);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
   }
 
   .admin-profile-general__photo-panel {
     position: sticky;
     top: 20px;
     align-self: start;
-    background:
-      radial-gradient(circle at top left, rgba(113, 158, 223, 0.16), transparent 38%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
-  }
-
-  .admin-profile-general__photo-hero {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
   }
 
   .admin-profile-general__panel-header,
@@ -705,12 +703,25 @@
     gap: 12px;
   }
 
+  .admin-profile-general__photo-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
   .admin-profile-general__panel-title {
+    margin: 0;
     color: var(--ui-text-main);
+    font-size: 16px;
+    font-weight: 840;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
   }
 
   .admin-profile-general__panel-subtitle {
+    margin-top: 4px;
     color: var(--ui-text-secondary);
+    font-size: 12px;
     line-height: 1.5;
   }
 
@@ -741,56 +752,55 @@
   .admin-profile-general__photo-chips {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
   }
 
   .admin-profile-general__photo-chip {
-    padding: 12px 14px;
-    border-radius: 18px;
-    background: rgba(7, 18, 53, 0.42);
-    border: 1px solid rgba(113, 158, 223, 0.16);
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ui-background-card) 58%, transparent);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     min-width: 0;
   }
 
   .admin-profile-general__photo-chip span {
     color: var(--ui-text-secondary);
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
   }
 
   .admin-profile-general__photo-chip strong {
     color: var(--ui-text-main);
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 760;
     word-break: break-word;
   }
 
   .admin-profile-general__photo-main {
     display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 18px;
-    border-radius: 24px;
-    background: rgba(6, 15, 40, 0.34);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
   }
 
   .admin-profile-general__avatar,
   .admin-profile-general__avatar-image,
   .admin-profile-general__avatar-placeholder {
-    width: 136px;
-    height: 136px;
-    border-radius: 26px;
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
   }
 
   .admin-profile-general__avatar-image,
   .admin-profile-general__history-image {
     object-fit: cover;
-    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
   }
 
   .admin-profile-general__avatar-placeholder,
@@ -800,7 +810,7 @@
     justify-content: center;
     background: linear-gradient(135deg, rgba(50, 110, 255, 0.24), rgba(113, 158, 223, 0.42));
     color: var(--ui-text-main);
-    font-size: 34px;
+    font-size: 28px;
     font-weight: 700;
   }
 
@@ -808,19 +818,20 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
 
   .admin-profile-general__photo-name {
     color: var(--ui-text-main);
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.15;
+    font-size: 18px;
+    font-weight: 820;
+    line-height: 1.2;
   }
 
   .admin-profile-general__photo-email,
   .admin-profile-general__photo-last-seen {
     color: var(--ui-text-secondary);
+    font-size: 13px;
     line-height: 1.5;
   }
 
@@ -858,8 +869,8 @@
   .admin-profile-general__history-shell {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding-top: 6px;
+    gap: 12px;
+    padding-top: 12px;
     border-top: 1px solid rgba(113, 158, 223, 0.12);
   }
 
@@ -877,8 +888,8 @@
 
   .admin-profile-general__history-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 10px;
   }
 
   .admin-profile-general__load-more {
@@ -903,11 +914,11 @@
   .admin-profile-general__history-card {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 10px;
+    padding: 10px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--ui-background-card) 54%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
     transition:
       transform 0.2s ease,
       border-color 0.2s ease,
@@ -924,19 +935,19 @@
   .admin-profile-general__history-placeholder {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 16px;
+    border-radius: 14px;
   }
 
   .admin-profile-general__history-card-body {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
 
   .admin-profile-general__history-card-top {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
 
   .admin-profile-general__history-date {
@@ -949,29 +960,16 @@
     gap: 8px;
   }
 
-  .admin-profile-general__details-panel {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)), rgba(7, 18, 53, 0.28);
-  }
-
   .admin-profile-general__form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 10px 12px;
   }
 
   .admin-profile-general__field-card {
-    padding: 14px 14px 10px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease;
-  }
-
-  .admin-profile-general__field-card:hover {
-    border-color: rgba(113, 158, 223, 0.2);
-    background: rgba(255, 255, 255, 0.045);
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
   .admin-profile-general__field-card :deep(.ui-form-control__label) {
@@ -981,14 +979,18 @@
     color: var(--ui-text-secondary);
   }
 
+  .admin-profile-general__field-card :deep(.ui-form-control) {
+    gap: 6px;
+  }
+
   .admin-profile-general__form-actions {
     display: flex;
     justify-content: flex-end;
-    padding-top: 4px;
+    padding-top: 6px;
   }
 
   .admin-profile-general__form-actions :deep(button) {
-    min-width: 220px;
+    min-width: 200px;
   }
 
   @media (max-width: 1120px) {

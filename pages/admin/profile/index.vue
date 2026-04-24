@@ -410,8 +410,8 @@
 
   .admin-detail__header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
+    gap: 14px;
     align-items: start;
   }
 
@@ -469,28 +469,28 @@
   }
 
   .admin-detail__roles {
-    margin-top: 10px;
+    margin-top: 8px;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
 
   .admin-detail__role-pill {
     display: inline-flex;
     align-items: center;
     border-radius: 999px;
-    padding: 6px 10px;
-    font-size: 0.8125rem;
+    padding: 5px 9px;
+    font-size: 0.78rem;
     color: var(--ui-text-main);
     background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
   }
 
   .admin-detail__header-side {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 10px;
+    gap: 8px;
   }
 
   .admin-detail__status {
@@ -522,15 +522,15 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+    gap: 8px;
   }
 
   .admin-detail__summary-card {
     min-width: 0;
-    padding: 12px 14px;
-    border-radius: 16px;
-    border: 1px solid var(--admin-glass-border);
-    background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 60%, transparent);
   }
 
   .admin-detail__summary-label {
@@ -545,15 +545,15 @@
 
   .admin-detail__summary-value {
     display: block;
-    margin-top: 6px;
+    margin-top: 4px;
     color: var(--ui-text-main);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.45;
     word-break: break-word;
   }
 
   .admin-detail__refresh {
-    min-width: 148px;
+    min-width: 134px;
   }
 
   .admin-detail-card {
@@ -595,15 +595,15 @@
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 248px minmax(0, 1fr);
-    min-height: 640px;
+    grid-template-columns: 220px minmax(0, 1fr);
+    min-height: 600px;
   }
 
   .admin-detail__nav {
     display: flex;
     flex-direction: column;
-    gap: 7px;
-    padding: 10px;
+    gap: 6px;
+    padding: 8px;
     border-right: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
   }
 
@@ -637,12 +637,12 @@
   }
 
   .admin-detail__content-header {
-    min-height: 74px;
+    min-height: 68px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
   }
 
@@ -670,8 +670,8 @@
   .admin-detail__content :deep(.admin-profile-tab-space) {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 14px;
+    gap: 12px;
+    padding: 12px;
   }
 
   @media (max-width: 1200px) {
