@@ -1,90 +1,57 @@
 <template>
-  <UiContainer>
-    <div class="admin-profile-page">
-      <div class="admin-profile-page__header">
-        <div>
-          <UiTextH4 class="text-[var(--ui-text-main)]">
-            {{ resolveText("admin.profile.title", "Admin profile") }}
-          </UiTextH4>
-          <UiTextSmall class="admin-profile-page__subtitle">
-            {{ resolveText("admin.profile.subtitle", "Manage your administrator account, security, and activity.") }}
-          </UiTextSmall>
+  <div class="admin-detail">
+    <div class="admin-detail__header">
+      <div class="admin-detail__identity">
+        <div class="admin-detail__avatar">
+          <img
+            v-if="profile?.photo_url"
+            :src="profile.photo_url"
+            :alt="profileDisplayName"
+          />
+          <span v-else>{{ profile?.initials || "AD" }}</span>
         </div>
 
-        <UiButtonDefault
-          state="info--outline"
-          :isLoading="isLoading"
-          @click="loadProfile">
-          {{ resolveText("admin.profile.actions.refresh", "Refresh") }}
-        </UiButtonDefault>
+        <div class="admin-detail__heading">
+          <h1 class="admin-detail__title">{{ profileDisplayName }}</h1>
+          <p class="admin-detail__subtitle">{{ profile?.email || "—" }}</p>
+
+          <div
+            v-if="roleNames.length > 0"
+            class="admin-detail__roles"
+          >
+            <span
+              v-for="roleName in roleNames"
+              :key="roleName"
+              class="admin-detail__role-pill"
+            >
+              {{ roleName }}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <PanelDefault class="admin-profile-page__summary">
-        <div class="admin-profile-page__summary-hero">
-          <div class="admin-profile-page__summary-avatar">
-            <UiImage
-              v-if="profile?.photo_url"
-              class="admin-profile-page__summary-image"
-              :src="profile.photo_url" />
-            <div
-              v-else
-              class="admin-profile-page__summary-placeholder">
-              {{ profile?.initials || "AD" }}
-            </div>
-          </div>
-
-          <div class="admin-profile-page__summary-main">
-            <div class="admin-profile-page__summary-top">
-              <div>
-                <UiTextH5 class="admin-profile-page__summary-name">
-                  {{ profile?.name || profile?.nickname || profile?.email || "—" }}
-                </UiTextH5>
-                <UiTextSmall class="admin-profile-page__subtitle">
-                  {{ profile?.email || "—" }}
-                </UiTextSmall>
-              </div>
-
-              <UiBadge
-                :state="profile?.is_online ? 'success' : 'warning'"
-                outline
-                class="!px-3">
-                {{
-                  profile?.is_online
-                    ? resolveText("admin.profile.status.online", "Online")
-                    : resolveText("admin.profile.status.offline", "Offline")
-                }}
-              </UiBadge>
-            </div>
-
-            <div
-              v-if="roleNames.length > 0"
-              class="admin-profile-page__summary-roles">
-              <span class="admin-profile-page__summary-label">{{
-                resolveText("admin.profile.summary.roles", "Roles")
-              }}</span>
-              <span
-                v-for="roleName in roleNames"
-                :key="roleName"
-                class="admin-profile-page__role-pill">
-                {{ roleName }}
-              </span>
-            </div>
-          </div>
+      <div class="admin-detail__header-side">
+        <div
+          class="admin-detail__status"
+          :class="profile?.is_online ? 'is-online' : 'is-offline'"
+        >
+          <span class="admin-detail__status-dot" />
+          <span>{{ presenceLabel }}</span>
         </div>
 
-        <div class="admin-profile-page__summary-stats">
-          <div class="admin-profile-page__summary-stat">
-            <span class="admin-profile-page__summary-stat-label">
+        <div class="admin-detail__summary-grid">
+          <div class="admin-detail__summary-card">
+            <span class="admin-detail__summary-label">
               {{ resolveText("admin.profile.summary.nickname", "Nickname") }}
             </span>
-            <strong class="admin-profile-page__summary-stat-value">{{ profile?.nickname || "—" }}</strong>
+            <strong class="admin-detail__summary-value">{{ profile?.nickname || "—" }}</strong>
           </div>
 
-          <div class="admin-profile-page__summary-stat">
-            <span class="admin-profile-page__summary-stat-label">
+          <div class="admin-detail__summary-card">
+            <span class="admin-detail__summary-label">
               {{ resolveText("admin.profile.summary.twoFactor", "2FA") }}
             </span>
-            <strong class="admin-profile-page__summary-stat-value">
+            <strong class="admin-detail__summary-value">
               {{
                 profile?.two_factor_enabled
                   ? resolveText("admin.profile.security.twoFactor.enabled", "Enabled")
@@ -93,93 +60,182 @@
             </strong>
           </div>
 
-          <div class="admin-profile-page__summary-stat">
-            <span class="admin-profile-page__summary-stat-label">
+          <div class="admin-detail__summary-card">
+            <span class="admin-detail__summary-label">
               {{ resolveText("admin.profile.summary.lastSeen", "Last seen") }}
             </span>
-            <strong class="admin-profile-page__summary-stat-value">
-              {{ formatDateTime(profile?.last_seen_at) }}
-            </strong>
+            <strong class="admin-detail__summary-value">{{ presenceMeta }}</strong>
           </div>
         </div>
-      </PanelDefault>
 
-      <PanelDefault class="admin-profile-page__workspace">
-        <div class="admin-profile-page__layout">
-          <div class="admin-profile-page__tabs">
-            <TabsAsList
-              :tabsList="tabsList"
-              :activeTabIndex="activeTabIndex"
-              @selectTab="handleActiveTab" />
-          </div>
+        <PrimeButton
+          class="admin-detail__refresh"
+          icon="pi pi-refresh"
+          :label="resolveText('admin.profile.actions.refresh', 'Refresh')"
+          outlined
+          :loading="isLoading"
+          @click="loadProfile"
+        />
+      </div>
+    </div>
 
-          <div class="admin-profile-page__content">
-            <div class="admin-profile-page__content-header">
-              {{ tabsList[activeTabIndex]?.label }}
+    <PrimeCard class="admin-detail-card">
+      <template #content>
+        <div class="admin-detail__layout">
+          <aside class="admin-detail__nav">
+            <PrimeButton
+              v-for="tab in tabsList"
+              :key="tab.id"
+              type="button"
+              class="admin-detail__nav-button"
+              :class="{ 'is-active': activeTabKey === tab.id }"
+              :icon="tab.icon"
+              :label="tab.label"
+              text
+              @click="handleActiveTab(tab.id)"
+            />
+          </aside>
+
+          <main class="admin-detail__content">
+            <div class="admin-detail__content-header">
+              <div>
+                <h2>{{ activeTab?.label }}</h2>
+                <p>{{ activeTab?.description }}</p>
+              </div>
             </div>
 
-            <div class="admin-profile-page__content-body">
+            <Transition
+              enter-active-class="transition ease-out duration-150"
+              enter-from-class="opacity-0 translate-y-2"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition ease-in duration-100"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-1"
+              mode="out-in"
+            >
               <component
-                :is="tabsList[activeTabIndex]?.component"
-                :key="tabsList[activeTabIndex]?.key"
+                :is="activeTab?.component"
+                :key="activeTab?.id || activeTabKey"
                 :profileData="profile"
                 :isLoading="isLoading"
+                :profileScope="profileScope"
                 @profile-updated="handleProfileUpdated"
-                @profile-refresh="loadProfile" />
-            </div>
-          </div>
+                @profile-refresh="loadProfile"
+              />
+            </Transition>
+          </main>
         </div>
-      </PanelDefault>
-    </div>
-  </UiContainer>
+      </template>
+    </PrimeCard>
+  </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, ref, watch } from "vue";
+  import { computed, ref, watch } from "vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
-  import { definePageMeta } from "~/.nuxt/imports";
+  import { definePageMeta, useRoute } from "~/.nuxt/imports";
 
-  import UiBadge from "~/components/ui/UiBadge.vue";
-  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-  import UiContainer from "~/components/ui/UiContainer.vue";
-  import UiImage from "~/components/ui/UiImage.vue";
-  import UiTextH4 from "~/components/ui/UiTextH4.vue";
-  import UiTextH5 from "~/components/ui/UiTextH5.vue";
-  import UiTextSmall from "~/components/ui/UiTextSmall.vue";
-  import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-  import TabsAsList from "~/components/block/tabs/TabsAsList.vue";
   import useAppCore from "~/composables/useAppCore";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
   import TabActivity from "~/pages/admin/profile/components/TabActivity.vue";
   import TabGeneral from "~/pages/admin/profile/components/TabGeneral.vue";
+  import TabLogs from "~/pages/admin/profile/components/TabLogs.vue";
   import TabSecurity from "~/pages/admin/profile/components/TabSecurity.vue";
 
   definePageMeta({
     middleware: ["admin-middleware"],
   });
 
-  const STORAGE_KEY = "adminProfileActiveTab";
-
+  const route = useRoute();
   const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
   const appCore = useAppCore();
   const authStore = useAdminAuthStore();
 
-  const activeTabIndex = ref(0);
-  const isLoading = ref(false);
   const profile = ref<any>(null);
+  const isLoading = ref(false);
+  const activeTabKey = ref("general");
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
     return value === key ? fallback : value;
   };
 
-  const tabsList = computed(() => [
-    { key: "general", label: resolveText("admin.profile.tabs.general", "General"), component: TabGeneral },
-    { key: "security", label: resolveText("admin.profile.tabs.security", "Security"), component: TabSecurity },
-    { key: "activity", label: resolveText("admin.profile.tabs.activity", "Activity"), component: TabActivity },
-  ]);
+  const canViewAdmins = computed(
+    () => authStore.hasRole("super-admin") || authStore.hasPermission("view-admins")
+  );
+
+  const currentAdminId = computed(() => String(authStore.user?.id ?? "").trim());
+  const requestedAdminId = computed(() => String(route.query?.adminId ?? "").trim());
+
+  const profileScope = computed<"self" | "admin">(() => {
+    if (!requestedAdminId.value || !canViewAdmins.value) {
+      return "self";
+    }
+
+    if (!currentAdminId.value || requestedAdminId.value !== currentAdminId.value) {
+      return "admin";
+    }
+
+    return "self";
+  });
+
+  const storageKey = computed(() =>
+    profileScope.value === "self" ? "adminProfileActiveTab:self" : "adminProfileActiveTab:view"
+  );
+
+  const tabsList = computed(() => {
+    const tabs = [
+      {
+        id: "general",
+        label: resolveText("admin.profile.tabs.general", "General"),
+        description: resolveText(
+          "admin.profile.tabsDescription.general",
+          "Profile details, contact fields and photo history."
+        ),
+        icon: "pi pi-user",
+        component: TabGeneral,
+      },
+      {
+        id: "activity",
+        label: resolveText("admin.profile.tabs.activity", "Activity"),
+        description: resolveText(
+          "admin.profile.tabsDescription.activity",
+          "Presence analytics, online sessions and environment breakdown."
+        ),
+        icon: "pi pi-chart-line",
+        component: TabActivity,
+      },
+      {
+        id: "logs",
+        label: resolveText("admin.profile.tabs.logs", "Actions & chats"),
+        description: resolveText(
+          "admin.profile.tabsDescription.logs",
+          "Administrative actions and support chat connection history."
+        ),
+        icon: "pi pi-clock",
+        component: TabLogs,
+      },
+    ];
+
+    if (profileScope.value === "self") {
+      tabs.splice(1, 0, {
+        id: "security",
+        label: resolveText("admin.profile.tabs.security", "Security"),
+        description: resolveText(
+          "admin.profile.tabsDescription.security",
+          "Password recovery and two-factor authentication settings."
+        ),
+        icon: "pi pi-shield",
+        component: TabSecurity,
+      });
+    }
+
+    return tabs;
+  });
+
+  const activeTab = computed(() => tabsList.value.find(tab => tab.id === activeTabKey.value) ?? tabsList.value[0] ?? null);
 
   const roleNames = computed(() =>
     Array.isArray(profile.value?.roles)
@@ -187,20 +243,36 @@
       : []
   );
 
-  const applyProfile = (payload: any) => {
-    if (!payload || typeof payload !== "object") {
-      profile.value = null;
-      return;
+  const profileDisplayName = computed(
+    () => profile.value?.name || profile.value?.nickname || profile.value?.email || "—"
+  );
+
+  const presenceLabel = computed(() =>
+    profile.value?.is_online
+      ? resolveText("admin.profile.status.online", "Online")
+      : resolveText("admin.profile.status.offline", "Offline")
+  );
+
+  const presenceMeta = computed(() => {
+    if (profile.value?.is_online) {
+      return resolveText("admin.profile.status.onlineNow", "Active now");
     }
 
-    profile.value = payload;
-    authStore.setUser({
-      ...(authStore.user ?? {}),
-      ...payload,
-    });
+    return formatRelativeDateTime(profile.value?.last_seen_at) || "—";
+  });
 
-    if (typeof payload.photo_url === "string") {
-      authStore.setPhotoUrl(payload.photo_url);
+  const applyProfile = (payload: any) => {
+    profile.value = payload ?? null;
+
+    if (profileScope.value === "self" && payload) {
+      authStore.setUser({
+        ...(authStore.user ?? {}),
+        ...payload,
+      });
+
+      if (typeof payload.photo_url === "string") {
+        authStore.setPhotoUrl(payload.photo_url);
+      }
     }
   };
 
@@ -208,7 +280,11 @@
     isLoading.value = true;
 
     try {
-      const response = await appCore.adminModules.profile.getMe();
+      const response =
+        profileScope.value === "self"
+          ? await appCore.adminModules.profile.getMe()
+          : await appCore.admins.getById(requestedAdminId.value);
+
       applyProfile(response?.data?.data ?? response?.data ?? null);
     } catch (error: any) {
       toast.error(
@@ -223,293 +299,435 @@
     applyProfile(payload);
   };
 
-  const handleActiveTab = (tabIndex: number) => {
-    activeTabIndex.value = tabIndex;
+  const handleActiveTab = (tabId: string) => {
+    activeTabKey.value = tabId;
   };
 
-  const formatDateTime = (value?: string | null) => {
-    if (!value) return "—";
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-
-    return date.toLocaleString();
-  };
-
-  onMounted(async () => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved !== null && !Number.isNaN(Number(saved))) {
-      activeTabIndex.value = Number(saved);
+  const readStoredTab = () => {
+    if (typeof window === "undefined") {
+      return null;
     }
 
-    await loadProfile();
+    return localStorage.getItem(storageKey.value);
+  };
+
+  const writeStoredTab = (value: string) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    localStorage.setItem(storageKey.value, value);
+  };
+
+  const resolveTabKey = (value: unknown) => {
+    const normalized = String(value ?? "").trim().toLowerCase();
+    if (!normalized) return null;
+
+    return tabsList.value.some(tab => tab.id === normalized) ? normalized : null;
+  };
+
+  const syncActiveTab = () => {
+    const queryTab = resolveTabKey(route.query?.tab);
+    if (queryTab) {
+      activeTabKey.value = queryTab;
+      writeStoredTab(queryTab);
+      return;
+    }
+
+    const saved = resolveTabKey(readStoredTab());
+    activeTabKey.value = saved ?? tabsList.value[0]?.id ?? "general";
+  };
+
+  const formatRelativeDateTime = (value?: string | null) => {
+    if (!value) return "";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    const diffMs = date.getTime() - Date.now();
+    const absDiffMs = Math.abs(diffMs);
+    const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+
+    if (absDiffMs < hour) {
+      return formatter.format(Math.round(diffMs / minute), "minute");
+    }
+
+    if (absDiffMs < day) {
+      return formatter.format(Math.round(diffMs / hour), "hour");
+    }
+
+    return formatter.format(Math.round(diffMs / day), "day");
+  };
+
+  watch(
+    [profileScope, requestedAdminId],
+    async () => {
+      syncActiveTab();
+      await loadProfile();
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => route.query?.tab,
+    () => {
+      const resolved = resolveTabKey(route.query?.tab);
+      if (resolved) {
+        activeTabKey.value = resolved;
+      }
+    }
+  );
+
+  watch(tabsList, value => {
+    if (!value.some(tab => tab.id === activeTabKey.value)) {
+      activeTabKey.value = value[0]?.id ?? "general";
+    }
   });
 
-  watch(activeTabIndex, value => {
-    localStorage.setItem(STORAGE_KEY, String(value));
+  watch(activeTabKey, value => {
+    writeStoredTab(value);
   });
 </script>
 
-<style scoped lang="scss">
-  .admin-profile-page {
+<style lang="scss" scoped>
+  .admin-detail {
+    --admin-glass-bg: color-mix(in srgb, var(--ui-background-card) 76%, transparent);
+    --admin-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 88%, transparent);
+    --admin-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+    --admin-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 18%, transparent);
+
+    width: 100%;
+    max-width: none;
     display: flex;
     flex-direction: column;
-    gap: 22px;
-  }
-
-  .admin-profile-page__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .admin-profile-page__subtitle {
-    color: var(--ui-text-secondary);
-    line-height: 1.5;
-  }
-
-  .admin-profile-page__summary {
-    position: relative;
-    overflow: hidden;
-    padding: 28px;
-    display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
-    gap: 20px;
-    background:
-      radial-gradient(circle at top left, rgba(113, 158, 223, 0.22), transparent 38%),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
-  }
-
-  .admin-profile-page__summary::after {
-    content: "";
-    position: absolute;
-    inset: auto -20% -45% auto;
-    width: 340px;
-    height: 340px;
-    background: radial-gradient(circle, rgba(113, 223, 173, 0.09), transparent 68%);
-    pointer-events: none;
-  }
-
-  .admin-profile-page__summary-hero,
-  .admin-profile-page__summary-stats {
-    position: relative;
-    z-index: 1;
-  }
-
-  .admin-profile-page__summary-hero {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-  }
-
-  .admin-profile-page__summary-avatar {
-    flex-shrink: 0;
-  }
-
-  .admin-profile-page__summary-image,
-  .admin-profile-page__summary-placeholder {
-    width: 128px;
-    height: 128px;
-    border-radius: 24px;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-  }
-
-  .admin-profile-page__summary-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, rgba(50, 110, 255, 0.26), rgba(113, 158, 223, 0.45));
+    gap: 12px;
+    padding: clamp(12px, 1.35vw, 22px);
     color: var(--ui-text-main);
-    font-size: 36px;
-    font-weight: 700;
   }
 
-  .admin-profile-page__summary-main {
+  .admin-detail__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .admin-detail__identity {
     min-width: 0;
-    flex: 1;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 14px;
   }
 
-  .admin-profile-page__summary-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+  .admin-detail__avatar {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 18px;
+    color: var(--ui-text-invert);
+    background: linear-gradient(
+      135deg,
+      var(--ui-primary-main),
+      color-mix(in srgb, var(--ui-primary-main) 45%, var(--ui-primary-accent))
+    );
+    font-size: 15px;
+    font-weight: 880;
+    letter-spacing: 0.04em;
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
   }
 
-  .admin-profile-page__summary-name {
+  .admin-detail__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .admin-detail__heading {
+    min-width: 0;
+  }
+
+  .admin-detail__title {
+    margin: 0;
     color: var(--ui-text-main);
-    font-size: 28px;
-    line-height: 1.1;
+    font-size: clamp(24px, 2.1vw, 36px);
+    font-weight: 850;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
   }
 
-  .admin-profile-page__summary-roles {
+  .admin-detail__subtitle {
+    margin: 6px 0 0;
+    color: var(--ui-text-secondary);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .admin-detail__roles {
+    margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 12px;
-    color: var(--ui-text-secondary);
+    gap: 8px;
   }
 
-  .admin-profile-page__summary-label {
-    color: var(--ui-text-main);
-    font-weight: 600;
-  }
-
-  .admin-profile-page__role-pill {
-    padding: 7px 12px;
+  .admin-detail__role-pill {
+    display: inline-flex;
+    align-items: center;
     border-radius: 999px;
-    border: 1px solid rgba(113, 158, 223, 0.28);
-    background: rgba(113, 158, 223, 0.11);
+    padding: 6px 10px;
+    font-size: 0.8125rem;
     color: var(--ui-text-main);
-    backdrop-filter: blur(6px);
+    background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 20%, transparent);
   }
 
-  .admin-profile-page__summary-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    align-self: stretch;
-  }
-
-  .admin-profile-page__summary-stat {
-    min-width: 0;
-    border-radius: 20px;
-    padding: 18px;
-    background: rgba(6, 15, 40, 0.4);
-    border: 1px solid rgba(113, 158, 223, 0.14);
+  .admin-detail__header-side {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    justify-content: space-between;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    align-items: flex-end;
+    gap: 10px;
   }
 
-  .admin-profile-page__summary-stat-label {
-    color: var(--ui-text-secondary);
+  .admin-detail__status {
+    --status-color: var(--ui-text-secondary);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--status-color);
     font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-weight: 780;
+    white-space: nowrap;
   }
 
-  .admin-profile-page__summary-stat-value {
+  .admin-detail__status.is-online {
+    --status-color: var(--color-success);
+  }
+
+  .admin-detail__status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    border-radius: 999px;
+    background: var(--status-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
+  }
+
+  .admin-detail__summary-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .admin-detail__summary-card {
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--admin-glass-border);
+    background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
+  }
+
+  .admin-detail__summary-label {
+    display: block;
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .admin-detail__summary-value {
+    display: block;
+    margin-top: 6px;
     color: var(--ui-text-main);
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.45;
     word-break: break-word;
   }
 
-  .admin-profile-page__workspace {
+  .admin-detail__refresh {
+    min-width: 148px;
+  }
+
+  .admin-detail-card {
+    position: relative;
+    isolation: isolate;
     overflow: hidden;
+    border: 1px solid var(--admin-glass-border);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 38%),
+      linear-gradient(145deg, var(--admin-glass-bg), var(--admin-glass-bg-strong));
+    box-shadow: var(--admin-glass-shadow);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
   }
 
-  .admin-profile-page__layout {
+  .admin-detail-card :deep(.p-card-body),
+  .admin-detail-card :deep(.p-card-content) {
+    padding: 0;
+  }
+
+  .admin-detail-card::after {
+    content: "";
+    position: absolute;
+    inset: -30% auto -30% -52%;
+    z-index: 0;
+    width: 46%;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 11%, transparent), transparent);
+    opacity: 0;
+    transform: rotate(12deg) translateX(-35%);
+  }
+
+  .admin-detail-card:hover::after {
+    animation: admin-detail-glint 1.1s ease both;
+  }
+
+  .admin-detail__layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+    min-height: 640px;
+  }
+
+  .admin-detail__nav {
     display: flex;
-    min-height: 720px;
+    flex-direction: column;
+    gap: 7px;
+    padding: 10px;
+    border-right: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
   }
 
-  .admin-profile-page__tabs {
-    width: 240px;
-    border-right: 1px solid rgba(113, 158, 223, 0.26);
-    padding: 18px 14px;
-    flex-shrink: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)), rgba(7, 18, 53, 0.45);
-  }
-
-  .admin-profile-page__content {
-    flex: 1;
-    min-width: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0));
-  }
-
-  .admin-profile-page__content-header {
-    height: 66px;
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    border-bottom: 1px solid rgba(113, 158, 223, 0.2);
-    color: var(--ui-text-main);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    background: rgba(255, 255, 255, 0.015);
-  }
-
-  .admin-profile-page__content-body {
-    padding: 24px;
-  }
-
-  .admin-profile-page__tabs :deep(.tabs) {
-    gap: 10px;
-  }
-
-  .admin-profile-page__tabs :deep(.tab) {
-    border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.025);
+  .admin-detail__nav-button {
+    justify-content: flex-start;
+    min-height: 42px;
+    border-radius: 14px;
+    color: var(--ui-text-secondary);
+    background: transparent;
     transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      transform 0.2s ease;
+      color 0.18s ease,
+      background-color 0.18s ease,
+      transform 0.18s ease;
   }
 
-  .admin-profile-page__tabs :deep(.tab:hover) {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(113, 158, 223, 0.14);
+  .admin-detail__nav-button:hover,
+  .admin-detail__nav-button.is-active {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 11%, transparent);
     transform: translateX(2px);
   }
 
-  .admin-profile-page__tabs :deep(.tab.active) {
-    background: linear-gradient(135deg, rgba(62, 110, 241, 0.92), rgba(113, 158, 223, 0.86));
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 26px rgba(30, 64, 175, 0.28);
+  .admin-detail__nav-button.is-active {
+    box-shadow: inset 2px 0 0 var(--ui-primary-main);
   }
 
-  .admin-profile-page__tabs :deep(.tab__icon) {
-    opacity: 0.9;
+  .admin-detail__content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
   }
 
-  @media (max-width: 1100px) {
-    .admin-profile-page__summary {
+  .admin-detail__content-header {
+    min-height: 74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+  }
+
+  .admin-detail__content-header h2 {
+    margin: 0;
+    color: var(--ui-text-main);
+    font-size: 18px;
+    font-weight: 840;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .admin-detail__content-header p {
+    max-width: 820px;
+    margin: 5px 0 0;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .admin-detail__content :deep(*) {
+    min-width: 0;
+  }
+
+  .admin-detail__content :deep(.admin-profile-tab-space) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  @media (max-width: 1200px) {
+    .admin-detail__header {
       grid-template-columns: 1fr;
     }
 
-    .admin-profile-page__layout {
-      flex-direction: column;
+    .admin-detail__header-side {
+      align-items: stretch;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .admin-detail__layout {
+      grid-template-columns: 1fr;
     }
 
-    .admin-profile-page__tabs {
-      width: 100%;
+    .admin-detail__nav {
       border-right: 0;
-      border-bottom: 1px solid rgba(113, 158, 223, 0.22);
+      border-bottom: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
     }
 
-    .admin-profile-page__summary-stats {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .admin-profile-page__tabs :deep(.tab:hover) {
+    .admin-detail__nav-button:hover,
+    .admin-detail__nav-button.is-active {
       transform: none;
     }
   }
 
-  @media (max-width: 640px) {
-    .admin-profile-page__header,
-    .admin-profile-page__summary-top,
-    .admin-profile-page__summary-hero {
-      flex-direction: column;
+  @media (max-width: 720px) {
+    .admin-detail {
+      padding: 12px;
     }
 
-    .admin-profile-page__summary {
-      padding: 22px 18px;
+    .admin-detail__identity,
+    .admin-detail__header-side {
+      align-items: flex-start;
     }
 
-    .admin-profile-page__summary-stats {
+    .admin-detail__summary-grid {
       grid-template-columns: 1fr;
     }
+  }
 
-    .admin-profile-page__content-body {
-      padding: 18px;
+  @keyframes admin-detail-glint {
+    0% {
+      opacity: 0;
+      transform: rotate(12deg) translateX(-35%);
+    }
+
+    20% {
+      opacity: 0.58;
+    }
+
+    100% {
+      opacity: 0;
+      transform: rotate(12deg) translateX(245%);
     }
   }
 </style>

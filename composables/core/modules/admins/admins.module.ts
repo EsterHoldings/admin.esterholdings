@@ -16,6 +16,10 @@ export class AdminsModule implements BasicModuleInterface {
         return await this.adminsService.getFirst(id);
     }
 
+    async getActivity(id:any, params: object = {}): Promise<any> {
+        return await this.adminsService.getActivity(id, params);
+    }
+
     async post(data:any): Promise<any> {
         return await this.adminsService.post(data);
     }

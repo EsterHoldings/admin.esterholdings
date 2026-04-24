@@ -13,6 +13,10 @@ export class AdminsService {
     return await this.useApi.get(`/admins/${id}`);
   }
 
+  async getActivity(id:any, params: {} = {}):Promise<any> {
+    return await this.useApi.get(`/admins/${id}/activity`, params);
+  }
+
   async post(data:object = {}):Promise<any> {
     return await this.useApi.post("/admins", data);
   }

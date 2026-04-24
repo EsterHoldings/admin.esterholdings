@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-profile-activity">
+  <div class="admin-profile-tab-space admin-profile-activity">
     <PanelDefault class="admin-profile-activity__toolbar">
       <div class="admin-profile-activity__presets">
         <button
@@ -8,7 +8,8 @@
           type="button"
           class="admin-profile-activity__preset-button"
           :class="{ 'admin-profile-activity__preset-button--active': filters.preset === preset.id }"
-          @click="applyPreset(preset.id)">
+          @click="applyPreset(preset.id)"
+        >
           {{ preset.label }}
         </button>
       </div>
@@ -21,7 +22,8 @@
           <UiInput
             type="date"
             :value="toDateInputValue(filters.date_from)"
-            @input="value => updateFilter('date_from', value)" />
+            @input="value => updateFilter('date_from', value)"
+          />
         </div>
 
         <div class="admin-profile-activity__filter">
@@ -31,7 +33,8 @@
           <UiInput
             type="date"
             :value="toDateInputValue(filters.date_to)"
-            @input="value => updateFilter('date_to', value)" />
+            @input="value => updateFilter('date_to', value)"
+          />
         </div>
 
         <div class="admin-profile-activity__filter">
@@ -42,7 +45,8 @@
             :data="bucketOptions"
             :value="filters.bucket"
             without-no-select
-            @change="value => updateFilter('bucket', value || 'day')" />
+            @change="value => updateFilter('bucket', value || 'day')"
+          />
         </div>
 
         <div class="admin-profile-activity__filter">
@@ -52,7 +56,8 @@
           <UiSelect
             :data="deviceOptions"
             :value="filters.device_type"
-            @change="value => updateFilter('device_type', value || '')" />
+            @change="value => updateFilter('device_type', value || '')"
+          />
         </div>
 
         <div class="admin-profile-activity__filter">
@@ -62,7 +67,8 @@
           <UiSelect
             :data="browserOptions"
             :value="filters.browser"
-            @change="value => updateFilter('browser', value || '')" />
+            @change="value => updateFilter('browser', value || '')"
+          />
         </div>
 
         <div class="admin-profile-activity__filter">
@@ -72,13 +78,15 @@
           <UiSelect
             :data="osOptions"
             :value="filters.os"
-            @change="value => updateFilter('os', value || '')" />
+            @change="value => updateFilter('os', value || '')"
+          />
         </div>
 
         <UiButtonDefault
           state="info"
           :isLoading="isLoading"
-          @click="loadActivity">
+          @click="loadActivity"
+        >
           {{ resolveText("admin.profile.actions.refresh", "Refresh") }}
         </UiButtonDefault>
       </div>
@@ -88,7 +96,8 @@
       <PanelDefault
         v-for="card in summaryCards"
         :key="card.id"
-        class="admin-profile-activity__summary-card">
+        class="admin-profile-activity__summary-card"
+      >
         <UiTextSmall class="admin-profile-activity__summary-label">{{ card.label }}</UiTextSmall>
         <UiTextH5 class="admin-profile-activity__summary-value">{{ card.value }}</UiTextH5>
         <UiTextSmall class="admin-profile-activity__summary-hint">{{ card.hint }}</UiTextSmall>
@@ -118,7 +127,8 @@
           :categoryKeys="timelineKeys"
           :series="chartSeries"
           :yAxes="chartAxes"
-          :height="320" />
+          :height="320"
+        />
       </PanelDefault>
 
       <PanelDefault class="admin-profile-activity__panel">
@@ -145,13 +155,15 @@
             </div>
             <div
               v-if="deviceBreakdowns.length === 0"
-              class="admin-profile-activity__empty-inline">
+              class="admin-profile-activity__empty-inline"
+            >
               {{ resolveText("admin.profile.activity.empty.breakdowns", "No data yet.") }}
             </div>
             <div
               v-for="item in deviceBreakdowns"
               :key="`device-${item.key}`"
-              class="admin-profile-activity__breakdown-row">
+              class="admin-profile-activity__breakdown-row"
+            >
               <span>{{ item.label }}</span>
               <span>{{ formatHours(item.hours) }} · {{ item.sessions_count }}</span>
             </div>
@@ -163,13 +175,15 @@
             </div>
             <div
               v-if="browserBreakdowns.length === 0"
-              class="admin-profile-activity__empty-inline">
+              class="admin-profile-activity__empty-inline"
+            >
               {{ resolveText("admin.profile.activity.empty.breakdowns", "No data yet.") }}
             </div>
             <div
               v-for="item in browserBreakdowns"
               :key="`browser-${item.key}`"
-              class="admin-profile-activity__breakdown-row">
+              class="admin-profile-activity__breakdown-row"
+            >
               <span>{{ item.label }}</span>
               <span>{{ formatHours(item.hours) }} · {{ item.sessions_count }}</span>
             </div>
@@ -181,13 +195,15 @@
             </div>
             <div
               v-if="osBreakdowns.length === 0"
-              class="admin-profile-activity__empty-inline">
+              class="admin-profile-activity__empty-inline"
+            >
               {{ resolveText("admin.profile.activity.empty.breakdowns", "No data yet.") }}
             </div>
             <div
               v-for="item in osBreakdowns"
               :key="`os-${item.key}`"
-              class="admin-profile-activity__breakdown-row">
+              class="admin-profile-activity__breakdown-row"
+            >
               <span>{{ item.label }}</span>
               <span>{{ formatHours(item.hours) }} · {{ item.sessions_count }}</span>
             </div>
@@ -215,30 +231,36 @@
 
       <div
         v-if="sessionRows.length === 0"
-        class="admin-profile-activity__empty-state">
+        class="admin-profile-activity__empty-state"
+      >
         {{ resolveText("admin.profile.activity.empty.sessions", "No online sessions recorded yet.") }}
       </div>
 
       <div
         v-else
-        class="admin-profile-activity__sessions">
+        class="admin-profile-activity__sessions"
+      >
         <div
-          v-for="session in sessionRows"
+          v-for="session in visibleSessionRows"
           :key="session.id"
-          class="admin-profile-activity__session-card">
+          class="admin-profile-activity__session-card"
+        >
           <div class="admin-profile-activity__session-top">
             <div class="admin-profile-activity__session-main">
               <strong>{{ session.ip || resolveText("admin.profile.activity.labels.unknown", "Unknown") }}</strong>
-              <UiBadge
-                :state="session.is_online ? 'success' : 'warning'"
-                outline
-                class="!px-3">
-                {{
-                  session.is_online
-                    ? resolveText("admin.profile.status.online", "Online")
-                    : resolveText("admin.profile.status.offline", "Offline")
-                }}
-              </UiBadge>
+              <span
+                class="admin-profile-activity__inline-status"
+                :class="session.is_online ? 'is-online' : 'is-offline'"
+              >
+                <span class="admin-profile-activity__inline-status-dot" />
+                <span>
+                  {{
+                    session.is_online
+                      ? resolveText("admin.profile.status.online", "Online")
+                      : resolveText("admin.profile.status.offline", "Offline")
+                  }}
+                </span>
+              </span>
             </div>
 
             <span class="admin-profile-activity__session-duration">{{ session.duration_human }}</span>
@@ -250,139 +272,31 @@
             <span>{{ session.device_type || resolveText("admin.profile.activity.labels.unknown", "Unknown") }}</span>
             <span>{{ session.browser || resolveText("admin.profile.activity.labels.unknown", "Unknown") }}</span>
             <span>{{ session.os || resolveText("admin.profile.activity.labels.unknown", "Unknown") }}</span>
-            <span>{{
-              session.city || session.country || resolveText("admin.profile.activity.labels.unknown", "Unknown")
-            }}</span>
+            <span>{{ session.city || session.country || resolveText("admin.profile.activity.labels.unknown", "Unknown") }}</span>
           </div>
 
           <div
             v-if="session.user_agent"
-            class="admin-profile-activity__session-agent">
+            class="admin-profile-activity__session-agent"
+          >
             {{ session.user_agent }}
           </div>
         </div>
+
+        <div
+          v-if="canLoadMoreSessions"
+          class="admin-profile-activity__load-more"
+        >
+          <button
+            type="button"
+            class="admin-profile-activity__load-more-button"
+            @click="visibleSessionCount += 10"
+          >
+            {{ resolveText("admin.profile.actions.loadMore", "Load more") }}
+          </button>
+        </div>
       </div>
     </PanelDefault>
-
-    <div class="admin-profile-activity__logs-grid">
-      <PanelDefault class="admin-profile-activity__panel">
-        <div class="admin-profile-activity__panel-header">
-          <div>
-            <UiTextH5 class="admin-profile-activity__panel-title">
-              {{ resolveText("admin.profile.activity.sections.actions", "Admin actions") }}
-            </UiTextH5>
-            <UiTextSmall class="admin-profile-activity__panel-subtitle">
-              {{
-                resolveText(
-                  "admin.profile.activity.descriptions.actions",
-                  "Profile updates, security changes and write actions from the admin panel."
-                )
-              }}
-            </UiTextSmall>
-          </div>
-        </div>
-
-        <div
-          v-if="actionRows.length === 0"
-          class="admin-profile-activity__empty-state">
-          {{ resolveText("admin.profile.activity.empty.actions", "No actions recorded yet.") }}
-        </div>
-
-        <div
-          v-else
-          class="admin-profile-activity__log-list">
-          <div
-            v-for="row in actionRows"
-            :key="row.id"
-            class="admin-profile-activity__log-card">
-            <div class="admin-profile-activity__log-top">
-              <div class="admin-profile-activity__log-title-wrap">
-                <strong>{{ row.title }}</strong>
-                <UiBadge
-                  :state="resolveLogBadge(row.type)"
-                  outline
-                  class="!px-3">
-                  {{ row.type }}
-                </UiBadge>
-              </div>
-              <span class="admin-profile-activity__log-time">{{ formatDateTime(row.created_at) }}</span>
-            </div>
-
-            <div
-              v-if="row.description"
-              class="admin-profile-activity__log-description">
-              {{ row.description }}
-            </div>
-
-            <div class="admin-profile-activity__log-meta">
-              <span v-if="row.method">{{ row.method }}</span>
-              <span v-if="row.path">{{ row.path }}</span>
-              <span v-if="row.route_name">{{ row.route_name }}</span>
-              <span v-if="row.ip">{{ row.ip }}</span>
-            </div>
-          </div>
-        </div>
-      </PanelDefault>
-
-      <PanelDefault class="admin-profile-activity__panel">
-        <div class="admin-profile-activity__panel-header">
-          <div>
-            <UiTextH5 class="admin-profile-activity__panel-title">
-              {{ resolveText("admin.profile.activity.sections.chatConnections", "Chat connections") }}
-            </UiTextH5>
-            <UiTextSmall class="admin-profile-activity__panel-subtitle">
-              {{
-                resolveText(
-                  "admin.profile.activity.descriptions.chatConnections",
-                  "All connections and disconnections from support chats."
-                )
-              }}
-            </UiTextSmall>
-          </div>
-        </div>
-
-        <div
-          v-if="chatRows.length === 0"
-          class="admin-profile-activity__empty-state">
-          {{ resolveText("admin.profile.activity.empty.chatConnections", "No chat connections recorded yet.") }}
-        </div>
-
-        <div
-          v-else
-          class="admin-profile-activity__log-list">
-          <div
-            v-for="row in chatRows"
-            :key="row.id"
-            class="admin-profile-activity__log-card">
-            <div class="admin-profile-activity__log-top">
-              <div class="admin-profile-activity__log-title-wrap">
-                <strong>{{ row.title }}</strong>
-                <UiBadge
-                  state="success"
-                  outline
-                  class="!px-3">
-                  {{ row.action }}
-                </UiBadge>
-              </div>
-              <span class="admin-profile-activity__log-time">{{ formatDateTime(row.created_at) }}</span>
-            </div>
-
-            <div
-              v-if="row.description"
-              class="admin-profile-activity__log-description">
-              {{ row.description }}
-            </div>
-
-            <div class="admin-profile-activity__log-meta">
-              <span v-if="row.meta?.ticket_id">Ticket #{{ row.meta.ticket_id }}</span>
-              <span v-if="row.meta?.session_id">Session {{ row.meta.session_id }}</span>
-              <span v-if="row.ip">{{ row.ip }}</span>
-              <span v-if="row.path">{{ row.path }}</span>
-            </div>
-          </div>
-        </div>
-      </PanelDefault>
-    </div>
   </div>
 </template>
 
@@ -393,7 +307,6 @@
 
   import AdminMetricChart from "~/components/block/charts/AdminMetricChart.vue";
   import PanelDefault from "~/components/block/panels/PanelDefault.vue";
-  import UiBadge from "~/components/ui/UiBadge.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiInput from "~/components/ui/UiInput.vue";
   import UiSelect from "~/components/ui/UiSelect.vue";
@@ -414,10 +327,12 @@
     defineProps<{
       profileData?: Record<string, any> | null;
       isLoading?: boolean;
+      profileScope?: "self" | "admin";
     }>(),
     {
       profileData: null,
       isLoading: false,
+      profileScope: "self",
     }
   );
 
@@ -427,6 +342,7 @@
 
   const activity = ref<any>(null);
   const isLoading = ref(false);
+  const visibleSessionCount = ref(10);
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -474,7 +390,7 @@
     device_type: "",
     browser: "",
     os: "",
-    limit: 30,
+    limit: 100,
   });
 
   const bucketOptions = computed(() => [
@@ -485,11 +401,6 @@
   const metrics = computed(() => activity.value?.metrics ?? {});
   const timeline = computed(() => (Array.isArray(metrics.value?.timeline) ? metrics.value.timeline : []));
   const sessions = computed(() => (Array.isArray(metrics.value?.sessions) ? metrics.value.sessions : []));
-  const actionRows = computed(() => (Array.isArray(activity.value?.actions) ? activity.value.actions : []));
-  const chatRows = computed(() =>
-    Array.isArray(activity.value?.chat_connections) ? activity.value.chat_connections : []
-  );
-
   const deviceBreakdowns = computed(() => metrics.value?.breakdowns?.devices ?? []);
   const browserBreakdowns = computed(() => metrics.value?.breakdowns?.browsers ?? []);
   const osBreakdowns = computed(() => metrics.value?.breakdowns?.oses ?? []);
@@ -552,6 +463,8 @@
   ]);
 
   const sessionRows = computed(() => sessions.value);
+  const visibleSessionRows = computed(() => sessionRows.value.slice(0, visibleSessionCount.value));
+  const canLoadMoreSessions = computed(() => visibleSessionRows.value.length < sessionRows.value.length);
 
   const summaryCards = computed(() => {
     const metricsSummary = metrics.value?.summary ?? {};
@@ -582,35 +495,44 @@
           `: ${formatDuration(metricsSummary?.average_session_seconds ?? 0)}`,
       },
       {
-        id: "actions",
-        label: resolveText("admin.profile.activity.summary.actions", "Actions"),
-        value: String(summary?.actions_count ?? 0),
-        hint:
-          resolveText("admin.profile.activity.summary.lastActivity", "Last activity") +
-          `: ${formatDateTime(summary?.last_activity_at)}`,
-      },
-      {
-        id: "chat",
-        label: resolveText("admin.profile.activity.summary.chatConnections", "Chat connections"),
-        value: String(summary?.chat_connections_count ?? 0),
-        hint: resolveText("admin.profile.activity.summary.liveSupport", "Support chat connect/disconnect events"),
+        id: "last-activity",
+        label: resolveText("admin.profile.activity.summary.lastActivity", "Last activity"),
+        value: formatDateTime(summary?.last_activity_at),
+        hint: resolveText("admin.profile.logs.summary.actionsHint", "Changes to profile, security settings and other admin actions."),
       },
     ];
   });
 
   const loadActivity = async () => {
+    const adminId = String(props.profileData?.id ?? "").trim();
+    if (!adminId) {
+      activity.value = null;
+      return;
+    }
+
     isLoading.value = true;
 
     try {
-      const response = await appCore.adminModules.profile.getActivity({
-        date_from: filters.date_from,
-        date_to: filters.date_to,
-        bucket: filters.bucket,
-        device_type: filters.device_type,
-        browser: filters.browser,
-        os: filters.os,
-        limit: filters.limit,
-      });
+      const response =
+        props.profileScope === "self"
+          ? await appCore.adminModules.profile.getActivity({
+              date_from: filters.date_from,
+              date_to: filters.date_to,
+              bucket: filters.bucket,
+              device_type: filters.device_type,
+              browser: filters.browser,
+              os: filters.os,
+              limit: filters.limit,
+            })
+          : await appCore.admins.getActivity(adminId, {
+              date_from: filters.date_from,
+              date_to: filters.date_to,
+              bucket: filters.bucket,
+              device_type: filters.device_type,
+              browser: filters.browser,
+              os: filters.os,
+              limit: filters.limit,
+            });
 
       activity.value = response?.data?.data ?? null;
     } catch (error: any) {
@@ -654,7 +576,7 @@
     if (!value) return "—";
 
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
+    if (Number.isNaN(date.getTime())) return String(value);
 
     return date.toLocaleString();
   };
@@ -675,20 +597,10 @@
     return `${minutes}m`;
   };
 
-  const resolveLogBadge = (type: string) => {
-    if (type === "security") return "warning";
-    if (type === "profile") return "info";
-    if (type === "support_chat") return "success";
-    return "secondary";
-  };
-
   watch(
     () => props.profileData?.id,
-    async value => {
-      if (!value) {
-        return;
-      }
-
+    async () => {
+      visibleSessionCount.value = 10;
       await loadActivity();
     },
     { immediate: true }
@@ -699,17 +611,19 @@
   .admin-profile-activity {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 14px;
+  }
+
+  .admin-profile-activity__toolbar,
+  .admin-profile-activity__summary-card,
+  .admin-profile-activity__panel {
+    padding: 18px;
   }
 
   .admin-profile-activity__toolbar {
-    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    background:
-      radial-gradient(circle at top left, rgba(113, 158, 223, 0.14), transparent 32%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
+    gap: 14px;
   }
 
   .admin-profile-activity__presets {
@@ -719,23 +633,18 @@
   }
 
   .admin-profile-activity__preset-button {
-    border: 1px solid rgba(113, 158, 223, 0.18);
-    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 90%, transparent);
     color: var(--ui-text-secondary);
     border-radius: 999px;
     padding: 9px 14px;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease,
-      transform 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 
   .admin-profile-activity__preset-button--active {
     color: var(--ui-text-main);
-    border-color: rgba(113, 158, 223, 0.48);
-    background: rgba(113, 158, 223, 0.12);
-    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 42%, transparent);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
   }
 
   .admin-profile-activity__filters {
@@ -751,61 +660,29 @@
     gap: 6px;
     padding: 12px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
   }
 
   .admin-profile-activity__filter-label,
   .admin-profile-activity__summary-label,
   .admin-profile-activity__summary-hint,
-  .admin-profile-activity__panel-subtitle {
+  .admin-profile-activity__panel-subtitle,
+  .admin-profile-activity__session-duration,
+  .admin-profile-activity__session-meta {
     color: var(--ui-text-secondary);
   }
 
   .admin-profile-activity__summary-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
   }
 
-  .admin-profile-activity__summary-card,
-  .admin-profile-activity__panel {
-    padding: 22px;
-  }
-
   .admin-profile-activity__summary-card {
-    position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)), rgba(7, 18, 53, 0.34);
-  }
-
-  .admin-profile-activity__summary-card::before {
-    content: "";
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 4px;
-    border-radius: 999px;
-    background: rgba(113, 158, 223, 0.7);
-  }
-
-  .admin-profile-activity__summary-card:nth-child(2)::before {
-    background: rgba(113, 223, 173, 0.76);
-  }
-
-  .admin-profile-activity__summary-card:nth-child(3)::before {
-    background: rgba(255, 173, 66, 0.82);
-  }
-
-  .admin-profile-activity__summary-card:nth-child(4)::before {
-    background: rgba(255, 99, 132, 0.78);
-  }
-
-  .admin-profile-activity__summary-card:nth-child(5)::before {
-    background: rgba(128, 169, 255, 0.82);
+    gap: 10px;
   }
 
   .admin-profile-activity__summary-value,
@@ -813,18 +690,16 @@
     color: var(--ui-text-main);
   }
 
-  .admin-profile-activity__main-grid,
-  .admin-profile-activity__logs-grid {
+  .admin-profile-activity__main-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+    gap: 14px;
   }
 
   .admin-profile-activity__panel {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)), rgba(7, 18, 53, 0.24);
+    gap: 16px;
   }
 
   .admin-profile-activity__panel-header {
@@ -837,14 +712,14 @@
   .admin-profile-activity__breakdowns {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: 12px;
   }
 
   .admin-profile-activity__breakdown-block {
-    border-radius: 18px;
-    padding: 18px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px;
+    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -856,12 +731,10 @@
   }
 
   .admin-profile-activity__breakdown-row,
-  .admin-profile-activity__session-meta,
-  .admin-profile-activity__log-meta {
+  .admin-profile-activity__session-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 12px;
-    color: var(--ui-text-secondary);
   }
 
   .admin-profile-activity__empty-inline,
@@ -871,58 +744,39 @@
   }
 
   .admin-profile-activity__empty-state {
-    min-height: 144px;
+    min-height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 20px;
-    border: 1px dashed rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  .admin-profile-activity__sessions,
-  .admin-profile-activity__log-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .admin-profile-activity__session-card,
-  .admin-profile-activity__log-card {
-    position: relative;
-    padding: 16px 18px;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px dashed color-mix(in srgb, var(--ui-primary-main) 12%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 90%, transparent);
+  }
+
+  .admin-profile-activity__sessions {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow: hidden;
   }
 
-  .admin-profile-activity__session-card::before,
-  .admin-profile-activity__log-card::before {
-    content: "";
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 3px;
-    background: rgba(113, 158, 223, 0.55);
+  .admin-profile-activity__session-card {
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 10%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .admin-profile-activity__log-card::before {
-    background: rgba(113, 223, 173, 0.5);
-  }
-
-  .admin-profile-activity__session-top,
-  .admin-profile-activity__log-top {
+  .admin-profile-activity__session-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
   }
 
-  .admin-profile-activity__session-main,
-  .admin-profile-activity__log-title-wrap {
+  .admin-profile-activity__session-main {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -930,20 +784,53 @@
     color: var(--ui-text-main);
   }
 
-  .admin-profile-activity__session-duration,
-  .admin-profile-activity__log-time {
-    color: var(--ui-text-secondary);
-    white-space: nowrap;
-    font-size: 13px;
+  .admin-profile-activity__inline-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    font-weight: 700;
   }
 
-  .admin-profile-activity__session-agent,
-  .admin-profile-activity__log-description {
+  .admin-profile-activity__inline-status.is-online {
+    color: var(--color-success);
+  }
+
+  .admin-profile-activity__inline-status.is-offline {
+    color: var(--ui-text-secondary);
+  }
+
+  .admin-profile-activity__inline-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .admin-profile-activity__session-agent {
     color: var(--ui-text-main);
     line-height: 1.5;
   }
 
-  @media (max-width: 1240px) {
+  .admin-profile-activity__load-more {
+    display: flex;
+    justify-content: center;
+    padding-top: 4px;
+  }
+
+  .admin-profile-activity__load-more-button {
+    color: var(--ui-primary-main);
+    font-size: 0.875rem;
+    font-weight: 700;
+    transition: opacity 0.2s ease;
+  }
+
+  .admin-profile-activity__load-more-button:hover {
+    opacity: 0.78;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 1280px) {
     .admin-profile-activity__filters {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -953,7 +840,6 @@
     }
 
     .admin-profile-activity__main-grid,
-    .admin-profile-activity__logs-grid,
     .admin-profile-activity__breakdowns {
       grid-template-columns: 1fr;
     }
@@ -965,14 +851,8 @@
       grid-template-columns: 1fr;
     }
 
-    .admin-profile-activity__toolbar,
-    .admin-profile-activity__summary-card,
-    .admin-profile-activity__panel {
-      padding: 18px;
-    }
-
-    .admin-profile-activity__session-top,
-    .admin-profile-activity__log-top {
+    .admin-profile-activity__panel-header,
+    .admin-profile-activity__session-top {
       flex-direction: column;
     }
   }

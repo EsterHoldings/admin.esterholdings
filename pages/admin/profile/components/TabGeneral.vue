@@ -12,16 +12,18 @@
             </UiTextSmall>
           </div>
 
-          <UiBadge
-            :state="props.profileData?.is_online ? 'success' : 'warning'"
-            outline
-            class="!px-3">
-            {{
-              props.profileData?.is_online
-                ? resolveText("admin.profile.status.online", "Online")
-                : resolveText("admin.profile.status.offline", "Offline")
-            }}
-          </UiBadge>
+          <div
+            class="admin-profile-general__status"
+            :class="props.profileData?.is_online ? 'is-online' : 'is-offline'">
+            <span class="admin-profile-general__status-dot" />
+            <span>
+              {{
+                props.profileData?.is_online
+                  ? resolveText("admin.profile.status.online", "Online")
+                  : resolveText("admin.profile.status.offline", "Offline")
+              }}
+            </span>
+          </div>
         </div>
 
         <div class="admin-profile-general__photo-chips">
@@ -64,7 +66,9 @@
         </div>
       </div>
 
-      <div class="admin-profile-general__photo-actions">
+      <div
+        v-if="!isReadOnly"
+        class="admin-profile-general__photo-actions">
         <input
           ref="fileInputRef"
           type="file"
@@ -89,14 +93,14 @@
       </div>
 
       <div
-        v-if="selectedFileName"
+        v-if="!isReadOnly && selectedFileName"
         class="admin-profile-general__selected-file">
         <strong>{{ resolveText("admin.profile.general.labels.selectedFile", "Selected file") }}:</strong>
         <span>{{ selectedFileName }}</span>
       </div>
 
       <div
-        v-if="uploadProgress > 0 && isUploadingPhoto"
+        v-if="!isReadOnly && uploadProgress > 0 && isUploadingPhoto"
         class="admin-profile-general__upload-progress">
         <div
           class="admin-profile-general__upload-progress-bar"
@@ -128,7 +132,7 @@
           v-else
           class="admin-profile-general__history-grid">
           <div
-            v-for="photo in photoHistory"
+            v-for="photo in visiblePhotoHistory"
             :key="photo.id"
             class="admin-profile-general__history-card">
             <UiImage
@@ -157,6 +161,7 @@
 
               <div class="admin-profile-general__history-card-actions">
                 <UiButtonDefault
+                  v-if="!isReadOnly"
                   state="info--outline--small"
                   :disabled="photo.is_current || busyPhotoId === photo.id"
                   :isLoading="busyPhotoId === photo.id && busyPhotoAction === 'select'"
@@ -165,6 +170,7 @@
                 </UiButtonDefault>
 
                 <UiButtonDefault
+                  v-if="!isReadOnly"
                   state="danger--outline--small"
                   :disabled="busyPhotoId === photo.id"
                   :isLoading="busyPhotoId === photo.id && busyPhotoAction === 'delete'"
@@ -173,6 +179,17 @@
                 </UiButtonDefault>
               </div>
             </div>
+          </div>
+
+          <div
+            v-if="canLoadMorePhotoHistory"
+            class="admin-profile-general__load-more">
+            <button
+              type="button"
+              class="admin-profile-general__load-more-button"
+              @click="visiblePhotoHistoryCount += 6">
+              {{ resolveText("admin.profile.actions.loadMore", "Load more") }}
+            </button>
           </div>
         </div>
       </div>
@@ -186,10 +203,15 @@
           </UiTextH5>
           <UiTextSmall class="admin-profile-general__panel-subtitle">
             {{
-              resolveText(
-                "admin.profile.general.hints.profileDetails",
-                "Update the administrator account details used across the admin panel."
-              )
+              isReadOnly
+                ? resolveText(
+                    "admin.profile.general.hints.profileDetailsReadonly",
+                    "Profile snapshot for this administrator. Editing is available only in the owner session."
+                  )
+                : resolveText(
+                    "admin.profile.general.hints.profileDetails",
+                    "Update the administrator account details used across the admin panel."
+                  )
             }}
           </UiTextSmall>
         </div>
@@ -207,12 +229,15 @@
               :type="field.type"
               :value="formData[field.key]"
               :placeholder="field.placeholder"
+              :disabled="isReadOnly || isSaving"
               @input="value => updateField(field.key, value)" />
           </UiFormControl>
         </div>
       </div>
 
-      <div class="admin-profile-general__form-actions">
+      <div
+        v-if="!isReadOnly"
+        class="admin-profile-general__form-actions">
         <UiButtonDefault
           state="primary"
           :isLoading="isSaving"
@@ -247,10 +272,12 @@
     defineProps<{
       profileData?: Record<string, any> | null;
       isLoading?: boolean;
+      profileScope?: "self" | "admin";
     }>(),
     {
       profileData: null,
       isLoading: false,
+      profileScope: "self",
     }
   );
 
@@ -269,6 +296,7 @@
   const uploadProgress = ref(0);
   const isUploadingPhoto = ref(false);
   const isSaving = ref(false);
+  const visiblePhotoHistoryCount = ref(6);
   const busyPhotoId = ref("");
   const busyPhotoAction = ref<"select" | "delete" | "">("");
 
@@ -404,6 +432,11 @@
   const photoHistory = computed(() =>
     Array.isArray(props.profileData?.photo_history) ? props.profileData.photo_history : []
   );
+  const visiblePhotoHistory = computed(() => photoHistory.value.slice(0, visiblePhotoHistoryCount.value));
+  const canLoadMorePhotoHistory = computed(
+    () => visiblePhotoHistory.value.length < photoHistory.value.length
+  );
+  const isReadOnly = computed(() => props.profileScope === "admin");
 
   const avatarUrl = computed(() => selectedPreviewUrl.value || props.profileData?.photo_url || "");
   const selectedFileName = computed(() => selectedFile.value?.name || "");
@@ -435,6 +468,10 @@
   };
 
   const openFilePicker = () => {
+    if (isReadOnly.value) {
+      return;
+    }
+
     fileInputRef.value?.click();
   };
 
@@ -471,6 +508,10 @@
   };
 
   const saveProfile = async () => {
+    if (isReadOnly.value) {
+      return;
+    }
+
     isSaving.value = true;
     resetErrors();
 
@@ -498,7 +539,7 @@
   };
 
   const uploadPhoto = async () => {
-    if (!selectedFile.value) {
+    if (isReadOnly.value || !selectedFile.value) {
       return;
     }
 
@@ -550,6 +591,10 @@
   };
 
   const selectPhoto = async (photoId: string) => {
+    if (isReadOnly.value) {
+      return;
+    }
+
     busyPhotoId.value = photoId;
     busyPhotoAction.value = "select";
 
@@ -572,6 +617,10 @@
   };
 
   const deletePhoto = async (photoId: string) => {
+    if (isReadOnly.value) {
+      return;
+    }
+
     const isConfirmed =
       typeof window === "undefined"
         ? true
@@ -608,6 +657,7 @@
     () => props.profileData,
     value => {
       applyFormData(value);
+      visiblePhotoHistoryCount.value = 6;
     },
     { immediate: true, deep: true }
   );
@@ -662,6 +712,30 @@
   .admin-profile-general__panel-subtitle {
     color: var(--ui-text-secondary);
     line-height: 1.5;
+  }
+
+  .admin-profile-general__status {
+    --status-color: var(--ui-text-secondary);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--status-color);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .admin-profile-general__status.is-online {
+    --status-color: var(--color-success);
+  }
+
+  .admin-profile-general__status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    border-radius: 999px;
+    background: var(--status-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 16%, transparent);
   }
 
   .admin-profile-general__photo-chips {
@@ -805,6 +879,25 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 14px;
+  }
+
+  .admin-profile-general__load-more {
+    display: flex;
+    justify-content: center;
+    grid-column: 1 / -1;
+  }
+
+  .admin-profile-general__load-more-button {
+    color: var(--ui-primary-main);
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: opacity 0.2s ease;
+  }
+
+  .admin-profile-general__load-more-button:hover {
+    opacity: 0.78;
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
 
   .admin-profile-general__history-card {

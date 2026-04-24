@@ -1432,11 +1432,14 @@
             "email": "Email",
             "roles": "Roles",
             "createdAt": "Created At",
-            "options": "Options"
+            "options": "Options",
+            "lastSeen": "Last seen"
           },
           "actions": {
             "addNewAdmin": "Add new Admin",
-            "create": "New admin"
+            "create": "New admin",
+            "delete": "Delete admin",
+            "deleteConfirm": "Delete this admin?"
           },
           "empty": "No admins found."
         },
@@ -2394,7 +2397,8 @@
       "tabs": {
         "general": "General",
         "security": "Security",
-        "activity": "Activity"
+        "activity": "Activity",
+        "logs": "Actions & chats"
       },
       "actions": {
         "refresh": "Refresh",
@@ -2406,11 +2410,13 @@
         "updatePassword": "Update password",
         "sendGeneratedPassword": "Generate and send password",
         "enableTwoFactor": "Enable 2FA",
-        "disableTwoFactor": "Disable 2FA"
+        "disableTwoFactor": "Disable 2FA",
+        "loadMore": "Load more"
       },
       "status": {
         "online": "Online",
-        "offline": "Offline"
+        "offline": "Offline",
+        "onlineNow": "Active now"
       },
       "summary": {
         "nickname": "Nickname",
@@ -2431,7 +2437,8 @@
         "hints": {
           "fileSupport": "Upload JPG, JPEG or PNG up to 5 MB.",
           "photoHistory": "Reuse any previously uploaded image or remove it from history.",
-          "profileDetails": "Update the administrator account details used across the admin panel."
+          "profileDetails": "Update the administrator account details used across the admin panel.",
+          "profileDetailsReadonly": "Profile snapshot for this administrator. Editing is available only in the owner session."
         },
         "fields": {
           "nickname": "Nickname",
@@ -2562,6 +2569,20 @@
         },
         "errors": {
           "load": "Failed to load activity."
+        }
+      },
+      "tabsDescription": {
+        "general": "Profile details, contact fields and photo history.",
+        "security": "Password recovery and two-factor authentication settings.",
+        "activity": "Presence analytics, online sessions and environment breakdown.",
+        "logs": "Administrative actions and support chat connection history."
+      },
+      "logs": {
+        "summary": {
+          "actions": "Admin actions",
+          "actionsHint": "Changes to profile, security settings and other admin actions.",
+          "chatConnections": "Chat connections",
+          "chatConnectionsHint": "Support chat connect and disconnect events."
         }
       }
     },
