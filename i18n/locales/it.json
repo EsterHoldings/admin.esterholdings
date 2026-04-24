@@ -1742,7 +1742,8 @@
         "load": "Impossibile caricare le richieste.",
         "update": "Impossibile aggiornare la richiesta.",
         "documentNotFound": "Documento non trovato.",
-        "openDocument": "Impossibile aprire il documento."
+        "openDocument": "Impossibile aprire il documento.",
+        "copy": "Impossibile copiare il valore."
       },
       "clientRequests": {
         "title": "Richieste di verifica",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "Tutto",
           "allHint": "Tutti i record di revisione visibili",
-          "statusAll": "Tutto"
+          "statusAll": "Tutto",
+          "actionable": "Richiedono revisione",
+          "history": "Cronologia",
+          "approved": "Confermati",
+          "rejected": "Rifiutati"
+        },
+        "steps": {
+          "profile": "Profilo",
+          "documents": "Documenti",
+          "paymentDetails": "Dettagli di pagamento",
+          "email": "Email",
+          "verification": "Verifica"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} approvato",
+          "stepRejected": "{step} rifiutato",
+          "stepPending": "{step} inviato in revisione",
+          "documentsApproved": "Documenti approvati",
+          "documentsRejected": "Documenti rifiutati",
+          "documentApproved": "Documento approvato",
+          "documentRejected": "Documento rifiutato",
+          "payoutApproved": "Dettaglio di pagamento approvato",
+          "payoutRejected": "Dettaglio di pagamento rifiutato"
+        },
+        "actions": {
+          "copyEmail": "Copia email",
+          "copyActorId": "Copia ID admin"
+        },
+        "messages": {
+          "emailCopied": "Email copiata",
+          "actorIdCopied": "ID admin copiato"
         }
       },
       "historyKeys": {

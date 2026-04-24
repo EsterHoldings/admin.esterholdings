@@ -2109,7 +2109,8 @@
         "load": "Failed to load verification requests.",
         "update": "Failed to update request status.",
         "documentNotFound": "Document not found.",
-        "openDocument": "Failed to open document."
+        "openDocument": "Failed to open document.",
+        "copy": "Failed to copy value."
       },
       "clientRequests": {
         "title": "Verification requests",
@@ -2246,7 +2247,37 @@
         "filters": {
           "all": "All",
           "allHint": "All visible review records",
-          "statusAll": "All"
+          "statusAll": "All",
+          "actionable": "Requires review",
+          "history": "History",
+          "approved": "Approved",
+          "rejected": "Rejected"
+        },
+        "steps": {
+          "profile": "Profile",
+          "documents": "Documents",
+          "paymentDetails": "Payment details",
+          "email": "Email",
+          "verification": "Verification"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} approved",
+          "stepRejected": "{step} rejected",
+          "stepPending": "{step} sent for review",
+          "documentsApproved": "Documents approved",
+          "documentsRejected": "Documents rejected",
+          "documentApproved": "Document approved",
+          "documentRejected": "Document rejected",
+          "payoutApproved": "Payment detail approved",
+          "payoutRejected": "Payment detail rejected"
+        },
+        "actions": {
+          "copyEmail": "Copy email",
+          "copyActorId": "Copy actor ID"
+        },
+        "messages": {
+          "emailCopied": "Email copied",
+          "actorIdCopied": "Actor ID copied"
         }
       },
       "historyKeys": {

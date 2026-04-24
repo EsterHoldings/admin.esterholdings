@@ -1742,7 +1742,8 @@
         "load": "確認リクエストを読み込めませんでした。",
         "update": "リクエスト状態を更新できませんでした。",
         "documentNotFound": "書類が見つかりません。",
-        "openDocument": "書類を開けませんでした。"
+        "openDocument": "書類を開けませんでした。",
+        "copy": "値をコピーできませんでした。"
       },
       "clientRequests": {
         "title": "確認リクエスト",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "すべて",
           "allHint": "表示中のすべての審査レコード",
-          "statusAll": "すべて"
+          "statusAll": "すべて",
+          "actionable": "要対応",
+          "history": "履歴",
+          "approved": "承認済み",
+          "rejected": "却下済み"
+        },
+        "steps": {
+          "profile": "プロフィール",
+          "documents": "書類",
+          "paymentDetails": "支払い情報",
+          "email": "メール",
+          "verification": "認証"
+        },
+        "historyTitles": {
+          "stepApproved": "{step}を承認しました",
+          "stepRejected": "{step}を却下しました",
+          "stepPending": "{step}を確認待ちにしました",
+          "documentsApproved": "書類を承認しました",
+          "documentsRejected": "書類を却下しました",
+          "documentApproved": "書類を承認しました",
+          "documentRejected": "書類を却下しました",
+          "payoutApproved": "支払い情報を承認しました",
+          "payoutRejected": "支払い情報を却下しました"
+        },
+        "actions": {
+          "copyEmail": "メールをコピー",
+          "copyActorId": "管理者IDをコピー"
+        },
+        "messages": {
+          "emailCopied": "メールをコピーしました",
+          "actorIdCopied": "管理者IDをコピーしました"
         }
       },
       "historyKeys": {

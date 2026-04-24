@@ -1742,7 +1742,8 @@
         "load": "Doğrulama talepleri yüklenemedi.",
         "update": "Talep durumu güncellenemedi.",
         "documentNotFound": "Belge bulunamadı.",
-        "openDocument": "Belge açılamadı."
+        "openDocument": "Belge açılamadı.",
+        "copy": "Değer kopyalanamadı."
       },
       "clientRequests": {
         "title": "Doğrulama talepleri",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "Tümü",
           "allHint": "Görünen tüm inceleme kayıtları",
-          "statusAll": "Tümü"
+          "statusAll": "Tümü",
+          "actionable": "İşlem gerektiriyor",
+          "history": "Geçmiş",
+          "approved": "Onaylananlar",
+          "rejected": "Reddedilenler"
+        },
+        "steps": {
+          "profile": "Profil",
+          "documents": "Belgeler",
+          "paymentDetails": "Ödeme bilgileri",
+          "email": "E-posta",
+          "verification": "Doğrulama"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} onaylandı",
+          "stepRejected": "{step} reddedildi",
+          "stepPending": "{step} incelemeye gönderildi",
+          "documentsApproved": "Belgeler onaylandı",
+          "documentsRejected": "Belgeler reddedildi",
+          "documentApproved": "Belge onaylandı",
+          "documentRejected": "Belge reddedildi",
+          "payoutApproved": "Ödeme bilgisi onaylandı",
+          "payoutRejected": "Ödeme bilgisi reddedildi"
+        },
+        "actions": {
+          "copyEmail": "E-postayı kopyala",
+          "copyActorId": "Yönetici kimliğini kopyala"
+        },
+        "messages": {
+          "emailCopied": "E-posta kopyalandı",
+          "actorIdCopied": "Yönetici kimliği kopyalandı"
         }
       },
       "historyKeys": {

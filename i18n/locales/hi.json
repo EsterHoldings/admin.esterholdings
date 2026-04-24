@@ -1742,7 +1742,8 @@
         "load": "सत्यापन अनुरोध लोड नहीं हो सके।",
         "update": "अनुरोध स्थिति अपडेट नहीं हो सकी।",
         "documentNotFound": "दस्तावेज़ नहीं मिला।",
-        "openDocument": "दस्तावेज़ नहीं खुल सका।"
+        "openDocument": "दस्तावेज़ नहीं खुल सका।",
+        "copy": "मान कॉपी नहीं किया जा सका।"
       },
       "clientRequests": {
         "title": "सत्यापन अनुरोध",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "सभी",
           "allHint": "सभी दिखाई देने वाले समीक्षा रिकॉर्ड",
-          "statusAll": "सभी"
+          "statusAll": "सभी",
+          "actionable": "समीक्षा आवश्यक",
+          "history": "इतिहास",
+          "approved": "स्वीकृत",
+          "rejected": "अस्वीकृत"
+        },
+        "steps": {
+          "profile": "प्रोफ़ाइल",
+          "documents": "दस्तावेज़",
+          "paymentDetails": "भुगतान विवरण",
+          "email": "ईमेल",
+          "verification": "सत्यापन"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} स्वीकृत",
+          "stepRejected": "{step} अस्वीकृत",
+          "stepPending": "{step} समीक्षा के लिए भेजा गया",
+          "documentsApproved": "दस्तावेज़ स्वीकृत",
+          "documentsRejected": "दस्तावेज़ अस्वीकृत",
+          "documentApproved": "दस्तावेज़ स्वीकृत",
+          "documentRejected": "दस्तावेज़ अस्वीकृत",
+          "payoutApproved": "भुगतान विवरण स्वीकृत",
+          "payoutRejected": "भुगतान विवरण अस्वीकृत"
+        },
+        "actions": {
+          "copyEmail": "ईमेल कॉपी करें",
+          "copyActorId": "एडमिन आईडी कॉपी करें"
+        },
+        "messages": {
+          "emailCopied": "ईमेल कॉपी हो गया",
+          "actorIdCopied": "एडमिन आईडी कॉपी हो गई"
         }
       },
       "historyKeys": {

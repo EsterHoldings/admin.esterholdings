@@ -1742,7 +1742,8 @@
         "load": "Verifizierungsanfragen konnten nicht geladen werden.",
         "update": "Anfragestatus konnte nicht aktualisiert werden.",
         "documentNotFound": "Dokument nicht gefunden.",
-        "openDocument": "Dokument konnte nicht geöffnet werden."
+        "openDocument": "Dokument konnte nicht geöffnet werden.",
+        "copy": "Wert konnte nicht kopiert werden."
       },
       "clientRequests": {
         "title": "Verifizierungsanfragen",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "Alle",
           "allHint": "Alle sichtbaren Prüfeinträge",
-          "statusAll": "Alle"
+          "statusAll": "Alle",
+          "actionable": "Erfordert Prüfung",
+          "history": "Verlauf",
+          "approved": "Bestätigt",
+          "rejected": "Abgelehnt"
+        },
+        "steps": {
+          "profile": "Profil",
+          "documents": "Dokumente",
+          "paymentDetails": "Zahlungsdaten",
+          "email": "E-Mail",
+          "verification": "Verifizierung"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} bestätigt",
+          "stepRejected": "{step} abgelehnt",
+          "stepPending": "{step} zur Prüfung gesendet",
+          "documentsApproved": "Dokumente bestätigt",
+          "documentsRejected": "Dokumente abgelehnt",
+          "documentApproved": "Dokument bestätigt",
+          "documentRejected": "Dokument abgelehnt",
+          "payoutApproved": "Zahlungsdetail bestätigt",
+          "payoutRejected": "Zahlungsdetail abgelehnt"
+        },
+        "actions": {
+          "copyEmail": "E-Mail kopieren",
+          "copyActorId": "Admin-ID kopieren"
+        },
+        "messages": {
+          "emailCopied": "E-Mail kopiert",
+          "actorIdCopied": "Admin-ID kopiert"
         }
       },
       "historyKeys": {

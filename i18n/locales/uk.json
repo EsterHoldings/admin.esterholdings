@@ -2104,7 +2104,8 @@
         "load": "Не вдалося завантажити запити на верифікацію.",
         "update": "Не вдалося оновити статус запиту.",
         "documentNotFound": "Document not found.",
-        "openDocument": "Failed to open document."
+        "openDocument": "Failed to open document.",
+        "copy": "Не вдалося скопіювати значення."
       },
       "clientRequests": {
         "title": "Запити на верифікацію",
@@ -2241,7 +2242,37 @@
         "filters": {
           "all": "Усі",
           "allHint": "Усі видимі записи перевірки",
-          "statusAll": "Усі"
+          "statusAll": "Усі",
+          "actionable": "Потребують обробки",
+          "history": "Історія",
+          "approved": "Підтверджені",
+          "rejected": "Відхилені"
+        },
+        "steps": {
+          "profile": "Профіль",
+          "documents": "Документи",
+          "paymentDetails": "Платіжні реквізити",
+          "email": "Email",
+          "verification": "Верифікація"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} підтверджено",
+          "stepRejected": "{step} відхилено",
+          "stepPending": "{step} відправлено на перевірку",
+          "documentsApproved": "Документи підтверджено",
+          "documentsRejected": "Документи відхилено",
+          "documentApproved": "Документ підтверджено",
+          "documentRejected": "Документ відхилено",
+          "payoutApproved": "Платіжний реквізит підтверджено",
+          "payoutRejected": "Платіжний реквізит відхилено"
+        },
+        "actions": {
+          "copyEmail": "Скопіювати email",
+          "copyActorId": "Скопіювати ID адміністратора"
+        },
+        "messages": {
+          "emailCopied": "Email скопійовано",
+          "actorIdCopied": "ID адміністратора скопійовано"
         }
       },
       "historyKeys": {

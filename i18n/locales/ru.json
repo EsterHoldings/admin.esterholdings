@@ -2109,7 +2109,8 @@
         "load": "Не удалось загрузить запросы на верификацию.",
         "update": "Не удалось обновить статус запроса.",
         "documentNotFound": "Document not found.",
-        "openDocument": "Failed to open document."
+        "openDocument": "Failed to open document.",
+        "copy": "Не удалось скопировать значение."
       },
       "clientRequests": {
         "title": "Запросы на верификацию",
@@ -2246,7 +2247,37 @@
         "filters": {
           "all": "Все",
           "allHint": "Все видимые записи проверки",
-          "statusAll": "Все"
+          "statusAll": "Все",
+          "actionable": "Требующие обработки",
+          "history": "История",
+          "approved": "Подтвержденные",
+          "rejected": "Отклоненные"
+        },
+        "steps": {
+          "profile": "Профиль",
+          "documents": "Документы",
+          "paymentDetails": "Платежные реквизиты",
+          "email": "Email",
+          "verification": "Верификация"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} подтвержден",
+          "stepRejected": "{step} отклонен",
+          "stepPending": "{step} отправлен на проверку",
+          "documentsApproved": "Документы подтверждены",
+          "documentsRejected": "Документы отклонены",
+          "documentApproved": "Документ подтвержден",
+          "documentRejected": "Документ отклонен",
+          "payoutApproved": "Платежный реквизит подтвержден",
+          "payoutRejected": "Платежный реквизит отклонен"
+        },
+        "actions": {
+          "copyEmail": "Скопировать email",
+          "copyActorId": "Скопировать ID администратора"
+        },
+        "messages": {
+          "emailCopied": "Email скопирован",
+          "actorIdCopied": "ID администратора скопирован"
         }
       },
       "historyKeys": {

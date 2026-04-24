@@ -1742,7 +1742,8 @@
         "load": "无法加载验证请求。",
         "update": "无法更新请求状态。",
         "documentNotFound": "未找到文档。",
-        "openDocument": "无法打开文档。"
+        "openDocument": "无法打开文档。",
+        "copy": "无法复制该值。"
       },
       "clientRequests": {
         "title": "验证请求",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "全部",
           "allHint": "所有可见审核记录",
-          "statusAll": "全部"
+          "statusAll": "全部",
+          "actionable": "待处理",
+          "history": "历史",
+          "approved": "已确认",
+          "rejected": "已拒绝"
+        },
+        "steps": {
+          "profile": "资料",
+          "documents": "文件",
+          "paymentDetails": "支付信息",
+          "email": "邮箱",
+          "verification": "验证"
+        },
+        "historyTitles": {
+          "stepApproved": "已确认{step}",
+          "stepRejected": "已拒绝{step}",
+          "stepPending": "{step}已提交审核",
+          "documentsApproved": "文件已确认",
+          "documentsRejected": "文件已拒绝",
+          "documentApproved": "文件已确认",
+          "documentRejected": "文件已拒绝",
+          "payoutApproved": "支付信息已确认",
+          "payoutRejected": "支付信息已拒绝"
+        },
+        "actions": {
+          "copyEmail": "复制邮箱",
+          "copyActorId": "复制管理员ID"
+        },
+        "messages": {
+          "emailCopied": "邮箱已复制",
+          "actorIdCopied": "管理员ID已复制"
         }
       },
       "historyKeys": {

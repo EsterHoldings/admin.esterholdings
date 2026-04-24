@@ -1742,7 +1742,8 @@
         "load": "No se pudieron cargar las solicitudes.",
         "update": "No se pudo actualizar el estado.",
         "documentNotFound": "Document not found.",
-        "openDocument": "Failed to open document."
+        "openDocument": "Failed to open document.",
+        "copy": "No se pudo copiar el valor."
       },
       "clientRequests": {
         "title": "Solicitudes de verificación",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "Todo",
           "allHint": "Todos los registros visibles de revisión",
-          "statusAll": "Todo"
+          "statusAll": "Todo",
+          "actionable": "Requieren revisión",
+          "history": "Historial",
+          "approved": "Confirmados",
+          "rejected": "Rechazados"
+        },
+        "steps": {
+          "profile": "Perfil",
+          "documents": "Documentos",
+          "paymentDetails": "Datos de pago",
+          "email": "Email",
+          "verification": "Verificación"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} confirmado",
+          "stepRejected": "{step} rechazado",
+          "stepPending": "{step} enviado a revisión",
+          "documentsApproved": "Documentos confirmados",
+          "documentsRejected": "Documentos rechazados",
+          "documentApproved": "Documento confirmado",
+          "documentRejected": "Documento rechazado",
+          "payoutApproved": "Dato de pago confirmado",
+          "payoutRejected": "Dato de pago rechazado"
+        },
+        "actions": {
+          "copyEmail": "Copiar email",
+          "copyActorId": "Copiar ID del administrador"
+        },
+        "messages": {
+          "emailCopied": "Email copiado",
+          "actorIdCopied": "ID del administrador copiado"
         }
       },
       "historyKeys": {

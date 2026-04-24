@@ -1742,7 +1742,8 @@
         "load": "Falha ao carregar pedidos.",
         "update": "Falha ao atualizar pedido.",
         "documentNotFound": "Documento não encontrado.",
-        "openDocument": "Falha ao abrir documento."
+        "openDocument": "Falha ao abrir documento.",
+        "copy": "Não foi possível copiar o valor."
       },
       "clientRequests": {
         "title": "Pedidos de verificação",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "Tudo",
           "allHint": "Todos os registros de revisão visíveis",
-          "statusAll": "Tudo"
+          "statusAll": "Tudo",
+          "actionable": "Exigem revisão",
+          "history": "Histórico",
+          "approved": "Confirmados",
+          "rejected": "Rejeitados"
+        },
+        "steps": {
+          "profile": "Perfil",
+          "documents": "Documentos",
+          "paymentDetails": "Dados de pagamento",
+          "email": "Email",
+          "verification": "Verificação"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} confirmado",
+          "stepRejected": "{step} rejeitado",
+          "stepPending": "{step} enviado para revisão",
+          "documentsApproved": "Documentos confirmados",
+          "documentsRejected": "Documentos rejeitados",
+          "documentApproved": "Documento confirmado",
+          "documentRejected": "Documento rejeitado",
+          "payoutApproved": "Detalhe de pagamento confirmado",
+          "payoutRejected": "Detalhe de pagamento rejeitado"
+        },
+        "actions": {
+          "copyEmail": "Copiar email",
+          "copyActorId": "Copiar ID do admin"
+        },
+        "messages": {
+          "emailCopied": "Email copiado",
+          "actorIdCopied": "ID do admin copiado"
         }
       },
       "historyKeys": {

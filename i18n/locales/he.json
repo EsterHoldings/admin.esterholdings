@@ -1742,7 +1742,8 @@
         "load": "טעינת בקשות האימות נכשלה.",
         "update": "עדכון סטטוס הבקשה נכשל.",
         "documentNotFound": "המסמך לא נמצא.",
-        "openDocument": "לא ניתן לפתוח את המסמך."
+        "openDocument": "לא ניתן לפתוח את המסמך.",
+        "copy": "לא ניתן היה להעתיק את הערך."
       },
       "clientRequests": {
         "title": "בקשות אימות",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "הכול",
           "allHint": "כל רשומות הבדיקה הגלויות",
-          "statusAll": "הכול"
+          "statusAll": "הכול",
+          "actionable": "דורש טיפול",
+          "history": "היסטוריה",
+          "approved": "מאושרים",
+          "rejected": "נדחו"
+        },
+        "steps": {
+          "profile": "פרופיל",
+          "documents": "מסמכים",
+          "paymentDetails": "פרטי תשלום",
+          "email": "אימייל",
+          "verification": "אימות"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} אושר",
+          "stepRejected": "{step} נדחה",
+          "stepPending": "{step} נשלח לבדיקה",
+          "documentsApproved": "מסמכים אושרו",
+          "documentsRejected": "מסמכים נדחו",
+          "documentApproved": "מסמך אושר",
+          "documentRejected": "מסמך נדחה",
+          "payoutApproved": "פרטי התשלום אושרו",
+          "payoutRejected": "פרטי התשלום נדחו"
+        },
+        "actions": {
+          "copyEmail": "העתק אימייל",
+          "copyActorId": "העתק מזהה מנהל"
+        },
+        "messages": {
+          "emailCopied": "האימייל הועתק",
+          "actorIdCopied": "מזהה המנהל הועתק"
         }
       },
       "historyKeys": {

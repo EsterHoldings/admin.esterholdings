@@ -1742,7 +1742,8 @@
         "load": "인증 요청을 불러오지 못했습니다.",
         "update": "요청 상태를 업데이트하지 못했습니다.",
         "documentNotFound": "문서를 찾을 수 없습니다.",
-        "openDocument": "문서를 열 수 없습니다."
+        "openDocument": "문서를 열 수 없습니다.",
+        "copy": "값을 복사하지 못했습니다."
       },
       "clientRequests": {
         "title": "인증 요청",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "전체",
           "allHint": "표시되는 모든 심사 기록",
-          "statusAll": "전체"
+          "statusAll": "전체",
+          "actionable": "검토 필요",
+          "history": "이력",
+          "approved": "승인됨",
+          "rejected": "거절됨"
+        },
+        "steps": {
+          "profile": "프로필",
+          "documents": "문서",
+          "paymentDetails": "지급 정보",
+          "email": "이메일",
+          "verification": "인증"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} 승인됨",
+          "stepRejected": "{step} 거절됨",
+          "stepPending": "{step} 검토 요청됨",
+          "documentsApproved": "문서 승인됨",
+          "documentsRejected": "문서 거절됨",
+          "documentApproved": "문서 승인됨",
+          "documentRejected": "문서 거절됨",
+          "payoutApproved": "지급 정보 승인됨",
+          "payoutRejected": "지급 정보 거절됨"
+        },
+        "actions": {
+          "copyEmail": "이메일 복사",
+          "copyActorId": "관리자 ID 복사"
+        },
+        "messages": {
+          "emailCopied": "이메일이 복사되었습니다",
+          "actorIdCopied": "관리자 ID가 복사되었습니다"
         }
       },
       "historyKeys": {

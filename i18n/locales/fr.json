@@ -1742,7 +1742,8 @@
         "load": "Impossible de charger les demandes de vérification.",
         "update": "Impossible de mettre à jour la demande.",
         "documentNotFound": "Document introuvable.",
-        "openDocument": "Impossible d’ouvrir le document."
+        "openDocument": "Impossible d’ouvrir le document.",
+        "copy": "Impossible de copier la valeur."
       },
       "clientRequests": {
         "title": "Demandes de vérification",
@@ -1879,7 +1880,37 @@
         "filters": {
           "all": "Tout",
           "allHint": "Tous les éléments de vérification visibles",
-          "statusAll": "Tout"
+          "statusAll": "Tout",
+          "actionable": "À traiter",
+          "history": "Historique",
+          "approved": "Confirmés",
+          "rejected": "Rejetés"
+        },
+        "steps": {
+          "profile": "Profil",
+          "documents": "Documents",
+          "paymentDetails": "Coordonnées de paiement",
+          "email": "Email",
+          "verification": "Vérification"
+        },
+        "historyTitles": {
+          "stepApproved": "{step} confirmé",
+          "stepRejected": "{step} rejeté",
+          "stepPending": "{step} envoyé en révision",
+          "documentsApproved": "Documents confirmés",
+          "documentsRejected": "Documents rejetés",
+          "documentApproved": "Document confirmé",
+          "documentRejected": "Document rejeté",
+          "payoutApproved": "Coordonnée de paiement confirmée",
+          "payoutRejected": "Coordonnée de paiement rejetée"
+        },
+        "actions": {
+          "copyEmail": "Copier l’email",
+          "copyActorId": "Copier l’ID admin"
+        },
+        "messages": {
+          "emailCopied": "Email copié",
+          "actorIdCopied": "ID admin copié"
         }
       },
       "historyKeys": {

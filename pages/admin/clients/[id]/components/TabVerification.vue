@@ -61,7 +61,7 @@
       </PrimeCard>
     </div>
 
-    <div class="verification-filter-strip">
+    <div class="verification-filter-strip flex max-w-full flex-wrap items-center gap-2">
       <PrimeButton
         v-for="option in timelineStatusFilterOptions"
         :key="option.value"
@@ -189,6 +189,50 @@
             </div>
 
             <div
+              v-if="item.historyMetaVisible"
+              class="flex flex-wrap items-center gap-2 rounded-2xl border border-[color:var(--verification-glass-border)] bg-[color:color-mix(in_srgb,var(--ui-background-card)_52%,transparent)] px-3 py-2 text-[11px] text-[color:var(--ui-text-secondary)]">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-[color:color-mix(in_srgb,var(--ui-primary-main)_10%,transparent)] px-2 py-1 font-semibold text-[color:var(--ui-text-main)]">
+                <i class="pi pi-user text-[10px]" />
+                <span>{{ item.actorTypeLabel }}</span>
+              </span>
+
+              <span
+                v-if="item.actorNickname"
+                class="rounded-full bg-[color:color-mix(in_srgb,var(--color-success)_10%,transparent)] px-2 py-1 font-semibold text-[color:var(--ui-text-main)]">
+                @{{ item.actorNickname }}
+              </span>
+
+              <span
+                v-if="item.actor"
+                class="font-semibold text-[color:var(--ui-text-main)]">
+                {{ item.actor }}
+              </span>
+
+              <span
+                v-if="item.actorEmail"
+                class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--verification-glass-border)] px-2 py-1 text-[color:var(--ui-text-main)]">
+                <span class="truncate">{{ item.actorEmail }}</span>
+                <button
+                  type="button"
+                  class="inline-flex h-5 w-5 items-center justify-center rounded-full text-[color:var(--ui-text-secondary)] transition hover:bg-[color:color-mix(in_srgb,var(--ui-primary-main)_10%,transparent)] hover:text-[color:var(--ui-text-main)]"
+                  :title="text('admin.verifications.clientTimeline.actions.copyEmail', 'Copy email')"
+                  @click="copyVerificationValue(item.actorEmail, text('admin.verifications.clientTimeline.messages.emailCopied', 'Email copied'))">
+                  <i class="pi pi-copy text-[10px]" />
+                </button>
+              </span>
+
+              <button
+                v-if="item.actorId"
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--verification-glass-border)] px-2 py-1 font-semibold text-[color:var(--ui-text-main)] transition hover:bg-[color:color-mix(in_srgb,var(--ui-primary-main)_10%,transparent)]"
+                :title="text('admin.verifications.clientTimeline.actions.copyActorId', 'Copy actor ID')"
+                @click="copyVerificationValue(item.actorId, text('admin.verifications.clientTimeline.messages.actorIdCopied', 'Actor ID copied'))">
+                <span>ID</span>
+                <i class="pi pi-copy text-[10px] text-[color:var(--ui-text-secondary)]" />
+              </button>
+            </div>
+
+            <div
               v-if="item.changes.length"
               class="verification-change-grid">
               <div
@@ -281,7 +325,7 @@ type VerificationStatus = "approved" | "pending" | "rejected";
 type RequestReviewState = "pending" | "approved" | "rejected";
 type AdminPaymentDetailStatus = "approved" | "pending" | "rejected";
 type VerificationTimelineSectionFilter = "all" | VerificationTimelineKind | "history";
-type VerificationTimelineStatusFilter = "all" | VerificationStatus;
+type VerificationTimelineStatusFilter = "actionable" | "history" | Exclude<VerificationStatus, "pending">;
 
 interface VerificationSection {
   verification_status: string;
@@ -362,6 +406,8 @@ interface VerificationHistoryRow {
     id: string;
     type: string;
     name: string;
+    email: string;
+    nickname: string;
   };
   data: Record<string, any>;
 }
@@ -408,6 +454,12 @@ interface VerificationTimelineItem {
   title: string;
   description: string;
   actor: string;
+  actorId: string;
+  actorType: string;
+  actorTypeLabel: string;
+  actorEmail: string;
+  actorNickname: string;
+  historyMetaVisible: boolean;
   date: string;
   sortTime: number;
   requestId: string;
@@ -472,7 +524,7 @@ const requestUpdatingState = reactive<Record<string, boolean>>({});
 const timelineUpdatingState = reactive<Record<string, boolean>>({});
 const highlightedSection = ref<VerificationSectionTarget | null>(null);
 const activeTimelineSectionFilter = ref<VerificationTimelineSectionFilter>("all");
-const activeTimelineStatusFilter = ref<VerificationTimelineStatusFilter>("all");
+const activeTimelineStatusFilter = ref<VerificationTimelineStatusFilter>("actionable");
 const profileSectionRef = ref<HTMLElement | null>(null);
 const documentsSectionRef = ref<HTMLElement | null>(null);
 const payoutSectionRef = ref<HTMLElement | null>(null);
@@ -609,6 +661,8 @@ const normalizeVerificationHistoryRows = (payload: unknown): VerificationHistory
       id: String(row?.actor?.id ?? ""),
       type: String(row?.actor?.type ?? ""),
       name: String(row?.actor?.name ?? ""),
+      email: String(row?.actor?.email ?? ""),
+      nickname: String(row?.actor?.nickname ?? ""),
     },
     data: row?.data && typeof row.data === "object" ? row.data : {},
   }));
@@ -1050,26 +1104,26 @@ const timelineStatusFilterOptions = computed<Array<{
   severity: "secondary" | "warn" | "success" | "danger";
 }>>(() => [
   {
-    value: "all",
-    label: text("admin.verifications.clientTimeline.filters.statusAll", "All"),
-    icon: "pi pi-list",
-    severity: "secondary",
-  },
-  {
-    value: "pending",
-    label: text("admin.verifications.status.pending", "Pending"),
+    value: "actionable",
+    label: text("admin.verifications.clientTimeline.filters.actionable", "Requires review"),
     icon: "pi pi-clock",
     severity: "warn",
   },
   {
+    value: "history",
+    label: text("admin.verifications.clientTimeline.filters.history", "History"),
+    icon: "pi pi-list",
+    severity: "secondary",
+  },
+  {
     value: "approved",
-    label: text("admin.verifications.actions.approve", "Approve"),
+    label: text("admin.verifications.clientTimeline.filters.approved", "Approved"),
     icon: "pi pi-check",
     severity: "success",
   },
   {
     value: "rejected",
-    label: text("admin.verifications.actions.reject", "Reject"),
+    label: text("admin.verifications.clientTimeline.filters.rejected", "Rejected"),
     icon: "pi pi-times",
     severity: "danger",
   },
@@ -1077,10 +1131,18 @@ const timelineStatusFilterOptions = computed<Array<{
 
 const setTimelineSectionFilter = (filter: VerificationTimelineSectionFilter): void => {
   activeTimelineSectionFilter.value = filter;
+
+  if (filter === "history") {
+    activeTimelineStatusFilter.value = "history";
+  }
 };
 
 const setTimelineStatusFilter = (filter: VerificationTimelineStatusFilter): void => {
   activeTimelineStatusFilter.value = filter;
+
+  if (filter !== "actionable") {
+    activeTimelineSectionFilter.value = "all";
+  }
 };
 
 const requestFocusItems = (request: ClientVerificationRequestRow): Array<{
@@ -1219,7 +1281,6 @@ const parseTimelineDate = (value: string | null | undefined): number => {
 const hiddenVerificationHistoryKeys = new Set([
   "email_verification_sent",
   "step_status_auto_synced",
-  "step_status_updated",
   "step_status_reset",
   "step_comment_cleared",
 ]);
@@ -1234,7 +1295,7 @@ const shouldShowVerificationHistoryRow = (row: VerificationHistoryRow): boolean 
     return false;
   }
 
-  if (hiddenVerificationHistoryKeys.has(key) || key.startsWith("step_")) {
+  if (hiddenVerificationHistoryKeys.has(key)) {
     return false;
   }
 
@@ -1284,7 +1345,74 @@ const timelineIconFromKind = (kind: VerificationTimelineKind): string => {
   }
 };
 
+const historyStepLabel = (row: VerificationHistoryRow): string => {
+  const step = String(row.data?.step ?? "").trim().toLowerCase();
+
+  switch (step) {
+    case "info":
+      return text("admin.verifications.clientTimeline.steps.profile", "Profile");
+    case "documents":
+      return text("admin.verifications.clientTimeline.steps.documents", "Documents");
+    case "payout":
+      return text("admin.verifications.clientTimeline.steps.paymentDetails", "Payment details");
+    case "email":
+      return text("admin.verifications.clientTimeline.steps.email", "Email");
+    default:
+      return text("admin.verifications.clientTimeline.steps.verification", "Verification");
+  }
+};
+
 const historyTitle = (row: VerificationHistoryRow): string => {
+  if (row.key === "step_status_updated") {
+    const stepLabel = historyStepLabel(row);
+
+    if (row.status === "approved") {
+      return text("admin.verifications.clientTimeline.historyTitles.stepApproved", "{step} approved", {
+        step: stepLabel,
+      });
+    }
+
+    if (row.status === "rejected") {
+      return text("admin.verifications.clientTimeline.historyTitles.stepRejected", "{step} rejected", {
+        step: stepLabel,
+      });
+    }
+
+    return text("admin.verifications.clientTimeline.historyTitles.stepPending", "{step} sent for review", {
+      step: stepLabel,
+    });
+  }
+
+  if (row.key === "documents_bulk_updated") {
+    if (row.status === "approved") {
+      return text("admin.verifications.clientTimeline.historyTitles.documentsApproved", "Documents approved");
+    }
+
+    if (row.status === "rejected") {
+      return text("admin.verifications.clientTimeline.historyTitles.documentsRejected", "Documents rejected");
+    }
+  }
+
+  if (row.key === "document_updated") {
+    if (row.status === "approved") {
+      return text("admin.verifications.clientTimeline.historyTitles.documentApproved", "Document approved");
+    }
+
+    if (row.status === "rejected") {
+      return text("admin.verifications.clientTimeline.historyTitles.documentRejected", "Document rejected");
+    }
+  }
+
+  if (row.key === "payout_detail_status_updated") {
+    if (row.status === "approved") {
+      return text("admin.verifications.clientTimeline.historyTitles.payoutApproved", "Payment detail approved");
+    }
+
+    if (row.status === "rejected") {
+      return text("admin.verifications.clientTimeline.historyTitles.payoutRejected", "Payment detail rejected");
+    }
+  }
+
   const key = `admin.verifications.historyKeys.${row.key}`;
   return text(key, row.name || text("admin.verifications.history.generic", "Verification activity"));
 };
@@ -1422,6 +1550,12 @@ const pendingTimelineItems = computed<VerificationTimelineItem[]>(() => {
         "Client changed profile data. Approve to keep it or reject to roll back logged changes."
       ),
       actor: latestProfileHistory ? historyActorText(latestProfileHistory) : text("admin.verifications.history.actorClient", "Client"),
+      actorId: "",
+      actorType: "client",
+      actorTypeLabel: historyActorTypeLabel("client"),
+      actorEmail: "",
+      actorNickname: "",
+      historyMetaVisible: false,
       date: latestProfileHistory?.date || requestDate,
       sortTime: parseTimelineDate(latestProfileHistory?.date) || requestSortTime,
       requestId,
@@ -1449,6 +1583,12 @@ const pendingTimelineItems = computed<VerificationTimelineItem[]>(() => {
         text("admin.verifications.clientTimeline.items.documentTitle", "Document requires review"),
       description: text("admin.verifications.clientTimeline.items.documentDescription", "Client uploaded a document for identity verification."),
       actor: text("admin.verifications.history.actorClient", "Client"),
+      actorId: "",
+      actorType: "client",
+      actorTypeLabel: historyActorTypeLabel("client"),
+      actorEmail: "",
+      actorNickname: "",
+      historyMetaVisible: false,
       date: requestDate,
       sortTime: requestSortTime,
       requestId,
@@ -1475,6 +1615,12 @@ const pendingTimelineItems = computed<VerificationTimelineItem[]>(() => {
         paymentDetail.paymentSystemName ||
         text("admin.verifications.clientTimeline.items.payoutDescription", "Client submitted or updated payment details."),
       actor: text("admin.verifications.history.actorClient", "Client"),
+      actorId: "",
+      actorType: "client",
+      actorTypeLabel: historyActorTypeLabel("client"),
+      actorEmail: "",
+      actorNickname: "",
+      historyMetaVisible: false,
       date: paymentDetail.updatedAt || requestDate,
       sortTime: parseTimelineDate(paymentDetail.updatedAt) || requestSortTime,
       requestId,
@@ -1495,6 +1641,7 @@ const historyTimelineItems = computed<VerificationTimelineItem[]>(() =>
   verificationHistoryRows.value.filter(shouldShowVerificationHistoryRow).map(row => {
     const kind = timelineKindFromHistoryKey(row.key);
     const section = timelineSectionFromKind(kind);
+    const actorType = row.actor.type.trim().toLowerCase();
 
     return {
       id: `history-${row.id}`,
@@ -1506,6 +1653,12 @@ const historyTimelineItems = computed<VerificationTimelineItem[]>(() =>
       title: historyTitle(row),
       description: text("admin.verifications.clientTimeline.items.historyDescription", "Recorded verification activity."),
       actor: historyActorText(row),
+      actorId: row.actor.id,
+      actorType,
+      actorTypeLabel: historyActorTypeLabel(actorType),
+      actorEmail: row.actor.email,
+      actorNickname: row.actor.nickname,
+      historyMetaVisible: actorType === "admin",
       date: row.date,
       sortTime: parseTimelineDate(row.date),
       requestId: "",
@@ -1532,8 +1685,21 @@ const timelineSectionMatches = (item: VerificationTimelineItem, filter: Verifica
   return item.kind === filter;
 };
 
-const timelineStatusMatches = (item: VerificationTimelineItem, filter: VerificationTimelineStatusFilter): boolean =>
-  filter === "all" || item.status === filter;
+const timelineStatusMatches = (item: VerificationTimelineItem, filter: VerificationTimelineStatusFilter): boolean => {
+  if (filter === "actionable") {
+    return item.actionable;
+  }
+
+  if (!item.id.startsWith("history-")) {
+    return false;
+  }
+
+  if (filter === "history") {
+    return true;
+  }
+
+  return item.status === filter;
+};
 
 const rawVerificationTimelineItems = computed(() =>
   [
@@ -1545,7 +1711,17 @@ const rawVerificationTimelineItems = computed(() =>
 const verificationSummaryCards = computed(() => {
   const rawItems = rawVerificationTimelineItems.value;
   const countBySection = (filter: VerificationTimelineSectionFilter): number =>
-    rawItems.filter(item => timelineSectionMatches(item, filter)).length;
+    rawItems.filter(item => {
+      if (filter === "all") {
+        return true;
+      }
+
+      if (filter === "history") {
+        return item.id.startsWith("history-");
+      }
+
+      return item.kind === filter;
+    }).length;
 
   return [
     {
@@ -1601,7 +1777,8 @@ const visibleVerificationTimelineItems = computed(() =>
 );
 
 const hasMoreVerificationTimeline = computed(() =>
-  historyTimelineItems.value.length > verificationHistoryVisibleCount.value
+  activeTimelineStatusFilter.value !== "actionable"
+  && historyTimelineItems.value.length > verificationHistoryVisibleCount.value
 );
 
 const profileFieldLabel = (field: string): string => {
@@ -1629,6 +1806,44 @@ const historyActorText = (row: VerificationHistoryRow): string => {
   }
 
   return text("admin.verifications.history.actorSystem", "System");
+};
+
+const historyActorTypeLabel = (actorType: string): string => {
+  switch (String(actorType || "").trim().toLowerCase()) {
+    case "admin":
+      return text("admin.verifications.history.actorAdmin", "Admin");
+    case "client":
+      return text("admin.verifications.history.actorClient", "Client");
+    default:
+      return text("admin.verifications.history.actorSystem", "System");
+  }
+};
+
+const copyVerificationValue = async (value: string, successMessage: string): Promise<void> => {
+  const normalized = String(value || "").trim();
+  if (normalized === "") {
+    return;
+  }
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(normalized);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = normalized;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+
+    toast.success(successMessage);
+  } catch {
+    toast.error(text("admin.verifications.errors.copy", "Failed to copy value."));
+  }
 };
 
 const verificationTabs = computed(() => [
@@ -3280,11 +3495,8 @@ onBeforeUnmount(() => {
 }
 
 .verification-filter-strip {
-  display: inline-flex;
-  align-items: center;
   width: fit-content;
-  max-width: 100%;
-  padding: 4px;
+  padding: 0;
   border: 1px solid var(--verification-glass-border);
   border-radius: 16px;
   background:
@@ -3334,31 +3546,31 @@ onBeforeUnmount(() => {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px;
+  gap: 8px;
+  padding: 10px 12px;
 }
 
 .verification-timeline-card__top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
-  gap: 11px;
+  gap: 8px;
   align-items: flex-start;
 }
 
 .verification-timeline-card__identity {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 9px;
+  align-items: flex-start;
   min-width: 0;
 }
 
 .verification-timeline-card__icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-  border-radius: 13px;
+  border-radius: 12px;
   color: var(--verification-accent);
   background: color-mix(in srgb, var(--verification-accent) 13%, transparent);
 }
@@ -3367,15 +3579,15 @@ onBeforeUnmount(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
 }
 
 .verification-timeline-card__main h3 {
   margin: 0;
   color: var(--ui-text-main);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 840;
-  line-height: 1.18;
+  line-height: 1.16;
   letter-spacing: -0.02em;
 }
 
@@ -3383,7 +3595,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 7px;
+  gap: 6px;
 }
 
 .verification-timeline-card__status {
@@ -3395,15 +3607,15 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px;
+  padding: 2px;
   border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
-  border-radius: 14px;
+  border-radius: 12px;
   background: color-mix(in srgb, var(--ui-background-card) 44%, transparent);
 }
 
 .verification-decision-group :deep(.p-button) {
-  min-height: 30px;
-  padding: 6px 10px;
+  min-height: 28px;
+  padding: 5px 9px;
   border-radius: 11px;
   font-size: 11px;
   font-weight: 820;
@@ -3412,23 +3624,24 @@ onBeforeUnmount(() => {
 .verification-timeline-card__main p {
   margin: 0;
   color: var(--ui-text-secondary);
-  font-size: 12px;
-  line-height: 1.42;
+  font-size: 11px;
+  line-height: 1.34;
 }
 
 .verification-timeline-card__meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
   color: var(--ui-text-secondary);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 650;
+  line-height: 1.25;
 }
 
 .verification-timeline-card__meta span:not(:last-child)::after {
   content: "·";
-  margin-left: 7px;
+  margin-left: 6px;
   color: color-mix(in srgb, var(--ui-text-secondary) 70%, transparent);
 }
 
@@ -3472,7 +3685,7 @@ onBeforeUnmount(() => {
 
 .verification-change-grid {
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
 .verification-change-row {
@@ -3480,7 +3693,7 @@ onBeforeUnmount(() => {
   grid-template-columns: minmax(130px, 0.7fr) minmax(0, 1fr) 18px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
-  padding: 9px;
+  padding: 8px 9px;
   border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
   border-radius: 14px;
   background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
@@ -3518,15 +3731,15 @@ onBeforeUnmount(() => {
 .verification-field-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 7px;
 }
 
 .verification-field-card {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  min-height: 62px;
-  padding: 10px;
+  min-height: 54px;
+  padding: 8px 9px;
   border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
   border-radius: 14px;
   background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
@@ -3549,17 +3762,17 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: stretch;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
 }
 
 .verification-document-chip {
-  min-width: 180px;
-  max-width: 260px;
+  min-width: 160px;
+  max-width: 240px;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-columns: 38px minmax(0, 1fr);
   align-items: center;
-  gap: 9px;
-  padding: 7px;
+  gap: 8px;
+  padding: 6px;
   border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
   border-radius: 14px;
   background: color-mix(in srgb, var(--ui-background-card) 48%, transparent);
@@ -3579,9 +3792,9 @@ onBeforeUnmount(() => {
 
 .verification-document-chip img,
 .verification-document-chip .verification-file-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
 }
 
 .verification-document-chip img {
@@ -3591,7 +3804,7 @@ onBeforeUnmount(() => {
 .verification-document-chip > span:last-child {
   min-width: 0;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 760;
   text-overflow: ellipsis;
   white-space: nowrap;
