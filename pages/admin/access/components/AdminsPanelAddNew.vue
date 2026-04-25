@@ -109,9 +109,13 @@
           <PrimeMultiSelect
             v-model="formData.roles"
             class="w-full"
+            append-to="self"
             display="chip"
             filter
+            data-key="id"
+            overlay-class="admins-create-modal__roles-overlay"
             :options="rolesData"
+            :max-selected-labels="3"
             option-label="name"
             option-value="id"
             :invalid="hasFieldErrors('roles')"
@@ -344,6 +348,37 @@ onBeforeUnmount(() => {
 
 :deep(.p-multiselect-chip) {
   border-radius: 999px;
+}
+
+:deep(.admins-create-modal__roles-overlay) {
+  z-index: 4;
+  margin-top: 6px;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--ui-background-card) 97%, transparent);
+  box-shadow: 0 18px 42px color-mix(in srgb, #000000 18%, transparent);
+  overflow: hidden;
+}
+
+:deep(.admins-create-modal__roles-overlay .p-multiselect-header) {
+  border-bottom: 1px solid var(--color-stroke-ui-light);
+  background: color-mix(in srgb, var(--ui-background) 94%, transparent);
+}
+
+:deep(.admins-create-modal__roles-overlay .p-multiselect-list-container) {
+  max-height: 240px;
+}
+
+:deep(.admins-create-modal__roles-overlay .p-multiselect-option) {
+  color: var(--ui-text-main);
+}
+
+:deep(.admins-create-modal__roles-overlay .p-multiselect-option.p-focus) {
+  background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+}
+
+:deep(.admins-create-modal__roles-overlay .p-multiselect-option.p-multiselect-option-selected) {
+  background: color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
 }
 
 :deep(.p-message) {
