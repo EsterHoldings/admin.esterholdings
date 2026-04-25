@@ -167,14 +167,6 @@
         </div>
 
         <div class="verification-request-card__side">
-          <span
-            class="verification-status-line verification-status-line--overall"
-            :class="statusClass(requestItem.state)"
-          >
-            <i aria-hidden="true" />
-            {{ overallStatusText(requestItem.state) }}
-          </span>
-
           <div
             v-if="requestItem.request_state === 'pending'"
             class="verification-request-card__actions"
@@ -187,7 +179,7 @@
               severity="success"
               :loading="isUpdating(requestItem.id, 'approved')"
               :disabled="isUpdating(requestItem.id)"
-              @click="handleRequestReviewUpdate(requestItem, 'approved')"
+              @click="openRequestReviewConfirm(requestItem, 'approved')"
             />
             <PrimeButton
               :label="text('admin.verifications.actions.rejectAll', 'Reject all')"
@@ -197,7 +189,7 @@
               outlined
               :loading="isUpdating(requestItem.id, 'rejected')"
               :disabled="isUpdating(requestItem.id)"
-              @click="handleRequestReviewUpdate(requestItem, 'rejected')"
+              @click="openRequestReviewConfirm(requestItem, 'rejected')"
             />
           </div>
         </div>
@@ -212,6 +204,40 @@
       :rows-per-page-options="[5, 10, 20, 50]"
       @page="handlePaginatorPage"
     />
+
+    <PrimeDialog
+      v-model:visible="requestReviewDialog.visible"
+      modal
+      :draggable="false"
+      :closable="!requestReviewDialogSubmitting"
+      :dismissable-mask="!requestReviewDialogSubmitting"
+      class="verification-confirm-dialog"
+      :header="requestReviewDialogTitle"
+    >
+      <div class="verification-confirm-dialog__body">
+        <p>{{ requestReviewDialogMessage }}</p>
+      </div>
+
+      <template #footer>
+        <div class="verification-confirm-dialog__footer">
+          <PrimeButton
+            severity="secondary"
+            text
+            :disabled="requestReviewDialogSubmitting"
+            :label="text('admin.verifications.actions.cancel', 'Cancel')"
+            @click="closeRequestReviewDialog"
+          />
+          <PrimeButton
+            :severity="requestReviewDialog.nextState === 'approved' ? 'success' : 'danger'"
+            :loading="requestReviewDialogSubmitting"
+            :label="requestReviewDialog.nextState === 'approved'
+              ? text('admin.verifications.actions.approveAll', 'Approve all')
+              : text('admin.verifications.actions.rejectAll', 'Reject all')"
+            @click="confirmRequestReviewUpdate"
+          />
+        </div>
+      </template>
+    </PrimeDialog>
   </div>
 </template>
 
@@ -295,6 +321,16 @@ const summary = reactive<Record<string, number>>({
 });
 const updatingState = reactive<Record<string, RequestReviewState | "">>({});
 const unreadVerificationNotifications = ref<AdminVerificationUnreadNotification[]>([]);
+const requestReviewDialogSubmitting = ref(false);
+const requestReviewDialog = reactive<{
+  visible: boolean;
+  requestItem: VerificationRequestItem | null;
+  nextState: Exclude<RequestReviewState, "pending"> | null;
+}>({
+  visible: false,
+  requestItem: null,
+  nextState: null,
+});
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -498,17 +534,6 @@ const statusText = (status: VerificationStatus): string => {
   }
 };
 
-const overallStatusText = (status: VerificationStatus): string => {
-  switch (status) {
-    case "approved":
-      return text("admin.verifications.overall.approved", "Overall approved");
-    case "rejected":
-      return text("admin.verifications.overall.rejected", "Needs attention");
-    default:
-      return text("admin.verifications.overall.pending", "In review");
-  }
-};
-
 const requestStateText = (state: "all" | RequestReviewState): string => {
   switch (state) {
     case "all":
@@ -522,7 +547,6 @@ const requestStateText = (state: "all" | RequestReviewState): string => {
   }
 };
 
-const statusClass = (status: VerificationStatus): string => `is-${normalizeVerificationStatus(status)}`;
 const requestStateClass = (state: RequestReviewState): string => `is-${normalizeRequestReviewState(state)}`;
 
 const resolveSortPayload = (value: string): { orderBy: string; orderDirection: "asc" | "desc" } => {
@@ -639,6 +663,60 @@ const handleRequestReviewUpdate = async (
     toast.error(error?.response?.data?.message || text("admin.verifications.errors.update", "Failed to update request status."));
   } finally {
     delete updatingState[requestItem.id];
+  }
+};
+
+const openRequestReviewConfirm = (
+  requestItem: VerificationRequestItem,
+  nextState: Exclude<RequestReviewState, "pending">
+): void => {
+  requestReviewDialog.requestItem = requestItem;
+  requestReviewDialog.nextState = nextState;
+  requestReviewDialog.visible = true;
+};
+
+const closeRequestReviewDialog = (): void => {
+  requestReviewDialog.visible = false;
+  requestReviewDialog.requestItem = null;
+  requestReviewDialog.nextState = null;
+};
+
+const requestReviewDialogTitle = computed(() =>
+  requestReviewDialog.nextState === "approved"
+    ? text("admin.verifications.confirm.titleApprove", "Confirm approval")
+    : text("admin.verifications.confirm.titleReject", "Confirm rejection")
+);
+
+const requestReviewDialogMessage = computed(() => {
+  if (requestReviewDialog.nextState === "approved") {
+    return text(
+      "admin.verifications.confirm.requestApprove",
+      "Approve all pending verification changes for this client?"
+    );
+  }
+
+  return text(
+    "admin.verifications.confirm.requestReject",
+    "Reject all pending verification changes for this client? Pending profile changes will be rolled back."
+  );
+});
+
+const confirmRequestReviewUpdate = async (): Promise<void> => {
+  const requestItem = requestReviewDialog.requestItem;
+  const nextState = requestReviewDialog.nextState;
+
+  if (!requestItem || !nextState || requestReviewDialogSubmitting.value) {
+    return;
+  }
+
+  requestReviewDialogSubmitting.value = true;
+
+  try {
+    await handleRequestReviewUpdate(requestItem, nextState);
+    requestReviewDialogSubmitting.value = false;
+    closeRequestReviewDialog();
+  } finally {
+    requestReviewDialogSubmitting.value = false;
   }
 };
 
@@ -1162,8 +1240,29 @@ defineExpose({
   color: var(--ui-warning-main, #f59e0b);
 }
 
-.verification-status-line--overall {
-  white-space: nowrap;
+:deep(.verification-confirm-dialog) {
+  width: min(100%, 460px);
+}
+
+:deep(.verification-confirm-dialog .p-dialog-header) {
+  padding-bottom: 0;
+}
+
+:deep(.verification-confirm-dialog .p-dialog-content) {
+  padding-top: 12px;
+}
+
+.verification-confirm-dialog__body p {
+  color: var(--ui-text-main);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.verification-confirm-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
 }
 
 @media (max-width: 1180px) {

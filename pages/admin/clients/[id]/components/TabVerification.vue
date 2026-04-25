@@ -294,6 +294,37 @@
         {{ text("admin.verifications.history.loadMore", "Load more") }}
       </button>
     </div>
+
+    <PrimeDialog
+      v-model:visible="timelineDecisionDialog.visible"
+      modal
+      :draggable="false"
+      :closable="!timelineDecisionDialogSubmitting"
+      :dismissable-mask="!timelineDecisionDialogSubmitting"
+      class="verification-confirm-dialog"
+      :header="timelineDecisionDialogTitle">
+      <div class="verification-confirm-dialog__body">
+        <p>{{ timelineDecisionDialogMessage }}</p>
+      </div>
+
+      <template #footer>
+        <div class="verification-confirm-dialog__footer">
+          <PrimeButton
+            severity="secondary"
+            text
+            :disabled="timelineDecisionDialogSubmitting"
+            :label="text('admin.verifications.actions.cancel', 'Cancel')"
+            @click="closeTimelineDecisionDialog" />
+          <PrimeButton
+            :severity="timelineDecisionDialog.status === 'approved' ? 'success' : 'danger'"
+            :loading="timelineDecisionDialogSubmitting"
+            :label="timelineDecisionDialog.status === 'approved'
+              ? text('admin.verifications.actions.approve', 'Approve')
+              : text('admin.verifications.actions.reject', 'Reject')"
+            @click="confirmTimelineDecision" />
+        </div>
+      </template>
+    </PrimeDialog>
   </div>
 </template>
 
@@ -305,17 +336,6 @@ import { useToast } from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
-import VerificationRequestStateActions from "~/components/block/verification/VerificationRequestStateActions.vue";
-import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-import UiFormControl from "~/components/ui/UiFormControl.vue";
-import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
-import UiIconPaymentDetail from "~/components/ui/UiIconPaymentDetail.vue";
-import UiIconProfile from "~/components/ui/UiIconProfile.vue";
-import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-import UiTextH5 from "~/components/ui/UiTextH5.vue";
-import UiTextarea from "~/components/ui/UiTextarea.vue";
-import VerificationActions from "~/pages/admin/clients/[id]/components/VerificationActions.vue";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
@@ -528,6 +548,16 @@ const activeTimelineStatusFilter = ref<VerificationTimelineStatusFilter>("action
 const profileSectionRef = ref<HTMLElement | null>(null);
 const documentsSectionRef = ref<HTMLElement | null>(null);
 const payoutSectionRef = ref<HTMLElement | null>(null);
+const timelineDecisionDialogSubmitting = ref(false);
+const timelineDecisionDialog = reactive<{
+  visible: boolean;
+  item: VerificationTimelineItem | null;
+  status: Exclude<VerificationStatus, "pending"> | null;
+}>({
+  visible: false,
+  item: null,
+  status: null,
+});
 
 const infoStatus = ref<VerificationStatus>("pending");
 const infoComment = ref("");
@@ -2069,7 +2099,91 @@ const handleTimelineDecisionClick = (
   item: VerificationTimelineItem,
   status: Exclude<VerificationStatus, "pending">
 ): void => {
-  void handleTimelineItemAction(item, status);
+  timelineDecisionDialog.item = item;
+  timelineDecisionDialog.status = status;
+  timelineDecisionDialog.visible = true;
+};
+
+const closeTimelineDecisionDialog = (): void => {
+  timelineDecisionDialog.visible = false;
+  timelineDecisionDialog.item = null;
+  timelineDecisionDialog.status = null;
+};
+
+const timelineDecisionDialogTitle = computed(() => {
+  if (timelineDecisionDialog.status === "approved") {
+    return text("admin.verifications.confirm.titleApprove", "Confirm approval");
+  }
+
+  return text("admin.verifications.confirm.titleReject", "Confirm rejection");
+});
+
+const timelineDecisionDialogMessage = computed(() => {
+  const item = timelineDecisionDialog.item;
+  const status = timelineDecisionDialog.status;
+
+  if (!item || !status) {
+    return "";
+  }
+
+  if (item.actionType === "profile") {
+    return status === "approved"
+      ? text(
+          "admin.verifications.confirm.profileApprove",
+          "Approve this profile update? The client changes will be kept."
+        )
+      : text(
+          "admin.verifications.confirm.profileReject",
+          "Reject this profile update? The last pending profile changes will be rolled back."
+        );
+  }
+
+  if (item.actionType === "document") {
+    return status === "approved"
+      ? text(
+          "admin.verifications.confirm.documentApprove",
+          "Approve this document?"
+        )
+      : text(
+          "admin.verifications.confirm.documentReject",
+          "Reject this document?"
+        );
+  }
+
+  if (item.actionType === "payout") {
+    return status === "approved"
+      ? text(
+          "admin.verifications.confirm.payoutApprove",
+          "Approve this payment detail?"
+        )
+      : text(
+          "admin.verifications.confirm.payoutReject",
+          "Reject this payment detail?"
+        );
+  }
+
+  return status === "approved"
+    ? text("admin.verifications.confirm.titleApprove", "Confirm approval")
+    : text("admin.verifications.confirm.titleReject", "Confirm rejection");
+});
+
+const confirmTimelineDecision = async (): Promise<void> => {
+  const item = timelineDecisionDialog.item;
+  const status = timelineDecisionDialog.status;
+
+  if (!item || !status || timelineDecisionDialogSubmitting.value) {
+    return;
+  }
+
+  timelineDecisionDialogSubmitting.value = true;
+
+  try {
+    await handleTimelineItemAction(item, status);
+    timelineDecisionDialogSubmitting.value = false;
+    closeTimelineDecisionDialog();
+  } finally {
+    timelineDecisionDialogSubmitting.value = false;
+  }
 };
 
 const openTimelineDocument = async (document: VerificationTimelineDocument): Promise<void> => {
@@ -3872,6 +3986,31 @@ onBeforeUnmount(() => {
 
 .verification-timeline__load:hover {
   text-decoration: underline;
+}
+
+:deep(.verification-confirm-dialog) {
+  width: min(100%, 460px);
+}
+
+:deep(.verification-confirm-dialog .p-dialog-header) {
+  padding-bottom: 0;
+}
+
+:deep(.verification-confirm-dialog .p-dialog-content) {
+  padding-top: 12px;
+}
+
+.verification-confirm-dialog__body p {
+  color: var(--ui-text-main);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.verification-confirm-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
 }
 
 @keyframes verification-glass-glint {

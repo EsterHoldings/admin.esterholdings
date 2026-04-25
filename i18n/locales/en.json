@@ -2050,7 +2050,20 @@
         "rejectAll": "Reject all",
         "approve": "Approve",
         "reject": "Reject",
-        "chooseDecision": "Choose decision"
+        "chooseDecision": "Choose decision",
+        "cancel": "Cancel"
+      },
+      "confirm": {
+        "titleApprove": "Confirm approval",
+        "titleReject": "Confirm rejection",
+        "profileApprove": "Approve this profile update? The client changes will be kept.",
+        "profileReject": "Reject this profile update? The last pending profile changes will be rolled back.",
+        "documentApprove": "Approve this document?",
+        "documentReject": "Reject this document?",
+        "payoutApprove": "Approve this payment detail?",
+        "payoutReject": "Reject this payment detail?",
+        "requestApprove": "Approve all pending verification changes for this client?",
+        "requestReject": "Reject all pending verification changes for this client? Pending profile changes will be rolled back."
       },
       "filters": {
         "active": "Filter",
