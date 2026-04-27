@@ -222,46 +222,70 @@
                     {{ requestItem.payment_detail_name || requestItem.payment_detail?.name || "-" }}
                   </div>
                 </div>
-
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-2 rounded-full border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] px-3 py-1 text-xs font-medium text-[var(--ui-text-main)] transition hover:border-[var(--ui-primary-accent)]"
+                  :aria-expanded="isPaymentDetailExpanded(requestItem.id) ? 'true' : 'false'"
+                  :title="paymentDetailText"
+                  @click="togglePaymentDetailExpanded(requestItem.id)">
+                  <span>{{ documentsText }} {{ requestItem.payment_detail?.documents?.length || 0 }}</span>
+                  <UiIconChevronUp v-if="isPaymentDetailExpanded(requestItem.id)" class="!h-3.5 !w-3.5" />
+                  <UiIconChevronDown v-else class="!h-3.5 !w-3.5" />
+                </button>
               </div>
 
-              <div
-                v-if="paymentDetailEntries(requestItem).length"
-                class="withdrawal-request-card__details-grid">
+              <div v-if="isPaymentDetailExpanded(requestItem.id)">
                 <div
-                  v-for="entry in paymentDetailEntries(requestItem)"
-                  :key="entry.key"
-                  class="withdrawal-request-card__details-item">
-                  <div class="withdrawal-request-card__details-key">{{ entry.label }}</div>
-                  <div class="withdrawal-request-card__details-value-row">
-                    <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
-                    <UiIconCopy
-                      class="withdrawal-request-card__details-copy"
-                      :text="entry.value"
-                      :title="copyValueText" />
+                  v-if="paymentDetailEntries(requestItem).length"
+                  class="withdrawal-request-card__details-grid">
+                  <div
+                    v-for="entry in paymentDetailEntries(requestItem)"
+                    :key="entry.key"
+                    class="withdrawal-request-card__details-item">
+                    <div class="withdrawal-request-card__details-key">{{ entry.label }}</div>
+                    <div class="withdrawal-request-card__details-value-row">
+                      <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
+                      <UiIconCopy
+                        class="withdrawal-request-card__details-copy"
+                        :text="entry.value"
+                        :title="copyValueText" />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div
-                v-if="requestItem.payment_detail?.documents?.length"
-                class="withdrawal-request-card__details-documents">
-                <div class="withdrawal-request-card__details-key">{{ documentsText }}</div>
-                <div class="withdrawal-request-card__details-document-list">
-                  <span
-                    v-for="document in requestItem.payment_detail.documents"
-                    :key="`${requestItem.id}-${document.path}`"
-                    class="withdrawal-request-card__details-document">
-                    {{ document.name || document.path }}
-                  </span>
+                <div
+                  v-if="requestItem.payment_detail?.documents?.length"
+                  class="withdrawal-request-card__details-documents">
+                  <div class="withdrawal-request-card__details-key">{{ documentsText }}</div>
+                  <div class="withdrawal-request-card__details-document-list">
+                    <a
+                      v-for="document in requestItem.payment_detail.documents"
+                      :key="`${requestItem.id}-${document.path}`"
+                      class="flex min-w-0 items-center gap-3 rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--color-stroke-ui-dark)] px-3 py-2 text-[var(--ui-text-main)] transition hover:border-[var(--ui-primary-accent)]"
+                      :href="paymentDetailDocumentHref(document)"
+                      target="_blank"
+                      rel="noopener noreferrer">
+                      <img
+                        v-if="isPaymentDetailDocumentImage(document)"
+                        :src="paymentDetailDocumentHref(document)"
+                        :alt="document.name || documentsText"
+                        class="h-10 w-10 shrink-0 rounded-lg object-cover" />
+                      <div
+                        v-else
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] text-[10px] font-semibold uppercase text-[var(--ui-text-secondary)]">
+                        {{ paymentDetailDocumentExtension(document) }}
+                      </div>
+                      <span class="truncate text-sm font-medium">{{ document.name || document.path }}</span>
+                    </a>
+                  </div>
                 </div>
-              </div>
 
-              <div
-                v-if="requestItem.payment_detail?.comment"
-                class="withdrawal-request-card__details-note">
-                <div class="withdrawal-request-card__details-key">{{ requisitesCommentText }}</div>
-                <div class="withdrawal-request-card__comment-body">{{ requestItem.payment_detail.comment }}</div>
+                <div
+                  v-if="requestItem.payment_detail?.comment"
+                  class="withdrawal-request-card__details-note">
+                  <div class="withdrawal-request-card__details-key">{{ requisitesCommentText }}</div>
+                  <div class="withdrawal-request-card__comment-body">{{ requestItem.payment_detail.comment }}</div>
+                </div>
               </div>
             </div>
 
@@ -368,6 +392,8 @@
   import UiTextH4 from "~/components/ui/UiTextH4.vue";
   import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+  import UiIconChevronDown from "~/components/ui/UiIconChevronDown.vue";
+  import UiIconChevronUp from "~/components/ui/UiIconChevronUp.vue";
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -415,6 +441,7 @@
         mime_type: string;
         size: number | null;
         uploaded_at: string | null;
+        preview_url: string | null;
       }>;
     };
   };
@@ -457,6 +484,7 @@
     adminComment: "",
   });
   const editErrors = reactive<Record<string, string>>({});
+  const expandedPaymentDetailIds = ref<string[]>([]);
 
   const resolveText = (key: string, fallback: string): string => {
     const value = t(key);
@@ -704,6 +732,58 @@
     );
   };
 
+  const isPaymentDetailExpanded = (requestId: string): boolean => expandedPaymentDetailIds.value.includes(requestId);
+
+  const togglePaymentDetailExpanded = (requestId: string): void => {
+    expandedPaymentDetailIds.value = isPaymentDetailExpanded(requestId)
+      ? expandedPaymentDetailIds.value.filter(id => id !== requestId)
+      : [...expandedPaymentDetailIds.value, requestId];
+  };
+
+  const paymentDetailDocumentHref = (document: {
+    path: string;
+    preview_url: string | null;
+  }): string => {
+    const previewUrl = String(document?.preview_url ?? "").trim();
+    if (previewUrl !== "") {
+      return previewUrl;
+    }
+
+    return String(document?.path ?? "").trim();
+  };
+
+  const isPaymentDetailDocumentImage = (document: {
+    mime_type: string;
+    path: string;
+    preview_url: string | null;
+  }): boolean => {
+    const href = paymentDetailDocumentHref(document);
+    if (href === "") {
+      return false;
+    }
+
+    return String(document?.mime_type ?? "")
+      .trim()
+      .toLowerCase()
+      .startsWith("image/");
+  };
+
+  const paymentDetailDocumentExtension = (document: { name: string; path: string; mime_type: string }): string => {
+    const name = String(document?.name || document?.path || "").trim();
+    const extension = name.includes(".") ? name.split(".").pop() ?? "" : "";
+    const normalizedExtension = extension.trim().toUpperCase();
+
+    if (normalizedExtension !== "") {
+      return normalizedExtension.slice(0, 4);
+    }
+
+    if (String(document?.mime_type ?? "").toLowerCase().includes("pdf")) {
+      return "PDF";
+    }
+
+    return "FILE";
+  };
+
   const normalizeRequest = (row: any): WithdrawalRequestItem => ({
     id: String(row?.id ?? ""),
     user_id: String(row?.user_id ?? ""),
@@ -743,6 +823,7 @@
             mime_type: String(document?.mime_type ?? ""),
             size: document?.size == null ? null : Number(document.size),
             uploaded_at: document?.uploaded_at == null ? null : String(document.uploaded_at),
+            preview_url: document?.preview_url == null ? null : String(document.preview_url),
           }))
         : [],
     },
