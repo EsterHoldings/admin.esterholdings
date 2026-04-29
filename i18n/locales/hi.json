@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "खाते",
-        "paymentDetails": "भुगतान विवरण"
+        "paymentDetails": "भुगतान विवरण",
+        "emails": "ईमेल"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "इस ग्राहक के MT खाते.",
-        "paymentDetails": "निकासी विवरण और उनकी मॉडरेशन स्थिति."
+        "paymentDetails": "निकासी विवरण और उनकी मॉडरेशन स्थिति.",
+        "emails": "इस क्लाइंट को भेजे गए ट्रांज़ैक्शनल ईमेल का इतिहास।"
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "ईमेल",
           "phone": "फ़ोन"
+        }
+      },
+      "emails": {
+        "title": "ईमेल इतिहास",
+        "subtitle": "इस क्लाइंट को भेजे गए सभी ट्रांज़ैक्शनल ईमेल यहाँ नए से पुराने क्रम में दिखाए जाते हैं।",
+        "total": "कुल",
+        "empty": "अभी तक कोई ईमेल नहीं भेजा गया है।",
+        "noSubject": "कोई विषय नहीं",
+        "recipient": "प्राप्तकर्ता",
+        "type": "प्रकार",
+        "messageId": "संदेश आईडी",
+        "source": "स्रोत",
+        "categories": {
+          "auth": "प्रमाणीकरण",
+          "accounts": "खाते",
+          "billing": "भुगतान",
+          "clients": "क्लाइंट प्रबंधन",
+          "support": "सहायता",
+          "transactional": "ट्रांज़ैक्शनल"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "अस्वीकृत करें",
         "successfulManual": "ट्रांसफ़र के बिना पुष्टि करें",
         "successfulAutoTransfer": "स्वीकृत करें और MT4 ट्रांसफ़र चलाएँ",
-        "copyValue": "मान कॉपी करें"
+        "copyValue": "मान कॉपी करें",
+        "notifyClient": "क्लाइंट को सूचित करें"
       },
       "messages": {
         "saved": "निकासी अनुरोध अपडेट किया गया।",

@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "Konten",
-        "paymentDetails": "Zahlungsdaten"
+        "paymentDetails": "Zahlungsdaten",
+        "emails": "E-Mails"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "MT-Konten dieses Kunden.",
-        "paymentDetails": "Auszahlungsdaten und deren Moderationsstatus."
+        "paymentDetails": "Auszahlungsdaten und deren Moderationsstatus.",
+        "emails": "Verlauf der an diesen Kunden gesendeten Transaktions-E-Mails."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "E-Mail",
           "phone": "Telefon"
+        }
+      },
+      "emails": {
+        "title": "E-Mail-Verlauf",
+        "subtitle": "Hier werden alle an diesen Kunden gesendeten Transaktions-E-Mails von neu nach alt angezeigt.",
+        "total": "Gesamt",
+        "empty": "Es wurden noch keine E-Mails gesendet.",
+        "noSubject": "Kein Betreff",
+        "recipient": "Empfänger",
+        "type": "Typ",
+        "messageId": "Nachrichten-ID",
+        "source": "Quelle",
+        "categories": {
+          "auth": "Authentifizierung",
+          "accounts": "Konten",
+          "billing": "Zahlungen",
+          "clients": "Kundenverwaltung",
+          "support": "Support",
+          "transactional": "Transaktional"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "Ablehnen",
         "successfulManual": "Ohne Transfer bestätigen",
         "successfulAutoTransfer": "Genehmigen und MT4-Transfer ausführen",
-        "copyValue": "Wert kopieren"
+        "copyValue": "Wert kopieren",
+        "notifyClient": "Kunden benachrichtigen"
       },
       "messages": {
         "saved": "Auszahlungsanfrage aktualisiert.",

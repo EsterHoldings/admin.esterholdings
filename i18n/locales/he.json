@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "חשבונות",
-        "paymentDetails": "פרטי תשלום"
+        "paymentDetails": "פרטי תשלום",
+        "emails": "מיילים"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "חשבונות MT של הלקוח.",
-        "paymentDetails": "פרטי משיכה ומצב הבדיקה שלהם."
+        "paymentDetails": "פרטי משיכה ומצב הבדיקה שלהם.",
+        "emails": "היסטוריית מיילים טרנזקציוניים שנשלחו ללקוח זה."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "אימייל",
           "phone": "טלפון"
+        }
+      },
+      "emails": {
+        "title": "היסטוריית מיילים",
+        "subtitle": "כאן מוצגים כל המיילים הטרנזקציוניים שנשלחו ללקוח זה מהחדש לישן.",
+        "total": "סה\"כ",
+        "empty": "עדיין לא נשלחו מיילים.",
+        "noSubject": "ללא נושא",
+        "recipient": "נמען",
+        "type": "סוג",
+        "messageId": "מזהה הודעה",
+        "source": "מקור",
+        "categories": {
+          "auth": "אימות",
+          "accounts": "חשבונות",
+          "billing": "תשלומים",
+          "clients": "ניהול לקוח",
+          "support": "תמיכה",
+          "transactional": "טרנזקציוני"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "דחה",
         "successfulManual": "אשר ללא העברה",
         "successfulAutoTransfer": "אשר ובצע העברת MT4",
-        "copyValue": "העתק ערך"
+        "copyValue": "העתק ערך",
+        "notifyClient": "שלח התראה ללקוח"
       },
       "messages": {
         "saved": "בקשת המשיכה עודכנה.",

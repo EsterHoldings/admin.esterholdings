@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "Comptes",
-        "paymentDetails": "Coordonnées de paiement"
+        "paymentDetails": "Coordonnées de paiement",
+        "emails": "E-mails"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "Comptes MT détenus par ce client.",
-        "paymentDetails": "Coordonnées de retrait et leur statut de modération."
+        "paymentDetails": "Coordonnées de retrait et leur statut de modération.",
+        "emails": "Historique des e-mails transactionnels envoyés à ce client."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "E-mail",
           "phone": "Téléphone"
+        }
+      },
+      "emails": {
+        "title": "Historique des e-mails",
+        "subtitle": "Tous les e-mails transactionnels envoyés à ce client sont affichés ici du plus récent au plus ancien.",
+        "total": "Total",
+        "empty": "Aucun e-mail n’a encore été envoyé.",
+        "noSubject": "Sans objet",
+        "recipient": "Destinataire",
+        "type": "Type",
+        "messageId": "ID du message",
+        "source": "Source",
+        "categories": {
+          "auth": "Authentification",
+          "accounts": "Comptes",
+          "billing": "Paiements",
+          "clients": "Gestion du client",
+          "support": "Support",
+          "transactional": "Transactionnel"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "Rejeter",
         "successfulManual": "Confirmer sans transfert",
         "successfulAutoTransfer": "Approuver et exécuter le transfert MT4",
-        "copyValue": "Copier la valeur"
+        "copyValue": "Copier la valeur",
+        "notifyClient": "Notifier le client"
       },
       "messages": {
         "saved": "Demande de retrait mise à jour.",

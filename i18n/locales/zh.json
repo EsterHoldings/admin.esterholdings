@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "账户",
-        "paymentDetails": "付款详情"
+        "paymentDetails": "付款详情",
+        "emails": "邮件"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "该客户的 MT 账户。",
-        "paymentDetails": "提现信息及其审核状态。"
+        "paymentDetails": "提现信息及其审核状态。",
+        "emails": "发送给该客户的事务邮件历史。"
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "邮箱",
           "phone": "电话"
+        }
+      },
+      "emails": {
+        "title": "邮件历史",
+        "subtitle": "这里显示发送给该客户的全部事务邮件，按从新到旧排序。",
+        "total": "总数",
+        "empty": "尚未发送任何邮件。",
+        "noSubject": "无主题",
+        "recipient": "收件人",
+        "type": "类型",
+        "messageId": "消息 ID",
+        "source": "来源",
+        "categories": {
+          "auth": "身份验证",
+          "accounts": "账户",
+          "billing": "支付",
+          "clients": "客户管理",
+          "support": "支持",
+          "transactional": "事务邮件"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "拒绝",
         "successfulManual": "不转账确认",
         "successfulAutoTransfer": "批准并执行 MT4 转账",
-        "copyValue": "复制值"
+        "copyValue": "复制值",
+        "notifyClient": "通知客户"
       },
       "messages": {
         "saved": "提款申请已更新。",

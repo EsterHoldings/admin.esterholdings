@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "口座",
-        "paymentDetails": "支払い詳細"
+        "paymentDetails": "支払い詳細",
+        "emails": "メール"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "このクライアントのMT口座。",
-        "paymentDetails": "出金先情報と審査ステータス。"
+        "paymentDetails": "出金先情報と審査ステータス。",
+        "emails": "この顧客に送信されたトランザクションメールの履歴。"
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "メール",
           "phone": "電話"
+        }
+      },
+      "emails": {
+        "title": "メール履歴",
+        "subtitle": "この顧客に送信されたすべてのトランザクションメールを新しい順に表示します。",
+        "total": "合計",
+        "empty": "まだメールは送信されていません。",
+        "noSubject": "件名なし",
+        "recipient": "宛先",
+        "type": "種類",
+        "messageId": "メッセージID",
+        "source": "送信元",
+        "categories": {
+          "auth": "認証",
+          "accounts": "口座",
+          "billing": "支払い",
+          "clients": "顧客管理",
+          "support": "サポート",
+          "transactional": "トランザクション"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "却下",
         "successfulManual": "振替なしで確認",
         "successfulAutoTransfer": "承認してMT4振替を実行",
-        "copyValue": "値をコピー"
+        "copyValue": "値をコピー",
+        "notifyClient": "顧客に通知する"
       },
       "messages": {
         "saved": "出金リクエストを更新しました。",

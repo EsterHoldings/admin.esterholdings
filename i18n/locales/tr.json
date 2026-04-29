@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "Hesaplar",
-        "paymentDetails": "Ödeme bilgileri"
+        "paymentDetails": "Ödeme bilgileri",
+        "emails": "E-postalar"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "Bu müşteriye ait MT hesapları.",
-        "paymentDetails": "Para çekme bilgileri ve moderasyon durumu."
+        "paymentDetails": "Para çekme bilgileri ve moderasyon durumu.",
+        "emails": "Bu müşteriye gönderilen işlem e-postalarının geçmişi."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "E-posta",
           "phone": "Telefon"
+        }
+      },
+      "emails": {
+        "title": "E-posta geçmişi",
+        "subtitle": "Bu müşteriye gönderilen tüm işlem e-postaları burada en yeniden en eskiye gösterilir.",
+        "total": "Toplam",
+        "empty": "Henüz e-posta gönderilmedi.",
+        "noSubject": "Konu yok",
+        "recipient": "Alıcı",
+        "type": "Tür",
+        "messageId": "Mesaj kimliği",
+        "source": "Kaynak",
+        "categories": {
+          "auth": "Kimlik doğrulama",
+          "accounts": "Hesaplar",
+          "billing": "Ödemeler",
+          "clients": "Müşteri yönetimi",
+          "support": "Destek",
+          "transactional": "İşlemsel"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "Reddet",
         "successfulManual": "Transfer olmadan onayla",
         "successfulAutoTransfer": "Onayla ve MT4 transferini çalıştır",
-        "copyValue": "Değeri kopyala"
+        "copyValue": "Değeri kopyala",
+        "notifyClient": "Müşteriye bildirim gönder"
       },
       "messages": {
         "saved": "Para çekme talebi güncellendi.",

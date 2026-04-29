@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "Conti",
-        "paymentDetails": "Dati di pagamento"
+        "paymentDetails": "Dati di pagamento",
+        "emails": "Email"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "Conti MT di questo cliente.",
-        "paymentDetails": "Dati di prelievo e relativo stato di moderazione."
+        "paymentDetails": "Dati di prelievo e relativo stato di moderazione.",
+        "emails": "Cronologia delle email transazionali inviate a questo cliente."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "Email",
           "phone": "Telefono"
+        }
+      },
+      "emails": {
+        "title": "Cronologia email",
+        "subtitle": "Qui sono mostrate tutte le email transazionali inviate a questo cliente, dalla più recente alla più vecchia.",
+        "total": "Totale",
+        "empty": "Non è stata ancora inviata alcuna email.",
+        "noSubject": "Senza oggetto",
+        "recipient": "Destinatario",
+        "type": "Tipo",
+        "messageId": "ID messaggio",
+        "source": "Origine",
+        "categories": {
+          "auth": "Autenticazione",
+          "accounts": "Conti",
+          "billing": "Pagamenti",
+          "clients": "Gestione cliente",
+          "support": "Supporto",
+          "transactional": "Transazionale"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "Rifiuta",
         "successfulManual": "Conferma senza trasferimento",
         "successfulAutoTransfer": "Approva ed esegui trasferimento MT4",
-        "copyValue": "Copia valore"
+        "copyValue": "Copia valore",
+        "notifyClient": "Notifica il cliente"
       },
       "messages": {
         "saved": "Richiesta di prelievo aggiornata.",

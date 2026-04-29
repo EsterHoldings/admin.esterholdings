@@ -126,26 +126,35 @@
 
                 <div
                   v-if="canManagePayments"
-                  class="withdrawal-request-card__status-actions withdrawal-request-card__status-actions--top">
-                  <button
-                    type="button"
-                    class="withdrawal-status-action withdrawal-status-action--successful"
-                    :class="{ 'is-active': isStatusActive(requestItem, 'successful') }"
-                    :disabled="isStatusDisabled(requestItem, 'successful')"
-                    :title="successfulActionTitle(requestItem)"
-                    @click="handleQuickStatusUpdate(requestItem, 'successful')">
-                    <UiIconSuccessFull />
-                  </button>
+                  class="withdrawal-request-card__status-meta">
+                  <label class="withdrawal-request-card__notify-toggle">
+                    <input
+                      v-model="notifyClientByRequestId[requestItem.id]"
+                      type="checkbox" />
+                    <span>{{ notifyClientText }}</span>
+                  </label>
 
-                  <button
-                    type="button"
-                    class="withdrawal-status-action withdrawal-status-action--rejected"
-                    :class="{ 'is-active': isStatusActive(requestItem, 'rejected') }"
-                    :disabled="isStatusDisabled(requestItem, 'rejected')"
-                    :title="rejectText"
-                    @click="handleQuickStatusUpdate(requestItem, 'rejected')">
-                    <UiIconDangerFull />
-                  </button>
+                  <div class="withdrawal-request-card__status-actions withdrawal-request-card__status-actions--top">
+                    <button
+                      type="button"
+                      class="withdrawal-status-action withdrawal-status-action--successful"
+                      :class="{ 'is-active': isStatusActive(requestItem, 'successful') }"
+                      :disabled="isStatusDisabled(requestItem, 'successful')"
+                      :title="successfulActionTitle(requestItem)"
+                      @click="handleQuickStatusUpdate(requestItem, 'successful')">
+                      <UiIconSuccessFull />
+                    </button>
+
+                    <button
+                      type="button"
+                      class="withdrawal-status-action withdrawal-status-action--rejected"
+                      :class="{ 'is-active': isStatusActive(requestItem, 'rejected') }"
+                      :disabled="isStatusDisabled(requestItem, 'rejected')"
+                      :title="rejectText"
+                      @click="handleQuickStatusUpdate(requestItem, 'rejected')">
+                      <UiIconDangerFull />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -485,6 +494,7 @@
   });
   const editErrors = reactive<Record<string, string>>({});
   const expandedPaymentDetailIds = ref<string[]>([]);
+  const notifyClientByRequestId = reactive<Record<string, boolean>>({});
 
   const resolveText = (key: string, fallback: string): string => {
     const value = t(key);
@@ -523,6 +533,9 @@
     resolveText("admin.withdrawalRequests.fields.requisitesComment", "Requisites comment")
   );
   const adminCommentText = computed(() => resolveText("admin.withdrawalRequests.fields.adminComment", "Admin comment"));
+  const notifyClientText = computed(() =>
+    resolveText("admin.withdrawalRequests.actions.notifyClient", "Notify client")
+  );
   const openClientText = computed(() => resolveText("admin.withdrawalRequests.actions.openClient", "Open client"));
   const editText = computed(() => resolveText("admin.withdrawalRequests.actions.edit", "Edit"));
   const cancelEditText = computed(() => resolveText("admin.withdrawalRequests.actions.cancelEdit", "Cancel"));
@@ -848,6 +861,11 @@
       });
 
       requests.value = extractRows(response).map(normalizeRequest);
+      requests.value.forEach(requestItem => {
+        if (typeof notifyClientByRequestId[requestItem.id] !== "boolean") {
+          notifyClientByRequestId[requestItem.id] = true;
+        }
+      });
     } catch (error: any) {
       errorMessage.value =
         error?.response?.data?.message ||
@@ -1027,6 +1045,7 @@
         status: nextStatus,
         admin_comment:
           editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment,
+        notify_client: notifyClientByRequestId[requestItem.id] !== false,
         ...(executeTransfer ? { execute_transfer: true } : {}),
       });
 
@@ -1625,14 +1644,36 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 4px;
-    border-radius: 12px;
-    background: var(--color-stroke-ui-dark);
-    border: 1px solid var(--color-stroke-ui-light);
   }
 
   .withdrawal-request-card__status-actions--top {
     justify-content: flex-end;
+  }
+
+  .withdrawal-request-card__status-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .withdrawal-request-card__notify-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+  }
+
+  .withdrawal-request-card__notify-toggle input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--ui-primary-main);
+    cursor: pointer;
   }
 
   .withdrawal-status-action {
@@ -1782,6 +1823,11 @@
     .withdrawal-request-card__status-actions {
       width: 100%;
       justify-content: flex-end;
+    }
+
+    .withdrawal-request-card__status-meta {
+      width: 100%;
+      align-items: flex-start;
     }
 
     .withdrawal-requests-page__toolbar-right {

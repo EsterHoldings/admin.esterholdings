@@ -1685,7 +1685,8 @@
         "kyc": "KYC",
         "metrics": "Metrics",
         "accounts": "Accounts",
-        "paymentDetails": "Payment details"
+        "paymentDetails": "Payment details",
+        "emails": "Emails"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1833,7 +1834,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "MT accounts owned by this client.",
-        "paymentDetails": "Withdrawal requisites and their moderation state."
+        "paymentDetails": "Withdrawal requisites and their moderation state.",
+        "emails": "Transactional email history sent to this client."
       },
       "common": {
         "emptyValue": "-",
@@ -2028,6 +2030,25 @@
           "swift": "SWIFT",
           "email": "Email",
           "phone": "Phone"
+        }
+      },
+      "emails": {
+        "title": "Email history",
+        "subtitle": "All transactional emails sent to this client are shown here from newest to oldest.",
+        "total": "Total",
+        "empty": "No emails have been sent yet.",
+        "noSubject": "No subject",
+        "recipient": "Recipient",
+        "type": "Type",
+        "messageId": "Message ID",
+        "source": "Source",
+        "categories": {
+          "auth": "Authentication",
+          "accounts": "Accounts",
+          "billing": "Billing",
+          "clients": "Client management",
+          "support": "Support",
+          "transactional": "Transactional"
         }
       }
     },
@@ -2657,7 +2678,8 @@
         "reject": "Reject",
         "successfulManual": "Confirm without transfer",
         "successfulAutoTransfer": "Approve and execute MT4 transfer",
-        "copyValue": "Copy value"
+        "copyValue": "Copy value",
+        "notifyClient": "Notify client"
       },
       "messages": {
         "saved": "Withdrawal request updated.",

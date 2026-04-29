@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "Contas",
-        "paymentDetails": "Dados de pagamento"
+        "paymentDetails": "Dados de pagamento",
+        "emails": "E-mails"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "Contas MT deste cliente.",
-        "paymentDetails": "Dados de saque e seu estado de moderação."
+        "paymentDetails": "Dados de saque e seu estado de moderação.",
+        "emails": "Histórico de e-mails transacionais enviados para este cliente."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "E-mail",
           "phone": "Telefone"
+        }
+      },
+      "emails": {
+        "title": "Histórico de e-mails",
+        "subtitle": "Todos os e-mails transacionais enviados para este cliente são mostrados aqui do mais recente ao mais antigo.",
+        "total": "Total",
+        "empty": "Nenhum e-mail foi enviado ainda.",
+        "noSubject": "Sem assunto",
+        "recipient": "Destinatário",
+        "type": "Tipo",
+        "messageId": "ID da mensagem",
+        "source": "Origem",
+        "categories": {
+          "auth": "Autenticação",
+          "accounts": "Contas",
+          "billing": "Pagamentos",
+          "clients": "Gestão do cliente",
+          "support": "Suporte",
+          "transactional": "Transacional"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "Rejeitar",
         "successfulManual": "Confirmar sem transferência",
         "successfulAutoTransfer": "Aprovar e executar transferência MT4",
-        "copyValue": "Copiar valor"
+        "copyValue": "Copiar valor",
+        "notifyClient": "Notificar cliente"
       },
       "messages": {
         "saved": "Solicitação de saque atualizada.",

@@ -1401,7 +1401,8 @@
         "verification": "Verificación",
         "referrals": "Referidos",
         "accounts": "Cuentas",
-        "paymentDetails": "Datos de pago"
+        "paymentDetails": "Datos de pago",
+        "emails": "Correos"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Soporte del cliente y configuración del gabinete.",
         "security": "Controles de contraseña y autenticación de dos factores.",
         "accounts": "Cuentas MT propiedad de este cliente.",
-        "paymentDetails": "Datos de retiro y estado de moderación."
+        "paymentDetails": "Datos de retiro y estado de moderación.",
+        "emails": "Historial de correos transaccionales enviados a este cliente."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "Email",
           "phone": "Teléfono"
+        }
+      },
+      "emails": {
+        "title": "Historial de correos",
+        "subtitle": "Aquí se muestran todos los correos transaccionales enviados a este cliente, del más reciente al más antiguo.",
+        "total": "Total",
+        "empty": "Aún no se han enviado correos.",
+        "noSubject": "Sin asunto",
+        "recipient": "Destinatario",
+        "type": "Tipo",
+        "messageId": "ID del mensaje",
+        "source": "Origen",
+        "categories": {
+          "auth": "Autenticación",
+          "accounts": "Cuentas",
+          "billing": "Pagos",
+          "clients": "Gestión del cliente",
+          "support": "Soporte",
+          "transactional": "Transaccional"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "Rechazar",
         "successfulManual": "Confirmar sin transferencia",
         "successfulAutoTransfer": "Aprobar y ejecutar transferencia MT4",
-        "copyValue": "Copiar valor"
+        "copyValue": "Copiar valor",
+        "notifyClient": "Notificar al cliente"
       },
       "messages": {
         "saved": "Solicitud de retiro actualizada.",

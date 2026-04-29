@@ -1401,7 +1401,8 @@
         "verification": "Verification",
         "referrals": "Referrals",
         "accounts": "계정",
-        "paymentDetails": "결제 정보"
+        "paymentDetails": "결제 정보",
+        "emails": "메일"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1466,7 +1467,8 @@
         "settings": "Client support and cabinet configuration.",
         "security": "Password and two-factor authentication controls.",
         "accounts": "이 고객의 MT 계정입니다.",
-        "paymentDetails": "출금 정보와 심사 상태입니다."
+        "paymentDetails": "출금 정보와 심사 상태입니다.",
+        "emails": "이 고객에게 발송된 트랜잭션 메일 기록입니다."
       },
       "common": {
         "emptyValue": "-",
@@ -1661,6 +1663,25 @@
           "swift": "SWIFT",
           "email": "이메일",
           "phone": "전화"
+        }
+      },
+      "emails": {
+        "title": "메일 기록",
+        "subtitle": "이 고객에게 발송된 모든 트랜잭션 메일이 최신순으로 표시됩니다.",
+        "total": "전체",
+        "empty": "아직 발송된 메일이 없습니다.",
+        "noSubject": "제목 없음",
+        "recipient": "수신자",
+        "type": "유형",
+        "messageId": "메시지 ID",
+        "source": "출처",
+        "categories": {
+          "auth": "인증",
+          "accounts": "계좌",
+          "billing": "결제",
+          "clients": "고객 관리",
+          "support": "지원",
+          "transactional": "트랜잭션"
         }
       }
     },
@@ -2277,7 +2298,8 @@
         "reject": "거절",
         "successfulManual": "이체 없이 확인",
         "successfulAutoTransfer": "승인하고 MT4 이체 실행",
-        "copyValue": "값 복사"
+        "copyValue": "값 복사",
+        "notifyClient": "고객에게 알림 보내기"
       },
       "messages": {
         "saved": "출금 요청이 업데이트되었습니다.",

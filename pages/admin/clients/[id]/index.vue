@@ -85,6 +85,7 @@
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   import TabAccounts from "~/pages/admin/clients/[id]/components/TabAccounts.vue";
+  import TabEmails from "~/pages/admin/clients/[id]/components/TabEmails.vue";
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
   import TabMetrics from "~/pages/admin/clients/[id]/components/TabMetrics.vue";
   import TabPaymentDetails from "~/pages/admin/clients/[id]/components/TabPaymentDetails.vue";
@@ -226,6 +227,13 @@
           component: TabPaymentDetails,
         }]
       : []),
+    {
+      id: "emails",
+      label: resolveText("admin.clients.tabs.emails", "Emails"),
+      description: resolveText("admin.clients.tabsDescription.emails", "Transactional email history sent to this client."),
+      icon: "pi pi-envelope",
+      component: TabEmails,
+    },
     ...(canViewClientReferrals.value
       ? [{
           id: "referrals",
