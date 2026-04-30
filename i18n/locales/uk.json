@@ -2354,6 +2354,7 @@
         "onlineNow": "Зараз онлайн",
         "registrationsRange": "Реєстрації за період",
         "totalUsers": "Усього користувачів",
+        "transactionsQueue": "Черга транзакцій",
         "unprocessedVerifications": "Необроблені запити на верифікацію",
         "processingTransactions": "Транзакції в обробці",
         "unprocessedTransactions": "Необроблені транзакції"

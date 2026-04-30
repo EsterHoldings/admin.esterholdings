@@ -2359,6 +2359,7 @@
         "onlineNow": "Online now",
         "registrationsRange": "Registrations in range",
         "totalUsers": "Total users",
+        "transactionsQueue": "Transactions queue",
         "unprocessedVerifications": "Unprocessed verification requests",
         "processingTransactions": "Transactions in processing",
         "unprocessedTransactions": "Unprocessed transactions"
