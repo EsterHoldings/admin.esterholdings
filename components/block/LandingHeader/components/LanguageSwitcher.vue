@@ -19,7 +19,11 @@
           :key="code"
           @click="switchLanguage(code)"
           :class="{ active: locale === code }">
-          <span class="flag" :class="{ 'flag--monochrome': code === 'ru' }">{{ getFlag(code) }}</span>
+          <span
+            class="flag"
+            :class="{ 'flag--monochrome': code === 'ru' }"
+            >{{ getFlag(code) }}</span
+          >
           <span class="label">{{ label.toUpperCase() }}</span>
         </li>
       </ul>
@@ -120,8 +124,17 @@
 <style scoped lang="scss">
   .language-wrapper {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    line-height: 1;
 
     .icon {
+      display: block;
+      width: 24px;
+      height: 24px;
       cursor: pointer;
       font-size: 20px;
     }

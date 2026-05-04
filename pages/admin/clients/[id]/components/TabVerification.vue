@@ -211,7 +211,6 @@
               <span
                 v-if="item.actorEmail"
                 class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--verification-glass-border)] px-2 py-1 text-[color:var(--ui-text-main)]">
-                <span class="truncate">{{ item.actorEmail }}</span>
                 <button
                   type="button"
                   class="inline-flex h-5 w-5 items-center justify-center rounded-full text-[color:var(--ui-text-secondary)] transition hover:bg-[color:color-mix(in_srgb,var(--ui-primary-main)_10%,transparent)] hover:text-[color:var(--ui-text-main)]"
@@ -219,6 +218,7 @@
                   @click="copyVerificationValue(item.actorEmail, text('admin.verifications.clientTimeline.messages.emailCopied', 'Email copied'))">
                   <i class="pi pi-copy text-[10px]" />
                 </button>
+                <span class="truncate">{{ item.actorEmail }}</span>
               </span>
 
               <button
@@ -227,8 +227,8 @@
                 class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--verification-glass-border)] px-2 py-1 font-semibold text-[color:var(--ui-text-main)] transition hover:bg-[color:color-mix(in_srgb,var(--ui-primary-main)_10%,transparent)]"
                 :title="text('admin.verifications.clientTimeline.actions.copyActorId', 'Copy actor ID')"
                 @click="copyVerificationValue(item.actorId, text('admin.verifications.clientTimeline.messages.actorIdCopied', 'Actor ID copied'))">
-                <span>ID</span>
                 <i class="pi pi-copy text-[10px] text-[color:var(--ui-text-secondary)]" />
+                <span>ID</span>
               </button>
             </div>
 

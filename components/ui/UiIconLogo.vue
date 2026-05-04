@@ -20,6 +20,9 @@
 </template>
 
 <style lang="scss" scoped>
-svg {}
+svg {
+  display: block;
+  clip-path: inset(1px);
+}
 </style>
 <script setup lang="ts"></script>

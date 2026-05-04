@@ -253,11 +253,11 @@
                     class="withdrawal-request-card__details-item">
                     <div class="withdrawal-request-card__details-key">{{ entry.label }}</div>
                     <div class="withdrawal-request-card__details-value-row">
-                      <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
                       <UiIconCopy
                         class="withdrawal-request-card__details-copy"
                         :text="entry.value"
                         :title="copyValueText" />
+                      <div class="withdrawal-request-card__details-value">{{ entry.value }}</div>
                     </div>
                   </div>
                 </div>
@@ -1592,7 +1592,7 @@
 
   .withdrawal-request-card__details-value-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 8px;
   }

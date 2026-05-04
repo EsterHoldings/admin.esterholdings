@@ -5,9 +5,7 @@
         <h3>{{ titleText }}</h3>
         <p>{{ subtitleText }}</p>
       </div>
-      <div class="client-emails__summary-pill">
-        {{ totalText }}: {{ total }}
-      </div>
+      <div class="client-emails__summary-pill">{{ totalText }}: {{ total }}</div>
     </div>
 
     <div
@@ -60,22 +58,22 @@
           <div class="client-emails__cell">
             <div class="client-emails__label">{{ messageIdText }}</div>
             <div class="client-emails__copy-row">
-              <span class="truncate">{{ emailItem.message_id || "-" }}</span>
               <UiIconCopy
                 v-if="emailItem.message_id"
                 :text="emailItem.message_id"
                 :title="copyValueText" />
+              <span class="truncate">{{ emailItem.message_id || "-" }}</span>
             </div>
           </div>
 
           <div class="client-emails__cell">
             <div class="client-emails__label">{{ sourceText }}</div>
             <div class="client-emails__copy-row">
-              <span class="truncate">{{ emailSourceLabel(emailItem) }}</span>
               <UiIconCopy
                 v-if="emailSourceRaw(emailItem)"
                 :text="emailSourceRaw(emailItem)"
                 :title="copyValueText" />
+              <span class="truncate">{{ emailSourceLabel(emailItem) }}</span>
             </div>
           </div>
         </div>
@@ -171,7 +169,9 @@
   };
 
   const emailCategoryText = (category?: string | null): string => {
-    const normalized = String(category ?? "").trim().toLowerCase();
+    const normalized = String(category ?? "")
+      .trim()
+      .toLowerCase();
 
     if (normalized === "auth") {
       return resolveText("admin.clients.emails.categories.auth", "Authentication");
@@ -196,7 +196,8 @@
     return normalized || resolveText("admin.clients.emails.categories.transactional", "Transactional");
   };
 
-  const emailSourceRaw = (item: EmailHistoryItem): string => String(item.notification_class || item.mail_class || "").trim();
+  const emailSourceRaw = (item: EmailHistoryItem): string =>
+    String(item.notification_class || item.mail_class || "").trim();
 
   const emailSourceLabel = (item: EmailHistoryItem): string => {
     const value = emailSourceRaw(item);

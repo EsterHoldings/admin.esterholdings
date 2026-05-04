@@ -16,6 +16,8 @@ svg {
   height: 100%;
   max-width: 107px;
   max-height: 44px;
+  display: block;
+  clip-path: inset(1px);
 }
 </style>
 
