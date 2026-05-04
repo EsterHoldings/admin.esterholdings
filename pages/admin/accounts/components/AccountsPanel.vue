@@ -10,121 +10,126 @@
         @click="applyMetricFilter(card.id)">
         <PrimeCard class="accounts-metric-card">
           <template #content>
-            <span>{{ card.label }}</span>
-            <strong>{{ card.value }}</strong>
+            <div class="accounts-metric-card__body">
+              <div class="accounts-metric-card__copy">
+                <span>{{ card.label }}</span>
+                <strong>{{ card.value }}</strong>
+              </div>
+              <div class="accounts-metric-card__icon">
+                <i
+                  :class="card.icon"
+                  aria-hidden="true" />
+              </div>
+            </div>
           </template>
         </PrimeCard>
       </button>
     </div>
 
-    <PrimeCard class="accounts-balance-card">
-      <template #content>
-        <div class="accounts-balance-card__header">
-          {{ resolveText("admin.accounts.stats.balanceSummary", "Balances") }}
-        </div>
-        <div class="accounts-balance-card__grid">
-          <div
-            v-for="segment in balanceSegments"
-            :key="segment.id"
-            class="accounts-balance-card__item">
-            <span>{{ segment.label }}</span>
-            <strong>{{ segment.value }}</strong>
-          </div>
-        </div>
-      </template>
-    </PrimeCard>
-
-    <PrimeCard class="accounts-toolbar-card">
-      <template #content>
-        <div class="accounts-toolbar">
-          <label class="accounts-search">
-            <i
-              class="pi pi-search"
-              aria-hidden="true" />
-            <PrimeInputText
-              :model-value="searchDraft"
-              class="accounts-search__input"
-              :placeholder="
-                resolveText('admin.accounts.components.accounts-panel-search.placeholder', 'Search accounts...')
-              "
-              @update:model-value="handleSearchInput" />
-            <i
-              v-if="isLoadingSearch"
-              class="pi pi-spin pi-spinner accounts-search__spinner"
-              aria-hidden="true" />
-          </label>
-
-          <PrimeButton
-            rounded
-            outlined
-            icon="pi pi-refresh"
-            :loading="isLoading || isStatsLoading"
-            :aria-label="resolveText('admin.accounts.actions.refresh', 'Refresh')"
-            @click="handleClickRefresh" />
-
-          <PrimeSelect
-            :model-value="orderBy"
-            class="accounts-sort-select"
-            :options="sortByOptions"
-            option-label="text"
-            option-value="value"
-            @update:model-value="value => handleOrderBy(String(value || DEFAULT_ORDER_BY))" />
-
-          <PrimeButton
-            rounded
-            outlined
-            :icon="orderDirection === ORDER_DIRECTION_ASC ? 'pi pi-sort-amount-up-alt' : 'pi pi-sort-amount-down'"
-            :aria-label="
-              orderDirection === ORDER_DIRECTION_ASC
-                ? resolveText('admin.accounts.actions.sortAscending', 'Sort ascending')
-                : resolveText('admin.accounts.actions.sortDescending', 'Sort descending')
-            "
-            @click="toggleOrderDirection" />
-
-          <div class="accounts-view-switch">
-            <PrimeButton
-              v-for="option in viewOptions"
-              :key="option.value"
-              rounded
-              :text="viewMode !== option.value"
-              :outlined="viewMode !== option.value"
-              size="small"
-              :icon="option.icon"
-              :aria-label="option.label"
-              :title="option.label"
-              @click="handleChangeViewMode(option.value)" />
-          </div>
-
-          <PrimeButton
-            ref="filtersButton"
-            outlined
-            icon="pi pi-filter"
-            :label="resolveText('admin.accounts.filters.title', 'Filters')"
-            @click="toggleFiltersPopover" />
-        </div>
-
+    <section class="accounts-balance">
+      <div class="accounts-balance__header">
+        {{ resolveText("admin.accounts.stats.balanceSummary", "Balances") }}
+      </div>
+      <div class="accounts-balance__grid">
         <div
-          v-if="activeFilterChips.length"
-          class="accounts-filter-chips">
-          <PrimeButton
-            v-for="chip in activeFilterChips"
-            :key="chip.key"
-            size="small"
-            severity="secondary"
-            outlined
-            icon="pi pi-times"
-            icon-pos="right"
-            :label="`${chip.label}: ${chip.value}`"
-            @click="removeAppliedFilter(chip.key)" />
-
-          <PrimeButton
-            size="small"
-            text
-            :label="resolveText('admin.accounts.filters.clearAll', 'Clear all')"
-            @click="clearAllAppliedFilters" />
+          v-for="segment in balanceSegments"
+          :key="segment.id"
+          class="accounts-balance__item">
+          <span>{{ segment.label }}</span>
+          <strong>{{ segment.value }}</strong>
         </div>
-      </template>
-    </PrimeCard>
+      </div>
+    </section>
+
+    <section class="accounts-toolbar-section">
+      <div class="accounts-toolbar">
+        <label class="accounts-search">
+          <i
+            class="pi pi-search"
+            aria-hidden="true" />
+          <PrimeInputText
+            :model-value="searchDraft"
+            class="accounts-search__input"
+            :placeholder="
+              resolveText('admin.accounts.components.accounts-panel-search.placeholder', 'Search accounts...')
+            "
+            @update:model-value="handleSearchInput" />
+          <i
+            v-if="isLoadingSearch"
+            class="pi pi-spin pi-spinner accounts-search__spinner"
+            aria-hidden="true" />
+        </label>
+
+        <PrimeButton
+          rounded
+          outlined
+          icon="pi pi-refresh"
+          :loading="isLoading || isStatsLoading"
+          :aria-label="resolveText('admin.accounts.actions.refresh', 'Refresh')"
+          @click="handleClickRefresh" />
+
+        <PrimeSelect
+          :model-value="orderBy"
+          class="accounts-sort-select"
+          :options="sortByOptions"
+          option-label="text"
+          option-value="value"
+          @update:model-value="value => handleOrderBy(String(value || DEFAULT_ORDER_BY))" />
+
+        <PrimeButton
+          rounded
+          outlined
+          :icon="orderDirection === ORDER_DIRECTION_ASC ? 'pi pi-sort-amount-up-alt' : 'pi pi-sort-amount-down'"
+          :aria-label="
+            orderDirection === ORDER_DIRECTION_ASC
+              ? resolveText('admin.accounts.actions.sortAscending', 'Sort ascending')
+              : resolveText('admin.accounts.actions.sortDescending', 'Sort descending')
+          "
+          @click="toggleOrderDirection" />
+
+        <div class="accounts-view-switch">
+          <PrimeButton
+            v-for="option in viewOptions"
+            :key="option.value"
+            rounded
+            :text="viewMode !== option.value"
+            :outlined="viewMode !== option.value"
+            size="small"
+            :icon="option.icon"
+            :aria-label="option.label"
+            :title="option.label"
+            @click="handleChangeViewMode(option.value)" />
+        </div>
+
+        <PrimeButton
+          ref="filtersButton"
+          outlined
+          icon="pi pi-filter"
+          :label="resolveText('admin.accounts.filters.title', 'Filters')"
+          @click="toggleFiltersPopover" />
+      </div>
+
+      <div
+        v-if="activeFilterChips.length"
+        class="accounts-filter-chips">
+        <PrimeButton
+          v-for="chip in activeFilterChips"
+          :key="chip.key"
+          size="small"
+          severity="secondary"
+          outlined
+          icon="pi pi-times"
+          icon-pos="right"
+          :label="`${chip.label}: ${chip.value}`"
+          @click="removeAppliedFilter(chip.key)" />
+
+        <PrimeButton
+          size="small"
+          text
+          :label="resolveText('admin.accounts.filters.clearAll', 'Clear all')"
+          @click="clearAllAppliedFilters" />
+      </div>
+    </section>
 
     <PrimePopover
       ref="filtersPopover"
@@ -243,182 +248,180 @@
       </div>
     </PrimePopover>
 
-    <PrimeCard class="accounts-list-card">
-      <template #content>
-        <div
-          v-if="isInitialLoading"
-          class="accounts-skeleton-list">
-          <PrimeSkeleton
-            v-for="index in 8"
-            :key="`accounts-skeleton-${index}`"
-            height="64px"
-            border-radius="14px" />
-        </div>
+    <section class="accounts-list">
+      <div
+        v-if="isInitialLoading"
+        class="accounts-skeleton-list">
+        <PrimeSkeleton
+          v-for="index in 8"
+          :key="`accounts-skeleton-${index}`"
+          height="64px"
+          border-radius="14px" />
+      </div>
 
-        <template v-else>
-          <PrimeDataTable
-            v-if="viewMode === 'table'"
-            :value="accountsData"
-            data-key="id"
-            class="accounts-table"
-            :loading="isLoading && !isInitialLoading"
-            scrollable
-            responsive-layout="scroll"
-            row-hover
-            @row-click="event => handleOpenAccountPage(event.data)">
-            <PrimeColumn
-              field="owner_name"
-              :header="resolveText('admin.accounts.columns.owner', 'Owner')"
-              style="min-width: 260px">
-              <template #body="{ data }">
-                <div class="accounts-owner-cell">
-                  <UiImageCircle
-                    :twoChars="getTwoCharsByFullName(data.owner_name)"
-                    :src="data.owner_photo_path" />
-                  <div>
-                    <strong>{{ data.owner_name || "-" }}</strong>
-                    <span>{{ data.owner_email || "-" }}</span>
-                  </div>
+      <template v-else>
+        <PrimeDataTable
+          v-if="viewMode === 'table'"
+          :value="accountsData"
+          data-key="id"
+          class="accounts-table"
+          :loading="isLoading && !isInitialLoading"
+          scrollable
+          responsive-layout="scroll"
+          row-hover
+          @row-click="event => handleOpenAccountPage(event.data)">
+          <PrimeColumn
+            field="owner_name"
+            :header="resolveText('admin.accounts.columns.owner', 'Owner')"
+            style="min-width: 260px">
+            <template #body="{ data }">
+              <div class="accounts-owner-cell">
+                <UiImageCircle
+                  :twoChars="getTwoCharsByFullName(data.owner_name)"
+                  :src="data.owner_photo_path" />
+                <div>
+                  <strong>{{ data.owner_name || "-" }}</strong>
+                  <span>{{ data.owner_email || "-" }}</span>
                 </div>
-              </template>
-            </PrimeColumn>
+              </div>
+            </template>
+          </PrimeColumn>
 
-            <PrimeColumn
-              field="number"
-              :header="resolveText('admin.accounts.columns.number', 'Account number')"
-              style="min-width: 150px">
-              <template #body="{ data }">
-                <strong>{{ data.number || "-" }}</strong>
-              </template>
-            </PrimeColumn>
+          <PrimeColumn
+            field="number"
+            :header="resolveText('admin.accounts.columns.number', 'Account number')"
+            style="min-width: 150px">
+            <template #body="{ data }">
+              <strong>{{ data.number || "-" }}</strong>
+            </template>
+          </PrimeColumn>
 
-            <PrimeColumn
-              field="balance"
-              :header="resolveText('admin.accounts.columns.balance', 'Balance')"
-              style="min-width: 150px">
-              <template #body="{ data }">
-                <div class="accounts-balance-cell">
-                  <strong>{{ formatMoney(data.balance, data.currency) }}</strong>
-                  <PrimeButton
-                    v-if="canUpdateAccounts"
-                    rounded
-                    text
-                    size="small"
-                    icon="pi pi-refresh"
-                    :loading="refreshingAccountId === data.id"
-                    :disabled="refreshingAccountId === data.id"
-                    :aria-label="resolveText('admin.accounts.actions.refreshBalance', 'Refresh balance')"
-                    @click.stop="handleRefreshBalance(data)" />
-                </div>
-              </template>
-            </PrimeColumn>
-
-            <PrimeColumn
-              field="type_name"
-              :header="resolveText('admin.accounts.columns.type', 'Type')"
-              style="min-width: 150px">
-              <template #body="{ data }">
-                {{ data.type_name || data.type_id || "-" }}
-              </template>
-            </PrimeColumn>
-
-            <PrimeColumn
-              field="leverage_display"
-              :header="resolveText('admin.accounts.columns.leverage', 'Leverage')"
-              style="min-width: 120px">
-              <template #body="{ data }">
-                {{ data.leverage_display || data.leverage_id || "-" }}
-              </template>
-            </PrimeColumn>
-
-            <PrimeColumn
-              field="created_at"
-              :header="resolveText('admin.accounts.components.accounts-panel.columns.created_at', 'Created at')"
-              style="min-width: 180px">
-              <template #body="{ data }">
-                {{ formatDate(data.created_at) }}
-              </template>
-            </PrimeColumn>
-
-            <PrimeColumn
-              header="ID"
-              style="width: 70px">
-              <template #body="{ data }">
-                <button
-                  v-if="data.id"
-                  type="button"
-                  class="accounts-copy-cell"
-                  :aria-label="resolveText('admin.accounts.actions.copyId', 'Copy ID')"
-                  @click.stop>
-                  <UiIconCopy :text="data.id" />
-                </button>
-                <span v-else>-</span>
-              </template>
-            </PrimeColumn>
-
-            <PrimeColumn
-              v-if="showActionColumn"
-              :header="resolveText('admin.accounts.columns.actions', 'Actions')"
-              style="width: 86px">
-              <template #body="{ data }">
+          <PrimeColumn
+            field="balance"
+            :header="resolveText('admin.accounts.columns.balance', 'Balance')"
+            style="min-width: 150px">
+            <template #body="{ data }">
+              <div class="accounts-balance-cell">
+                <strong>{{ formatMoney(data.balance, data.currency) }}</strong>
                 <PrimeButton
+                  v-if="canUpdateAccounts"
                   rounded
                   text
                   size="small"
-                  icon="pi pi-ellipsis-v"
-                  :aria-label="resolveText('admin.accounts.actions.openActions', 'Open actions')"
-                  @click.stop="toggleActionMenu($event, data)" />
-              </template>
-            </PrimeColumn>
-
-            <template #empty>
-              <div class="accounts-empty">
-                <i class="pi pi-wallet" />
-                <strong>{{ resolveText("admin.accounts.empty.title", "No accounts found") }}</strong>
-                <span>{{
-                  resolveText("admin.accounts.empty.subtitle", "Change filters or search query to see accounts.")
-                }}</span>
+                  icon="pi pi-refresh"
+                  :loading="refreshingAccountId === data.id"
+                  :disabled="refreshingAccountId === data.id"
+                  :aria-label="resolveText('admin.accounts.actions.refreshBalance', 'Refresh balance')"
+                  @click.stop="handleRefreshBalance(data)" />
               </div>
             </template>
-          </PrimeDataTable>
+          </PrimeColumn>
 
-          <div
-            v-else
-            class="accounts-cards-wrap">
-            <div
-              v-if="isLoading && !isInitialLoading"
-              class="accounts-cards-overlay">
-              <i
-                class="pi pi-spin pi-spinner"
-                aria-hidden="true" />
-            </div>
+          <PrimeColumn
+            field="type_name"
+            :header="resolveText('admin.accounts.columns.type', 'Type')"
+            style="min-width: 150px">
+            <template #body="{ data }">
+              {{ data.type_name || data.type_id || "-" }}
+            </template>
+          </PrimeColumn>
 
-            <AccountsContent
-              v-if="accountsData.length"
-              :data="accountsData"
-              :viewMode="viewMode"
-              :canEdit="canUpdateAccounts"
-              :canRefresh="canUpdateAccounts"
-              :canDelete="canDeleteAccounts"
-              :refreshingAccountId="refreshingAccountId"
-              @click="handleOpenAccountPage"
-              @edit="handleOpenEditModal"
-              @refresh="handleRefreshBalance"
-              @delete="handleDeleteAccount" />
+          <PrimeColumn
+            field="leverage_display"
+            :header="resolveText('admin.accounts.columns.leverage', 'Leverage')"
+            style="min-width: 120px">
+            <template #body="{ data }">
+              {{ data.leverage_display || data.leverage_id || "-" }}
+            </template>
+          </PrimeColumn>
 
-            <div
-              v-else
-              class="accounts-empty">
+          <PrimeColumn
+            field="created_at"
+            :header="resolveText('admin.accounts.components.accounts-panel.columns.created_at', 'Created at')"
+            style="min-width: 180px">
+            <template #body="{ data }">
+              {{ formatDate(data.created_at) }}
+            </template>
+          </PrimeColumn>
+
+          <PrimeColumn
+            header="ID"
+            style="width: 70px">
+            <template #body="{ data }">
+              <button
+                v-if="data.id"
+                type="button"
+                class="accounts-copy-cell"
+                :aria-label="resolveText('admin.accounts.actions.copyId', 'Copy ID')"
+                @click.stop>
+                <UiIconCopy :text="data.id" />
+              </button>
+              <span v-else>-</span>
+            </template>
+          </PrimeColumn>
+
+          <PrimeColumn
+            v-if="showActionColumn"
+            :header="resolveText('admin.accounts.columns.actions', 'Actions')"
+            style="width: 86px">
+            <template #body="{ data }">
+              <PrimeButton
+                rounded
+                text
+                size="small"
+                icon="pi pi-ellipsis-v"
+                :aria-label="resolveText('admin.accounts.actions.openActions', 'Open actions')"
+                @click.stop="toggleActionMenu($event, data)" />
+            </template>
+          </PrimeColumn>
+
+          <template #empty>
+            <div class="accounts-empty">
               <i class="pi pi-wallet" />
               <strong>{{ resolveText("admin.accounts.empty.title", "No accounts found") }}</strong>
               <span>{{
                 resolveText("admin.accounts.empty.subtitle", "Change filters or search query to see accounts.")
               }}</span>
             </div>
+          </template>
+        </PrimeDataTable>
+
+        <div
+          v-else
+          class="accounts-cards-wrap">
+          <div
+            v-if="isLoading && !isInitialLoading"
+            class="accounts-cards-overlay">
+            <i
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true" />
           </div>
-        </template>
+
+          <AccountsContent
+            v-if="accountsData.length"
+            :data="accountsData"
+            :viewMode="viewMode"
+            :canEdit="canUpdateAccounts"
+            :canRefresh="canUpdateAccounts"
+            :canDelete="canDeleteAccounts"
+            :refreshingAccountId="refreshingAccountId"
+            @click="handleOpenAccountPage"
+            @edit="handleOpenEditModal"
+            @refresh="handleRefreshBalance"
+            @delete="handleDeleteAccount" />
+
+          <div
+            v-else
+            class="accounts-empty">
+            <i class="pi pi-wallet" />
+            <strong>{{ resolveText("admin.accounts.empty.title", "No accounts found") }}</strong>
+            <span>{{
+              resolveText("admin.accounts.empty.subtitle", "Change filters or search query to see accounts.")
+            }}</span>
+          </div>
+        </div>
       </template>
-    </PrimeCard>
+    </section>
 
     <div
       v-if="totalRows > 0"
@@ -871,21 +874,25 @@
       id: "total_accounts" as const,
       label: resolveText("admin.accounts.stats.totalAccounts", "Total accounts"),
       value: formatCount(statsData.value.total_accounts),
+      icon: "pi pi-wallet",
     },
     {
       id: "new_today" as const,
       label: resolveText("admin.accounts.stats.newToday", "New accounts today"),
       value: formatCount(statsData.value.new_accounts.today),
+      icon: "pi pi-calendar",
     },
     {
       id: "new_week" as const,
       label: resolveText("admin.accounts.stats.newWeek", "New accounts this week"),
       value: formatCount(statsData.value.new_accounts.week),
+      icon: "pi pi-calendar-plus",
     },
     {
       id: "new_month" as const,
       label: resolveText("admin.accounts.stats.newMonth", "New accounts this month"),
       value: formatCount(statsData.value.new_accounts.month),
+      icon: "pi pi-chart-line",
     },
   ]);
 
@@ -1012,15 +1019,6 @@
         key: "currency",
         label: resolveText("admin.accounts.filters.fields.currency", "Currency"),
         options: getFilterOptions("currency"),
-        searchable: true,
-      });
-    }
-
-    if (accountFilterFeatures.value.payment_type) {
-      fields.push({
-        key: "payment_type",
-        label: resolveText("admin.accounts.filters.fields.payment_type", "Payment type"),
-        options: getFilterOptions("payment_type"),
         searchable: true,
       });
     }
@@ -1736,6 +1734,10 @@
     color: var(--ui-text-main);
   }
 
+  .accounts-panel :deep(*) {
+    box-shadow: none !important;
+  }
+
   .accounts-metrics-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -1760,68 +1762,128 @@
     background: transparent;
     text-align: left;
     color: inherit;
+    cursor: pointer;
   }
 
   .accounts-metric-card {
+    --accounts-metric-accent: var(--color-info, var(--ui-primary-main));
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     height: 100%;
-    border-color: transparent;
+    border-color: color-mix(in srgb, var(--accounts-metric-accent) 18%, var(--color-stroke-ui-light));
+    border-radius: 22px;
+    background:
+      radial-gradient(
+        circle at 16% 0%,
+        color-mix(in srgb, var(--accounts-metric-accent) 10%, transparent),
+        transparent 38%
+      ),
+      linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--ui-background-card) 74%, transparent),
+        color-mix(in srgb, var(--ui-background-panel) 86%, transparent)
+      );
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
     transition:
       border-color 0.18s ease,
-      box-shadow 0.18s ease,
       transform 0.18s ease;
 
     :deep(.p-card-content) {
-      display: grid;
-      gap: 4px;
-      padding: 14px;
+      padding: 0;
     }
+  }
 
-    span {
-      color: var(--ui-text-secondary);
-      font-size: 12px;
-    }
+  .accounts-metric-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--accounts-metric-accent),
+      color-mix(in srgb, var(--accounts-metric-accent) 24%, transparent)
+    );
+  }
 
-    strong {
-      color: var(--ui-text-main);
-      font-size: clamp(22px, 2.2vw, 30px);
-      line-height: 1;
-    }
+  .accounts-metric-card__body {
+    position: relative;
+    z-index: 2;
+    min-height: 72px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .accounts-metric-card__copy {
+    min-width: 0;
+    display: grid;
+    gap: 5px;
+  }
+
+  .accounts-metric-card__copy span {
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    font-weight: 760;
+    line-height: 1.3;
+  }
+
+  .accounts-metric-card__copy strong {
+    color: var(--ui-text-main);
+    font-size: clamp(22px, 1.85vw, 30px);
+    font-weight: 880;
+    line-height: 1;
+  }
+
+  .accounts-metric-card__icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: var(--accounts-metric-accent);
+    background: color-mix(in srgb, var(--accounts-metric-accent) 13%, transparent);
+    font-size: 15px;
   }
 
   .accounts-metric-button:hover .accounts-metric-card,
   .accounts-metric-button.is-active .accounts-metric-card {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 58%, var(--color-stroke-ui-light));
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accounts-metric-accent) 58%, var(--color-stroke-ui-light));
     transform: translateY(-1px);
   }
 
-  .accounts-balance-card {
-    :deep(.p-card-content) {
-      display: grid;
-      gap: 10px;
-      padding: 14px;
-    }
+  .accounts-balance {
+    display: grid;
+    gap: 10px;
+    padding: 0;
   }
 
-  .accounts-balance-card__header {
+  .accounts-balance__header {
     color: var(--ui-text-secondary);
     font-size: 12px;
     font-weight: 700;
   }
 
-  .accounts-balance-card__grid {
+  .accounts-balance__grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 12px;
   }
 
   @media (min-width: 700px) {
-    .accounts-balance-card__grid {
+    .accounts-balance__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
-  .accounts-balance-card__item {
+  .accounts-balance__item {
     display: grid;
     gap: 3px;
 
@@ -1836,15 +1898,11 @@
     }
   }
 
-  .accounts-toolbar-card {
+  .accounts-toolbar-section {
     position: relative;
     z-index: 2;
-
-    :deep(.p-card-content) {
-      display: grid;
-      gap: 10px;
-      padding: 12px;
-    }
+    display: grid;
+    gap: 10px;
   }
 
   .accounts-toolbar {
@@ -1964,23 +2022,27 @@
     }
   }
 
-  .accounts-list-card {
+  .accounts-list {
     overflow: visible;
-
-    :deep(.p-card-content) {
-      padding: 0;
-    }
   }
 
   .accounts-skeleton-list {
     display: grid;
     gap: 10px;
-    padding: 12px;
+    padding: 0;
   }
 
   .accounts-table {
     :deep(.p-datatable-table) {
       min-width: 1120px;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    :deep(.p-datatable-table-container) {
+      border: 1px solid var(--color-stroke-ui-light);
+      border-radius: 16px;
+      background: var(--ui-background-panel);
     }
 
     :deep(.p-datatable-thead > tr > th) {
@@ -2054,7 +2116,7 @@
 
   .accounts-cards-wrap {
     position: relative;
-    padding: 12px;
+    padding: 0;
   }
 
   .accounts-cards-overlay {
@@ -2105,12 +2167,6 @@
   }
 
   @media (max-width: 640px) {
-    .accounts-toolbar-card :deep(.p-card-content),
-    .accounts-list-card :deep(.p-card-content),
-    .accounts-cards-wrap {
-      padding: 10px;
-    }
-
     .accounts-filters {
       width: calc(100vw - 28px);
     }

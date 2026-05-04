@@ -63,43 +63,41 @@
       </div>
 
       <div class="admin-dashboard__charts">
-        <div
+        <section
           v-for="item in chartSkeletonCards"
           :key="`chart-skeleton-${item}`"
-          class="dashboard-panel-card dashboard-panel-card--skeleton">
-          <div class="dashboard-chart-card">
-            <div class="dashboard-chart-card__header">
-              <div class="dashboard-chart-card__heading">
-                <PrimeSkeleton
-                  width="220px"
-                  height="22px"
-                  border-radius="8px" />
-                <PrimeSkeleton
-                  width="320px"
-                  height="14px"
-                  border-radius="999px" />
-              </div>
-              <div class="dashboard-chart-card__presets">
-                <PrimeSkeleton
-                  v-for="preset in metricRangePresets"
-                  :key="`chart-preset-skeleton-${item}-${preset.id}`"
-                  width="52px"
-                  height="34px"
-                  border-radius="999px" />
-              </div>
-            </div>
-            <div class="dashboard-chart-card__filters dashboard-chart-card__filters--skeleton">
+          class="dashboard-chart-card dashboard-chart-card--chart dashboard-chart-card--skeleton">
+          <div class="dashboard-chart-card__header">
+            <div class="dashboard-chart-card__heading">
               <PrimeSkeleton
-                v-for="filter in 6"
-                :key="`filter-skeleton-${item}-${filter}`"
-                height="64px"
-                border-radius="16px" />
+                width="220px"
+                height="22px"
+                border-radius="8px" />
+              <PrimeSkeleton
+                width="320px"
+                height="14px"
+                border-radius="999px" />
             </div>
-            <PrimeSkeleton
-              height="300px"
-              border-radius="18px" />
+            <div class="dashboard-chart-card__presets">
+              <PrimeSkeleton
+                v-for="preset in metricRangePresets"
+                :key="`chart-preset-skeleton-${item}-${preset.id}`"
+                width="52px"
+                height="34px"
+                border-radius="999px" />
+            </div>
           </div>
-        </div>
+          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--skeleton">
+            <PrimeSkeleton
+              v-for="filter in 6"
+              :key="`filter-skeleton-${item}-${filter}`"
+              height="64px"
+              border-radius="16px" />
+          </div>
+          <PrimeSkeleton
+            height="300px"
+            border-radius="18px" />
+        </section>
       </div>
 
       <div class="admin-dashboard__panels">
@@ -170,208 +168,202 @@
       </div>
 
       <div class="admin-dashboard__charts">
-        <div class="dashboard-panel-card dashboard-panel-card--chart">
-          <div class="dashboard-chart-card">
-            <div class="dashboard-chart-card__header">
-              <div class="dashboard-chart-card__heading">
-                <h2 class="dashboard-chart-card__title">
-                  {{ resolveText("admin.dashboard.charts.onlineTitle", "Online activity") }}
-                </h2>
-                <p class="dashboard-chart-card__subtitle">
-                  {{
-                    resolveText(
-                      "admin.dashboard.charts.onlineSubtitle",
-                      "Current online users, accumulated online hours, and active sessions."
-                    )
-                  }}
-                </p>
-              </div>
-
-              <div class="dashboard-chart-card__presets">
-                <PrimeButton
-                  v-for="preset in metricRangePresets"
-                  :key="`online-${preset.id}`"
-                  size="small"
-                  rounded
-                  :outlined="onlineFilters.preset !== preset.id"
-                  :text="onlineFilters.preset !== preset.id"
-                  :label="preset.label"
-                  @click="applyDashboardPreset('online', preset.id)" />
-              </div>
+        <section class="dashboard-chart-card dashboard-chart-card--chart">
+          <div class="dashboard-chart-card__header">
+            <div class="dashboard-chart-card__heading">
+              <h2 class="dashboard-chart-card__title">
+                {{ resolveText("admin.dashboard.charts.onlineTitle", "Online activity") }}
+              </h2>
+              <p class="dashboard-chart-card__subtitle">
+                {{
+                  resolveText(
+                    "admin.dashboard.charts.onlineSubtitle",
+                    "Current online users, accumulated online hours, and active sessions."
+                  )
+                }}
+              </p>
             </div>
 
-            <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.from", "From") }}
-                </span>
-                <PrimeDatePicker
-                  :model-value="toDatePickerValue(onlineFilters.date_from)"
-                  date-format="yy-mm-dd"
-                  show-icon
-                  fluid
-                  @update:model-value="value => updateDateFilter('online', 'date_from', value)" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.to", "To") }}
-                </span>
-                <PrimeDatePicker
-                  :model-value="toDatePickerValue(onlineFilters.date_to)"
-                  date-format="yy-mm-dd"
-                  show-icon
-                  fluid
-                  @update:model-value="value => updateDateFilter('online', 'date_to', value)" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.step", "Step") }}
-                </span>
-                <PrimeSelect
-                  :model-value="onlineFilters.bucket"
-                  :options="bucketSelectOptions"
-                  option-label="label"
-                  option-value="value"
-                  fluid
-                  @update:model-value="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.device", "Device") }}
-                </span>
-                <PrimeSelect
-                  :model-value="onlineFilters.device_type"
-                  :options="deviceSelectOptions"
-                  option-label="label"
-                  option-value="value"
-                  show-clear
-                  fluid
-                  :placeholder="resolveText('admin.dashboard.filters.allDevices', 'All devices')"
-                  @update:model-value="value => updateDashboardFilter('online', 'device_type', value || '')" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.browser", "Browser") }}
-                </span>
-                <PrimeSelect
-                  :model-value="onlineFilters.browser"
-                  :options="browserSelectOptions"
-                  option-label="label"
-                  option-value="value"
-                  show-clear
-                  fluid
-                  :placeholder="resolveText('admin.dashboard.filters.allBrowsers', 'All browsers')"
-                  @update:model-value="value => updateDashboardFilter('online', 'browser', value || '')" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.os", "OS") }}
-                </span>
-                <PrimeSelect
-                  :model-value="onlineFilters.os"
-                  :options="osSelectOptions"
-                  option-label="label"
-                  option-value="value"
-                  show-clear
-                  fluid
-                  :placeholder="resolveText('admin.dashboard.filters.allOs', 'All OS')"
-                  @update:model-value="value => updateDashboardFilter('online', 'os', value || '')" />
-              </label>
-            </div>
-
-            <div class="dashboard-chart-card__chart">
-              <AdminMetricChart
-                :categories="onlineLabels"
-                :category-keys="onlineCategoryKeys"
-                :series="onlineSeries"
-                :y-axes="onlineAxes"
-                :height="360"
-                enable-zoom
-                :tooltip-formatter="formatOnlineTooltip"
-                @range-selected="handleOnlineRangeSelected" />
+            <div class="dashboard-chart-card__presets">
+              <PrimeButton
+                v-for="preset in metricRangePresets"
+                :key="`online-${preset.id}`"
+                size="small"
+                rounded
+                :outlined="onlineFilters.preset !== preset.id"
+                :text="onlineFilters.preset !== preset.id"
+                :label="preset.label"
+                @click="applyDashboardPreset('online', preset.id)" />
             </div>
           </div>
-        </div>
 
-        <div class="dashboard-panel-card dashboard-panel-card--chart">
-          <div class="dashboard-chart-card">
-            <div class="dashboard-chart-card__header">
-              <div class="dashboard-chart-card__heading">
-                <h2 class="dashboard-chart-card__title">
-                  {{ resolveText("admin.dashboard.charts.registrationsTitle", "Client registrations") }}
-                </h2>
-                <p class="dashboard-chart-card__subtitle">
-                  {{
-                    resolveText("admin.dashboard.charts.registrationsSubtitle", "New clients for the selected range.")
-                  }}
-                </p>
-              </div>
+          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.from", "From") }}
+              </span>
+              <PrimeDatePicker
+                :model-value="toDatePickerValue(onlineFilters.date_from)"
+                date-format="yy-mm-dd"
+                show-icon
+                fluid
+                @update:model-value="value => updateDateFilter('online', 'date_from', value)" />
+            </label>
 
-              <div class="dashboard-chart-card__presets">
-                <PrimeButton
-                  v-for="preset in metricRangePresets"
-                  :key="`registrations-${preset.id}`"
-                  size="small"
-                  rounded
-                  :outlined="registrationsFilters.preset !== preset.id"
-                  :text="registrationsFilters.preset !== preset.id"
-                  :label="preset.label"
-                  @click="applyDashboardPreset('registrations', preset.id)" />
-              </div>
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.to", "To") }}
+              </span>
+              <PrimeDatePicker
+                :model-value="toDatePickerValue(onlineFilters.date_to)"
+                date-format="yy-mm-dd"
+                show-icon
+                fluid
+                @update:model-value="value => updateDateFilter('online', 'date_to', value)" />
+            </label>
+
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.step", "Step") }}
+              </span>
+              <PrimeSelect
+                :model-value="onlineFilters.bucket"
+                :options="bucketSelectOptions"
+                option-label="label"
+                option-value="value"
+                fluid
+                @update:model-value="value => updateDashboardFilter('online', 'bucket', value || 'day')" />
+            </label>
+
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.device", "Device") }}
+              </span>
+              <PrimeSelect
+                :model-value="onlineFilters.device_type"
+                :options="deviceSelectOptions"
+                option-label="label"
+                option-value="value"
+                show-clear
+                fluid
+                :placeholder="resolveText('admin.dashboard.filters.allDevices', 'All devices')"
+                @update:model-value="value => updateDashboardFilter('online', 'device_type', value || '')" />
+            </label>
+
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.browser", "Browser") }}
+              </span>
+              <PrimeSelect
+                :model-value="onlineFilters.browser"
+                :options="browserSelectOptions"
+                option-label="label"
+                option-value="value"
+                show-clear
+                fluid
+                :placeholder="resolveText('admin.dashboard.filters.allBrowsers', 'All browsers')"
+                @update:model-value="value => updateDashboardFilter('online', 'browser', value || '')" />
+            </label>
+
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.os", "OS") }}
+              </span>
+              <PrimeSelect
+                :model-value="onlineFilters.os"
+                :options="osSelectOptions"
+                option-label="label"
+                option-value="value"
+                show-clear
+                fluid
+                :placeholder="resolveText('admin.dashboard.filters.allOs', 'All OS')"
+                @update:model-value="value => updateDashboardFilter('online', 'os', value || '')" />
+            </label>
+          </div>
+
+          <div class="dashboard-chart-card__chart">
+            <AdminMetricChart
+              :categories="onlineLabels"
+              :category-keys="onlineCategoryKeys"
+              :series="onlineSeries"
+              :y-axes="onlineAxes"
+              :height="360"
+              enable-zoom
+              :tooltip-formatter="formatOnlineTooltip"
+              @range-selected="handleOnlineRangeSelected" />
+          </div>
+        </section>
+
+        <section class="dashboard-chart-card dashboard-chart-card--chart">
+          <div class="dashboard-chart-card__header">
+            <div class="dashboard-chart-card__heading">
+              <h2 class="dashboard-chart-card__title">
+                {{ resolveText("admin.dashboard.charts.registrationsTitle", "Client registrations") }}
+              </h2>
+              <p class="dashboard-chart-card__subtitle">
+                {{ resolveText("admin.dashboard.charts.registrationsSubtitle", "New clients for the selected range.") }}
+              </p>
             </div>
 
-            <div class="dashboard-chart-card__filters dashboard-chart-card__filters--compact">
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.from", "From") }}
-                </span>
-                <PrimeDatePicker
-                  :model-value="toDatePickerValue(registrationsFilters.date_from)"
-                  date-format="yy-mm-dd"
-                  show-icon
-                  fluid
-                  @update:model-value="value => updateDateFilter('registrations', 'date_from', value)" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.to", "To") }}
-                </span>
-                <PrimeDatePicker
-                  :model-value="toDatePickerValue(registrationsFilters.date_to)"
-                  date-format="yy-mm-dd"
-                  show-icon
-                  fluid
-                  @update:model-value="value => updateDateFilter('registrations', 'date_to', value)" />
-              </label>
-
-              <label class="admin-dashboard__filter">
-                <span class="admin-dashboard__filter-label">
-                  {{ resolveText("admin.dashboard.filters.step", "Step") }}
-                </span>
-                <PrimeSelect
-                  :model-value="registrationsFilters.bucket"
-                  :options="bucketSelectOptions"
-                  option-label="label"
-                  option-value="value"
-                  fluid
-                  @update:model-value="value => updateDashboardFilter('registrations', 'bucket', value || 'day')" />
-              </label>
-            </div>
-
-            <div class="dashboard-chart-card__chart">
-              <AdminMetricChart
-                :categories="registrationLabels"
-                :series="registrationSeries"
-                :height="320" />
+            <div class="dashboard-chart-card__presets">
+              <PrimeButton
+                v-for="preset in metricRangePresets"
+                :key="`registrations-${preset.id}`"
+                size="small"
+                rounded
+                :outlined="registrationsFilters.preset !== preset.id"
+                :text="registrationsFilters.preset !== preset.id"
+                :label="preset.label"
+                @click="applyDashboardPreset('registrations', preset.id)" />
             </div>
           </div>
-        </div>
+
+          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--compact">
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.from", "From") }}
+              </span>
+              <PrimeDatePicker
+                :model-value="toDatePickerValue(registrationsFilters.date_from)"
+                date-format="yy-mm-dd"
+                show-icon
+                fluid
+                @update:model-value="value => updateDateFilter('registrations', 'date_from', value)" />
+            </label>
+
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.to", "To") }}
+              </span>
+              <PrimeDatePicker
+                :model-value="toDatePickerValue(registrationsFilters.date_to)"
+                date-format="yy-mm-dd"
+                show-icon
+                fluid
+                @update:model-value="value => updateDateFilter('registrations', 'date_to', value)" />
+            </label>
+
+            <label class="admin-dashboard__filter">
+              <span class="admin-dashboard__filter-label">
+                {{ resolveText("admin.dashboard.filters.step", "Step") }}
+              </span>
+              <PrimeSelect
+                :model-value="registrationsFilters.bucket"
+                :options="bucketSelectOptions"
+                option-label="label"
+                option-value="value"
+                fluid
+                @update:model-value="value => updateDashboardFilter('registrations', 'bucket', value || 'day')" />
+            </label>
+          </div>
+
+          <div class="dashboard-chart-card__chart">
+            <AdminMetricChart
+              :categories="registrationLabels"
+              :series="registrationSeries"
+              :height="320" />
+          </div>
+        </section>
       </div>
 
       <div class="admin-dashboard__panels">
@@ -1277,9 +1269,7 @@
       {
         id: "transactions_queue",
         label: resolveText("admin.dashboard.cards.transactionsQueue", "Transactions queue"),
-        value: `${formatNumber(dashboard.value?.priority?.processing_transactions ?? 0)} / ${formatNumber(
-          dashboard.value?.priority?.unprocessed_transactions ?? 0
-        )}`,
+        value: formatNumber(dashboard.value?.priority?.unprocessed_transactions ?? 0),
         icon: UiIconTime,
         to: "/payments",
         kind: "success",
@@ -1440,7 +1430,7 @@
     --dashboard-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
     --dashboard-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
     --dashboard-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
-    --dashboard-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 20%, transparent);
+    --dashboard-glass-shadow: none;
 
     position: relative;
     width: 100%;
@@ -1451,6 +1441,10 @@
     padding: clamp(12px, 1.35vw, 22px);
     color: var(--ui-text-main);
     animation: dashboard-enter 0.32s ease both;
+  }
+
+  .admin-dashboard :deep(*) {
+    box-shadow: none !important;
   }
 
   .admin-dashboard--refreshing::after {
@@ -1552,8 +1546,7 @@
     transition:
       transform 0.18s ease,
       border-color 0.18s ease,
-      background-color 0.18s ease,
-      box-shadow 0.18s ease;
+      background-color 0.18s ease;
   }
 
   .dashboard-summary-card :deep(.p-card-body),
@@ -1592,7 +1585,7 @@
   .dashboard-panel-card:hover {
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 34%, var(--color-stroke-ui-light));
-    box-shadow: 0 22px 68px color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 12%, #000000 20%);
+    box-shadow: none;
   }
 
   .admin-dashboard__summary-link:hover .dashboard-summary-card::after,
@@ -1604,9 +1597,9 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 10px;
-    min-height: 96px;
-    padding: 13px;
+    gap: 8px;
+    min-height: 72px;
+    padding: 12px;
   }
 
   .dashboard-summary-card__top {
@@ -1620,7 +1613,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 5px;
   }
 
   .dashboard-summary-card__label,
@@ -1641,7 +1634,7 @@
 
   .dashboard-summary-card__value {
     color: var(--ui-text-main);
-    font-size: clamp(24px, 2.1vw, 34px);
+    font-size: clamp(22px, 1.85vw, 30px);
     font-weight: 880;
     line-height: 1;
     letter-spacing: -0.04em;
@@ -1649,20 +1642,20 @@
   }
 
   .dashboard-summary-card__icon-wrap {
-    width: 36px;
-    height: 36px;
-    flex: 0 0 36px;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 13px;
+    border-radius: 12px;
     color: var(--summary-accent, var(--ui-primary-main));
     background: color-mix(in srgb, var(--summary-accent, var(--ui-primary-main)) 13%, transparent);
   }
 
   .dashboard-summary-card__icon {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
   }
 
   .dashboard-summary-card--primary {
@@ -1708,6 +1701,12 @@
     flex-direction: column;
     gap: 12px;
     padding: 14px;
+  }
+
+  .dashboard-chart-card--chart {
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
   .dashboard-list-card {
@@ -1834,7 +1833,7 @@
   .admin-dashboard__filter :deep(.p-select.p-focus),
   .admin-dashboard__filter :deep(.p-datepicker:has(.p-inputtext:focus)) {
     border-color: color-mix(in srgb, var(--ui-primary-main) 50%, var(--color-stroke-ui-light));
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+    box-shadow: none;
   }
 
   .admin-dashboard__filter :deep(.p-select-dropdown),
@@ -1878,15 +1877,14 @@
     transition:
       transform 0.18s ease,
       border-color 0.18s ease,
-      background-color 0.18s ease,
-      box-shadow 0.18s ease;
+      background-color 0.18s ease;
   }
 
   .dashboard-row-link:hover {
     transform: translateY(-1px);
     border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
     background: color-mix(in srgb, var(--ui-primary-main) 7%, var(--ui-background-card));
-    box-shadow: 0 10px 24px color-mix(in srgb, #000000 12%, transparent);
+    box-shadow: none;
   }
 
   .dashboard-row-link__avatar {
@@ -1954,7 +1952,7 @@
     flex: 0 0 7px;
     border-radius: 999px;
     background: var(--status-color);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 15%, transparent);
+    box-shadow: none;
   }
 
   .dashboard-inline-status--info {

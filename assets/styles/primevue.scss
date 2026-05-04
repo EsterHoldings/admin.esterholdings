@@ -47,7 +47,7 @@
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--ui-background-card) 92%, transparent), transparent),
     var(--ui-background-panel);
-  box-shadow: 0 14px 32px color-mix(in srgb, var(--ui-background) 72%, transparent);
+  box-shadow: none;
 }
 
 .p-card-body,
@@ -60,8 +60,7 @@
     transform 0.18s ease,
     border-color 0.18s ease,
     background-color 0.18s ease,
-    color 0.18s ease,
-    box-shadow 0.18s ease;
+    color 0.18s ease;
 }
 
 .p-button:not(:disabled):hover {
@@ -100,7 +99,7 @@
 .p-inputtext:enabled:focus,
 .p-select.p-focus {
   border-color: var(--ui-primary-main);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  box-shadow: none;
 }
 
 .p-select-overlay,
@@ -108,7 +107,7 @@
   color: var(--ui-text-main);
   border: 1px solid var(--color-stroke-ui-light);
   background: color-mix(in srgb, var(--ui-background-card) 96%, transparent);
-  box-shadow: 0 18px 42px color-mix(in srgb, #000000 26%, transparent);
+  box-shadow: none;
   backdrop-filter: blur(10px);
 }
 
@@ -187,7 +186,7 @@
   color: var(--ui-text-main);
   border: 1px solid var(--color-stroke-ui-light);
   background: color-mix(in srgb, var(--ui-background-card) 96%, transparent);
-  box-shadow: 0 18px 42px color-mix(in srgb, #000000 26%, transparent);
+  box-shadow: none;
   backdrop-filter: blur(10px);
   z-index: 12000;
 }

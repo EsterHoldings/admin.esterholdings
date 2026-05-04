@@ -2,19 +2,6 @@
   <div class="accounts-form">
     <header class="accounts-form__header">
       <h2>{{ titleText }}</h2>
-      <p>
-        {{
-          isEditMode
-            ? resolveText(
-                "admin.accounts.form.notes.edit",
-                "Editing changes local account settings. MT4 account number and password are not recreated here."
-              )
-            : resolveText(
-                "admin.accounts.form.notes.create",
-                "Creating an account opens a real MT4 account for the selected client using the client profile data."
-              )
-        }}
-      </p>
     </header>
 
     <div class="accounts-form__body">
@@ -29,20 +16,30 @@
         <label class="accounts-form__field">
           <span>{{ resolveText("admin.accounts.form.labels.user", "Client") }}</span>
           <PrimeSelect
+            ref="clientSelect"
             class="w-full"
+            panel-class="accounts-form__client-panel"
             append-to="self"
             filter
             :model-value="form.user_id || null"
             :options="userOptions"
             option-label="text"
             option-value="value"
-            :loading="isMetaLoading"
-            :disabled="isMetaLoading || isRecordLoading || isEditMode"
+            :loading="isMetaLoading || isLoadingMoreUsers"
+            :disabled="isRecordLoading || isEditMode"
             :invalid="hasFieldError('user_id')"
             :placeholder="resolveText('admin.accounts.form.placeholders.userSearch', 'Search by email, phone or name')"
             @update:model-value="value => updateField('user_id', String(value || ''))"
             @filter="event => handleSearchUsers(String(event?.value || ''))"
-            @show="() => loadMeta({ searchUser: userSearch, selectedUserId: form.user_id })" />
+            @show="handleShowUserSelect"
+            @hide="detachUserSelectScroll">
+            <template #option="{ option }">
+              <div class="accounts-form__client-option">
+                <span>{{ option.text }}</span>
+                <small v-if="option.email">{{ option.email }}</small>
+              </div>
+            </template>
+          </PrimeSelect>
           <small v-if="firstFieldError('user_id')">{{ firstFieldError("user_id") }}</small>
         </label>
 
@@ -62,77 +59,25 @@
           <small v-if="firstFieldError('account_type_id')">{{ firstFieldError("account_type_id") }}</small>
         </label>
 
-        <label class="accounts-form__field">
-          <span>{{ resolveText("admin.accounts.form.labels.leverage", "Leverage") }}</span>
-          <PrimeSelect
-            class="w-full"
-            append-to="self"
-            :model-value="form.leverage_id || null"
-            :options="leverageOptions"
-            option-label="text"
-            option-value="value"
-            :disabled="isMetaLoading || isRecordLoading"
-            :invalid="hasFieldError('leverage_id')"
-            :placeholder="resolveText('admin.accounts.form.placeholders.leverage', 'Select leverage')"
-            @update:model-value="value => updateField('leverage_id', String(value || ''))" />
-          <small v-if="firstFieldError('leverage_id')">{{ firstFieldError("leverage_id") }}</small>
-        </label>
-
-        <label
-          v-if="features.currency"
-          class="accounts-form__field">
-          <span>{{ resolveText("admin.accounts.form.labels.currency", "Currency") }}</span>
-          <PrimeSelect
-            class="w-full"
-            append-to="self"
-            :model-value="form.currency || null"
-            :options="currencyOptions"
-            option-label="text"
-            option-value="value"
-            :disabled="isMetaLoading || isRecordLoading"
-            :invalid="hasFieldError('currency')"
-            :placeholder="resolveText('admin.accounts.form.placeholders.currency', 'Select currency')"
-            @update:model-value="value => updateField('currency', String(value || ''))" />
-          <small v-if="firstFieldError('currency')">{{ firstFieldError("currency") }}</small>
-        </label>
-
-        <label
-          v-if="features.payment_type"
-          class="accounts-form__field">
-          <span>{{ resolveText("admin.accounts.form.labels.paymentType", "Payment type") }}</span>
-          <PrimeSelect
-            class="w-full"
-            append-to="self"
-            :model-value="form.payment_type || null"
-            :options="paymentTypeOptions"
-            option-label="text"
-            option-value="value"
-            :disabled="isMetaLoading || isRecordLoading"
-            :invalid="hasFieldError('payment_type')"
-            :placeholder="resolveText('admin.accounts.form.placeholders.paymentType', 'Select payment type')"
-            @update:model-value="value => updateField('payment_type', String(value || ''))" />
-          <small v-if="firstFieldError('payment_type')">{{ firstFieldError("payment_type") }}</small>
-        </label>
+        <div class="accounts-form__static-settings">
+          <div class="accounts-form__static-field">
+            <span>{{ resolveText("admin.accounts.form.labels.leverage", "Leverage") }}</span>
+            <strong>{{ leverageDisplay }}</strong>
+          </div>
+          <div class="accounts-form__static-field">
+            <span>{{ resolveText("admin.accounts.form.labels.currency", "Currency") }}</span>
+            <strong>{{ currencyDisplay }}</strong>
+          </div>
+        </div>
       </div>
 
-      <PrimeCard class="accounts-form__note">
-        <template #content>
-          <strong>{{ resolveText("admin.accounts.form.notes.title", "MT4 note") }}</strong>
-          <span>
-            {{
-              isEditMode
-                ? resolveText(
-                    "admin.accounts.form.notes.edit",
-                    "Editing changes local account settings. MT4 account number and password are not recreated here."
-                  )
-                : resolveText(
-                    "admin.accounts.form.notes.create",
-                    "Creating an account opens a real MT4 account for the selected client using the client profile data."
-                  )
-            }}
-          </span>
-        </template>
-      </PrimeCard>
+      <PrimeMessage
+        class="accounts-form__note"
+        severity="warn"
+        :closable="false">
+        <strong>{{ resolveText("admin.accounts.form.notes.title", "MT4 note") }}</strong>
+        <span>{{ mt4NoteText }}</span>
+      </PrimeMessage>
     </div>
 
     <footer class="accounts-form__footer">
@@ -151,7 +96,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, inject, onMounted, reactive, ref } from "vue";
+  import { computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
 
@@ -167,6 +112,9 @@
     id: string;
     value: string;
     text: string;
+    email?: string;
+    phone?: string;
+    photo_path?: string;
   }
 
   interface AccountPayload {
@@ -216,8 +164,16 @@
 
   const isSubmitting = ref(false);
   const isMetaLoading = ref(false);
+  const isLoadingMoreUsers = ref(false);
   const isRecordLoading = ref(false);
   const userSearch = ref("");
+  const clientSelect = ref<any | null>(null);
+  const userPage = ref(1);
+  const userHasMore = ref(false);
+  let clientSelectScrollElement: HTMLElement | null = null;
+  let latestMetaRequestId = 0;
+
+  const USER_PAGE_SIZE = 20;
 
   const form = reactive<AccountPayload>({
     user_id: "",
@@ -245,10 +201,6 @@
     payment_type: "0",
     leverage_id: "100",
   });
-  const features = reactive({
-    currency: true,
-    payment_type: true,
-  });
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -260,7 +212,31 @@
       id: String(item?.id ?? item?.value ?? ""),
       value: String(item?.value ?? item?.id ?? ""),
       text: String(item?.text ?? item?.[textFallbackKey] ?? item?.label ?? item?.value ?? item?.id ?? "-"),
+      email: item?.email ? String(item.email) : "",
+      phone: item?.phone ? String(item.phone) : "",
+      photo_path: item?.photo_path ? String(item.photo_path) : "",
     }));
+
+  const mt4NoteText = computed(() =>
+    isEditMode.value
+      ? resolveText(
+          "admin.accounts.form.notes.edit",
+          "Editing changes local account settings. MT4 account number and password are not recreated here."
+        )
+      : resolveText(
+          "admin.accounts.form.notes.create",
+          "Creating an account opens a real MT4 account for the selected client using the client profile data."
+        )
+  );
+
+  const formatLeverage = (value: string): string => {
+    const normalized = String(value || "").trim();
+    if (!normalized) return "1:100";
+    return normalized.includes(":") ? normalized : `1:${normalized}`;
+  };
+
+  const leverageDisplay = computed(() => formatLeverage(form.leverage_id || defaults.leverage_id || "100"));
+  const currencyDisplay = computed(() => String(form.currency || defaults.currency || "USD").toUpperCase());
 
   const resetErrors = () => {
     (Object.keys(fieldErrors) as FieldKey[]).forEach(key => {
@@ -305,17 +281,39 @@
     });
   };
 
-  const loadMeta = async (params: { searchUser?: string; selectedUserId?: string } = {}) => {
-    isMetaLoading.value = true;
+  const loadMeta = async (
+    params: { searchUser?: string; selectedUserId?: string; page?: number; appendUsers?: boolean } = {}
+  ) => {
+    const requestId = ++latestMetaRequestId;
+    const targetPage = Math.max(1, Number(params.page ?? userPage.value) || 1);
+    const appendUsers = Boolean(params.appendUsers && targetPage > 1);
+
+    if (appendUsers) {
+      isLoadingMoreUsers.value = true;
+    } else {
+      isMetaLoading.value = true;
+    }
 
     try {
       const response = await appCore.adminModules.accounts.getMeta({
         search_user: params.searchUser ?? userSearch.value,
         selected_user_id: params.selectedUserId ?? form.user_id,
+        users_page: targetPage,
+        users_per_page: USER_PAGE_SIZE,
       });
-      const payload = response?.data?.data ?? {};
+      if (requestId !== latestMetaRequestId) return;
 
-      userOptions.value = normalizeOptions(Array.isArray(payload?.users) ? payload.users : [], "email");
+      const payload = response?.data?.data ?? {};
+      const nextUsers = normalizeOptions(Array.isArray(payload?.users) ? payload.users : [], "email");
+
+      userOptions.value = appendUsers
+        ? [
+            ...userOptions.value,
+            ...nextUsers.filter(nextUser => !userOptions.value.some(user => user.value === nextUser.value)),
+          ]
+        : nextUsers;
+      userPage.value = Number(payload?.users_meta?.page ?? targetPage);
+      userHasMore.value = Boolean(payload?.users_meta?.has_more ?? false);
       accountTypeOptions.value = normalizeOptions(Array.isArray(payload?.account_types) ? payload.account_types : []);
       leverageOptions.value = normalizeOptions(Array.isArray(payload?.leverages) ? payload.leverages : [], "label");
       currencyOptions.value = normalizeOptions(Array.isArray(payload?.currencies) ? payload.currencies : [], "value");
@@ -327,8 +325,6 @@
       defaults.currency = String(payload?.defaults?.currency ?? defaults.currency);
       defaults.payment_type = String(payload?.defaults?.payment_type ?? defaults.payment_type);
       defaults.leverage_id = String(payload?.defaults?.leverage_id ?? defaults.leverage_id);
-      features.currency = Boolean(payload?.features?.currency ?? true);
-      features.payment_type = Boolean(payload?.features?.payment_type ?? true);
 
       if (!paymentTypeOptions.value.length && defaults.payment_type) {
         paymentTypeOptions.value = [
@@ -342,7 +338,10 @@
 
       applyDefaults();
     } finally {
-      isMetaLoading.value = false;
+      if (requestId === latestMetaRequestId) {
+        isMetaLoading.value = false;
+        isLoadingMoreUsers.value = false;
+      }
     }
   };
 
@@ -427,11 +426,70 @@
 
   const doSearchUsers = debounce(async (value: string) => {
     userSearch.value = value;
-    await loadMeta({ searchUser: value, selectedUserId: form.user_id });
+    userPage.value = 1;
+    await loadMeta({ searchUser: value, selectedUserId: form.user_id, page: 1 });
+    await attachUserSelectScroll();
   }, 300);
 
   const handleSearchUsers = (value: string) => {
     doSearchUsers(value);
+  };
+
+  const detachUserSelectScroll = () => {
+    if (clientSelectScrollElement) {
+      clientSelectScrollElement.removeEventListener("scroll", handleUserSelectScroll);
+      clientSelectScrollElement = null;
+    }
+  };
+
+  const findUserSelectScrollElement = (): HTMLElement | null => {
+    const root = clientSelect.value?.$el as HTMLElement | undefined;
+    if (!root) return null;
+
+    return (
+      root.querySelector<HTMLElement>(".p-select-list-container") ||
+      root.querySelector<HTMLElement>(".p-virtualscroller") ||
+      root.querySelector<HTMLElement>(".p-select-list")
+    );
+  };
+
+  const attachUserSelectScroll = async () => {
+    await nextTick();
+    detachUserSelectScroll();
+    const scrollElement = findUserSelectScrollElement();
+    if (!scrollElement) return;
+
+    clientSelectScrollElement = scrollElement;
+    clientSelectScrollElement.addEventListener("scroll", handleUserSelectScroll, { passive: true });
+  };
+
+  const loadMoreUsers = async () => {
+    if (!userHasMore.value || isMetaLoading.value || isLoadingMoreUsers.value || isEditMode.value) return;
+
+    const nextPage = userPage.value + 1;
+    await loadMeta({
+      searchUser: userSearch.value,
+      selectedUserId: form.user_id,
+      page: nextPage,
+      appendUsers: true,
+    });
+    await attachUserSelectScroll();
+  };
+
+  const handleUserSelectScroll = () => {
+    const element = clientSelectScrollElement;
+    if (!element) return;
+
+    const distanceToBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+    if (distanceToBottom <= 48) {
+      void loadMoreUsers();
+    }
+  };
+
+  const handleShowUserSelect = async () => {
+    userPage.value = 1;
+    await loadMeta({ searchUser: userSearch.value, selectedUserId: form.user_id, page: 1 });
+    await attachUserSelectScroll();
   };
 
   onMounted(async () => {
@@ -443,7 +501,11 @@
       await loadAccount();
     }
 
-    await loadMeta({ selectedUserId: form.user_id });
+    await loadMeta({ selectedUserId: form.user_id, page: 1 });
+  });
+
+  onBeforeUnmount(() => {
+    detachUserSelectScroll();
   });
 </script>
 
@@ -455,21 +517,18 @@
     color: var(--ui-text-main);
   }
 
+  .accounts-form :deep(*) {
+    box-shadow: none !important;
+  }
+
   .accounts-form__header {
-    padding: 8px 48px 18px 24px;
+    padding: 8px 48px 16px 24px;
     border-bottom: 1px solid var(--color-stroke-ui-light);
 
     h2 {
       font-size: 1.25rem;
       font-weight: 800;
       line-height: 1.2;
-    }
-
-    p {
-      margin-top: 6px;
-      color: var(--ui-text-secondary);
-      font-size: 0.875rem;
-      line-height: 1.45;
     }
   }
 
@@ -500,16 +559,79 @@
       color: var(--color-negative);
       font-size: 0.75rem;
     }
+
+    :deep(.p-select) {
+      min-height: 40px;
+      height: 40px;
+      align-items: center;
+    }
+
+    :deep(.p-select-label) {
+      display: flex;
+      align-items: center;
+      min-height: 38px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
   }
 
-  .accounts-form__note {
-    :deep(.p-card-content) {
-      display: grid;
-      gap: 6px;
-      padding: 14px;
+  .accounts-form__client-option {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+
+    span,
+    small {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      color: var(--ui-text-main);
+      font-weight: 700;
+    }
+
+    small {
+      color: var(--ui-text-secondary);
+      font-size: 0.75rem;
+    }
+  }
+
+  .accounts-form__static-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .accounts-form__static-field {
+    min-height: 40px;
+    display: grid;
+    gap: 3px;
+    padding: 8px 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ui-background-card) 86%, transparent);
+
+    span {
+      color: var(--ui-text-secondary);
+      font-size: 0.75rem;
+      line-height: 1.2;
     }
 
     strong {
+      color: var(--ui-text-main);
+      font-size: 0.875rem;
+      line-height: 1.2;
+    }
+  }
+
+  .accounts-form__note {
+    align-items: flex-start;
+
+    strong {
+      display: block;
+      margin-bottom: 3px;
       font-size: 0.875rem;
     }
 
@@ -523,5 +645,11 @@
   .accounts-form__footer {
     padding: 18px 24px 24px;
     border-top: 1px solid var(--color-stroke-ui-light);
+  }
+
+  @media (max-width: 520px) {
+    .accounts-form__static-settings {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
