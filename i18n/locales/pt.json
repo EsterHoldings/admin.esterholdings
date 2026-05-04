@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "Visão geral de contas",
-            "items": [
-              "Padrão",
-              "Pro",
-              "Islâmica",
-              "Demo"
-            ]
+            "items": ["Padrão", "Pro", "Islâmica", "Demo"]
           },
           {
             "section": "Instrumentos de mercado",
-            "items": [
-              "Forex",
-              "Metais",
-              "CFDs de Cripto",
-              "Índices",
-              "Ações",
-              "Energia",
-              "ETFs"
-            ]
+            "items": ["Forex", "Metais", "CFDs de Cripto", "Índices", "Ações", "Energia", "ETFs"]
           },
           {
             "section": "Plataforma",
-            "items": [
-              "MT4 Desktop",
-              "MT 4 Mobile"
-            ]
+            "items": ["MT4 Desktop", "MT 4 Mobile"]
           },
           {
             "section": "Condições de negociação",
-            "items": [
-              "Recarga de conta",
-              "Retirada de fundos"
-            ]
+            "items": ["Recarga de conta", "Retirada de fundos"]
           },
           {
             "section": "HUB do Trader",
-            "items": [
-              "Blog do trader",
-              "Calendário econômico",
-              "Notícias do mercado"
-            ]
+            "items": ["Blog do trader", "Calendário econômico", "Notícias do mercado"]
           },
           {
             "section": "Negociação TANDEM",
-            "items": [
-              "Para trader",
-              "Para investidor"
-            ]
+            "items": ["Para trader", "Para investidor"]
           }
         ],
         "Partnership": [
           {
             "section": "Parceria",
-            "items": [
-              "Registrar IB/ Parceria",
-              "Como os IB geram renda"
-            ]
+            "items": ["Registrar IB/ Parceria", "Como os IB geram renda"]
           }
         ],
         "Company": [
           {
             "section": "Empresa",
-            "items": [
-              "Sobre a empresa",
-              "Documentos",
-              "Notícias da empresa",
-              "Contatos",
-              "Carreira"
-            ]
+            "items": ["Sobre a empresa", "Documentos", "Notícias da empresa", "Contatos", "Carreira"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "Demo",
           "subtitle": "conta",
           "description": "Negociação sem risco com fundos virtuais, perfeito para iniciantes explorarem os mercados.",
-          "features": [
-            "Alavancagem até 1:100",
-            "Spreads a partir de 0,0 pips",
-            "Nenhum depósito necessário"
-          ],
+          "features": ["Alavancagem até 1:100", "Spreads a partir de 0,0 pips", "Nenhum depósito necessário"],
           "buttonText": "Experimente Demo Agora",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "Padrão",
           "subtitle": "conta",
           "description": "Acesso fácil aos mercados à vista com taxas baixas — ideal para iniciantes e traders ativos.",
-          "features": [
-            "Alavancagem até 1:100",
-            "Spreads a partir de 1,2 pips",
-            "Primeiro depósito de $50"
-          ],
+          "features": ["Alavancagem até 1:100", "Spreads a partir de 1,2 pips", "Primeiro depósito de $50"],
           "buttonText": "Abrir Conta Padrão",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "Pro",
           "subtitle": "conta",
           "description": "Experimente spreads apertados, maior alavancagem e controle total sobre cada negociação.",
-          "features": [
-            "Alavancagem até 1:100",
-            "Spreads a partir de 0,0 pips",
-            "Primeiro depósito de $1000"
-          ],
+          "features": ["Alavancagem até 1:100", "Spreads a partir de 0,0 pips", "Primeiro depósito de $1000"],
           "buttonText": "Negocie Como um Pro",
           "isRecommended": false
         },
@@ -486,10 +439,7 @@
         "career": {
           "title": "Carreira",
           "subtitle": "No momento, a empresa está procurando os seguintes especialistas:",
-          "positions": [
-            "GERENTE DE VENDAS",
-            "CHEFE DO DEPARTAMENTO DE ANÁLISE"
-          ],
+          "positions": ["GERENTE DE VENDAS", "CHEFE DO DEPARTAMENTO DE ANÁLISE"],
           "cta": "SE VOCÊ ESTÁ PRONTO PARA CRESCIMENTO DINÂMICO, VOCÊ É AMBICIOSO E TALENTOSO, ENVIE SEU CURRÍCULO.",
           "button": "ENVIAR CV"
         },
@@ -686,30 +636,15 @@
       "description": "O objetivo principal da Ester é criar as melhores e mais transparentes condições para traders de varejo e corporativos.",
       "trading": {
         "title": "Negociação",
-        "items": [
-          "Visão geral de contas",
-          "Mercados",
-          "Plataforma",
-          "Termos de negociação",
-          "Negociação tandem"
-        ]
+        "items": ["Visão geral de contas", "Mercados", "Plataforma", "Termos de negociação", "Negociação tandem"]
       },
       "partnership": {
         "title": "Parceria",
-        "items": [
-          "Registrar IB/ Parceria",
-          "Como os IB geram renda"
-        ]
+        "items": ["Registrar IB/ Parceria", "Como os IB geram renda"]
       },
       "company": {
         "title": "Empresa",
-        "items": [
-          "Sobre a empresa",
-          "Documentos",
-          "Notícias da empresa",
-          "Contatos",
-          "Carreira"
-        ]
+        "items": ["Sobre a empresa", "Documentos", "Notícias da empresa", "Contatos", "Carreira"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1278,7 +1213,7 @@
             "name": "Nome",
             "email": "Email",
             "phone": "Telefone",
-            "created_at": "Criado em",
+            "created_at": "Created at",
             "options": "Ações"
           }
         },
@@ -1322,12 +1257,138 @@
           "submit": "Atualizar e Salvar"
         },
         "accounts-panel-search": {
-          "placeholder": "Pesquisar clientes..."
+          "placeholder": "Pesquisar contas..."
         }
       },
       "index": {
         "title": "Contas",
         "subtitle": "Lista de contas"
+      },
+      "actions": {
+        "create": "Nova conta",
+        "edit": "Editar",
+        "refresh": "Atualizar",
+        "refreshBalance": "Atualizar saldo",
+        "archive": "Arquivar",
+        "openActions": "Abrir ações",
+        "copyId": "Copiar ID",
+        "sortAscending": "Ordenar crescente",
+        "sortDescending": "Ordenar decrescente"
+      },
+      "columns": {
+        "owner": "Titular",
+        "number": "Número da conta",
+        "type": "Tipo",
+        "balance": "Saldo",
+        "leverage": "Alavancagem",
+        "actions": "Ações"
+      },
+      "stats": {
+        "totalAccounts": "Total de contas",
+        "newToday": "Novas contas hoje",
+        "newWeek": "Novas contas esta semana",
+        "newMonth": "Novas contas este mês",
+        "balanceSummary": "Saldos",
+        "balanceToday": "Hoje",
+        "balanceWeek": "Semana",
+        "balanceMonth": "Mês",
+        "balanceYear": "Ano"
+      },
+      "view": {
+        "table": "Tabela",
+        "cards": "Cartões",
+        "full": "Cartões em largura total"
+      },
+      "filters": {
+        "title": "Filtros",
+        "close": "Fechar filtros",
+        "clearAll": "Limpar tudo",
+        "reset": "Redefinir",
+        "apply": "Aplicar",
+        "sections": {
+          "selects": "Filtros de seleção",
+          "text": "Campos de texto",
+          "ranges": "Intervalos",
+          "dates": "Intervalos de datas"
+        },
+        "fields": {
+          "user_id": "ID do usuário",
+          "owner_name": "Nome do titular",
+          "owner_email": "Email do titular",
+          "owner_phone": "Telefone do titular",
+          "currency": "Moeda",
+          "payment_type": "Tipo de pagamento",
+          "type_id": "ID do tipo",
+          "type_group": "Grupo do tipo",
+          "leverage_id": "ID da alavancagem",
+          "is_favorite": "Favorito",
+          "balance_from": "Saldo de",
+          "balance_to": "Saldo até",
+          "created_at_from": "Criado de",
+          "created_at_to": "Criado até",
+          "updated_at_from": "Atualizado de",
+          "updated_at_to": "Atualizado até"
+        },
+        "values": {
+          "yes": "Sim",
+          "no": "Não"
+        }
+      },
+      "empty": {
+        "title": "Nenhuma conta encontrada",
+        "subtitle": "Altere filtros ou pesquisa para ver contas."
+      },
+      "pagination": {
+        "empty": "0 contas",
+        "report": "{first} a {last} / Total: {total}"
+      },
+      "messages": {
+        "loadError": "Falha ao carregar contas.",
+        "refreshSuccess": "Saldo da conta atualizado.",
+        "refreshError": "Falha ao atualizar o saldo da conta.",
+        "archiveConfirm": "Arquivar esta conta?",
+        "archiveSuccess": "Conta arquivada.",
+        "archiveError": "Falha ao arquivar a conta."
+      },
+      "form": {
+        "titles": {
+          "create": "Criar conta",
+          "edit": "Editar conta"
+        },
+        "labels": {
+          "user": "Cliente",
+          "accountType": "Tipo de conta",
+          "leverage": "Alavancagem",
+          "currency": "Moeda",
+          "paymentType": "Tipo de pagamento"
+        },
+        "placeholders": {
+          "userSearch": "Pesquisar por email, telefone ou nome",
+          "accountType": "Selecionar tipo de conta",
+          "leverage": "Selecionar alavancagem",
+          "currency": "Selecionar moeda",
+          "paymentType": "Selecionar tipo de pagamento"
+        },
+        "notes": {
+          "title": "Nota MT4",
+          "create": "Ao criar uma conta, uma conta MT4 real é aberta para o cliente selecionado usando os dados do perfil dele.",
+          "edit": "A edição altera as configurações locais da conta. O número da conta MT4 e a senha não são recriados aqui."
+        },
+        "actions": {
+          "create": "Criar conta",
+          "save": "Salvar alterações"
+        },
+        "errors": {
+          "userRequired": "Selecione um cliente.",
+          "accountTypeRequired": "Selecione um tipo de conta."
+        },
+        "messages": {
+          "noPermission": "Você não tem permissão para gerenciar contas.",
+          "createSuccess": "Conta criada.",
+          "createError": "Falha ao criar a conta.",
+          "updateSuccess": "Conta atualizada.",
+          "updateError": "Falha ao atualizar a conta."
+        }
       }
     },
     "clients": {

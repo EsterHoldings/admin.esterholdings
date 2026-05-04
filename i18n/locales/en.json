@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "Account overview",
-            "items": [
-              "Standard",
-              "Pro",
-              "Islamic",
-              "Demo"
-            ]
+            "items": ["Standard", "Pro", "Islamic", "Demo"]
           },
           {
             "section": "Market Instruments",
-            "items": [
-              "Forex",
-              "Metals",
-              "Crypto CFDs",
-              "Indices",
-              "Shares",
-              "Energy",
-              "ETFs"
-            ]
+            "items": ["Forex", "Metals", "Crypto CFDs", "Indices", "Shares", "Energy", "ETFs"]
           },
           {
             "section": "Platform",
-            "items": [
-              "MT4 Desktop",
-              "MT 4 Mobile"
-            ]
+            "items": ["MT4 Desktop", "MT 4 Mobile"]
           },
           {
             "section": "Trading conditions",
-            "items": [
-              "Account replenishment",
-              "Withdrawal of funds"
-            ]
+            "items": ["Account replenishment", "Withdrawal of funds"]
           },
           {
             "section": "Trader's HUB",
-            "items": [
-              "Trader's blog",
-              "Economic calendar",
-              "Market news"
-            ]
+            "items": ["Trader's blog", "Economic calendar", "Market news"]
           },
           {
             "section": "TANDEM trading",
-            "items": [
-              "For trader",
-              "For investor"
-            ]
+            "items": ["For trader", "For investor"]
           }
         ],
         "Partnership": [
           {
             "section": "Partnership",
-            "items": [
-              "Register IB/ Partnership",
-              "How IB generate income"
-            ]
+            "items": ["Register IB/ Partnership", "How IB generate income"]
           }
         ],
         "Company": [
           {
             "section": "Company",
-            "items": [
-              "About the company",
-              "Documents",
-              "Company news",
-              "Contacts",
-              "Career"
-            ]
+            "items": ["About the company", "Documents", "Company news", "Contacts", "Career"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "Demo",
           "subtitle": "account",
           "description": "Risk-free trading with virtual funds, perfect for beginners to explore markets.",
-          "features": [
-            "Leverage up to 1:100",
-            "Spreads from 0.0 pips",
-            "No deposit required"
-          ],
+          "features": ["Leverage up to 1:100", "Spreads from 0.0 pips", "No deposit required"],
           "buttonText": "Try Demo Now",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "Standard",
           "subtitle": "account",
           "description": "Easy access to spot markets with low fees and — ideal for beginners and active traders.",
-          "features": [
-            "Leverage up to 1:100",
-            "Spreads from 1.2 pips",
-            "First deposit of $50"
-          ],
+          "features": ["Leverage up to 1:100", "Spreads from 1.2 pips", "First deposit of $50"],
           "buttonText": "Open Standard Account",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "Pro",
           "subtitle": "account",
           "description": "Experience tight spreads, higher leverage, and full control over every trade.",
-          "features": [
-            "Leverage up to 1:100",
-            "Spreads from 0.0 pips",
-            "First deposit of $1000"
-          ],
+          "features": ["Leverage up to 1:100", "Spreads from 0.0 pips", "First deposit of $1000"],
           "buttonText": "Trade Like a Pro",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "Tandem",
           "subtitle": "account",
           "description": "Pair with a partner, mentor, or co-trader and grow together with synchronized strategies.",
-          "features": [
-            "Leverage up to 1:100",
-            "Shared account access",
-            "Real-time trade mirroring"
-          ],
+          "features": ["Leverage up to 1:100", "Shared account access", "Real-time trade mirroring"],
           "buttonText": "Trade Together",
           "isRecommended": false
         },
@@ -291,11 +240,7 @@
           "title": "Islamic",
           "subtitle": "account",
           "description": "Swap-free. Shariah-compliant. Trade without interest, with full platform access.",
-          "features": [
-            "Leverage up to 1:100",
-            "No swap / interest fees",
-            "Access to all trading instruments"
-          ],
+          "features": ["Leverage up to 1:100", "No swap / interest fees", "Access to all trading instruments"],
           "buttonText": "Open Islamic Account",
           "isRecommended": false
         }
@@ -486,10 +431,7 @@
         "career": {
           "title": "Career",
           "subtitle": "At the present moment the company is seeking the following specialists:",
-          "positions": [
-            "SALES MANAGER",
-            "HEADMASTER OF THE DEPARTMENT OF ANALYTICS"
-          ],
+          "positions": ["SALES MANAGER", "HEADMASTER OF THE DEPARTMENT OF ANALYTICS"],
           "cta": "IF YOU ARE READY TO DYNAMIC GROWTH, YOU ARE AMBITIOUS AND TALENTLY, SEND YOUR SUMMARY.",
           "button": "SEND CV"
         },
@@ -686,30 +628,15 @@
       "description": "The main goal of Ester is to create the best and most transparent conditions for retail and corporate traders.",
       "trading": {
         "title": "Trading",
-        "items": [
-          "Account overview",
-          "Markets",
-          "Platform",
-          "Terms of trade",
-          "Tandem trading"
-        ]
+        "items": ["Account overview", "Markets", "Platform", "Terms of trade", "Tandem trading"]
       },
       "partnership": {
         "title": "Partnership",
-        "items": [
-          "Register IB/ Partnership",
-          "How IB generate income"
-        ]
+        "items": ["Register IB/ Partnership", "How IB generate income"]
       },
       "company": {
         "title": "Company",
-        "items": [
-          "About the company",
-          "Documents",
-          "Company news",
-          "Contacts",
-          "Career"
-        ]
+        "items": ["About the company", "Documents", "Company news", "Contacts", "Career"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1550,7 +1477,7 @@
             "name": "Name",
             "email": "Email",
             "phone": "Phone",
-            "created_at": "Created At",
+            "created_at": "Created at",
             "options": "Actions"
           }
         },
@@ -1594,12 +1521,138 @@
           "submit": "Update & Save"
         },
         "accounts-panel-search": {
-          "placeholder": "Search clients..."
+          "placeholder": "Search accounts..."
         }
       },
       "index": {
         "title": "Accounts",
         "subtitle": "List of accounts"
+      },
+      "actions": {
+        "create": "New account",
+        "edit": "Edit",
+        "refresh": "Refresh",
+        "refreshBalance": "Refresh balance",
+        "archive": "Archive",
+        "openActions": "Open actions",
+        "copyId": "Copy ID",
+        "sortAscending": "Sort ascending",
+        "sortDescending": "Sort descending"
+      },
+      "columns": {
+        "owner": "Owner",
+        "number": "Account number",
+        "type": "Type",
+        "balance": "Balance",
+        "leverage": "Leverage",
+        "actions": "Actions"
+      },
+      "stats": {
+        "totalAccounts": "Total accounts",
+        "newToday": "New accounts today",
+        "newWeek": "New accounts this week",
+        "newMonth": "New accounts this month",
+        "balanceSummary": "Balances",
+        "balanceToday": "Today",
+        "balanceWeek": "Week",
+        "balanceMonth": "Month",
+        "balanceYear": "Year"
+      },
+      "view": {
+        "table": "Table",
+        "cards": "Cards",
+        "full": "Full width cards"
+      },
+      "filters": {
+        "title": "Filters",
+        "close": "Close filters",
+        "clearAll": "Clear all",
+        "reset": "Reset",
+        "apply": "Apply",
+        "sections": {
+          "selects": "Select filters",
+          "text": "Text fields",
+          "ranges": "Ranges",
+          "dates": "Date ranges"
+        },
+        "fields": {
+          "user_id": "User ID",
+          "owner_name": "Owner name",
+          "owner_email": "Owner email",
+          "owner_phone": "Owner phone",
+          "currency": "Currency",
+          "payment_type": "Payment type",
+          "type_id": "Type ID",
+          "type_group": "Type group",
+          "leverage_id": "Leverage ID",
+          "is_favorite": "Favorite",
+          "balance_from": "Balance from",
+          "balance_to": "Balance to",
+          "created_at_from": "Created from",
+          "created_at_to": "Created to",
+          "updated_at_from": "Updated from",
+          "updated_at_to": "Updated to"
+        },
+        "values": {
+          "yes": "Yes",
+          "no": "No"
+        }
+      },
+      "empty": {
+        "title": "No accounts found",
+        "subtitle": "Change filters or search query to see accounts."
+      },
+      "pagination": {
+        "empty": "0 accounts",
+        "report": "{first} to {last} / Total: {total}"
+      },
+      "messages": {
+        "loadError": "Failed to load accounts.",
+        "refreshSuccess": "Account balance updated.",
+        "refreshError": "Failed to refresh account balance.",
+        "archiveConfirm": "Archive this account?",
+        "archiveSuccess": "Account archived.",
+        "archiveError": "Failed to archive account."
+      },
+      "form": {
+        "titles": {
+          "create": "Create account",
+          "edit": "Edit account"
+        },
+        "labels": {
+          "user": "Client",
+          "accountType": "Account type",
+          "leverage": "Leverage",
+          "currency": "Currency",
+          "paymentType": "Payment type"
+        },
+        "placeholders": {
+          "userSearch": "Search by email, phone or name",
+          "accountType": "Select account type",
+          "leverage": "Select leverage",
+          "currency": "Select currency",
+          "paymentType": "Select payment type"
+        },
+        "notes": {
+          "title": "MT4 note",
+          "create": "Creating an account opens a real MT4 account for the selected client using the client profile data.",
+          "edit": "Editing changes local account settings. MT4 account number and password are not recreated here."
+        },
+        "actions": {
+          "create": "Create account",
+          "save": "Save changes"
+        },
+        "errors": {
+          "userRequired": "Select a client.",
+          "accountTypeRequired": "Select an account type."
+        },
+        "messages": {
+          "noPermission": "You do not have permission to manage accounts.",
+          "createSuccess": "Account created.",
+          "createError": "Failed to create account.",
+          "updateSuccess": "Account updated.",
+          "updateError": "Failed to update account."
+        }
       }
     },
     "clients": {

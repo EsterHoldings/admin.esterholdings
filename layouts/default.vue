@@ -117,6 +117,7 @@
 
     return (
       routeKey === "dashboard" ||
+      routeKey === "accounts" ||
       routeKey === "verifications" ||
       routeKey.endsWith("/verifications") ||
       /^clients\/[^/]+$/.test(routeKey)

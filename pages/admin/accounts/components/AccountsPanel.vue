@@ -1,151 +1,400 @@
 <template>
-  <div class="flex w-full flex-col gap-3 text-[var(--ui-text-main)]">
-    <div class="accounts-stats-grid">
-      <div
-        v-for="card in metricCards"
+  <div class="accounts-panel">
+    <div class="accounts-metrics-grid">
+      <button
+        v-for="card in metricFilterCards"
         :key="card.id"
-        class="accounts-stat-card"
-        :class="card.kind"
-      >
-        <template v-if="card.kind === 'is-balance-summary'">
-          <div class="accounts-stat-card__label">{{ card.label }}</div>
-          <div class="accounts-stat-card__balance-grid">
-            <div
-              v-for="segment in card.segments"
-              :key="segment.id"
-              class="accounts-stat-card__balance-item"
-            >
-              <div class="accounts-stat-card__balance-label">{{ segment.label }}</div>
-              <div
-                class="accounts-stat-card__balance-value"
-                :class="`size-${segment.size}`"
-              >
-                {{ segment.value }}
-              </div>
-            </div>
-          </div>
-        </template>
-        <template v-else>
-          <div class="accounts-stat-card__label">{{ card.label }}</div>
-          <div class="accounts-stat-card__value">{{ card.value }}</div>
-        </template>
-      </div>
+        type="button"
+        class="accounts-metric-button"
+        :class="{ 'is-active': activeMetricFilter === card.id }"
+        @click="applyMetricFilter(card.id)">
+        <PrimeCard class="accounts-metric-card">
+          <template #content>
+            <span>{{ card.label }}</span>
+            <strong>{{ card.value }}</strong>
+          </template>
+        </PrimeCard>
+      </button>
     </div>
 
-    <PageStructureContent :plain="viewMode !== 'table'">
-      <template #top>
-        <div class="flex w-full flex-col gap-2">
-          <div class="flex w-full flex-col gap-2 xl:flex-row xl:items-center">
-            <div class="flex w-full flex-1 min-w-[260px] items-center gap-2">
-              <UiInput
-                class="w-full"
-                :placeholder="resolveText('admin.accounts.components.accounts-panel-search.placeholder', 'Search accounts...')"
-                :isLoading="isLoadingSearch"
-                @input="handleInputSearch"
-                :value="searchFilter"
-              >
-                <template #icon-left>
-                  <UiIconSearch />
-                </template>
-              </UiInput>
-
-              <UiButtonDefault
-                state="info--small"
-                class="!w-[44px]"
-                @click="handleClickRefresh"
-              >
-                <UiIconUpdate :spinning="isLoading || isStatsLoading" />
-              </UiButtonDefault>
-            </div>
-
-            <div class="flex w-full flex-1 items-center gap-2 xl:w-auto xl:flex-none xl:justify-end">
-              <UiSelect
-                class="min-w-[160px] sm:w-[200px]"
-                :value="orderBy"
-                :data="sortByOptions"
-                :withoutNoSelect="true"
-                @change="handleOrderBy"
-              />
-
-              <UiButtonDefault
-                state="info--small"
-                class="!w-[44px]"
-                @click="toggleOrderDirection"
-              >
-                <UiIconSortBy
-                  class="!h-4 !w-4"
-                  :orderDirectionEnabled="true"
-                  :orderDirection="orderDirection"
-                />
-              </UiButtonDefault>
-
-              <ViewModeToggle
-                class="w-full sm:w-auto"
-                bordered
-                :modelValue="viewMode"
-                :options="viewOptions"
-                @update:modelValue="handleChangeViewMode"
-              />
-
-              <div
-                ref="filtersTriggerRef"
-                class="relative"
-              >
-                <UiButtonDefault
-                  state="info--small"
-                  class="min-w-[120px] shrink-0"
-                  @click="toggleFiltersPopover"
-                >
-                  <span class="inline-flex items-center gap-2">
-                    <UiIconFilters class="!h-4 !w-4" />
-                    <span>{{ resolveText("admin.accounts.filters.title", "Filters") }}</span>
-                  </span>
-                </UiButtonDefault>
-              </div>
-
-            </div>
-          </div>
-
+    <PrimeCard class="accounts-balance-card">
+      <template #content>
+        <div class="accounts-balance-card__header">
+          {{ resolveText("admin.accounts.stats.balanceSummary", "Balances") }}
+        </div>
+        <div class="accounts-balance-card__grid">
           <div
-            v-if="activeFilterChips.length"
-            class="accounts-filter-chips"
-          >
-            <button
-              v-for="chip in activeFilterChips"
-              :key="chip.key"
-              type="button"
-              class="accounts-filter-chip"
-              @click="removeAppliedFilter(chip.key)"
-            >
-              <span>{{ chip.label }}: {{ chip.value }}</span>
-              <span class="accounts-filter-chip__remove">×</span>
-            </button>
-
-            <button
-              type="button"
-              class="accounts-filter-chip accounts-filter-chip--clear"
-              @click="clearAllAppliedFilters"
-            >
-              {{ resolveText("admin.accounts.filters.clearAll", "Clear all") }}
-            </button>
+            v-for="segment in balanceSegments"
+            :key="segment.id"
+            class="accounts-balance-card__item">
+            <span>{{ segment.label }}</span>
+            <strong>{{ segment.value }}</strong>
           </div>
         </div>
       </template>
+    </PrimeCard>
 
+    <PrimeCard class="accounts-toolbar-card">
       <template #content>
-        <div>
+        <div class="accounts-toolbar">
+          <label class="accounts-search">
+            <i
+              class="pi pi-search"
+              aria-hidden="true" />
+            <PrimeInputText
+              :model-value="searchDraft"
+              class="accounts-search__input"
+              :placeholder="
+                resolveText('admin.accounts.components.accounts-panel-search.placeholder', 'Search accounts...')
+              "
+              @update:model-value="handleSearchInput" />
+            <i
+              v-if="isLoadingSearch"
+              class="pi pi-spin pi-spinner accounts-search__spinner"
+              aria-hidden="true" />
+          </label>
+
+          <PrimeButton
+            rounded
+            outlined
+            icon="pi pi-refresh"
+            :loading="isLoading || isStatsLoading"
+            :aria-label="resolveText('admin.accounts.actions.refresh', 'Refresh')"
+            @click="handleClickRefresh" />
+
+          <PrimeSelect
+            :model-value="orderBy"
+            class="accounts-sort-select"
+            :options="sortByOptions"
+            option-label="text"
+            option-value="value"
+            @update:model-value="value => handleOrderBy(String(value || DEFAULT_ORDER_BY))" />
+
+          <PrimeButton
+            rounded
+            outlined
+            :icon="orderDirection === ORDER_DIRECTION_ASC ? 'pi pi-sort-amount-up-alt' : 'pi pi-sort-amount-down'"
+            :aria-label="
+              orderDirection === ORDER_DIRECTION_ASC
+                ? resolveText('admin.accounts.actions.sortAscending', 'Sort ascending')
+                : resolveText('admin.accounts.actions.sortDescending', 'Sort descending')
+            "
+            @click="toggleOrderDirection" />
+
+          <div class="accounts-view-switch">
+            <PrimeButton
+              v-for="option in viewOptions"
+              :key="option.value"
+              rounded
+              :text="viewMode !== option.value"
+              :outlined="viewMode !== option.value"
+              size="small"
+              :icon="option.icon"
+              :aria-label="option.label"
+              :title="option.label"
+              @click="handleChangeViewMode(option.value)" />
+          </div>
+
+          <PrimeButton
+            ref="filtersButton"
+            outlined
+            icon="pi pi-filter"
+            :label="resolveText('admin.accounts.filters.title', 'Filters')"
+            @click="toggleFiltersPopover" />
+        </div>
+
+        <div
+          v-if="activeFilterChips.length"
+          class="accounts-filter-chips">
+          <PrimeButton
+            v-for="chip in activeFilterChips"
+            :key="chip.key"
+            size="small"
+            severity="secondary"
+            outlined
+            icon="pi pi-times"
+            icon-pos="right"
+            :label="`${chip.label}: ${chip.value}`"
+            @click="removeAppliedFilter(chip.key)" />
+
+          <PrimeButton
+            size="small"
+            text
+            :label="resolveText('admin.accounts.filters.clearAll', 'Clear all')"
+            @click="clearAllAppliedFilters" />
+        </div>
+      </template>
+    </PrimeCard>
+
+    <PrimePopover
+      ref="filtersPopover"
+      class="accounts-filters-popover">
+      <div class="accounts-filters">
+        <div class="accounts-filters__header">
+          <strong>{{ resolveText("admin.accounts.filters.title", "Filters") }}</strong>
+          <PrimeButton
+            rounded
+            text
+            size="small"
+            icon="pi pi-times"
+            :aria-label="resolveText('admin.accounts.filters.close', 'Close filters')"
+            @click="hideFiltersPopover" />
+        </div>
+
+        <div class="accounts-filters__body">
+          <section>
+            <h3>{{ resolveText("admin.accounts.filters.sections.selects", "Select filters") }}</h3>
+            <div class="accounts-filters__grid">
+              <label
+                v-for="field in filterSelectFieldOptions"
+                :key="field.key"
+                class="accounts-filter-field">
+                <span>{{ field.label }}</span>
+                <PrimeSelect
+                  append-to="self"
+                  show-clear
+                  :filter="Boolean(field.searchable)"
+                  :model-value="draftFilters[field.key] || null"
+                  :options="field.options"
+                  option-label="text"
+                  option-value="value"
+                  @update:model-value="value => setDraftFilterValue(field.key, value)"
+                  @show="handleFilterOptionOpen(field.key)"
+                  @filter="event => handleFilterOptionSearch(field.key, String(event?.value || ''))" />
+              </label>
+            </div>
+          </section>
+
+          <section>
+            <h3>{{ resolveText("admin.accounts.filters.sections.text", "Text fields") }}</h3>
+            <div class="accounts-filters__grid">
+              <label
+                v-for="field in filterTextFieldOptions"
+                :key="field.key"
+                class="accounts-filter-field">
+                <span>{{ field.label }}</span>
+                <PrimeSelect
+                  append-to="self"
+                  show-clear
+                  filter
+                  :model-value="draftFilters[field.key] || null"
+                  :options="field.options"
+                  option-label="text"
+                  option-value="value"
+                  @update:model-value="value => setDraftFilterValue(field.key, value)"
+                  @show="handleFilterOptionOpen(field.key)"
+                  @filter="event => handleFilterOptionSearch(field.key, String(event?.value || ''))" />
+              </label>
+            </div>
+          </section>
+
+          <section>
+            <h3>{{ resolveText("admin.accounts.filters.sections.ranges", "Ranges") }}</h3>
+            <div class="accounts-filters__grid">
+              <label class="accounts-filter-field">
+                <span>{{ resolveText("admin.accounts.filters.fields.balance_from", "Balance from") }}</span>
+                <PrimeInputText
+                  :model-value="draftFilters.balance_from"
+                  type="number"
+                  step="0.01"
+                  @update:model-value="value => setDraftFilterValue('balance_from', value)" />
+              </label>
+
+              <label class="accounts-filter-field">
+                <span>{{ resolveText("admin.accounts.filters.fields.balance_to", "Balance to") }}</span>
+                <PrimeInputText
+                  :model-value="draftFilters.balance_to"
+                  type="number"
+                  step="0.01"
+                  @update:model-value="value => setDraftFilterValue('balance_to', value)" />
+              </label>
+            </div>
+          </section>
+
+          <section>
+            <h3>{{ resolveText("admin.accounts.filters.sections.dates", "Date ranges") }}</h3>
+            <div class="accounts-filters__grid">
+              <label
+                v-for="field in filterDateFieldOptions"
+                :key="field.key"
+                class="accounts-filter-field">
+                <span>{{ field.label }}</span>
+                <PrimeInputText
+                  :model-value="draftFilters[field.key]"
+                  type="date"
+                  @update:model-value="value => setDraftFilterValue(field.key, value)" />
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <div class="accounts-filters__actions">
+          <PrimeButton
+            severity="secondary"
+            outlined
+            class="w-full"
+            :label="resolveText('admin.accounts.filters.reset', 'Reset')"
+            @click="resetDraftFilters" />
+          <PrimeButton
+            class="w-full"
+            :label="resolveText('admin.accounts.filters.apply', 'Apply')"
+            @click="applyDraftFilters" />
+        </div>
+      </div>
+    </PrimePopover>
+
+    <PrimeCard class="accounts-list-card">
+      <template #content>
+        <div
+          v-if="isInitialLoading"
+          class="accounts-skeleton-list">
+          <PrimeSkeleton
+            v-for="index in 8"
+            :key="`accounts-skeleton-${index}`"
+            height="64px"
+            border-radius="14px" />
+        </div>
+
+        <template v-else>
+          <PrimeDataTable
+            v-if="viewMode === 'table'"
+            :value="accountsData"
+            data-key="id"
+            class="accounts-table"
+            :loading="isLoading && !isInitialLoading"
+            scrollable
+            responsive-layout="scroll"
+            row-hover
+            @row-click="event => handleOpenAccountPage(event.data)">
+            <PrimeColumn
+              field="owner_name"
+              :header="resolveText('admin.accounts.columns.owner', 'Owner')"
+              style="min-width: 260px">
+              <template #body="{ data }">
+                <div class="accounts-owner-cell">
+                  <UiImageCircle
+                    :twoChars="getTwoCharsByFullName(data.owner_name)"
+                    :src="data.owner_photo_path" />
+                  <div>
+                    <strong>{{ data.owner_name || "-" }}</strong>
+                    <span>{{ data.owner_email || "-" }}</span>
+                  </div>
+                </div>
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              field="number"
+              :header="resolveText('admin.accounts.columns.number', 'Account number')"
+              style="min-width: 150px">
+              <template #body="{ data }">
+                <strong>{{ data.number || "-" }}</strong>
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              field="balance"
+              :header="resolveText('admin.accounts.columns.balance', 'Balance')"
+              style="min-width: 150px">
+              <template #body="{ data }">
+                <div class="accounts-balance-cell">
+                  <strong>{{ formatMoney(data.balance, data.currency) }}</strong>
+                  <PrimeButton
+                    v-if="canUpdateAccounts"
+                    rounded
+                    text
+                    size="small"
+                    icon="pi pi-refresh"
+                    :loading="refreshingAccountId === data.id"
+                    :disabled="refreshingAccountId === data.id"
+                    :aria-label="resolveText('admin.accounts.actions.refreshBalance', 'Refresh balance')"
+                    @click.stop="handleRefreshBalance(data)" />
+                </div>
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              field="type_name"
+              :header="resolveText('admin.accounts.columns.type', 'Type')"
+              style="min-width: 150px">
+              <template #body="{ data }">
+                {{ data.type_name || data.type_id || "-" }}
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              field="leverage_display"
+              :header="resolveText('admin.accounts.columns.leverage', 'Leverage')"
+              style="min-width: 120px">
+              <template #body="{ data }">
+                {{ data.leverage_display || data.leverage_id || "-" }}
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              field="created_at"
+              :header="resolveText('admin.accounts.components.accounts-panel.columns.created_at', 'Created at')"
+              style="min-width: 180px">
+              <template #body="{ data }">
+                {{ formatDate(data.created_at) }}
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              header="ID"
+              style="width: 70px">
+              <template #body="{ data }">
+                <button
+                  v-if="data.id"
+                  type="button"
+                  class="accounts-copy-cell"
+                  :aria-label="resolveText('admin.accounts.actions.copyId', 'Copy ID')"
+                  @click.stop>
+                  <UiIconCopy :text="data.id" />
+                </button>
+                <span v-else>-</span>
+              </template>
+            </PrimeColumn>
+
+            <PrimeColumn
+              v-if="showActionColumn"
+              :header="resolveText('admin.accounts.columns.actions', 'Actions')"
+              style="width: 86px">
+              <template #body="{ data }">
+                <PrimeButton
+                  rounded
+                  text
+                  size="small"
+                  icon="pi pi-ellipsis-v"
+                  :aria-label="resolveText('admin.accounts.actions.openActions', 'Open actions')"
+                  @click.stop="toggleActionMenu($event, data)" />
+              </template>
+            </PrimeColumn>
+
+            <template #empty>
+              <div class="accounts-empty">
+                <i class="pi pi-wallet" />
+                <strong>{{ resolveText("admin.accounts.empty.title", "No accounts found") }}</strong>
+                <span>{{
+                  resolveText("admin.accounts.empty.subtitle", "Change filters or search query to see accounts.")
+                }}</span>
+              </div>
+            </template>
+          </PrimeDataTable>
+
           <div
-            v-if="viewMode !== 'table'"
-            class="relative"
-          >
+            v-else
+            class="accounts-cards-wrap">
             <div
-              class="backdrop-blur-[2px] w-full absolute inset-0 flex items-center justify-center z-10 rounded-xl"
               v-if="isLoading && !isInitialLoading"
-            >
-              <UiIconSpinnerDefault />
+              class="accounts-cards-overlay">
+              <i
+                class="pi pi-spin pi-spinner"
+                aria-hidden="true" />
             </div>
 
             <AccountsContent
+              v-if="accountsData.length"
               :data="accountsData"
               :viewMode="viewMode"
               :canEdit="canUpdateAccounts"
@@ -155,369 +404,61 @@
               @click="handleOpenAccountPage"
               @edit="handleOpenEditModal"
               @refresh="handleRefreshBalance"
-              @delete="handleDeleteAccount"
-            />
-          </div>
-
-          <div
-            v-else
-            class="relative"
-          >
-            <div
-              class="backdrop-blur-sm bg-[var(--ui-background)]/40 w-full absolute inset-0 flex items-center justify-center z-10 rounded-xl"
-              v-if="isLoading && !isInitialLoading"
-            >
-              <UiIconSpinnerDefault />
-            </div>
-
-            <template v-if="accountsData.length">
-              <TableMain>
-                <template #thead>
-                  <tr>
-                    <th class="px-4 py-3 text-left font-normal">{{ resolveText("admin.accounts.columns.owner", "Owner") }}</th>
-                    <th class="px-4 py-3 text-left font-normal">{{ resolveText("admin.accounts.columns.number", "Account number") }}</th>
-                    <th class="px-4 py-3 text-left font-normal">{{ resolveText("admin.accounts.columns.type", "Type") }}</th>
-                    <th class="px-4 py-3 text-left font-normal">{{ resolveText("admin.accounts.columns.balance", "Balance") }}</th>
-                    <th class="px-4 py-3 text-left font-normal">{{ resolveText("admin.accounts.columns.leverage", "Leverage") }}</th>
-                    <th class="px-4 py-3 text-left font-normal">
-                      {{ t("admin.accounts.components.accounts-panel.columns.created_at") }}
-                    </th>
-                    <th class="px-4 py-3 text-center font-normal w-[60px]">ID</th>
-                    <th
-                      v-if="showActionColumn"
-                      class="px-4 py-3 text-center font-normal w-[80px]"
-                    >
-                      {{ resolveText("admin.accounts.columns.actions", "Actions") }}
-                    </th>
-                  </tr>
-                </template>
-
-                <template #tbody>
-                  <tr
-                    v-for="account in accountsData"
-                    :key="account.id"
-                    class="border-t border-[var(--color-ui-border)] hover:bg-[var(--color-stroke-ui-dark)] cursor-pointer"
-                    @click="handleOpenAccountPage(account)"
-                  >
-                    <td class="px-4 py-3 max-w-[260px]">
-                      <div class="truncate font-semibold">{{ account.owner_name || "-" }}</div>
-                      <div class="text-xs text-[var(--ui-text-secondary)] truncate">{{ account.owner_email || "-" }}</div>
-                    </td>
-                    <td class="px-4 py-3 whitespace-nowrap">{{ account.number || "-" }}</td>
-                    <td class="px-4 py-3 truncate max-w-[180px]">
-                      {{ account.type_name || account.type_id || "-" }}
-                    </td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                      <div class="flex items-center gap-2">
-                        <span>{{ formatMoney(account.balance, account.currency) }}</span>
-                        <button
-                          v-if="canUpdateAccounts"
-                          type="button"
-                          class="accounts-inline-refresh-btn"
-                          :disabled="refreshingAccountId === account.id"
-                          :title="resolveText('admin.accounts.actions.refreshBalance', 'Refresh balance')"
-                          @click.stop="handleRefreshBalance(account)"
-                        >
-                          <UiIconUpdate :spinning="refreshingAccountId === account.id" />
-                        </button>
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 whitespace-nowrap">{{ account.leverage_display || account.leverage_id || "-" }}</td>
-                    <td class="px-4 py-3 text-xs whitespace-nowrap">{{ formatDate(account.created_at) }}</td>
-                    <td
-                      class="px-2 py-3"
-                      @click.stop
-                    >
-                      <div class="flex items-center justify-center">
-                        <UiIconCopy
-                          v-if="account.id"
-                          :text="account.id"
-                        />
-                        <span v-else>-</span>
-                      </div>
-                    </td>
-                    <td
-                      v-if="showActionColumn"
-                      class="px-2 py-3"
-                      @click.stop
-                    >
-                      <div class="relative flex items-center justify-center">
-                        <button
-                          type="button"
-                          class="accounts-row-action-btn"
-                          @click.stop="toggleActionMenu(account.id)"
-                        >
-                          <UiIconDotsVertical />
-                        </button>
-
-                        <div
-                          v-if="actionMenuId === account.id"
-                          class="accounts-row-menu"
-                        >
-                          <button
-                            v-if="canUpdateAccounts"
-                            type="button"
-                            class="accounts-row-menu__item"
-                            @click="handleOpenEditModal(account)"
-                          >
-                            {{ resolveText("admin.accounts.actions.edit", "Edit") }}
-                          </button>
-                          <button
-                            v-if="canUpdateAccounts"
-                            type="button"
-                            class="accounts-row-menu__item"
-                            @click="handleRefreshBalance(account)"
-                          >
-                            {{ resolveText("admin.accounts.actions.refreshBalance", "Refresh balance") }}
-                          </button>
-                          <button
-                            v-if="canDeleteAccounts"
-                            type="button"
-                            class="accounts-row-menu__item danger"
-                            @click="handleDeleteAccount(account)"
-                          >
-                            {{ resolveText("admin.accounts.actions.archive", "Archive") }}
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </template>
-              </TableMain>
-            </template>
+              @delete="handleDeleteAccount" />
 
             <div
-              v-else-if="!isLoading && !isInitialLoading"
-              class="h-[32vh] flex items-center justify-center text-[var(--ui-text-main)]"
-            >
-              {{ t("cabinet.billing.nothingToShow") }}
+              v-else
+              class="accounts-empty">
+              <i class="pi pi-wallet" />
+              <strong>{{ resolveText("admin.accounts.empty.title", "No accounts found") }}</strong>
+              <span>{{
+                resolveText("admin.accounts.empty.subtitle", "Change filters or search query to see accounts.")
+              }}</span>
             </div>
           </div>
-        </div>
+        </template>
       </template>
-    </PageStructureContent>
+    </PrimeCard>
 
-    <PaginationDefault
-      :isLoading="isLoading"
-      :perPage="perPage"
-      :page="page"
-      :totalRows="totalRows"
-      @perPageChange="handleChangePerPage"
-      @pageChange="handleChangePage"
-    />
-
-    <Teleport to="body">
-      <div
-        v-if="isFiltersPopoverOpen"
-        ref="filtersPopoverPanelRef"
-        class="accounts-filters-popover"
-        :style="filtersPopoverStyle"
-        @click.stop
-      >
-        <div class="accounts-filters-popover__title">
-          {{ resolveText("admin.accounts.filters.title", "Filters") }}
-        </div>
-
-        <div class="accounts-filters-popover__body">
-          <div class="accounts-filters-popover__section-title">
-            {{ resolveText("admin.accounts.filters.sections.selects", "Select filters") }}
-          </div>
-
-          <div class="accounts-filters-popover__grid accounts-filters-popover__grid--status">
-            <label
-              v-for="field in filterSelectFieldOptions"
-              :key="field.key"
-              class="accounts-filters-popover__field"
-            >
-              <span>{{ field.label }}</span>
-              <div class="accounts-filters-popover__control">
-                <UiSelect
-                  :withoutNoSelect="false"
-                  :searchable="Boolean(field.searchable)"
-                  :searchValue="filterSearchQueries[field.key]"
-                  :value="draftFilters[field.key] || null"
-                  :data="field.options"
-                  @change="value => setDraftFilterValue(field.key, value)"
-                  @open="handleFilterOptionOpen(field.key)"
-                  @search="value => handleFilterOptionSearch(field.key, value)"
-                />
-                <button
-                  v-if="hasDraftFilterValue(field.key)"
-                  type="button"
-                  class="accounts-filters-popover__clear"
-                  @click.prevent.stop="clearDraftFilterValue(field.key)"
-                >
-                  ×
-                </button>
-              </div>
-            </label>
-          </div>
-
-          <div class="accounts-filters-popover__section-title">
-            {{ resolveText("admin.accounts.filters.sections.text", "Text fields") }}
-          </div>
-
-          <div class="accounts-filters-popover__grid">
-            <label
-              v-for="field in filterTextFieldOptions"
-              :key="field.key"
-              class="accounts-filters-popover__field"
-            >
-              <span>{{ field.label }}</span>
-              <div class="accounts-filters-popover__control">
-                <UiSelect
-                  :withoutNoSelect="false"
-                  :searchable="true"
-                  :searchValue="filterSearchQueries[field.key]"
-                  :value="draftFilters[field.key] || null"
-                  :data="field.options"
-                  @change="value => setDraftFilterValue(field.key, value)"
-                  @open="handleFilterOptionOpen(field.key)"
-                  @search="value => handleFilterOptionSearch(field.key, value)"
-                />
-                <button
-                  v-if="hasDraftFilterValue(field.key)"
-                  type="button"
-                  class="accounts-filters-popover__clear"
-                  @click.prevent.stop="clearDraftFilterValue(field.key)"
-                >
-                  ×
-                </button>
-              </div>
-            </label>
-          </div>
-
-          <div class="accounts-filters-popover__section-title">
-            {{ resolveText("admin.accounts.filters.sections.ranges", "Ranges") }}
-          </div>
-
-          <div class="accounts-filters-popover__grid">
-            <label class="accounts-filters-popover__field">
-              <span>{{ resolveText("admin.accounts.filters.fields.balance_from", "Balance from") }}</span>
-              <div class="accounts-filters-popover__control">
-                <input
-                  class="accounts-filters-popover__input"
-                  type="number"
-                  step="0.01"
-                  :value="draftFilters.balance_from"
-                  @input="event => handleDraftTextInput('balance_from', event)"
-                />
-                <button
-                  v-if="hasDraftFilterValue('balance_from')"
-                  type="button"
-                  class="accounts-filters-popover__clear"
-                  @click.prevent.stop="clearDraftFilterValue('balance_from')"
-                >
-                  ×
-                </button>
-              </div>
-            </label>
-
-            <label class="accounts-filters-popover__field">
-              <span>{{ resolveText("admin.accounts.filters.fields.balance_to", "Balance to") }}</span>
-              <div class="accounts-filters-popover__control">
-                <input
-                  class="accounts-filters-popover__input"
-                  type="number"
-                  step="0.01"
-                  :value="draftFilters.balance_to"
-                  @input="event => handleDraftTextInput('balance_to', event)"
-                />
-                <button
-                  v-if="hasDraftFilterValue('balance_to')"
-                  type="button"
-                  class="accounts-filters-popover__clear"
-                  @click.prevent.stop="clearDraftFilterValue('balance_to')"
-                >
-                  ×
-                </button>
-              </div>
-            </label>
-          </div>
-
-          <div class="accounts-filters-popover__section-title">
-            {{ resolveText("admin.accounts.filters.sections.dates", "Date ranges") }}
-          </div>
-
-          <div class="accounts-filters-popover__grid">
-            <label
-              v-for="field in filterDateFieldOptions"
-              :key="field.key"
-              class="accounts-filters-popover__field"
-            >
-              <span>{{ field.label }}</span>
-              <div class="accounts-filters-popover__control">
-                <input
-                  class="accounts-filters-popover__input"
-                  type="date"
-                  :value="draftFilters[field.key]"
-                  @input="event => handleDraftTextInput(field.key, event)"
-                />
-                <button
-                  v-if="hasDraftFilterValue(field.key)"
-                  type="button"
-                  class="accounts-filters-popover__clear"
-                  @click.prevent.stop="clearDraftFilterValue(field.key)"
-                >
-                  ×
-                </button>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <div class="accounts-filters-popover__actions">
-          <UiButtonDefault
-            state="info--small"
-            class="!w-full"
-            @click="resetDraftFilters"
-          >
-            {{ resolveText("admin.accounts.filters.reset", "Reset") }}
-          </UiButtonDefault>
-          <UiButtonDefault
-            state="info--small"
-            class="!w-full"
-            @click="applyDraftFilters"
-          >
-            {{ resolveText("admin.accounts.filters.apply", "Apply") }}
-          </UiButtonDefault>
-        </div>
+    <div
+      v-if="totalRows > 0"
+      class="accounts-pagination">
+      <PrimePaginator
+        :first="(page - 1) * perPage"
+        :rows="perPage"
+        :total-records="totalRows"
+        :rows-per-page-options="[10, 20, 50, 100]"
+        @page="handlePaginatorPage" />
+      <div class="accounts-pagination__report">
+        {{ pageReport }}
       </div>
-    </Teleport>
+    </div>
+
+    <PrimeMenu
+      ref="actionMenu"
+      :model="actionMenuItems"
+      popup />
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, h, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+  import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
   import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from "vue-router";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
-  import { debounce } from "~/utils/helper/debounce";
   import { navigateTo } from "nuxt/app";
   import { useLocalePath } from "~/.nuxt/imports";
 
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
-
-  import TableMain from "~/components/block/tables/TableMain.vue";
-  import PaginationDefault from "~/components/block/paginations/PaginationDefault.vue";
-  import PageStructureContent from "~/components/block/pages/PageStructureContent.vue";
   import AccountsContent from "~/pages/admin/accounts/components/AccountsContent.vue";
-  import ViewModeToggle from "~/components/block/controls/ViewModeToggle.vue";
-  import UiInput from "~/components/ui/UiInput.vue";
-  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-  import UiIconSearch from "~/components/ui/UiIconSearch.vue";
-  import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-  import UiSelect from "~/components/ui/UiSelect.vue";
-  import UiIconSortBy from "~/components/ui/UiIconSortBy.vue";
-  import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
-  import UiIconCopy from "~/components/ui/UiIconCopy.vue";
-  import UiIconFilters from "~/components/ui/UiIconFilters.vue";
-  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import AccountsPanelEdit from "~/pages/admin/accounts/components/AccountsPanelEdit.vue";
+  import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+  import UiImageCircle from "~/components/ui/UiImageCircle.vue";
 
   type ViewMode = "cards" | "table" | "full";
+  type MetricFilterId = "total_accounts" | "new_today" | "new_week" | "new_month";
   type FilterKey =
     | "id"
     | "user_id"
@@ -602,7 +543,10 @@
   const DEFAULT_PAGE = 1;
   const DEFAULT_ORDER_BY = "created_at";
   const DEFAULT_VIEW_MODE: ViewMode = "table";
+  const DEFAULT_METRIC_FILTER: MetricFilterId = "total_accounts";
   const ORDER_BY_OPTIONS = ["created_at", "number", "balance", "user_id"] as const;
+  const METRIC_FILTER_IDS = ["total_accounts", "new_today", "new_week", "new_month"] as const;
+  const METRIC_MANAGED_FILTER_KEYS: FilterKey[] = ["created_at_from", "created_at_to"];
   const ALL_SEARCH_FIELDS = [
     "id",
     "user_id",
@@ -665,6 +609,7 @@
   const QUERY_KEY_ORDER_BY = "orderBy";
   const QUERY_KEY_ORDER_DIRECTION = "orderDirection";
   const QUERY_KEY_VIEW_MODE = "view";
+  const QUERY_KEY_METRIC = "metric";
   const FILTER_QUERY_PREFIX = "filter_";
 
   const createEmptyFilters = (): AccountFilters => ({
@@ -734,9 +679,7 @@
   const getFirstNonEmptyQueryValue = (...values: unknown[]): string => {
     for (const value of values) {
       const normalized = getQueryValue(value);
-      if (normalized !== "") {
-        return normalized;
-      }
+      if (normalized !== "") return normalized;
     }
 
     return "";
@@ -744,30 +687,21 @@
 
   const parsePositiveInt = (value: unknown, fallback: number, min = 1): number => {
     const parsed = Number.parseInt(getQueryValue(value), 10);
-    if (!Number.isFinite(parsed) || parsed < min) {
-      return fallback;
-    }
-
+    if (!Number.isFinite(parsed) || parsed < min) return fallback;
     return parsed;
   };
 
-  const isOrderByValue = (value: string): boolean => {
-    return ORDER_BY_OPTIONS.includes(value as (typeof ORDER_BY_OPTIONS)[number]);
-  };
-
-  const isOrderDirectionValue = (value: string): value is typeof ORDER_DIRECTION_ASC | typeof ORDER_DIRECTION_DESC => {
-    return value === ORDER_DIRECTION_ASC || value === ORDER_DIRECTION_DESC;
-  };
-
-  const isViewModeValue = (value: string): value is ViewMode => {
-    return value === "table" || value === "cards" || value === "full";
-  };
-
+  const isOrderByValue = (value: string): boolean =>
+    ORDER_BY_OPTIONS.includes(value as (typeof ORDER_BY_OPTIONS)[number]);
+  const isOrderDirectionValue = (value: string): value is typeof ORDER_DIRECTION_ASC | typeof ORDER_DIRECTION_DESC =>
+    value === ORDER_DIRECTION_ASC || value === ORDER_DIRECTION_DESC;
+  const isViewModeValue = (value: string): value is ViewMode =>
+    value === "table" || value === "cards" || value === "full";
+  const isMetricFilterValue = (value: string): value is MetricFilterId =>
+    METRIC_FILTER_IDS.includes(value as MetricFilterId);
   const isFilterBracketQueryKey = (queryKey: string): boolean => {
     const matched = queryKey.match(/^filters\[(.+)\]$/);
-    if (!matched) return false;
-
-    return FILTER_KEYS.includes(matched[1] as FilterKey);
+    return Boolean(matched && FILTER_KEYS.includes(matched[1] as FilterKey));
   };
 
   const managedQueryKeys = new Set<string>([
@@ -777,25 +711,21 @@
     QUERY_KEY_ORDER_BY,
     QUERY_KEY_ORDER_DIRECTION,
     QUERY_KEY_VIEW_MODE,
+    QUERY_KEY_METRIC,
     ...FILTER_KEYS.map(key => `${FILTER_QUERY_PREFIX}${key}`),
   ]);
 
-  const normalizeQuery = (query: LocationQuery | LocationQueryRaw): Record<string, string> => {
-    return Object.fromEntries(Object.entries(query).map(([key, value]) => [key, getQueryValue(value)]));
-  };
+  const normalizeQuery = (query: LocationQuery | LocationQueryRaw): Record<string, string> =>
+    Object.fromEntries(Object.entries(query).map(([key, value]) => [key, getQueryValue(value)]));
 
   const areQueryObjectsEqual = (left: Record<string, string>, right: Record<string, string>): boolean => {
     const leftEntries = Object.entries(left).filter(([, value]) => value !== "");
     const rightEntries = Object.entries(right).filter(([, value]) => value !== "");
 
-    if (leftEntries.length !== rightEntries.length) {
-      return false;
-    }
+    if (leftEntries.length !== rightEntries.length) return false;
 
     for (const [key, value] of leftEntries) {
-      if (right[key] !== value) {
-        return false;
-      }
+      if (right[key] !== value) return false;
     }
 
     return true;
@@ -808,10 +738,13 @@
   const appCore = useAppCore();
   const adminAuthStore = useAdminAuthStore();
   const toast = useToast();
-  const { openModal } = inject("modalControl") as { openModal: (component: unknown, props?: Record<string, unknown>) => void };
+  const { openModal } = inject("modalControl") as {
+    openModal: (component: unknown, props?: Record<string, unknown>) => void;
+  };
+
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
-    return value === key ? fallback : value;
+    return value === key ? fallback : String(value);
   };
 
   const isLoading = ref(false);
@@ -823,14 +756,22 @@
   const page = ref(DEFAULT_PAGE);
   const totalRows = ref(0);
   const searchFilter = ref("");
+  const searchDraft = ref("");
   const orderBy = ref<string>(DEFAULT_ORDER_BY);
   const orderDirection = ref<string>(ORDER_DIRECTION_DESC);
   const viewMode = ref<ViewMode>(DEFAULT_VIEW_MODE);
+  const activeMetricFilter = ref<MetricFilterId>(DEFAULT_METRIC_FILTER);
 
   const accountsData = ref<AdminAccount[]>([]);
-  const actionMenuId = ref<string | null>(null);
   const refreshingAccountId = ref<string | null>(null);
   const deletingAccountId = ref<string | null>(null);
+  const activeActionAccount = ref<AdminAccount | null>(null);
+  const actionMenu = ref<any | null>(null);
+  const filtersPopover = ref<any | null>(null);
+  const searchTimer = ref<ReturnType<typeof window.setTimeout> | null>(null);
+  let latestLoadRequestId = 0;
+  let latestSearchToken = 0;
+
   const statsData = ref<AccountsStats>({
     total_accounts: 0,
     favorite_accounts: 0,
@@ -850,10 +791,6 @@
 
   const appliedFilters = ref<AccountFilters>(createEmptyFilters());
   const draftFilters = ref<AccountFilters>(createEmptyFilters());
-  const isFiltersPopoverOpen = ref(false);
-  const filtersTriggerRef = ref<HTMLElement | null>(null);
-  const filtersPopoverPanelRef = ref<HTMLElement | null>(null);
-  const filtersPopoverStyle = ref<Record<string, string>>({});
   const dynamicFilterOptions = ref<DynamicFilterOptionsMap>(createEmptyDynamicFilterOptions());
   const filterSearchQueries = ref<FilterSearchQueryMap>(createEmptyFilterSearchQueries());
   const filterSearchTimers = new Map<SelectFilterKey, ReturnType<typeof window.setTimeout>>();
@@ -865,6 +802,155 @@
     currency: true,
     payment_type: true,
   });
+
+  const canUpdateAccounts = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts")
+  );
+  const canDeleteAccounts = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-accounts")
+  );
+  const showActionColumn = computed(() => canUpdateAccounts.value || canDeleteAccounts.value);
+
+  const formatDateInput = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, "0");
+    const day = `${date.getDate()}`.padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const metricDateRange = (metric: MetricFilterId): Partial<AccountFilters> => {
+    const today = new Date();
+    const end = formatDateInput(today);
+
+    if (metric === "new_today") {
+      return { created_at_from: end, created_at_to: end };
+    }
+
+    if (metric === "new_week") {
+      const start = new Date(today);
+      const day = start.getDay();
+      const diff = day === 0 ? 6 : day - 1;
+      start.setDate(start.getDate() - diff);
+      return { created_at_from: formatDateInput(start), created_at_to: end };
+    }
+
+    if (metric === "new_month") {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { created_at_from: formatDateInput(start), created_at_to: end };
+    }
+
+    return { created_at_from: "", created_at_to: "" };
+  };
+
+  const applyMetricFiltersToState = (metric: MetricFilterId, filters: AccountFilters): AccountFilters => ({
+    ...filters,
+    created_at_from: "",
+    created_at_to: "",
+    ...metricDateRange(metric),
+  });
+
+  const sortByOptions = computed(() => [
+    {
+      id: "created_at",
+      value: "created_at",
+      text: resolveText("admin.accounts.components.accounts-panel.columns.created_at", "Created at"),
+    },
+    { id: "number", value: "number", text: resolveText("admin.accounts.columns.number", "Account number") },
+    { id: "balance", value: "balance", text: resolveText("admin.accounts.columns.balance", "Balance") },
+    { id: "user_id", value: "user_id", text: resolveText("admin.accounts.filters.fields.user_id", "User ID") },
+  ]);
+
+  const viewOptions = computed(() => [
+    { value: "table" as const, label: resolveText("admin.accounts.view.table", "Table"), icon: "pi pi-list" },
+    { value: "cards" as const, label: resolveText("admin.accounts.view.cards", "Cards"), icon: "pi pi-th-large" },
+    { value: "full" as const, label: resolveText("admin.accounts.view.full", "Full width cards"), icon: "pi pi-bars" },
+  ]);
+
+  const metricFilterCards = computed(() => [
+    {
+      id: "total_accounts" as const,
+      label: resolveText("admin.accounts.stats.totalAccounts", "Total accounts"),
+      value: formatCount(statsData.value.total_accounts),
+    },
+    {
+      id: "new_today" as const,
+      label: resolveText("admin.accounts.stats.newToday", "New accounts today"),
+      value: formatCount(statsData.value.new_accounts.today),
+    },
+    {
+      id: "new_week" as const,
+      label: resolveText("admin.accounts.stats.newWeek", "New accounts this week"),
+      value: formatCount(statsData.value.new_accounts.week),
+    },
+    {
+      id: "new_month" as const,
+      label: resolveText("admin.accounts.stats.newMonth", "New accounts this month"),
+      value: formatCount(statsData.value.new_accounts.month),
+    },
+  ]);
+
+  const balanceSegments = computed(() => [
+    {
+      id: "today",
+      label: resolveText("admin.accounts.stats.balanceToday", "Today"),
+      value: formatMoney(statsData.value.balance_sum.today),
+    },
+    {
+      id: "week",
+      label: resolveText("admin.accounts.stats.balanceWeek", "Week"),
+      value: formatMoney(statsData.value.balance_sum.week),
+    },
+    {
+      id: "month",
+      label: resolveText("admin.accounts.stats.balanceMonth", "Month"),
+      value: formatMoney(statsData.value.balance_sum.month),
+    },
+    {
+      id: "year",
+      label: resolveText("admin.accounts.stats.balanceYear", "Year"),
+      value: formatMoney(statsData.value.balance_sum.year),
+    },
+  ]);
+
+  const normalizeSelectOptions = (items: any[] = []): SelectOption[] =>
+    items.map((item: any) => ({
+      id: String(item?.id ?? item?.value ?? ""),
+      value: String(item?.value ?? item?.id ?? ""),
+      text: String(item?.text ?? item?.name ?? item?.label ?? item?.value ?? item?.id ?? "-"),
+    }));
+
+  const filterOptionsByQuery = (options: SelectOption[], query: string): SelectOption[] => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return options;
+
+    return options.filter(option => `${option.text} ${option.value}`.trim().toLowerCase().includes(normalizedQuery));
+  };
+
+  const isDynamicSelectFilterKey = (key: SelectFilterKey): key is DynamicSelectFilterKey =>
+    (DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key);
+  const isRemoteSelectFilterKey = (key: SelectFilterKey): key is RemoteSelectFilterKey =>
+    (REMOTE_SELECT_FILTER_KEYS as readonly string[]).includes(key);
+
+  const getFilterOptions = (key: SelectFilterKey): SelectOption[] => {
+    const query = filterSearchQueries.value[key] ?? "";
+
+    if (isDynamicSelectFilterKey(key)) {
+      return filterOptionsByQuery(dynamicFilterOptions.value[key] ?? [], query);
+    }
+
+    const baseOptionsMap: Partial<Record<SelectFilterKey, SelectOption[]>> = {
+      type_id: accountTypeFilterOptions.value,
+      leverage_id: leverageFilterOptions.value,
+      currency: currencyFilterOptions.value,
+      payment_type: paymentTypeFilterOptions.value,
+    };
+
+    return filterOptionsByQuery(baseOptionsMap[key] ?? [], query);
+  };
+
+  const resetFilterSearchQueries = () => {
+    filterSearchQueries.value = createEmptyFilterSearchQueries();
+  };
 
   const filterTextFieldOptions = computed(() => [
     { key: "id" as DynamicSelectFilterKey, label: "ID", options: getFilterOptions("id") },
@@ -908,11 +994,6 @@
   const filterSelectFieldOptions = computed(() => {
     const fields: Array<{ key: SelectFilterKey; label: string; options: SelectOption[]; searchable?: boolean }> = [
       {
-        key: "is_favorite",
-        label: resolveText("admin.accounts.filters.fields.is_favorite", "Favorite"),
-        options: getFilterOptions("is_favorite"),
-      },
-      {
         key: "type_id",
         label: resolveText("admin.accounts.columns.type", "Type"),
         options: getFilterOptions("type_id"),
@@ -948,63 +1029,23 @@
   });
 
   const filterDateFieldOptions = computed(() => [
-    { key: "created_at_from" as FilterKey, label: resolveText("admin.accounts.filters.fields.created_at_from", "Created from") },
-    { key: "created_at_to" as FilterKey, label: resolveText("admin.accounts.filters.fields.created_at_to", "Created to") },
-    { key: "updated_at_from" as FilterKey, label: resolveText("admin.accounts.filters.fields.updated_at_from", "Updated from") },
-    { key: "updated_at_to" as FilterKey, label: resolveText("admin.accounts.filters.fields.updated_at_to", "Updated to") },
+    {
+      key: "created_at_from" as FilterKey,
+      label: resolveText("admin.accounts.filters.fields.created_at_from", "Created from"),
+    },
+    {
+      key: "created_at_to" as FilterKey,
+      label: resolveText("admin.accounts.filters.fields.created_at_to", "Created to"),
+    },
+    {
+      key: "updated_at_from" as FilterKey,
+      label: resolveText("admin.accounts.filters.fields.updated_at_from", "Updated from"),
+    },
+    {
+      key: "updated_at_to" as FilterKey,
+      label: resolveText("admin.accounts.filters.fields.updated_at_to", "Updated to"),
+    },
   ]);
-
-  const favoriteOptions = computed(() => [
-    { id: "yes", value: "yes", text: resolveText("admin.accounts.filters.values.yes", "Yes") },
-    { id: "no", value: "no", text: resolveText("admin.accounts.filters.values.no", "No") },
-  ]);
-
-  const isDynamicSelectFilterKey = (key: SelectFilterKey): key is DynamicSelectFilterKey =>
-    (DYNAMIC_SELECT_FILTER_KEYS as readonly string[]).includes(key);
-
-  const isRemoteSelectFilterKey = (key: SelectFilterKey): key is RemoteSelectFilterKey =>
-    (REMOTE_SELECT_FILTER_KEYS as readonly string[]).includes(key);
-
-  const normalizeSelectOptions = (items: any[] = []): SelectOption[] =>
-    items.map((item: any) => ({
-      id: String(item?.id ?? item?.value ?? ""),
-      value: String(item?.value ?? item?.id ?? ""),
-      text: String(item?.text ?? item?.name ?? item?.value ?? item?.id ?? "-"),
-    }));
-
-  const filterOptionsByQuery = (options: SelectOption[], query: string): SelectOption[] => {
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) {
-      return options;
-    }
-
-    return options.filter(option => {
-      const haystack = `${option.text} ${option.value}`.trim().toLowerCase();
-      return haystack.includes(normalizedQuery);
-    });
-  };
-
-  const getFilterOptions = (key: SelectFilterKey): SelectOption[] => {
-    const query = filterSearchQueries.value[key] ?? "";
-
-    if (isDynamicSelectFilterKey(key)) {
-      return filterOptionsByQuery(dynamicFilterOptions.value[key] ?? [], query);
-    }
-
-    const baseOptionsMap: Partial<Record<SelectFilterKey, SelectOption[]>> = {
-      is_favorite: favoriteOptions.value,
-      type_id: accountTypeFilterOptions.value,
-      leverage_id: leverageFilterOptions.value,
-      currency: currencyFilterOptions.value,
-      payment_type: paymentTypeFilterOptions.value,
-    };
-
-    return filterOptionsByQuery(baseOptionsMap[key] ?? [], query);
-  };
-
-  const resetFilterSearchQueries = () => {
-    filterSearchQueries.value = createEmptyFilterSearchQueries();
-  };
 
   const filterLabelMap = computed<Record<FilterKey, string>>(() => ({
     id: "ID",
@@ -1028,18 +1069,11 @@
     updated_at_to: resolveText("admin.accounts.filters.fields.updated_at_to", "Updated to"),
   }));
 
-  const getFilterOptionText = (options: SelectOption[], value: string): string => {
-    return options.find(option => option.value === value)?.text ?? value;
-  };
+  const getFilterOptionText = (options: SelectOption[], value: string): string =>
+    options.find(option => option.value === value)?.text ?? value;
 
   const getFilterDisplayValue = (key: FilterKey, value: string): string => {
     switch (key) {
-      case "is_favorite":
-        return value === "yes"
-          ? resolveText("admin.accounts.filters.values.yes", "Yes")
-          : value === "no"
-            ? resolveText("admin.accounts.filters.values.no", "No")
-            : value;
       case "id":
       case "user_id":
       case "owner_name":
@@ -1064,7 +1098,11 @@
 
   const activeFilterChips = computed(() =>
     (Object.entries(appliedFilters.value) as Array<[FilterKey, string]>)
-      .filter(([, value]) => sanitizeFilterValue(value) !== "")
+      .filter(
+        ([key, value]) =>
+          sanitizeFilterValue(value) !== "" &&
+          !(activeMetricFilter.value !== DEFAULT_METRIC_FILTER && METRIC_MANAGED_FILTER_KEYS.includes(key))
+      )
       .map(([key, value]) => ({
         key,
         label: filterLabelMap.value[key] ?? key,
@@ -1072,164 +1110,54 @@
       }))
   );
 
-  const sortByOptions = computed(() => [
-    { id: "created_at", value: "created_at", text: t("admin.accounts.components.accounts-panel.columns.created_at") },
-    { id: "number", value: "number", text: resolveText("admin.accounts.columns.number", "Account number") },
-    { id: "balance", value: "balance", text: resolveText("admin.accounts.columns.balance", "Balance") },
-    { id: "user_id", value: "user_id", text: resolveText("admin.accounts.filters.fields.user_id", "User ID") },
-  ]);
+  const actionMenuItems = computed(() => {
+    const account = activeActionAccount.value;
+    if (!account) return [];
 
-  const viewOptions = computed(() => [
-    {
-      value: "table" as const,
-      label: t("cabinet.billing.view.list") || "List",
-      icon: {
-        render() {
-          return h(
-            "svg",
-            {
-              viewBox: "0 0 24 24",
-              fill: "none",
-              stroke: "currentColor",
-              "stroke-width": "2",
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-            },
-            [
-              h("line", { x1: "8", y1: "6", x2: "21", y2: "6" }),
-              h("line", { x1: "3", y1: "6", x2: "4", y2: "6" }),
-              h("line", { x1: "8", y1: "12", x2: "21", y2: "12" }),
-              h("line", { x1: "3", y1: "12", x2: "4", y2: "12" }),
-              h("line", { x1: "8", y1: "18", x2: "21", y2: "18" }),
-              h("line", { x1: "3", y1: "18", x2: "4", y2: "18" }),
-            ]
-          );
-        },
-      },
-    },
-    {
-      value: "cards" as const,
-      label: t("cabinet.billing.view.cards") || "Cards",
-      icon: {
-        render() {
-          return h(
-            "svg",
-            {
-              viewBox: "0 0 24 24",
-              fill: "none",
-              stroke: "currentColor",
-              "stroke-width": "2",
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-            },
-            [
-              h("rect", { x: "3", y: "3", width: "7", height: "7", rx: "1" }),
-              h("rect", { x: "14", y: "3", width: "7", height: "7", rx: "1" }),
-              h("rect", { x: "3", y: "14", width: "7", height: "7", rx: "1" }),
-              h("rect", { x: "14", y: "14", width: "7", height: "7", rx: "1" }),
-            ]
-          );
-        },
-      },
-    },
-    {
-      value: "full" as const,
-      label: t("cabinet.billing.view.full") || "Full width",
-      icon: {
-        render() {
-          return h(
-            "svg",
-            {
-              viewBox: "0 0 24 24",
-              fill: "none",
-              stroke: "currentColor",
-              "stroke-width": "2",
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-            },
-            [
-              h("rect", { x: "3", y: "6", width: "18", height: "4", rx: "1" }),
-              h("rect", { x: "3", y: "14", width: "18", height: "4", rx: "1" }),
-            ]
-          );
-        },
-      },
-    },
-  ]);
+    return [
+      canUpdateAccounts.value
+        ? {
+            label: resolveText("admin.accounts.actions.edit", "Edit"),
+            icon: "pi pi-pencil",
+            command: () => handleOpenEditModal(account),
+          }
+        : null,
+      canUpdateAccounts.value
+        ? {
+            label: resolveText("admin.accounts.actions.refreshBalance", "Refresh balance"),
+            icon: "pi pi-refresh",
+            command: () => handleRefreshBalance(account),
+          }
+        : null,
+      canDeleteAccounts.value
+        ? {
+            label: resolveText("admin.accounts.actions.archive", "Archive"),
+            icon: "pi pi-archive",
+            class: "account-action-danger",
+            command: () => handleDeleteAccount(account),
+          }
+        : null,
+    ].filter(Boolean);
+  });
 
-  const metricCards = computed(() => [
-    {
-      id: "total_accounts",
-      kind: "is-neutral",
-      label: resolveText("admin.accounts.stats.totalAccounts", "Total accounts"),
-      value: formatCount(statsData.value.total_accounts),
-    },
-    {
-      id: "favorite_accounts",
-      kind: statsData.value.favorite_accounts > 0 ? "is-highlighted" : "is-neutral",
-      label: resolveText("admin.accounts.stats.favoriteAccounts", "Favorite accounts"),
-      value: formatCount(statsData.value.favorite_accounts),
-    },
-    {
-      id: "new_today",
-      kind: "is-neutral",
-      label: resolveText("admin.accounts.stats.newToday", "New accounts today"),
-      value: formatCount(statsData.value.new_accounts.today),
-    },
-    {
-      id: "new_week",
-      kind: "is-neutral",
-      label: resolveText("admin.accounts.stats.newWeek", "New accounts this week"),
-      value: formatCount(statsData.value.new_accounts.week),
-    },
-    {
-      id: "new_month",
-      kind: "is-neutral",
-      label: resolveText("admin.accounts.stats.newMonth", "New accounts this month"),
-      value: formatCount(statsData.value.new_accounts.month),
-    },
-    {
-      id: "balance_summary",
-      kind: "is-balance-summary",
-      label: resolveText("admin.accounts.stats.balanceSummary", "Balances"),
-      segments: [
-        {
-          id: "today",
-          label: resolveText("admin.accounts.stats.balanceToday", "Today"),
-          value: formatMoney(statsData.value.balance_sum.today),
-          size: "xl",
-        },
-        {
-          id: "week",
-          label: resolveText("admin.accounts.stats.balanceWeek", "Week"),
-          value: formatMoney(statsData.value.balance_sum.week),
-          size: "lg",
-        },
-        {
-          id: "month",
-          label: resolveText("admin.accounts.stats.balanceMonth", "Month"),
-          value: formatMoney(statsData.value.balance_sum.month),
-          size: "md",
-        },
-        {
-          id: "year",
-          label: resolveText("admin.accounts.stats.balanceYear", "Year"),
-          value: formatMoney(statsData.value.balance_sum.year),
-          size: "sm",
-        },
-      ],
-    },
-  ]);
+  const pageReport = computed(() => {
+    if (totalRows.value === 0) {
+      return resolveText("admin.accounts.pagination.empty", "0 accounts");
+    }
 
-  const canUpdateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts"));
-  const canDeleteAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-accounts"));
-  const showActionColumn = computed(() => canUpdateAccounts.value || canDeleteAccounts.value);
+    const first = (page.value - 1) * perPage.value + 1;
+    const last = Math.min(page.value * perPage.value, totalRows.value);
+    return resolveText("admin.accounts.pagination.report", "{first} to {last} / Total: {total}")
+      .replace("{first}", formatCount(first))
+      .replace("{last}", formatCount(last))
+      .replace("{total}", formatCount(totalRows.value));
+  });
 
   const initViewMode = () => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
-    if (saved && ["table", "cards", "full"].includes(saved)) {
-      viewMode.value = saved as ViewMode;
+    if (saved && isViewModeValue(saved)) {
+      viewMode.value = saved;
     }
   };
 
@@ -1259,6 +1187,7 @@
     perPage.value = parsePositiveInt(query[QUERY_KEY_PER_PAGE], DEFAULT_PER_PAGE);
     page.value = parsePositiveInt(query[QUERY_KEY_PAGE], DEFAULT_PAGE);
     searchFilter.value = getFirstNonEmptyQueryValue(query[QUERY_KEY_SEARCH], query.searchFilter);
+    searchDraft.value = searchFilter.value;
 
     const queryOrderBy = getQueryValue(query[QUERY_KEY_ORDER_BY]);
     if (isOrderByValue(queryOrderBy)) {
@@ -1275,7 +1204,12 @@
       viewMode.value = queryViewMode;
     }
 
-    const parsedFilters = getQueryFilters(query);
+    const queryMetric = getQueryValue(query[QUERY_KEY_METRIC]);
+    if (isMetricFilterValue(queryMetric)) {
+      activeMetricFilter.value = queryMetric;
+    }
+
+    const parsedFilters = applyMetricFiltersToState(activeMetricFilter.value, getQueryFilters(query));
     appliedFilters.value = parsedFilters;
     draftFilters.value = cloneFilters(parsedFilters);
   };
@@ -1283,35 +1217,19 @@
   const buildStateQuery = (): Record<string, string> => {
     const query: Record<string, string> = {};
 
-    if (page.value > DEFAULT_PAGE) {
-      query[QUERY_KEY_PAGE] = String(page.value);
-    }
-
-    if (perPage.value !== DEFAULT_PER_PAGE) {
-      query[QUERY_KEY_PER_PAGE] = String(perPage.value);
-    }
+    if (page.value > DEFAULT_PAGE) query[QUERY_KEY_PAGE] = String(page.value);
+    if (perPage.value !== DEFAULT_PER_PAGE) query[QUERY_KEY_PER_PAGE] = String(perPage.value);
 
     const normalizedSearch = sanitizeFilterValue(searchFilter.value);
-    if (normalizedSearch !== "") {
-      query[QUERY_KEY_SEARCH] = normalizedSearch;
-    }
-
-    if (orderBy.value !== DEFAULT_ORDER_BY) {
-      query[QUERY_KEY_ORDER_BY] = orderBy.value;
-    }
-
-    if (orderDirection.value !== ORDER_DIRECTION_DESC) {
-      query[QUERY_KEY_ORDER_DIRECTION] = orderDirection.value;
-    }
-
-    if (viewMode.value !== DEFAULT_VIEW_MODE) {
-      query[QUERY_KEY_VIEW_MODE] = viewMode.value;
-    }
+    if (normalizedSearch !== "") query[QUERY_KEY_SEARCH] = normalizedSearch;
+    if (orderBy.value !== DEFAULT_ORDER_BY) query[QUERY_KEY_ORDER_BY] = orderBy.value;
+    if (orderDirection.value !== ORDER_DIRECTION_DESC) query[QUERY_KEY_ORDER_DIRECTION] = orderDirection.value;
+    if (viewMode.value !== DEFAULT_VIEW_MODE) query[QUERY_KEY_VIEW_MODE] = viewMode.value;
+    if (activeMetricFilter.value !== DEFAULT_METRIC_FILTER) query[QUERY_KEY_METRIC] = activeMetricFilter.value;
 
     for (const filterKey of FILTER_KEYS) {
       const filterValue = sanitizeFilterValue(appliedFilters.value[filterKey]);
       if (filterValue === "") continue;
-
       query[`${FILTER_QUERY_PREFIX}${filterKey}`] = filterValue;
     }
 
@@ -1335,9 +1253,7 @@
     const currentQuery = normalizeQuery(route.query);
     const nextQuery = buildNextQuery();
 
-    if (areQueryObjectsEqual(currentQuery, nextQuery)) {
-      return;
-    }
+    if (areQueryObjectsEqual(currentQuery, nextQuery)) return;
 
     try {
       await router.replace({ query: nextQuery });
@@ -1357,6 +1273,7 @@
 
   const loadData = async ({ resetPage = false }: { resetPage?: boolean } = {}) => {
     if (resetPage) page.value = 1;
+    const requestId = ++latestLoadRequestId;
     isLoading.value = true;
 
     try {
@@ -1377,19 +1294,23 @@
       };
 
       const response = await appCore.adminModules.accounts.get(params);
-      const payload = response?.data?.data ?? {};
+      if (requestId !== latestLoadRequestId) return;
 
+      const payload = response?.data?.data ?? {};
       totalRows.value = Number(payload?.total ?? 0);
       accountsData.value = Array.isArray(payload?.data) ? payload.data : [];
     } catch (error: any) {
+      if (requestId !== latestLoadRequestId) return;
+
       totalRows.value = 0;
       accountsData.value = [];
       toast.error(
-        error?.response?.data?.message ||
-          resolveText("admin.accounts.messages.loadError", "Failed to load accounts.")
+        error?.response?.data?.message || resolveText("admin.accounts.messages.loadError", "Failed to load accounts.")
       );
     } finally {
-      isLoading.value = false;
+      if (requestId === latestLoadRequestId) {
+        isLoading.value = false;
+      }
     }
   };
 
@@ -1435,10 +1356,18 @@
       const payload = response?.data?.data ?? {};
 
       if (!filterField) {
-        accountTypeFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.account_types) ? payload.account_types : []);
-        leverageFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.leverages) ? payload.leverages : []);
-        currencyFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.currencies) ? payload.currencies : []);
-        paymentTypeFilterOptions.value = normalizeSelectOptions(Array.isArray(payload?.payment_types) ? payload.payment_types : []);
+        accountTypeFilterOptions.value = normalizeSelectOptions(
+          Array.isArray(payload?.account_types) ? payload.account_types : []
+        );
+        leverageFilterOptions.value = normalizeSelectOptions(
+          Array.isArray(payload?.leverages) ? payload.leverages : []
+        );
+        currencyFilterOptions.value = normalizeSelectOptions(
+          Array.isArray(payload?.currencies) ? payload.currencies : []
+        );
+        paymentTypeFilterOptions.value = normalizeSelectOptions(
+          Array.isArray(payload?.payment_types) ? payload.payment_types : []
+        );
       }
 
       accountFilterFeatures.value = {
@@ -1450,7 +1379,9 @@
       const nextDynamicOptions = { ...dynamicFilterOptions.value };
 
       if (filterField) {
-        const normalizedOptions = normalizeSelectOptions(Array.isArray(filterOptions?.[filterField]) ? filterOptions[filterField] : []);
+        const normalizedOptions = normalizeSelectOptions(
+          Array.isArray(filterOptions?.[filterField]) ? filterOptions[filterField] : []
+        );
 
         switch (filterField) {
           case "type_id":
@@ -1481,9 +1412,7 @@
 
       dynamicFilterOptions.value = nextDynamicOptions;
     } catch {
-      if (filterField) {
-        return;
-      }
+      if (filterField) return;
 
       accountTypeFilterOptions.value = [];
       leverageFilterOptions.value = [];
@@ -1510,17 +1439,17 @@
   const handleOpenEditModal = (account: AdminAccount) => {
     if (!account?.id || !canUpdateAccounts.value) return;
 
-    actionMenuId.value = null;
     openModal(AccountsPanelEdit, {
       id: account.id,
       title: resolveText("admin.accounts.form.titles.edit", "Edit account"),
     });
   };
 
-  const toggleActionMenu = (accountId: string) => {
+  const toggleActionMenu = (event: MouseEvent, account: AdminAccount) => {
     if (!showActionColumn.value) return;
 
-    actionMenuId.value = actionMenuId.value === accountId ? null : accountId;
+    activeActionAccount.value = account;
+    actionMenu.value?.toggle(event);
   };
 
   const replaceAccountInList = (nextAccount: AdminAccount) => {
@@ -1532,7 +1461,6 @@
   const handleRefreshBalance = async (account: AdminAccount) => {
     if (!account?.id || !canUpdateAccounts.value || refreshingAccountId.value === account.id) return;
 
-    actionMenuId.value = null;
     refreshingAccountId.value = account.id;
 
     try {
@@ -1558,13 +1486,9 @@
   const handleDeleteAccount = async (account: AdminAccount) => {
     if (!account?.id || !canDeleteAccounts.value || deletingAccountId.value === account.id) return;
 
-    const confirmed = window.confirm(
-      resolveText("admin.accounts.messages.archiveConfirm", "Archive this account?")
-    );
-
+    const confirmed = window.confirm(resolveText("admin.accounts.messages.archiveConfirm", "Archive this account?"));
     if (!confirmed) return;
 
-    actionMenuId.value = null;
     deletingAccountId.value = account.id;
 
     try {
@@ -1587,50 +1511,80 @@
     }
   };
 
-  const handleChangePerPage = async (value: number) => {
-    perPage.value = value;
+  const handlePaginatorPage = async (event: { page: number; rows: number }) => {
+    const nextPage = Number(event.page ?? 0) + 1;
+    const nextRows = Number(event.rows ?? perPage.value);
+
+    const pageChanged = nextPage !== page.value;
+    const rowsChanged = nextRows !== perPage.value;
+
+    page.value = rowsChanged ? DEFAULT_PAGE : nextPage;
+    perPage.value = nextRows;
+
+    if (pageChanged || rowsChanged) {
+      await loadData();
+      await syncStateToUrl();
+    }
+  };
+
+  const runSearch = async (token: number) => {
+    searchFilter.value = searchDraft.value;
     await loadData({ resetPage: true });
     await syncStateToUrl();
-  };
 
-  const handleChangePage = async (value: number) => {
-    page.value = value;
-    await loadData();
-    await syncStateToUrl();
-  };
-
-  const handleInputSearch = debounce(async (value: string) => {
-    try {
-      isLoadingSearch.value = true;
-      searchFilter.value = value;
-      await loadData({ resetPage: true });
-      await syncStateToUrl();
-    } finally {
+    if (token === latestSearchToken) {
       isLoadingSearch.value = false;
     }
-  }, 500);
+  };
+
+  const handleSearchInput = (value: string | undefined) => {
+    searchDraft.value = String(value ?? "");
+    latestSearchToken += 1;
+    const token = latestSearchToken;
+
+    if (searchTimer.value) {
+      window.clearTimeout(searchTimer.value);
+    }
+
+    isLoadingSearch.value = true;
+    searchTimer.value = window.setTimeout(() => {
+      searchTimer.value = null;
+      void runSearch(token);
+    }, 450);
+  };
 
   const handleOrderBy = async (value: string) => {
     orderBy.value = value;
-    await loadData();
+    await loadData({ resetPage: true });
     await syncStateToUrl();
   };
 
   const toggleOrderDirection = async () => {
     orderDirection.value = orderDirection.value === ORDER_DIRECTION_ASC ? ORDER_DIRECTION_DESC : ORDER_DIRECTION_ASC;
-    await loadData();
+    await loadData({ resetPage: true });
     await syncStateToUrl();
   };
 
   const handleChangeViewMode = async (value: string) => {
     if (value === "table" || value === "cards" || value === "full") {
       viewMode.value = value;
+      if (typeof window !== "undefined") {
+        localStorage.setItem(VIEW_MODE_STORAGE_KEY, value);
+      }
       await syncStateToUrl();
     }
   };
 
   const handleClickRefresh = async () => {
     await loadAll();
+    await syncStateToUrl();
+  };
+
+  const applyMetricFilter = async (metric: MetricFilterId) => {
+    activeMetricFilter.value = metric;
+    appliedFilters.value = applyMetricFiltersToState(metric, appliedFilters.value);
+    draftFilters.value = cloneFilters(appliedFilters.value);
+    await loadData({ resetPage: true });
     await syncStateToUrl();
   };
 
@@ -1647,24 +1601,23 @@
       [key]: query,
     };
 
-    if (!isRemoteSelectFilterKey(key)) {
-      return;
-    }
+    if (!isRemoteSelectFilterKey(key)) return;
 
     const activeTimer = filterSearchTimers.get(key);
     if (activeTimer) {
       window.clearTimeout(activeTimer);
     }
 
-    filterSearchTimers.set(key, window.setTimeout(async () => {
-      await loadFilterMeta({ filterField: key, filterSearch: query });
-    }, 500));
+    filterSearchTimers.set(
+      key,
+      window.setTimeout(async () => {
+        await loadFilterMeta({ filterField: key, filterSearch: query });
+      }, 400)
+    );
   };
 
   const handleFilterOptionOpen = async (key: SelectFilterKey) => {
-    if (!isRemoteSelectFilterKey(key)) {
-      return;
-    }
+    if (!isRemoteSelectFilterKey(key)) return;
 
     await loadFilterMeta({
       filterField: key,
@@ -1672,78 +1625,25 @@
     });
   };
 
-  const clearDraftFilterValue = (key: FilterKey) => {
-    setDraftFilterValue(key, "");
-
-    if ((SELECT_FILTER_KEYS as readonly string[]).includes(key)) {
-      filterSearchQueries.value = {
-        ...filterSearchQueries.value,
-        [key as SelectFilterKey]: "",
-      };
-    }
+  const toggleFiltersPopover = (event: MouseEvent) => {
+    draftFilters.value = cloneFilters(appliedFilters.value);
+    resetFilterSearchQueries();
+    filtersPopover.value?.toggle(event);
   };
 
-  const hasDraftFilterValue = (key: FilterKey): boolean => {
-    return sanitizeFilterValue(draftFilters.value[key]) !== "";
-  };
-
-  const handleDraftTextInput = (key: FilterKey, event: Event) => {
-    const target = event.target as HTMLInputElement | null;
-    setDraftFilterValue(key, target?.value ?? "");
-  };
-
-  const updateFiltersPopoverPosition = () => {
-    if (!isFiltersPopoverOpen.value || !filtersTriggerRef.value) {
-      return;
-    }
-
-    const triggerRect = filtersTriggerRef.value.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
-    const margin = 12;
-    const gap = 8;
-    const preferredWidth = Math.min(Math.max(viewportWidth - 24, 320), 560);
-    const left = Math.max(12, Math.min(triggerRect.right - preferredWidth, viewportWidth - preferredWidth - 12));
-    const spaceBelow = viewportHeight - triggerRect.bottom - gap - margin;
-    const spaceAbove = triggerRect.top - gap - margin;
-    const shouldOpenAbove = spaceBelow < 360 && spaceAbove > spaceBelow;
-    const availableHeight = shouldOpenAbove ? spaceAbove : spaceBelow;
-    const maxHeight = Math.max(220, Math.min(760, availableHeight));
-    const top = shouldOpenAbove
-      ? Math.max(margin, triggerRect.top - gap - maxHeight)
-      : Math.max(margin, triggerRect.bottom + gap);
-
-    filtersPopoverStyle.value = {
-      position: "fixed",
-      top: `${Math.round(top)}px`,
-      left: `${Math.round(left)}px`,
-      width: `${Math.round(preferredWidth)}px`,
-      maxWidth: "calc(100vw - 24px)",
-      maxHeight: `${Math.round(maxHeight)}px`,
-    };
-  };
-
-  const toggleFiltersPopover = async () => {
-    if (!isFiltersPopoverOpen.value) {
-      draftFilters.value = cloneFilters(appliedFilters.value);
-      resetFilterSearchQueries();
-    }
-    isFiltersPopoverOpen.value = !isFiltersPopoverOpen.value;
-
-    if (isFiltersPopoverOpen.value) {
-      await nextTick();
-      updateFiltersPopoverPosition();
-    }
+  const hideFiltersPopover = () => {
+    filtersPopover.value?.hide();
   };
 
   const resetDraftFilters = () => {
-    draftFilters.value = createEmptyFilters();
+    draftFilters.value = applyMetricFiltersToState(activeMetricFilter.value, createEmptyFilters());
     resetFilterSearchQueries();
   };
 
   const applyDraftFilters = async () => {
     appliedFilters.value = cloneFilters(draftFilters.value);
-    isFiltersPopoverOpen.value = false;
+    activeMetricFilter.value = DEFAULT_METRIC_FILTER;
+    hideFiltersPopover();
     resetFilterSearchQueries();
     await loadData({ resetPage: true });
     await syncStateToUrl();
@@ -1752,11 +1652,17 @@
   const removeAppliedFilter = async (key: FilterKey) => {
     appliedFilters.value = { ...appliedFilters.value, [key]: "" };
     draftFilters.value = { ...draftFilters.value, [key]: "" };
+
+    if (METRIC_MANAGED_FILTER_KEYS.includes(key)) {
+      activeMetricFilter.value = DEFAULT_METRIC_FILTER;
+    }
+
     await loadData({ resetPage: true });
     await syncStateToUrl();
   };
 
   const clearAllAppliedFilters = async () => {
+    activeMetricFilter.value = DEFAULT_METRIC_FILTER;
     appliedFilters.value = createEmptyFilters();
     draftFilters.value = createEmptyFilters();
     resetFilterSearchQueries();
@@ -1764,29 +1670,8 @@
     await syncStateToUrl();
   };
 
-  const handleClickOutsideFilters = (event: MouseEvent) => {
-    if (!isFiltersPopoverOpen.value) return;
-    const target = event.target as Node | null;
-    if (!target) return;
-
-    const clickedOnTrigger = filtersTriggerRef.value?.contains(target) ?? false;
-    const clickedOnPopover = filtersPopoverPanelRef.value?.contains(target) ?? false;
-
-    if (!clickedOnTrigger && !clickedOnPopover) {
-      isFiltersPopoverOpen.value = false;
-    }
-  };
-
-  const handleClickOutsideActionMenu = () => {
-    actionMenuId.value = null;
-  };
-
   const handleExternalReload = async () => {
     await loadAll();
-  };
-
-  const handleFiltersPopoverViewportChange = () => {
-    updateFiltersPopoverPosition();
   };
 
   const formatDate = (date?: string) => {
@@ -1813,10 +1698,13 @@
     }
   };
 
-  watch(viewMode, mode => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
-  });
+  const getTwoCharsByFullName = (fullName?: string): string => {
+    const segments = String(fullName ?? "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    return `${segments[0]?.charAt(0) ?? ""}${segments[1]?.charAt(0) ?? ""}`;
+  };
 
   onMounted(async () => {
     initViewMode();
@@ -1827,255 +1715,186 @@
     isInitialLoading.value = false;
 
     useEventBus.on("loadDataForAdminAccounts", handleExternalReload);
-    document.addEventListener("click", handleClickOutsideFilters);
-    document.addEventListener("click", handleClickOutsideActionMenu);
-    window.addEventListener("resize", handleFiltersPopoverViewportChange, { passive: true });
-    window.addEventListener("scroll", handleFiltersPopoverViewportChange, true);
   });
 
   onBeforeUnmount(() => {
+    if (searchTimer.value) {
+      window.clearTimeout(searchTimer.value);
+      searchTimer.value = null;
+    }
+
     filterSearchTimers.forEach(timerId => window.clearTimeout(timerId));
     filterSearchTimers.clear();
     useEventBus.off("loadDataForAdminAccounts", handleExternalReload);
-    document.removeEventListener("click", handleClickOutsideFilters);
-    document.removeEventListener("click", handleClickOutsideActionMenu);
-    window.removeEventListener("resize", handleFiltersPopoverViewportChange);
-    window.removeEventListener("scroll", handleFiltersPopoverViewportChange, true);
-  });
-
-  watch(isFiltersPopoverOpen, async isOpen => {
-    if (!isOpen) {
-      return;
-    }
-
-    await nextTick();
-    updateFiltersPopoverPosition();
   });
 </script>
 
 <style scoped lang="scss">
-  .accounts-stats-grid {
+  .accounts-panel {
     display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 14px;
+    color: var(--ui-text-main);
   }
 
-  @media (min-width: 768px) {
-    .accounts-stats-grid {
+  .accounts-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  @media (min-width: 700px) {
+    .accounts-metrics-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (min-width: 1400px) {
-    .accounts-stats-grid {
+  @media (min-width: 1280px) {
+    .accounts-metrics-grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
-  .accounts-stat-card {
-    border-radius: 10px;
-    padding: 12px;
+  .accounts-metric-button {
+    min-width: 0;
     border: none;
-    background:
-      linear-gradient(136deg, color-mix(in srgb, var(--ui-primary-main) 10%, transparent) 0%, transparent 70.44%),
-      var(--ui-background-card);
-  }
-
-  .accounts-stat-card.is-highlighted {
-    background:
-      linear-gradient(136deg, color-mix(in srgb, var(--ui-sticker-success) 18%, transparent) 0%, transparent 70.44%),
-      var(--ui-background-card);
-  }
-
-  .accounts-stat-card.is-balance-summary {
-    grid-column: 1 / -1;
     background: transparent;
-    padding: 0;
+    text-align: left;
+    color: inherit;
   }
 
-  .accounts-stat-card__label {
-    font-size: 12px;
+  .accounts-metric-card {
+    height: 100%;
+    border-color: transparent;
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+
+    :deep(.p-card-content) {
+      display: grid;
+      gap: 4px;
+      padding: 14px;
+    }
+
+    span {
+      color: var(--ui-text-secondary);
+      font-size: 12px;
+    }
+
+    strong {
+      color: var(--ui-text-main);
+      font-size: clamp(22px, 2.2vw, 30px);
+      line-height: 1;
+    }
+  }
+
+  .accounts-metric-button:hover .accounts-metric-card,
+  .accounts-metric-button.is-active .accounts-metric-card {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 58%, var(--color-stroke-ui-light));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .accounts-balance-card {
+    :deep(.p-card-content) {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+    }
+  }
+
+  .accounts-balance-card__header {
     color: var(--ui-text-secondary);
-  }
-
-  .accounts-stat-card.is-balance-summary .accounts-stat-card__label {
-    margin-bottom: 8px;
-  }
-
-  .accounts-stat-card__value {
-    margin-top: 2px;
-    font-size: 24px;
-    line-height: 28px;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--ui-text-main);
   }
 
-  .accounts-stat-card__balance-grid {
-    margin-top: 0;
+  .accounts-balance-card__grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 8px;
+    gap: 12px;
   }
 
-  @media (min-width: 640px) {
-    .accounts-stat-card__balance-grid {
+  @media (min-width: 700px) {
+    .accounts-balance-card__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
-  .accounts-stat-card__balance-item {
-    border-radius: 0;
-    background: transparent;
-    padding: 0;
-  }
-
-  .accounts-stat-card__balance-label {
-    font-size: 11px;
-    color: var(--ui-text-secondary);
-  }
-
-  .accounts-stat-card__balance-value {
-    color: var(--ui-text-main);
-    line-height: 1.1;
-    margin-top: 2px;
-    white-space: nowrap;
-  }
-
-  .accounts-stat-card__balance-value.size-xl {
-    font-size: clamp(20px, 2.4vw, 28px);
-    font-weight: 800;
-  }
-
-  .accounts-stat-card__balance-value.size-lg {
-    font-size: clamp(18px, 2vw, 24px);
-    font-weight: 700;
-  }
-
-  .accounts-stat-card__balance-value.size-md {
-    font-size: clamp(16px, 1.8vw, 20px);
-    font-weight: 700;
-  }
-
-  .accounts-stat-card__balance-value.size-sm {
-    font-size: clamp(14px, 1.5vw, 18px);
-    font-weight: 600;
-  }
-
-  .accounts-filters-popover {
-    position: fixed;
-    z-index: 1200;
-    width: min(92vw, 560px);
-    max-height: min(70vh, 760px);
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--ui-background-panel) 92%, var(--ui-background) 8%);
-    box-shadow: 0 18px 44px color-mix(in srgb, var(--ui-background) 84%, transparent);
-    backdrop-filter: blur(6px);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow: hidden;
-  }
-
-  .accounts-filters-popover__title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ui-text-secondary);
-  }
-
-  .accounts-filters-popover__body {
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-right: 2px;
-  }
-
-  .accounts-filters-popover__section-title {
-    font-size: 11px;
-    line-height: 14px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--ui-text-secondary);
-  }
-
-  .accounts-filters-popover__grid {
+  .accounts-balance-card__item {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
+    gap: 3px;
 
-  @media (min-width: 640px) {
-    .accounts-filters-popover__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    span {
+      color: var(--ui-text-secondary);
+      font-size: 11px;
+    }
+
+    strong {
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.1;
     }
   }
 
-  .accounts-filters-popover__grid--status {
-    grid-template-columns: 1fr;
-  }
-
-  .accounts-filters-popover__field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .accounts-filters-popover__field > span {
-    font-size: 12px;
-    color: var(--ui-text-secondary);
-  }
-
-  .accounts-filters-popover__control {
+  .accounts-toolbar-card {
     position: relative;
-  }
-
-  .accounts-filters-popover__input {
-    width: 100%;
-    height: 40px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 8px;
-    background: var(--color-stroke-ui-dark);
-    color: var(--ui-text-main);
-    font-size: 13px;
-    line-height: 1;
-    padding: 0 36px 0 12px;
-    outline: none;
-  }
-
-  .accounts-filters-popover__input:focus {
-    border-color: var(--ui-primary-accent);
-  }
-
-  .accounts-filters-popover__input::placeholder {
-    color: var(--ui-text-secondary);
-  }
-
-  .accounts-filters-popover__clear {
-    position: absolute;
-    top: 50%;
-    right: 8px;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 999px;
-    background: var(--ui-background-panel);
-    color: var(--ui-text-secondary);
-    font-size: 14px;
-    line-height: 1;
     z-index: 2;
+
+    :deep(.p-card-content) {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
   }
 
-  .accounts-filters-popover__actions {
-    margin-top: 4px;
+  .accounts-toolbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr);
+    gap: 10px;
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .accounts-toolbar {
+      grid-template-columns: minmax(260px, 1fr) auto minmax(170px, 220px) auto auto auto;
+    }
+  }
+
+  .accounts-search {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 8px;
+    min-width: 0;
+
+    > .pi-search {
+      position: absolute;
+      left: 13px;
+      z-index: 1;
+      color: var(--ui-text-secondary);
+      pointer-events: none;
+    }
+  }
+
+  .accounts-search__input {
+    width: 100%;
+    padding-left: 38px;
+    padding-right: 38px;
+  }
+
+  .accounts-search__spinner {
+    position: absolute;
+    right: 13px;
+    color: var(--ui-text-secondary);
+  }
+
+  .accounts-sort-select {
+    min-width: 170px;
+  }
+
+  .accounts-view-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .accounts-filter-chips {
@@ -2084,97 +1903,220 @@
     gap: 8px;
   }
 
-  .accounts-filter-chip {
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 999px;
-    min-height: 28px;
-    padding: 0 10px;
-    background: var(--ui-background-panel);
+  .accounts-filters {
+    width: min(92vw, 620px);
+    max-height: min(78vh, 760px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 12px;
     color: var(--ui-text-main);
-    font-size: 12px;
-    display: inline-flex;
+  }
+
+  .accounts-filters__header,
+  .accounts-filters__actions {
+    display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
+    gap: 10px;
   }
 
-  .accounts-filter-chip:hover {
-    background: var(--color-stroke-ui-dark);
+  .accounts-filters__body {
+    min-height: 0;
+    overflow: auto;
+    display: grid;
+    gap: 16px;
+    padding-right: 2px;
   }
 
-  .accounts-filter-chip--clear {
+  .accounts-filters section {
+    display: grid;
+    gap: 10px;
+  }
+
+  .accounts-filters h3 {
     color: var(--ui-text-secondary);
+    font-size: 11px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0;
   }
 
-  .accounts-filter-chip__remove {
-    font-size: 16px;
-    line-height: 1;
-    color: var(--ui-text-secondary);
+  .accounts-filters__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
-  .accounts-row-action-btn {
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--color-stroke-ui-dark);
-    color: var(--ui-text-main);
-  }
-
-  .accounts-inline-refresh-btn {
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--color-stroke-ui-dark);
-    color: var(--ui-text-main);
-    transition:
-      opacity 0.2s ease,
-      background-color 0.2s ease;
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: wait;
+  @media (min-width: 640px) {
+    .accounts-filters__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  .accounts-row-menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    z-index: 30;
-    min-width: 190px;
-    padding: 6px;
-    border-radius: 10px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--ui-background-panel);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  .accounts-filter-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+
+    > span {
+      color: var(--ui-text-secondary);
+      font-size: 12px;
+    }
   }
 
-  .accounts-row-menu__item {
-    width: 100%;
+  .accounts-list-card {
+    overflow: visible;
+
+    :deep(.p-card-content) {
+      padding: 0;
+    }
+  }
+
+  .accounts-skeleton-list {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .accounts-table {
+    :deep(.p-datatable-table) {
+      min-width: 1120px;
+    }
+
+    :deep(.p-datatable-thead > tr > th) {
+      background: color-mix(in srgb, var(--ui-background-card) 94%, transparent);
+      color: var(--ui-text-secondary);
+      border-color: var(--color-stroke-ui-light);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    :deep(.p-datatable-tbody > tr) {
+      background: color-mix(in srgb, var(--ui-background-panel) 96%, transparent);
+      color: var(--ui-text-main);
+      cursor: pointer;
+    }
+
+    :deep(.p-datatable-tbody > tr > td) {
+      border-color: var(--color-stroke-ui-light);
+      padding: 10px 12px;
+    }
+
+    :deep(.p-datatable-tbody > tr:hover) {
+      background: color-mix(in srgb, var(--ui-primary-main) 8%, var(--ui-background-panel));
+    }
+  }
+
+  .accounts-owner-cell {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding: 10px 12px;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--ui-text-main);
-    text-align: left;
+    gap: 10px;
+    min-width: 0;
+
+    > :first-child {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+    }
+
+    div {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+    }
+
+    strong,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      color: var(--ui-text-secondary);
+      font-size: 12px;
+    }
+  }
+
+  .accounts-balance-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .accounts-copy-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ui-text-secondary);
+  }
+
+  .accounts-cards-wrap {
+    position: relative;
+    padding: 12px;
+  }
+
+  .accounts-cards-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--ui-background-panel) 64%, transparent);
+    color: var(--ui-primary-main);
+    backdrop-filter: blur(3px);
+  }
+
+  .accounts-empty {
+    min-height: 240px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    color: var(--ui-text-secondary);
+    text-align: center;
+    padding: 24px;
+
+    i {
+      font-size: 32px;
+      color: var(--ui-primary-main);
+    }
+
+    strong {
+      color: var(--ui-text-main);
+    }
+  }
+
+  .accounts-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .accounts-pagination__report {
+    color: var(--ui-text-secondary);
     font-size: 13px;
+    font-weight: 700;
   }
 
-  .accounts-row-menu__item:hover {
-    background: var(--color-stroke-ui-dark);
-  }
+  @media (max-width: 640px) {
+    .accounts-toolbar-card :deep(.p-card-content),
+    .accounts-list-card :deep(.p-card-content),
+    .accounts-cards-wrap {
+      padding: 10px;
+    }
 
-  .accounts-row-menu__item.danger {
-    color: var(--ui-sticker-danger);
+    .accounts-filters {
+      width: calc(100vw - 28px);
+    }
+
+    .accounts-pagination {
+      justify-content: center;
+    }
   }
 </style>

@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "Aperçu des comptes",
-            "items": [
-              "Standard",
-              "Pro",
-              "Islamique",
-              "Démo"
-            ]
+            "items": ["Standard", "Pro", "Islamique", "Démo"]
           },
           {
             "section": "Instruments de marché",
-            "items": [
-              "Forex",
-              "Métaux",
-              "CFD Crypto",
-              "Indices",
-              "Actions",
-              "Énergie",
-              "ETF"
-            ]
+            "items": ["Forex", "Métaux", "CFD Crypto", "Indices", "Actions", "Énergie", "ETF"]
           },
           {
             "section": "Plateforme",
-            "items": [
-              "MT4 Desktop",
-              "MT 4 Mobile"
-            ]
+            "items": ["MT4 Desktop", "MT 4 Mobile"]
           },
           {
             "section": "Conditions de trading",
-            "items": [
-              "Rechargement du compte",
-              "Retrait de fonds"
-            ]
+            "items": ["Rechargement du compte", "Retrait de fonds"]
           },
           {
             "section": "HUB du Trader",
-            "items": [
-              "Blog du trader",
-              "Calendrier économique",
-              "Actualités du marché"
-            ]
+            "items": ["Blog du trader", "Calendrier économique", "Actualités du marché"]
           },
           {
             "section": "Trading TANDEM",
-            "items": [
-              "Pour trader",
-              "Pour investisseur"
-            ]
+            "items": ["Pour trader", "Pour investisseur"]
           }
         ],
         "Partnership": [
           {
             "section": "Partenariat",
-            "items": [
-              "Inscrire IB/ Partenariat",
-              "Comment les IB génèrent des revenus"
-            ]
+            "items": ["Inscrire IB/ Partenariat", "Comment les IB génèrent des revenus"]
           }
         ],
         "Company": [
           {
             "section": "Entreprise",
-            "items": [
-              "À propos de l'entreprise",
-              "Documents",
-              "Actualités de l'entreprise",
-              "Contacts",
-              "Carrière"
-            ]
+            "items": ["À propos de l'entreprise", "Documents", "Actualités de l'entreprise", "Contacts", "Carrière"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "Démo",
           "subtitle": "compte",
           "description": "Trading sans risque avec des fonds virtuels, parfait pour les débutants pour explorer les marchés.",
-          "features": [
-            "Effet de levier jusqu'à 1:100",
-            "Spreads à partir de 0,0 pips",
-            "Aucun dépôt requis"
-          ],
+          "features": ["Effet de levier jusqu'à 1:100", "Spreads à partir de 0,0 pips", "Aucun dépôt requis"],
           "buttonText": "Essayer la Démo maintenant",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "Standard",
           "subtitle": "compte",
           "description": "Accès facile aux marchés spot avec des frais faibles — idéal pour les débutants et les traders actifs.",
-          "features": [
-            "Effet de levier jusqu'à 1:100",
-            "Spreads à partir de 1,2 pips",
-            "Premier dépôt de 50$"
-          ],
+          "features": ["Effet de levier jusqu'à 1:100", "Spreads à partir de 1,2 pips", "Premier dépôt de 50$"],
           "buttonText": "Ouvrir un compte Standard",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "Pro",
           "subtitle": "compte",
           "description": "Découvrez des spreads serrés, un effet de levier plus élevé et un contrôle total sur chaque transaction.",
-          "features": [
-            "Effet de levier jusqu'à 1:100",
-            "Spreads à partir de 0,0 pips",
-            "Premier dépôt de 1000$"
-          ],
+          "features": ["Effet de levier jusqu'à 1:100", "Spreads à partir de 0,0 pips", "Premier dépôt de 1000$"],
           "buttonText": "Trader comme un Pro",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "Tandem",
           "subtitle": "compte",
           "description": "Associez-vous avec un partenaire, mentor ou co-trader et grandissez ensemble avec des stratégies synchronisées.",
-          "features": [
-            "Effet de levier jusqu'à 1:100",
-            "Accès partagé au compte",
-            "Miroir de trading en temps réel"
-          ],
+          "features": ["Effet de levier jusqu'à 1:100", "Accès partagé au compte", "Miroir de trading en temps réel"],
           "buttonText": "Trader ensemble",
           "isRecommended": false
         },
@@ -486,10 +435,7 @@
         "career": {
           "title": "Carrière",
           "subtitle": "À l'heure actuelle, l'entreprise recherche les spécialistes suivants:",
-          "positions": [
-            "RESPONSABLE DES VENTES",
-            "DIRECTEUR DU DÉPARTEMENT D'ANALYSE"
-          ],
+          "positions": ["RESPONSABLE DES VENTES", "DIRECTEUR DU DÉPARTEMENT D'ANALYSE"],
           "cta": "SI VOUS ÊTES PRÊT POUR UNE CROISSANCE DYNAMIQUE, VOUS ÊTES AMBITIEUX ET TALENTUEUX, ENVOYEZ VOTRE CV.",
           "button": "ENVOYER CV"
         },
@@ -686,30 +632,15 @@
       "description": "L'objectif principal d'Ester est de créer les meilleures conditions et les plus transparentes pour les traders particuliers et institutionnels.",
       "trading": {
         "title": "Trading",
-        "items": [
-          "Aperçu des comptes",
-          "Marchés",
-          "Plateforme",
-          "Conditions de trading",
-          "Trading tandem"
-        ]
+        "items": ["Aperçu des comptes", "Marchés", "Plateforme", "Conditions de trading", "Trading tandem"]
       },
       "partnership": {
         "title": "Partenariat",
-        "items": [
-          "Inscrire IB/ Partenariat",
-          "Comment les IB génèrent des revenus"
-        ]
+        "items": ["Inscrire IB/ Partenariat", "Comment les IB génèrent des revenus"]
       },
       "company": {
         "title": "Entreprise",
-        "items": [
-          "À propos de l'entreprise",
-          "Documents",
-          "Actualités de l'entreprise",
-          "Contacts",
-          "Carrière"
-        ]
+        "items": ["À propos de l'entreprise", "Documents", "Actualités de l'entreprise", "Contacts", "Carrière"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1278,7 +1209,7 @@
             "name": "Nom",
             "email": "Email",
             "phone": "Téléphone",
-            "created_at": "Créé le",
+            "created_at": "Created at",
             "options": "Actions"
           }
         },
@@ -1322,12 +1253,138 @@
           "submit": "Mettre à jour et Enregistrer"
         },
         "accounts-panel-search": {
-          "placeholder": "Rechercher des clients..."
+          "placeholder": "Rechercher des comptes..."
         }
       },
       "index": {
         "title": "Comptes",
         "subtitle": "Liste des comptes"
+      },
+      "actions": {
+        "create": "Nouveau compte",
+        "edit": "Modifier",
+        "refresh": "Actualiser",
+        "refreshBalance": "Actualiser le solde",
+        "archive": "Archiver",
+        "openActions": "Ouvrir les actions",
+        "copyId": "Copier l’ID",
+        "sortAscending": "Trier croissant",
+        "sortDescending": "Trier décroissant"
+      },
+      "columns": {
+        "owner": "Titulaire",
+        "number": "Numéro de compte",
+        "type": "Type",
+        "balance": "Solde",
+        "leverage": "Effet de levier",
+        "actions": "Actions"
+      },
+      "stats": {
+        "totalAccounts": "Total des comptes",
+        "newToday": "Nouveaux comptes aujourd’hui",
+        "newWeek": "Nouveaux comptes cette semaine",
+        "newMonth": "Nouveaux comptes ce mois-ci",
+        "balanceSummary": "Soldes",
+        "balanceToday": "Aujourd’hui",
+        "balanceWeek": "Semaine",
+        "balanceMonth": "Mois",
+        "balanceYear": "Année"
+      },
+      "view": {
+        "table": "Tableau",
+        "cards": "Cartes",
+        "full": "Cartes pleine largeur"
+      },
+      "filters": {
+        "title": "Filtres",
+        "close": "Fermer les filtres",
+        "clearAll": "Tout effacer",
+        "reset": "Réinitialiser",
+        "apply": "Appliquer",
+        "sections": {
+          "selects": "Filtres de sélection",
+          "text": "Champs texte",
+          "ranges": "Plages",
+          "dates": "Plages de dates"
+        },
+        "fields": {
+          "user_id": "ID utilisateur",
+          "owner_name": "Nom du titulaire",
+          "owner_email": "Email du titulaire",
+          "owner_phone": "Téléphone du titulaire",
+          "currency": "Devise",
+          "payment_type": "Type de paiement",
+          "type_id": "ID du type",
+          "type_group": "Groupe de type",
+          "leverage_id": "ID de levier",
+          "is_favorite": "Favori",
+          "balance_from": "Solde min.",
+          "balance_to": "Solde max.",
+          "created_at_from": "Créé depuis",
+          "created_at_to": "Créé jusqu’au",
+          "updated_at_from": "Mis à jour depuis",
+          "updated_at_to": "Mis à jour jusqu’au"
+        },
+        "values": {
+          "yes": "Oui",
+          "no": "Non"
+        }
+      },
+      "empty": {
+        "title": "Aucun compte trouvé",
+        "subtitle": "Modifiez les filtres ou la recherche pour voir les comptes."
+      },
+      "pagination": {
+        "empty": "0 compte",
+        "report": "{first} à {last} / Total : {total}"
+      },
+      "messages": {
+        "loadError": "Impossible de charger les comptes.",
+        "refreshSuccess": "Solde du compte mis à jour.",
+        "refreshError": "Impossible de mettre à jour le solde du compte.",
+        "archiveConfirm": "Archiver ce compte ?",
+        "archiveSuccess": "Compte archivé.",
+        "archiveError": "Impossible d’archiver le compte."
+      },
+      "form": {
+        "titles": {
+          "create": "Créer un compte",
+          "edit": "Modifier le compte"
+        },
+        "labels": {
+          "user": "Client",
+          "accountType": "Type de compte",
+          "leverage": "Effet de levier",
+          "currency": "Devise",
+          "paymentType": "Type de paiement"
+        },
+        "placeholders": {
+          "userSearch": "Rechercher par email, téléphone ou nom",
+          "accountType": "Sélectionner un type de compte",
+          "leverage": "Sélectionner un effet de levier",
+          "currency": "Sélectionner une devise",
+          "paymentType": "Sélectionner un type de paiement"
+        },
+        "notes": {
+          "title": "Note MT4",
+          "create": "La création d’un compte ouvre un vrai compte MT4 pour le client sélectionné à partir des données de son profil.",
+          "edit": "La modification change les paramètres locaux du compte. Le numéro de compte MT4 et le mot de passe ne sont pas recréés ici."
+        },
+        "actions": {
+          "create": "Créer un compte",
+          "save": "Enregistrer"
+        },
+        "errors": {
+          "userRequired": "Sélectionnez un client.",
+          "accountTypeRequired": "Sélectionnez un type de compte."
+        },
+        "messages": {
+          "noPermission": "Vous n’avez pas l’autorisation de gérer les comptes.",
+          "createSuccess": "Compte créé.",
+          "createError": "Impossible de créer le compte.",
+          "updateSuccess": "Compte mis à jour.",
+          "updateError": "Impossible de mettre à jour le compte."
+        }
       }
     },
     "clients": {

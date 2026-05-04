@@ -35,74 +35,39 @@
         "Trading": [
           {
             "section": "계좌 개요",
-            "items": [
-              "스탠다드",
-              "프로",
-              "이슬람",
-              "데모"
-            ]
+            "items": ["스탠다드", "프로", "이슬람", "데모"]
           },
           {
             "section": "시장 상품",
-            "items": [
-              "외환",
-              "귀금속",
-              "암호화폐 CFD",
-              "지수",
-              "주식",
-              "에너지",
-              "ETF"
-            ]
+            "items": ["외환", "귀금속", "암호화폐 CFD", "지수", "주식", "에너지", "ETF"]
           },
           {
             "section": "플랫폼",
-            "items": [
-              "MT4 데스크톱",
-              "MT4 모바일"
-            ]
+            "items": ["MT4 데스크톱", "MT4 모바일"]
           },
           {
             "section": "거래 조건",
-            "items": [
-              "계좌 입금",
-              "출금"
-            ]
+            "items": ["계좌 입금", "출금"]
           },
           {
             "section": "트레이더 HUB",
-            "items": [
-              "트레이더 블로그",
-              "경제 캘린더",
-              "시장 뉴스"
-            ]
+            "items": ["트레이더 블로그", "경제 캘린더", "시장 뉴스"]
           },
           {
             "section": "TANDEM 거래",
-            "items": [
-              "트레이더용",
-              "투자자용"
-            ]
+            "items": ["트레이더용", "투자자용"]
           }
         ],
         "Partnership": [
           {
             "section": "파트너십",
-            "items": [
-              "IB/파트너십 등록",
-              "IB 수익 창출 방법"
-            ]
+            "items": ["IB/파트너십 등록", "IB 수익 창출 방법"]
           }
         ],
         "Company": [
           {
             "section": "회사",
-            "items": [
-              "회사 소개",
-              "문서",
-              "회사 뉴스",
-              "연락처",
-              "채용"
-            ]
+            "items": ["회사 소개", "문서", "회사 뉴스", "연락처", "채용"]
           }
         ]
       }
@@ -235,11 +200,7 @@
           "title": "데모",
           "subtitle": "계좌",
           "description": "가상 자금으로 무위험 거래, 초보자가 시장을 탐색하기에 완벽합니다.",
-          "features": [
-            "최대 1:100 레버리지",
-            "0.0핍부터 스프레드",
-            "입금 불필요"
-          ],
+          "features": ["최대 1:100 레버리지", "0.0핍부터 스프레드", "입금 불필요"],
           "buttonText": "지금 데모 체험",
           "isRecommended": true
         },
@@ -249,11 +210,7 @@
           "title": "스탠다드",
           "subtitle": "계좌",
           "description": "낮은 수수료로 현물 시장에 쉽게 접근 — 초보자와 활발한 트레이더에게 이상적입니다.",
-          "features": [
-            "최대 1:100 레버리지",
-            "1.2핍부터 스프레드",
-            "최초 입금 $50"
-          ],
+          "features": ["최대 1:100 레버리지", "1.2핍부터 스프레드", "최초 입금 $50"],
           "buttonText": "스탠다드 계좌 개설",
           "isRecommended": false
         },
@@ -263,11 +220,7 @@
           "title": "프로",
           "subtitle": "계좌",
           "description": "타이트한 스프레드, 더 높은 레버리지, 모든 거래에 대한 완전한 제어를 경험하세요.",
-          "features": [
-            "최대 1:100 레버리지",
-            "0.0핍부터 스프레드",
-            "최초 입금 $1000"
-          ],
+          "features": ["최대 1:100 레버리지", "0.0핍부터 스프레드", "최초 입금 $1000"],
           "buttonText": "프로처럼 거래",
           "isRecommended": false
         },
@@ -277,11 +230,7 @@
           "title": "탠덤",
           "subtitle": "계좌",
           "description": "파트너, 멘토 또는 공동 트레이더와 짝을 이루고 동기화된 전략으로 함께 성장하세요.",
-          "features": [
-            "최대 1:100 레버리지",
-            "공유 계좌 접근",
-            "실시간 거래 미러링"
-          ],
+          "features": ["최대 1:100 레버리지", "공유 계좌 접근", "실시간 거래 미러링"],
           "buttonText": "함께 거래",
           "isRecommended": false
         },
@@ -291,11 +240,7 @@
           "title": "이슬람",
           "subtitle": "계좌",
           "description": "스왑 없음. 샤리아 준수. 이자 없이 거래, 플랫폼에 완전 접근.",
-          "features": [
-            "최대 1:100 레버리지",
-            "스왑/이자 수수료 없음",
-            "모든 거래 상품 접근"
-          ],
+          "features": ["최대 1:100 레버리지", "스왑/이자 수수료 없음", "모든 거래 상품 접근"],
           "buttonText": "이슬람 계좌 개설",
           "isRecommended": false
         }
@@ -486,10 +431,7 @@
         "career": {
           "title": "채용",
           "subtitle": "현재 회사는 다음 전문가를 찾고 있습니다:",
-          "positions": [
-            "영업 관리자",
-            "분석 부서장"
-          ],
+          "positions": ["영업 관리자", "분석 부서장"],
           "cta": "역동적인 성장을 준비하고 있고, 야심차고 재능이 있다면 이력서를 보내주세요.",
           "button": "이력서 보내기"
         },
@@ -686,30 +628,15 @@
       "description": "Ester의 주요 목표는 소매 및 기업 트레이더를 위한 최상의 가장 투명한 조건을 만드는 것입니다.",
       "trading": {
         "title": "거래",
-        "items": [
-          "계좌 개요",
-          "시장",
-          "플랫폼",
-          "거래 조건",
-          "탠덤 거래"
-        ]
+        "items": ["계좌 개요", "시장", "플랫폼", "거래 조건", "탠덤 거래"]
       },
       "partnership": {
         "title": "파트너십",
-        "items": [
-          "IB/파트너십 등록",
-          "IB 수익 창출 방법"
-        ]
+        "items": ["IB/파트너십 등록", "IB 수익 창출 방법"]
       },
       "company": {
         "title": "회사",
-        "items": [
-          "회사 소개",
-          "문서",
-          "회사 뉴스",
-          "연락처",
-          "채용"
-        ]
+        "items": ["회사 소개", "문서", "회사 뉴스", "연락처", "채용"]
       },
       "legal": {
         "company_name": "Ester Holdings Ltd.,",
@@ -1278,7 +1205,7 @@
             "name": "이름",
             "email": "이메일",
             "phone": "전화",
-            "created_at": "생성일",
+            "created_at": "Created at",
             "options": "작업"
           }
         },
@@ -1322,12 +1249,138 @@
           "submit": "업데이트 및 저장"
         },
         "accounts-panel-search": {
-          "placeholder": "고객 검색..."
+          "placeholder": "계정 검색..."
         }
       },
       "index": {
-        "title": "계좌",
-        "subtitle": "계좌 목록"
+        "title": "계정",
+        "subtitle": "계정 목록"
+      },
+      "actions": {
+        "create": "새 계정",
+        "edit": "편집",
+        "refresh": "새로고침",
+        "refreshBalance": "잔액 새로고침",
+        "archive": "보관",
+        "openActions": "작업 열기",
+        "copyId": "ID 복사",
+        "sortAscending": "오름차순 정렬",
+        "sortDescending": "내림차순 정렬"
+      },
+      "columns": {
+        "owner": "소유자",
+        "number": "계정 번호",
+        "type": "유형",
+        "balance": "잔액",
+        "leverage": "레버리지",
+        "actions": "작업"
+      },
+      "stats": {
+        "totalAccounts": "전체 계정",
+        "newToday": "오늘 새 계정",
+        "newWeek": "이번 주 새 계정",
+        "newMonth": "이번 달 새 계정",
+        "balanceSummary": "잔액",
+        "balanceToday": "오늘",
+        "balanceWeek": "주",
+        "balanceMonth": "월",
+        "balanceYear": "년"
+      },
+      "view": {
+        "table": "표",
+        "cards": "카드",
+        "full": "전체 너비 카드"
+      },
+      "filters": {
+        "title": "필터",
+        "close": "필터 닫기",
+        "clearAll": "모두 지우기",
+        "reset": "초기화",
+        "apply": "적용",
+        "sections": {
+          "selects": "선택 필터",
+          "text": "텍스트 필드",
+          "ranges": "범위",
+          "dates": "날짜 범위"
+        },
+        "fields": {
+          "user_id": "사용자 ID",
+          "owner_name": "소유자 이름",
+          "owner_email": "소유자 이메일",
+          "owner_phone": "소유자 전화번호",
+          "currency": "통화",
+          "payment_type": "결제 유형",
+          "type_id": "유형 ID",
+          "type_group": "유형 그룹",
+          "leverage_id": "레버리지 ID",
+          "is_favorite": "즐겨찾기",
+          "balance_from": "잔액 시작",
+          "balance_to": "잔액 끝",
+          "created_at_from": "생성일 시작",
+          "created_at_to": "생성일 끝",
+          "updated_at_from": "업데이트 시작",
+          "updated_at_to": "업데이트 끝"
+        },
+        "values": {
+          "yes": "예",
+          "no": "아니요"
+        }
+      },
+      "empty": {
+        "title": "계정을 찾을 수 없음",
+        "subtitle": "계정을 보려면 필터 또는 검색어를 변경하세요."
+      },
+      "pagination": {
+        "empty": "0개 계정",
+        "report": "{first} ~ {last} / 총: {total}"
+      },
+      "messages": {
+        "loadError": "계정을 불러오지 못했습니다.",
+        "refreshSuccess": "계정 잔액이 업데이트되었습니다.",
+        "refreshError": "계정 잔액을 업데이트하지 못했습니다.",
+        "archiveConfirm": "이 계정을 보관하시겠습니까?",
+        "archiveSuccess": "계정이 보관되었습니다.",
+        "archiveError": "계정을 보관하지 못했습니다."
+      },
+      "form": {
+        "titles": {
+          "create": "계정 생성",
+          "edit": "계정 편집"
+        },
+        "labels": {
+          "user": "고객",
+          "accountType": "계정 유형",
+          "leverage": "레버리지",
+          "currency": "통화",
+          "paymentType": "결제 유형"
+        },
+        "placeholders": {
+          "userSearch": "이메일, 전화번호 또는 이름으로 검색",
+          "accountType": "계정 유형 선택",
+          "leverage": "레버리지 선택",
+          "currency": "통화 선택",
+          "paymentType": "결제 유형 선택"
+        },
+        "notes": {
+          "title": "MT4 참고",
+          "create": "계정을 만들면 선택한 고객의 프로필 데이터를 사용하여 실제 MT4 계정이 개설됩니다.",
+          "edit": "편집은 로컬 계정 설정만 변경합니다. MT4 계정 번호와 비밀번호는 여기서 다시 생성되지 않습니다."
+        },
+        "actions": {
+          "create": "계정 생성",
+          "save": "변경사항 저장"
+        },
+        "errors": {
+          "userRequired": "고객을 선택하세요.",
+          "accountTypeRequired": "계정 유형을 선택하세요."
+        },
+        "messages": {
+          "noPermission": "계정을 관리할 권한이 없습니다.",
+          "createSuccess": "계정이 생성되었습니다.",
+          "createError": "계정을 생성하지 못했습니다.",
+          "updateSuccess": "계정이 업데이트되었습니다.",
+          "updateError": "계정을 업데이트하지 못했습니다."
+        }
       }
     },
     "clients": {

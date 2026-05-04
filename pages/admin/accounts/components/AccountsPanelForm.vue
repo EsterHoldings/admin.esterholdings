@@ -1,119 +1,152 @@
 <template>
-  <div class="accounts-form-drawer">
-    <div
-      v-if="titleText"
-      class="accounts-form-drawer__top"
-    >
-      <h2 class="accounts-form-drawer__title">{{ titleText }}</h2>
-    </div>
+  <div class="accounts-form">
+    <header class="accounts-form__header">
+      <h2>{{ titleText }}</h2>
+      <p>
+        {{
+          isEditMode
+            ? resolveText(
+                "admin.accounts.form.notes.edit",
+                "Editing changes local account settings. MT4 account number and password are not recreated here."
+              )
+            : resolveText(
+                "admin.accounts.form.notes.create",
+                "Creating an account opens a real MT4 account for the selected client using the client profile data."
+              )
+        }}
+      </p>
+    </header>
 
-    <div
-      class="accounts-form-drawer__content"
-      :class="{ 'without-top': !titleText }"
-    >
-      <div class="accounts-form-drawer__fields">
-        <UiFormControl
-          :label="resolveText('admin.accounts.form.labels.user', 'Client')"
-          :errors="fieldErrors.user_id"
-        >
-          <UiSelect
-            searchable
-            :value="form.user_id || null"
-            :data="userOptions"
-            :searchValue="userSearch"
-            :searchPlaceholder="resolveText('admin.accounts.form.placeholders.userSearch', 'Search by email, phone or name')"
+    <div class="accounts-form__body">
+      <PrimeMessage
+        v-if="!canSubmitAccounts"
+        severity="warn"
+        size="small">
+        {{ resolveText("admin.accounts.form.messages.noPermission", "You do not have permission to manage accounts.") }}
+      </PrimeMessage>
+
+      <div class="accounts-form__grid">
+        <label class="accounts-form__field">
+          <span>{{ resolveText("admin.accounts.form.labels.user", "Client") }}</span>
+          <PrimeSelect
+            class="w-full"
+            append-to="self"
+            filter
+            :model-value="form.user_id || null"
+            :options="userOptions"
+            option-label="text"
+            option-value="value"
+            :loading="isMetaLoading"
+            :disabled="isMetaLoading || isRecordLoading || isEditMode"
+            :invalid="hasFieldError('user_id')"
+            :placeholder="resolveText('admin.accounts.form.placeholders.userSearch', 'Search by email, phone or name')"
+            @update:model-value="value => updateField('user_id', String(value || ''))"
+            @filter="event => handleSearchUsers(String(event?.value || ''))"
+            @show="() => loadMeta({ searchUser: userSearch, selectedUserId: form.user_id })" />
+          <small v-if="firstFieldError('user_id')">{{ firstFieldError("user_id") }}</small>
+        </label>
+
+        <label class="accounts-form__field">
+          <span>{{ resolveText("admin.accounts.form.labels.accountType", "Account type") }}</span>
+          <PrimeSelect
+            class="w-full"
+            append-to="self"
+            :model-value="form.account_type_id || null"
+            :options="accountTypeOptions"
+            option-label="text"
+            option-value="value"
             :disabled="isMetaLoading || isRecordLoading"
-            @change="value => updateField('user_id', value || '')"
-            @search="handleSearchUsers"
-          />
-        </UiFormControl>
+            :invalid="hasFieldError('account_type_id')"
+            :placeholder="resolveText('admin.accounts.form.placeholders.accountType', 'Select account type')"
+            @update:model-value="value => updateField('account_type_id', String(value || ''))" />
+          <small v-if="firstFieldError('account_type_id')">{{ firstFieldError("account_type_id") }}</small>
+        </label>
 
-        <UiFormControl
-          :label="resolveText('admin.accounts.form.labels.accountType', 'Account type')"
-          :errors="fieldErrors.account_type_id"
-        >
-          <UiSelect
-            :value="form.account_type_id || null"
-            :data="accountTypeOptions"
+        <label class="accounts-form__field">
+          <span>{{ resolveText("admin.accounts.form.labels.leverage", "Leverage") }}</span>
+          <PrimeSelect
+            class="w-full"
+            append-to="self"
+            :model-value="form.leverage_id || null"
+            :options="leverageOptions"
+            option-label="text"
+            option-value="value"
             :disabled="isMetaLoading || isRecordLoading"
-            @change="value => updateField('account_type_id', value || '')"
-          />
-        </UiFormControl>
+            :invalid="hasFieldError('leverage_id')"
+            :placeholder="resolveText('admin.accounts.form.placeholders.leverage', 'Select leverage')"
+            @update:model-value="value => updateField('leverage_id', String(value || ''))" />
+          <small v-if="firstFieldError('leverage_id')">{{ firstFieldError("leverage_id") }}</small>
+        </label>
 
-        <UiFormControl
-          :label="resolveText('admin.accounts.form.labels.leverage', 'Leverage')"
-          :errors="fieldErrors.leverage_id"
-        >
-          <UiSelect
-            :value="form.leverage_id || null"
-            :data="leverageOptions"
-            :disabled="isMetaLoading || isRecordLoading"
-            @change="value => updateField('leverage_id', value || '')"
-          />
-        </UiFormControl>
-
-        <UiFormControl
+        <label
           v-if="features.currency"
-          :label="resolveText('admin.accounts.form.labels.currency', 'Currency')"
-          :errors="fieldErrors.currency"
-        >
-          <UiSelect
-            :value="form.currency || null"
-            :data="currencyOptions"
+          class="accounts-form__field">
+          <span>{{ resolveText("admin.accounts.form.labels.currency", "Currency") }}</span>
+          <PrimeSelect
+            class="w-full"
+            append-to="self"
+            :model-value="form.currency || null"
+            :options="currencyOptions"
+            option-label="text"
+            option-value="value"
             :disabled="isMetaLoading || isRecordLoading"
-            @change="value => updateField('currency', value || '')"
-          />
-        </UiFormControl>
+            :invalid="hasFieldError('currency')"
+            :placeholder="resolveText('admin.accounts.form.placeholders.currency', 'Select currency')"
+            @update:model-value="value => updateField('currency', String(value || ''))" />
+          <small v-if="firstFieldError('currency')">{{ firstFieldError("currency") }}</small>
+        </label>
 
-        <UiFormControl
+        <label
           v-if="features.payment_type"
-          :label="resolveText('admin.accounts.form.labels.paymentType', 'Payment type')"
-          :errors="fieldErrors.payment_type"
-        >
-          <UiSelect
-            :value="form.payment_type || null"
-            :data="paymentTypeOptions"
+          class="accounts-form__field">
+          <span>{{ resolveText("admin.accounts.form.labels.paymentType", "Payment type") }}</span>
+          <PrimeSelect
+            class="w-full"
+            append-to="self"
+            :model-value="form.payment_type || null"
+            :options="paymentTypeOptions"
+            option-label="text"
+            option-value="value"
             :disabled="isMetaLoading || isRecordLoading"
-            @change="value => updateField('payment_type', value || '')"
-          />
-        </UiFormControl>
+            :invalid="hasFieldError('payment_type')"
+            :placeholder="resolveText('admin.accounts.form.placeholders.paymentType', 'Select payment type')"
+            @update:model-value="value => updateField('payment_type', String(value || ''))" />
+          <small v-if="firstFieldError('payment_type')">{{ firstFieldError("payment_type") }}</small>
+        </label>
+      </div>
 
-        <div class="accounts-form-drawer__note">
-          <div class="accounts-form-drawer__note-title">
-            {{ resolveText('admin.accounts.form.notes.title', 'MT4 note') }}
-          </div>
-          <div class="accounts-form-drawer__note-text">
+      <PrimeCard class="accounts-form__note">
+        <template #content>
+          <strong>{{ resolveText("admin.accounts.form.notes.title", "MT4 note") }}</strong>
+          <span>
             {{
               isEditMode
                 ? resolveText(
-                    'admin.accounts.form.notes.edit',
-                    'Editing changes local account settings. MT4 account number and password are not recreated here.'
+                    "admin.accounts.form.notes.edit",
+                    "Editing changes local account settings. MT4 account number and password are not recreated here."
                   )
                 : resolveText(
-                    'admin.accounts.form.notes.create',
-                    'Creating an account opens a real MT4 account for the selected client using the client profile data.'
+                    "admin.accounts.form.notes.create",
+                    "Creating an account opens a real MT4 account for the selected client using the client profile data."
                   )
             }}
-          </div>
-        </div>
-      </div>
+          </span>
+        </template>
+      </PrimeCard>
     </div>
 
-    <div class="accounts-form-drawer__bottom">
-      <UiButtonDefault
-        state="secondary"
-        class="accounts-form-drawer__submit"
-        :disabled="!canSubmitAccounts || isMetaLoading || isRecordLoading"
-        :isLoading="isSubmitting"
-        @click="handleSubmit"
-      >
-        {{
+    <footer class="accounts-form__footer">
+      <PrimeButton
+        class="w-full"
+        :label="
           isEditMode
             ? resolveText('admin.accounts.form.actions.save', 'Save changes')
             : resolveText('admin.accounts.form.actions.create', 'Create account')
-        }}
-      </UiButtonDefault>
-    </div>
+        "
+        :loading="isSubmitting"
+        :disabled="!canSubmitAccounts || isMetaLoading || isRecordLoading || isSubmitting"
+        @click="handleSubmit" />
+    </footer>
   </div>
 </template>
 
@@ -125,10 +158,6 @@
   import useAppCore from "~/composables/useAppCore";
   import useEventBus from "~/composables/useEventBus";
   import { debounce } from "~/utils/helper/debounce";
-
-  import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
-  import UiFormControl from "~/components/ui/UiFormControl.vue";
-  import UiSelect from "~/components/ui/UiSelect.vue";
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   type Mode = "create" | "edit";
@@ -167,12 +196,15 @@
   const toast = useToast();
   const appCore = useAppCore();
   const adminAuthStore = useAdminAuthStore();
-
   const { closeModal } = inject("modalControl") as { closeModal: () => void };
 
   const isEditMode = computed(() => props.mode === "edit" && props.id !== "");
-  const canCreateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-accounts"));
-  const canUpdateAccounts = computed(() => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts"));
+  const canCreateAccounts = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-accounts")
+  );
+  const canUpdateAccounts = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts")
+  );
   const canSubmitAccounts = computed(() => (isEditMode.value ? canUpdateAccounts.value : canCreateAccounts.value));
   const titleText = computed(() => {
     if (props.title) return props.title;
@@ -220,14 +252,24 @@
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
-    return value === key ? fallback : value;
+    return value === key ? fallback : String(value);
   };
+
+  const normalizeOptions = (items: any[] = [], textFallbackKey = "name"): SelectOption[] =>
+    items.map((item: any) => ({
+      id: String(item?.id ?? item?.value ?? ""),
+      value: String(item?.value ?? item?.id ?? ""),
+      text: String(item?.text ?? item?.[textFallbackKey] ?? item?.label ?? item?.value ?? item?.id ?? "-"),
+    }));
 
   const resetErrors = () => {
     (Object.keys(fieldErrors) as FieldKey[]).forEach(key => {
       fieldErrors[key] = [];
     });
   };
+
+  const hasFieldError = (key: FieldKey): boolean => fieldErrors[key].length > 0;
+  const firstFieldError = (key: FieldKey): string => fieldErrors[key][0] ?? "";
 
   const updateField = (key: FieldKey, value: string) => {
     form[key] = value;
@@ -244,7 +286,7 @@
     }
 
     if (!form.payment_type) {
-      form.payment_type = defaults.payment_type || "0";
+      form.payment_type = defaults.payment_type || paymentTypeOptions.value[0]?.value || "0";
     }
 
     if (!form.account_type_id) {
@@ -273,45 +315,14 @@
       });
       const payload = response?.data?.data ?? {};
 
-      userOptions.value = Array.isArray(payload?.users)
-        ? payload.users.map((user: any) => ({
-            id: String(user?.id ?? ""),
-            value: String(user?.value ?? user?.id ?? ""),
-            text: String(user?.text ?? user?.email ?? user?.id ?? "-"),
-          }))
-        : [];
-
-      accountTypeOptions.value = Array.isArray(payload?.account_types)
-        ? payload.account_types.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.name ?? item?.id ?? "-"),
-          }))
-        : [];
-
-      leverageOptions.value = Array.isArray(payload?.leverages)
-        ? payload.leverages.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.label ?? item?.value ?? "-"),
-          }))
-        : [];
-
-      currencyOptions.value = Array.isArray(payload?.currencies)
-        ? payload.currencies.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.value ?? item?.id ?? "-"),
-          }))
-        : [];
-
-      paymentTypeOptions.value = Array.isArray(payload?.payment_types)
-        ? payload.payment_types.map((item: any) => ({
-            id: String(item?.id ?? item?.value ?? ""),
-            value: String(item?.value ?? item?.id ?? ""),
-            text: String(item?.text ?? item?.value ?? item?.id ?? "-"),
-          }))
-        : [];
+      userOptions.value = normalizeOptions(Array.isArray(payload?.users) ? payload.users : [], "email");
+      accountTypeOptions.value = normalizeOptions(Array.isArray(payload?.account_types) ? payload.account_types : []);
+      leverageOptions.value = normalizeOptions(Array.isArray(payload?.leverages) ? payload.leverages : [], "label");
+      currencyOptions.value = normalizeOptions(Array.isArray(payload?.currencies) ? payload.currencies : [], "value");
+      paymentTypeOptions.value = normalizeOptions(
+        Array.isArray(payload?.payment_types) ? payload.payment_types : [],
+        "value"
+      );
 
       defaults.currency = String(payload?.defaults?.currency ?? defaults.currency);
       defaults.payment_type = String(payload?.defaults?.payment_type ?? defaults.payment_type);
@@ -363,7 +374,9 @@
     }
 
     if (!form.account_type_id.trim()) {
-      fieldErrors.account_type_id = [resolveText("admin.accounts.form.errors.accountTypeRequired", "Select an account type.")];
+      fieldErrors.account_type_id = [
+        resolveText("admin.accounts.form.errors.accountTypeRequired", "Select an account type."),
+      ];
     }
 
     return !(fieldErrors.user_id.length || fieldErrors.account_type_id.length);
@@ -435,63 +448,80 @@
 </script>
 
 <style scoped lang="scss">
-  .accounts-form-drawer {
+  .accounts-form {
     display: flex;
     flex-direction: column;
     min-height: 100%;
-  }
-
-  .accounts-form-drawer__top {
-    min-height: 56px;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--color-stroke-ui-dark);
-  }
-
-  .accounts-form-drawer__title {
-    font-size: 1.25rem;
-    font-weight: 700;
     color: var(--ui-text-main);
   }
 
-  .accounts-form-drawer__content {
+  .accounts-form__header {
+    padding: 8px 48px 18px 24px;
+    border-bottom: 1px solid var(--color-stroke-ui-light);
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    p {
+      margin-top: 6px;
+      color: var(--ui-text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.45;
+    }
+  }
+
+  .accounts-form__body {
     flex: 1;
     min-height: 0;
-  }
-
-  .accounts-form-drawer__fields {
-    padding: 24px;
     display: grid;
-    gap: 18px;
+    gap: 16px;
+    padding: 20px 24px;
   }
 
-  .accounts-form-drawer__note {
-    padding: 14px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--ui-background-panel) 85%, transparent);
+  .accounts-form__grid {
+    display: grid;
+    gap: 14px;
   }
 
-  .accounts-form-drawer__note-title {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--ui-text-main);
+  .accounts-form__field {
+    display: grid;
+    gap: 6px;
+
+    > span {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--ui-text-main);
+    }
+
+    small {
+      color: var(--color-negative);
+      font-size: 0.75rem;
+    }
   }
 
-  .accounts-form-drawer__note-text {
-    margin-top: 6px;
-    font-size: 0.8125rem;
-    line-height: 1.45;
-    color: var(--ui-text-secondary);
+  .accounts-form__note {
+    :deep(.p-card-content) {
+      display: grid;
+      gap: 6px;
+      padding: 14px;
+    }
+
+    strong {
+      font-size: 0.875rem;
+    }
+
+    span {
+      color: var(--ui-text-secondary);
+      font-size: 0.8125rem;
+      line-height: 1.45;
+    }
   }
 
-  .accounts-form-drawer__bottom {
+  .accounts-form__footer {
     padding: 18px 24px 24px;
-    border-top: 1px solid var(--color-stroke-ui-dark);
-  }
-
-  .accounts-form-drawer__submit {
-    width: 100%;
+    border-top: 1px solid var(--color-stroke-ui-light);
   }
 </style>

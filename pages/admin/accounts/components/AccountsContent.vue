@@ -1,151 +1,102 @@
 <template>
   <div
-    class="accounts-panel__content"
-    :class="viewMode"
-  >
-    <div
+    class="accounts-cards"
+    :class="viewModeClass">
+    <PrimeMenu
+      ref="actionMenu"
+      :model="actionMenuItems"
+      popup />
+
+    <PrimeCard
       v-for="item in props.data"
       :key="item.id"
-      class="account-card card-with-action"
-      :class="viewMode === 'full' ? 'account-card--full' : ''"
-      @click="handleOpenAccountPage(item)"
-    >
-      <div class="account-card__actions-wrap">
-        <button
-          v-if="showActionMenu"
-          type="button"
-          class="account-card__menu-toggle"
-          @click.stop="toggleMenu(item.id)"
-        >
-          <UiIconDotsVertical />
-        </button>
-
-        <div
-          v-if="showActionMenu && activeMenuId === item.id"
-          class="account-card__menu"
-          @click.stop
-        >
-          <button
-            v-if="canEdit"
-            type="button"
-            class="account-card__menu-item"
-            @click="emitEdit(item)"
-          >
-            {{ t("admin.accounts.actions.edit", "Edit") }}
-          </button>
-          <button
-            v-if="canRefresh"
-            type="button"
-            class="account-card__menu-item"
-            @click="emitRefresh(item)"
-          >
-            {{ t("admin.accounts.actions.refreshBalance", "Refresh balance") }}
-          </button>
-          <button
-            v-if="canDelete"
-            type="button"
-            class="account-card__menu-item danger"
-            @click="emitDelete(item)"
-          >
-            {{ t("admin.accounts.actions.archive", "Archive") }}
-          </button>
-        </div>
-      </div>
-
-      <div
-        class="account-card__body"
-        :class="viewMode === 'full' ? 'account-card__body--row' : ''"
-      >
-        <div class="account-card__owner">
-          <div class="account-card__owner-row">
+      class="account-card"
+      :class="{ 'account-card--full': props.viewMode === 'full' }"
+      @click="handleOpenAccountPage(item)">
+      <template #content>
+        <div class="account-card__content">
+          <div class="account-card__owner">
             <button
               v-if="item.id"
-              class="account-card__copy account-card__copy--leading"
-              aria-label="Copy id"
-              @click.stop
-            >
+              type="button"
+              class="account-card__copy"
+              :aria-label="text('admin.accounts.actions.copyId', 'Copy ID')"
+              @click.stop>
               <UiIconCopy :text="item.id" />
             </button>
 
-            <div class="owner-photo">
+            <div class="account-card__avatar">
               <UiImageCircle
                 :twoChars="getTwoCharsByFullName(item.owner_name)"
-                :src="item.owner_photo_path"
-              />
+                :src="item.owner_photo_path" />
             </div>
 
             <div class="account-card__owner-text">
-              <div class="truncate font-semibold">
-                {{ item.owner_name || "-" }}
-              </div>
-              <div class="account-card__owner-meta truncate">
-                {{ item.owner_email || "-" }}
-              </div>
+              <strong>{{ item.owner_name || "-" }}</strong>
+              <span>{{ item.owner_email || "-" }}</span>
             </div>
           </div>
-        </div>
 
-        <div>
-          <UiTextSmall class="text-[var(--ui-text-secondary)]">
-            {{ t("admin.accounts.columns.number", "Account number") }}
-          </UiTextSmall>
-          <div class="truncate font-semibold">
-            {{ item.number || "-" }}
+          <div class="account-card__data">
+            <div class="account-data-item account-data-item--number">
+              <span>{{ text("admin.accounts.columns.number", "Account number") }}</span>
+              <strong>{{ item.number || "-" }}</strong>
+            </div>
+
+            <div class="account-data-item">
+              <span>{{ text("admin.accounts.columns.balance", "Balance") }}</span>
+              <strong class="account-card__value-row">
+                {{ formatMoney(item.balance, item.currency) }}
+                <PrimeButton
+                  v-if="canRefresh"
+                  rounded
+                  text
+                  size="small"
+                  icon="pi pi-refresh"
+                  class="account-card__refresh"
+                  :loading="refreshingAccountId === item.id"
+                  :disabled="refreshingAccountId === item.id"
+                  :aria-label="text('admin.accounts.actions.refreshBalance', 'Refresh balance')"
+                  @click.stop="emitRefresh(item)" />
+              </strong>
+            </div>
+
+            <div class="account-data-item">
+              <span>{{ text("admin.accounts.columns.type", "Type") }}</span>
+              <strong>{{ item.type_name || item.type_id || "-" }}</strong>
+            </div>
+
+            <div class="account-data-item">
+              <span>{{ text("admin.accounts.columns.leverage", "Leverage") }}</span>
+              <strong>{{ item.leverage_display || item.leverage_id || "-" }}</strong>
+            </div>
+
+            <div class="account-data-item">
+              <span>{{ text("admin.accounts.components.accounts-panel.columns.created_at", "Created at") }}</span>
+              <strong>{{ formatDate(item.created_at) }}</strong>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <UiTextSmall class="text-[var(--ui-text-secondary)]">
-            {{ t("admin.accounts.columns.balance", "Balance") }}
-          </UiTextSmall>
-          <div class="account-card__value-row">
-            <div class="truncate">{{ formatMoney(item.balance, item.currency) }}</div>
-            <button
-              v-if="canRefresh"
-              type="button"
-              class="account-card__refresh"
-              :disabled="refreshingAccountId === item.id"
-              :title="t('admin.accounts.actions.refreshBalance', 'Refresh balance')"
-              @click.stop="emitRefresh(item)"
-            >
-              <UiIconUpdate :spinning="refreshingAccountId === item.id" />
-            </button>
-          </div>
+          <PrimeButton
+            v-if="showActionMenu"
+            rounded
+            text
+            size="small"
+            icon="pi pi-ellipsis-v"
+            class="account-card__menu-toggle"
+            :aria-label="text('admin.accounts.actions.openActions', 'Open actions')"
+            @click.stop="toggleMenu($event, item)" />
         </div>
-
-        <div>
-          <UiTextSmall class="text-[var(--ui-text-secondary)]">
-            {{ t("admin.accounts.columns.type", "Type") }}
-          </UiTextSmall>
-          <div class="truncate">{{ item.type_name || item.type_id || "-" }}</div>
-        </div>
-
-        <div>
-          <UiTextSmall class="text-[var(--ui-text-secondary)]">
-            {{ t("admin.accounts.columns.leverage", "Leverage") }}
-          </UiTextSmall>
-          <div class="truncate">{{ item.leverage_display || item.leverage_id || "-" }}</div>
-        </div>
-
-        <div>
-          <UiTextSmall class="text-[var(--ui-text-secondary)]">
-            {{ t("admin.accounts.components.accounts-panel.columns.created_at") }}
-          </UiTextSmall>
-          <div class="account-card__meta">{{ formatDate(item.created_at) }}</div>
-        </div>
-      </div>
-    </div>
+      </template>
+    </PrimeCard>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+  import { computed, ref } from "vue";
   import { useI18n } from "vue-i18n";
   import UiImageCircle from "~/components/ui/UiImageCircle.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
-  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
-  import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
-  import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 
   interface AdminAccountCardItem {
     id: string;
@@ -190,32 +141,57 @@
   );
 
   const { t, locale } = useI18n({ useScope: "global" });
-  const activeMenuId = ref<string | null>(null);
+  const actionMenu = ref<any | null>(null);
+  const activeAccount = ref<AdminAccountCardItem | null>(null);
+
+  const text = (key: string, fallback: string): string => {
+    const value = t(key);
+    return value === key ? fallback : String(value);
+  };
+
   const showActionMenu = computed(() => props.canEdit || props.canRefresh || props.canDelete);
+  const viewModeClass = computed(() => (props.viewMode === "full" ? "accounts-cards--full" : "accounts-cards--grid"));
+
+  const actionMenuItems = computed(() => {
+    const account = activeAccount.value;
+    if (!account) return [];
+
+    return [
+      props.canEdit
+        ? {
+            label: text("admin.accounts.actions.edit", "Edit"),
+            icon: "pi pi-pencil",
+            command: () => emit("edit", account),
+          }
+        : null,
+      props.canRefresh
+        ? {
+            label: text("admin.accounts.actions.refreshBalance", "Refresh balance"),
+            icon: "pi pi-refresh",
+            command: () => emit("refresh", account),
+          }
+        : null,
+      props.canDelete
+        ? {
+            label: text("admin.accounts.actions.archive", "Archive"),
+            icon: "pi pi-archive",
+            class: "account-action-danger",
+            command: () => emit("delete", account),
+          }
+        : null,
+    ].filter(Boolean);
+  });
 
   const handleOpenAccountPage = (account: AdminAccountCardItem) => emit("click", account);
 
-  const toggleMenu = (id: string) => {
-    activeMenuId.value = activeMenuId.value === id ? null : id;
-  };
-
-  const emitEdit = (account: AdminAccountCardItem) => {
-    activeMenuId.value = null;
-    emit("edit", account);
+  const toggleMenu = (event: MouseEvent, account: AdminAccountCardItem) => {
+    activeAccount.value = account;
+    actionMenu.value?.toggle(event);
   };
 
   const emitRefresh = (account: AdminAccountCardItem) => {
-    activeMenuId.value = null;
+    activeAccount.value = account;
     emit("refresh", account);
-  };
-
-  const emitDelete = (account: AdminAccountCardItem) => {
-    activeMenuId.value = null;
-    emit("delete", account);
-  };
-
-  const handleDocumentClick = () => {
-    activeMenuId.value = null;
   };
 
   const getTwoCharsByFullName = (fullName?: string): string => {
@@ -223,9 +199,7 @@
       .trim()
       .split(/\s+/)
       .filter(Boolean);
-    const first = segments[0]?.charAt(0) ?? "";
-    const second = segments[1]?.charAt(0) ?? "";
-    return `${first}${second}`;
+    return `${segments[0]?.charAt(0) ?? ""}${segments[1]?.charAt(0) ?? ""}`;
   };
 
   const formatDate = (date?: string) => {
@@ -249,194 +223,167 @@
       return `${code} ${value.toFixed(2)}`;
     }
   };
-
-  onMounted(() => {
-    document.addEventListener("click", handleDocumentClick);
-  });
-
-  onBeforeUnmount(() => {
-    document.removeEventListener("click", handleDocumentClick);
-  });
 </script>
 
 <style scoped lang="scss">
-  .accounts-panel__content {
-    color: var(--ui-text-main);
-
-    &.cards {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: 1fr;
-    }
-
-    &.full {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: 1fr;
-    }
+  .accounts-cards {
+    display: grid;
+    gap: 10px;
   }
 
-  @media (min-width: 768px) {
-    .accounts-panel__content.cards {
+  .accounts-cards--grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .accounts-cards--full {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 860px) {
+    .accounts-cards--grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (min-width: 1280px) {
-    .accounts-panel__content.cards {
+  @media (min-width: 1440px) {
+    .accounts-cards--grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   .account-card {
+    cursor: pointer;
+  }
+
+  .account-card :deep(.p-card-body),
+  .account-card :deep(.p-card-content) {
+    height: 100%;
+  }
+
+  .account-card__content {
     position: relative;
-    background: var(--ui-background-panel);
-    border-bottom: 1px solid var(--color-stroke-ui-light);
-    border-radius: 10px;
-    padding: 10px 14px;
-    transition:
-      background-color 0.2s ease,
-      opacity 0.2s ease;
+    display: grid;
+    gap: 14px;
+    min-height: 100%;
+    padding: 14px;
   }
 
-  .account-card--full {
-    padding: 6px 48px 6px 14px;
-  }
-
-  .account-card:hover {
-    opacity: 0.9;
-  }
-
-  .account-card__actions-wrap {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 3;
-  }
-
-  .account-card__menu-toggle {
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
+  .account-card--full .account-card__content {
+    grid-template-columns: minmax(240px, 1.2fr) minmax(0, 3fr) auto;
     align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--color-stroke-ui-dark);
-    color: var(--ui-text-main);
   }
 
-  .account-card__menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    min-width: 180px;
-    padding: 6px;
-    border-radius: 10px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--ui-background-panel);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-  }
-
-  .account-card__menu-item {
-    width: 100%;
+  .account-card__owner {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding: 10px 12px;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--ui-text-main);
-    text-align: left;
-    font-size: 13px;
+    gap: 10px;
+    min-width: 0;
   }
 
-  .account-card__menu-item:hover {
-    background: var(--color-stroke-ui-dark);
+  .account-card__copy {
+    flex: 0 0 auto;
+    color: var(--ui-text-secondary);
   }
 
-  .account-card__menu-item.danger {
-    color: var(--ui-sticker-danger);
+  .account-card__avatar {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
   }
 
-  .account-card__body {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px 12px;
-    color: var(--ui-text-main);
+  .account-card__owner-text {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
   }
 
-  .account-card__body > div {
-    flex: 1 1 140px;
-    min-width: 140px;
+  .account-card__owner-text strong,
+  .account-card__owner-text span,
+  .account-data-item strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .account-card__owner-text span,
+  .account-data-item span {
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .account-card__data {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .account-card--full .account-card__data {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .account-data-item {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
   }
 
   .account-card__value-row {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     min-width: 0;
   }
 
   .account-card__refresh {
     width: 28px;
     height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     flex: 0 0 auto;
-    border-radius: 8px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--color-stroke-ui-dark);
-    color: var(--ui-text-main);
-    transition:
-      opacity 0.2s ease,
-      background-color 0.2s ease;
+    color: var(--ui-text-secondary);
+  }
 
-    &:disabled {
-      opacity: 0.6;
-      cursor: wait;
+  .account-card__menu-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    color: var(--ui-text-secondary);
+  }
+
+  .account-card--full .account-card__menu-toggle {
+    position: static;
+  }
+
+  @media (max-width: 1100px) {
+    .account-card--full .account-card__content {
+      grid-template-columns: 1fr auto;
+    }
+
+    .account-card--full .account-card__data {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  .account-card__body--row {
-    flex-wrap: nowrap;
-    gap: 4px 10px;
-    align-items: center;
-  }
+  @media (max-width: 620px) {
+    .account-card__content,
+    .account-card--full .account-card__content {
+      grid-template-columns: 1fr;
+      padding: 12px;
+    }
 
-  .account-card__owner {
-    min-width: 180px;
-  }
+    .account-card__data,
+    .account-card--full .account-card__data {
+      grid-template-columns: 1fr;
+    }
 
-  .account-card__owner-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-  }
-
-  .account-card__owner-text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-
-  .account-card__owner-meta {
-    margin-top: 2px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--ui-text-secondary);
-  }
-
-  .account-card__copy {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ui-text-secondary);
+    .account-card--full .account-card__menu-toggle,
+    .account-card__menu-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
   }
 </style>
