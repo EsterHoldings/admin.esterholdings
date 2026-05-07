@@ -941,6 +941,7 @@
   .admin-profile-general__history-image,
   .admin-profile-general__history-placeholder {
     width: 100%;
+    max-width: 200px;
     aspect-ratio: 1;
     border-radius: 14px;
   }
