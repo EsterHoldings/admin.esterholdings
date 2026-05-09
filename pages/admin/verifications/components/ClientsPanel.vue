@@ -3,7 +3,7 @@
     <ClientsPanelSearch
       @input="handleInputSearch"
       :isLoading="isLoadingSearch"
-      :value="searchFilter" />
+      :value="searchDraft" />
 
     <ClientsContent
       :data="clientsData"
@@ -59,6 +59,7 @@
     "created_at",
   ]);
   const searchFilter = ref("");
+  const searchDraft = ref("");
 
   const clientsData = reactive([]);
 
@@ -97,7 +98,8 @@
   const handleInputSearch = debounce(async (value: any) => {
     try {
       isLoadingSearch.value = true;
-      searchFilter.value = value;
+      searchDraft.value = String(value ?? "");
+      searchFilter.value = searchDraft.value;
       await loadData(true);
     } finally {
       isLoadingSearch.value = false;

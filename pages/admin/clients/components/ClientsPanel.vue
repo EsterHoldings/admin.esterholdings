@@ -22,7 +22,7 @@
                 class="w-full"
                 :placeholder="t('admin.clients.components.clients-panel-search.placeholder', 'Search clients...')"
                 @input="handleInputSearch"
-                :value="searchFilter">
+                :value="searchDraft">
                 <template #icon-left>
                   <UiIconSearch />
                 </template>
@@ -740,6 +740,7 @@
   const page = ref(DEFAULT_PAGE);
   const totalRows = ref(0);
   const searchFilter = ref("");
+  const searchDraft = ref("");
 
   const orderBy = ref<string>(DEFAULT_ORDER_BY);
   const orderDirection = ref<string>(ORDER_DIRECTION_DESC);
@@ -838,7 +839,11 @@
       label: resolveText("admin.clients.columns.state", "State / Region"),
       options: getFilterOptions("state"),
     },
-    { key: "city" as DynamicSelectFilterKey, label: resolveText("admin.clients.columns.city", "City"), options: getFilterOptions("city") },
+    {
+      key: "city" as DynamicSelectFilterKey,
+      label: resolveText("admin.clients.columns.city", "City"),
+      options: getFilterOptions("city"),
+    },
     {
       key: "address" as DynamicSelectFilterKey,
       label: resolveText("admin.clients.columns.address", "Address"),
@@ -868,7 +873,11 @@
 
   const emailVerifiedOptions = computed(() => [
     { id: "verified", value: "verified", text: resolveText("admin.clients.filters.values.verified", "Verified") },
-    { id: "unverified", value: "unverified", text: resolveText("admin.clients.filters.values.unverified", "Unverified") },
+    {
+      id: "unverified",
+      value: "unverified",
+      text: resolveText("admin.clients.filters.values.unverified", "Unverified"),
+    },
   ]);
 
   const hasPhotoOptions = computed(() => [
@@ -1169,6 +1178,7 @@
     perPage.value = parsePositiveInt(query[QUERY_KEY_PER_PAGE], DEFAULT_PER_PAGE);
     page.value = parsePositiveInt(query[QUERY_KEY_PAGE], DEFAULT_PAGE);
     searchFilter.value = getFirstNonEmptyQueryValue(query[QUERY_KEY_SEARCH], query.searchFilter);
+    searchDraft.value = searchFilter.value;
 
     const queryOrderBy = getQueryValue(query[QUERY_KEY_ORDER_BY]);
     if (isOrderByValue(queryOrderBy)) {
@@ -1413,7 +1423,8 @@
   const handleInputSearch = debounce(async (value: string) => {
     try {
       isLoadingSearch.value = true;
-      searchFilter.value = value;
+      searchDraft.value = String(value ?? "");
+      searchFilter.value = searchDraft.value;
       await loadData({ resetPage: true });
       await syncStateToUrl();
     } finally {
