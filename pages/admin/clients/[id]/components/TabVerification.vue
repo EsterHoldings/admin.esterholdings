@@ -1313,6 +1313,11 @@ const hiddenVerificationHistoryKeys = new Set([
   "step_status_auto_synced",
   "step_status_reset",
   "step_comment_cleared",
+  "photo_uploaded",
+  "photo_deleted",
+  "payout_detail_comment_updated",
+  "payout_detail_deleted",
+  "payout_detail_restored",
 ]);
 
 const visibleHistoryActorTypes = new Set(["admin", "client"]);
@@ -1393,7 +1398,29 @@ const historyStepLabel = (row: VerificationHistoryRow): string => {
 };
 
 const historyTitle = (row: VerificationHistoryRow): string => {
-  if (row.key === "step_status_updated") {
+  const rowKey = row.key.trim().toLowerCase();
+
+  if (rowKey === "profile_submitted") {
+    return text("admin.verifications.clientTimeline.historyTitles.profileSubmitted", "Profile sent for review");
+  }
+
+  if (rowKey === "documents_uploaded") {
+    return text("admin.verifications.clientTimeline.historyTitles.documentsSubmitted", "Documents sent for review");
+  }
+
+  if (rowKey === "document_deleted") {
+    return text("admin.verifications.clientTimeline.historyTitles.documentDeleted", "Document removed");
+  }
+
+  if (rowKey === "payout_detail_submitted") {
+    return text("admin.verifications.clientTimeline.historyTitles.payoutSubmitted", "Payment detail sent for review");
+  }
+
+  if (rowKey === "payout_detail_updated") {
+    return text("admin.verifications.clientTimeline.historyTitles.payoutUpdated", "Payment detail updated");
+  }
+
+  if (rowKey === "step_status_updated") {
     const stepLabel = historyStepLabel(row);
 
     if (row.status === "approved") {
@@ -1413,7 +1440,7 @@ const historyTitle = (row: VerificationHistoryRow): string => {
     });
   }
 
-  if (row.key === "documents_bulk_updated") {
+  if (rowKey === "documents_bulk_updated") {
     if (row.status === "approved") {
       return text("admin.verifications.clientTimeline.historyTitles.documentsApproved", "Documents approved");
     }
@@ -1423,7 +1450,7 @@ const historyTitle = (row: VerificationHistoryRow): string => {
     }
   }
 
-  if (row.key === "document_updated") {
+  if (rowKey === "document_updated") {
     if (row.status === "approved") {
       return text("admin.verifications.clientTimeline.historyTitles.documentApproved", "Document approved");
     }
@@ -1433,7 +1460,7 @@ const historyTitle = (row: VerificationHistoryRow): string => {
     }
   }
 
-  if (row.key === "payout_detail_status_updated") {
+  if (rowKey === "payout_detail_status_updated") {
     if (row.status === "approved") {
       return text("admin.verifications.clientTimeline.historyTitles.payoutApproved", "Payment detail approved");
     }
@@ -1445,6 +1472,29 @@ const historyTitle = (row: VerificationHistoryRow): string => {
 
   const key = `admin.verifications.historyKeys.${row.key}`;
   return text(key, row.name || text("admin.verifications.history.generic", "Verification activity"));
+};
+
+const historyDescription = (row: VerificationHistoryRow): string => {
+  const rowKey = row.key.trim().toLowerCase();
+
+  switch (rowKey) {
+    case "profile_submitted":
+      return text("admin.verifications.clientTimeline.historyDescriptions.profileSubmitted", "Client submitted profile data.");
+    case "documents_uploaded":
+      return text("admin.verifications.clientTimeline.historyDescriptions.documentsSubmitted", "Client uploaded documents.");
+    case "document_deleted":
+      return text("admin.verifications.clientTimeline.historyDescriptions.documentDeleted", "Client removed a document.");
+    case "payout_detail_submitted":
+    case "payout_detail_updated":
+      return text("admin.verifications.clientTimeline.historyDescriptions.payoutSubmitted", "Client submitted payment details.");
+    case "step_status_updated":
+    case "documents_bulk_updated":
+    case "document_updated":
+    case "payout_detail_status_updated":
+      return text("admin.verifications.clientTimeline.historyDescriptions.adminDecision", "Admin decision recorded.");
+    default:
+      return text("admin.verifications.clientTimeline.items.historyDescription", "Recorded verification activity.");
+  }
 };
 
 const profileSnapshotFields = (): VerificationTimelineField[] =>
@@ -1681,7 +1731,7 @@ const historyTimelineItems = computed<VerificationTimelineItem[]>(() =>
       statusText: statusText(row.status),
       icon: timelineIconFromKind(kind),
       title: historyTitle(row),
-      description: text("admin.verifications.clientTimeline.items.historyDescription", "Recorded verification activity."),
+      description: historyDescription(row),
       actor: historyActorText(row),
       actorId: row.actor.id,
       actorType,
