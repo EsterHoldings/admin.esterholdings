@@ -341,6 +341,17 @@
       :header="timelineDecisionDialogTitle">
       <div class="verification-confirm-dialog__body">
         <p>{{ timelineDecisionDialogMessage }}</p>
+        <label
+          v-if="timelineDecisionDialog.status === 'rejected'"
+          class="verification-confirm-dialog__comment">
+          <span>{{ text("admin.verifications.comment.label", "Comment") }}</span>
+          <textarea
+            v-model="timelineDecisionDialog.comment"
+            class="verification-confirm-dialog__textarea"
+            :placeholder="text('admin.verifications.comment.placeholder', 'Enter comment...')"
+            :disabled="timelineDecisionDialogSubmitting"
+            rows="4" />
+        </label>
       </div>
 
       <template #footer>
@@ -592,10 +603,12 @@
     visible: boolean;
     item: VerificationTimelineItem | null;
     status: Exclude<VerificationStatus, "pending"> | null;
+    comment: string;
   }>({
     visible: false,
     item: null,
     status: null,
+    comment: "",
   });
 
   const infoStatus = ref<VerificationStatus>("pending");
@@ -2243,7 +2256,8 @@
 
   const handleTimelineItemAction = async (
     item: VerificationTimelineItem,
-    status: Exclude<VerificationStatus, "pending">
+    status: Exclude<VerificationStatus, "pending">,
+    comment = ""
   ): Promise<void> => {
     if (!item.actionable || item.actionType === null) {
       return;
@@ -2254,11 +2268,11 @@
 
     try {
       if (item.actionType === "profile") {
-        await handleVerificationProfile({ status, comment: "" });
+        await handleVerificationProfile({ status, comment });
       } else if (item.actionType === "document") {
-        await handleVerificationDocument({ status, comment: "" }, item.actionId);
+        await handleVerificationDocument({ status, comment }, item.actionId);
       } else if (item.actionType === "payout") {
-        await handleVerificationPayoutDetail({ status, comment: "" }, item.actionId);
+        await handleVerificationPayoutDetail({ status, comment }, item.actionId);
       }
 
       await nextTick();
@@ -2274,6 +2288,7 @@
   ): void => {
     timelineDecisionDialog.item = item;
     timelineDecisionDialog.status = status;
+    timelineDecisionDialog.comment = status === "rejected" ? (item.comment ?? "") : "";
     timelineDecisionDialog.visible = true;
   };
 
@@ -2281,6 +2296,7 @@
     timelineDecisionDialog.visible = false;
     timelineDecisionDialog.item = null;
     timelineDecisionDialog.status = null;
+    timelineDecisionDialog.comment = "";
   };
 
   const timelineDecisionDialogTitle = computed(() => {
@@ -2339,7 +2355,9 @@
     timelineDecisionDialogSubmitting.value = true;
 
     try {
-      await handleTimelineItemAction(item, status);
+      const comment = status === "rejected" ? timelineDecisionDialog.comment.trim() : "";
+
+      await handleTimelineItemAction(item, status, comment);
       timelineDecisionDialogSubmitting.value = false;
       closeTimelineDecisionDialog();
     } finally {
@@ -4221,6 +4239,38 @@
     color: var(--ui-text-main);
     font-size: 14px;
     line-height: 1.5;
+  }
+
+  .verification-confirm-dialog__comment {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 760;
+  }
+
+  .verification-confirm-dialog__textarea {
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    border: 1px solid var(--ui-card-border);
+    border-radius: 12px;
+    background: var(--ui-background);
+    color: var(--ui-text-main);
+    font-size: 14px;
+    font-weight: 520;
+    line-height: 1.45;
+    outline: none;
+    padding: 10px 12px;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .verification-confirm-dialog__textarea:focus {
+    border-color: var(--ui-primary-main);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
   }
 
   .verification-confirm-dialog__footer {
