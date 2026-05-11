@@ -4254,7 +4254,7 @@
     width: 100%;
     min-height: 96px;
     resize: vertical;
-    border: 1px solid var(--ui-card-border);
+    border: 1px solid var(--color-stroke-ui-light);
     border-radius: 12px;
     background: var(--ui-background);
     color: var(--ui-text-main);
