@@ -102,6 +102,9 @@
                   <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">Counterparty</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
+                  <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">Admins</UiTextSmall>
+                </th>
+                <th class="px-4 font-semibold">
                   <div class="flex items-center justify-start gap-2">
                     <UiTextSmall
                       @click="handleOrderByAndDirection('status')"
@@ -175,12 +178,61 @@
                 </td>
 
                 <td class="px-4">
+                  <div
+                    class="ticket-admins"
+                    @click.stop>
+                    <span
+                      v-if="getTicketAdminParticipants(t).length === 0"
+                      class="ticket-admins__empty">
+                      None
+                    </span>
+                    <div
+                      v-for="admin in getTicketAdminParticipants(t)"
+                      :key="getAdminParticipantKey(t, admin)"
+                      class="ticket-admins__item"
+                      @mouseenter="activeAdminPopoverKey = getAdminParticipantKey(t, admin)"
+                      @mouseleave="activeAdminPopoverKey = ''">
+                      <button
+                        type="button"
+                        class="ticket-admin-avatar"
+                        :title="getAdminParticipantName(admin)"
+                        @click.stop="toggleAdminPopover(t, admin)">
+                        <img
+                          v-if="getAdminParticipantAvatarUrl(admin)"
+                          :src="getAdminParticipantAvatarUrl(admin)"
+                          :alt="getAdminParticipantName(admin)"
+                          class="h-full w-full object-cover" />
+                        <span v-else>{{ getAdminParticipantInitials(admin) }}</span>
+                      </button>
+                      <div
+                        v-if="activeAdminPopoverKey === getAdminParticipantKey(t, admin)"
+                        class="ticket-admin-popover"
+                        @click.stop>
+                        <div class="ticket-admin-popover__name">{{ getAdminParticipantName(admin) }}</div>
+                        <div
+                          v-if="getAdminParticipantEmail(admin)"
+                          class="ticket-admin-popover__email">
+                          {{ getAdminParticipantEmail(admin) }}
+                        </div>
+                        <button
+                          v-if="getAdminParticipantId(admin)"
+                          type="button"
+                          class="ticket-admin-popover__link"
+                          @click.stop="openAdminProfile(admin)">
+                          Open profile
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="px-4">
                   <span
                     class="inline-flex items-center gap-1.5 text-xs text-[var(--ui-text-secondary)] whitespace-nowrap">
                     <span
                       class="h-1.5 w-1.5 rounded-full"
                       :class="getTicketStatusDotClass(t.status)" />
-                    {{ t.status }}
+                    {{ getTicketStatusLabel(t.status) }}
                   </span>
                 </td>
 
@@ -196,12 +248,43 @@
                       </div>
                       <UiIconChat class="!h-[24px] !w-[24px]" />
                     </span>
-                    <button
-                      class="h-8 w-8 flex items-center justify-center rounded-md hover:bg-[var(--color-stroke-ui-light)] active:opacity-[.5]"
-                      aria-label="More"
+                    <div
+                      class="ticket-status-actions"
                       @click.stop>
+                      <button
+                        v-for="action in ticketStatusActions"
+                        :key="`${t.id}-${action.status}`"
+                        type="button"
+                        class="ticket-status-action"
+                        :class="[getTicketStatusActionClass(action.status), { 'is-active': isTicketStatusActive(t, action.status) }]"
+                        :title="`Set ${action.label}`"
+                        :disabled="!canUpdateSupport || isTicketStatusActive(t, action.status) || isTicketActionLoading(t)"
+                        @click.stop="handleChangeTicketStatus(t, action.status)">
+                        <component
+                          :is="action.icon"
+                          class="ticket-status-action__icon" />
+                      </button>
+                    </div>
+                    <button
+                      class="ticket-card__icon-btn"
+                      aria-label="More"
+                      @click.stop="toggleTicketActionMenu(t.id)">
                       <UiIconDotsVertical />
                     </button>
+                    <div
+                      v-if="openTicketActionMenuId === String(t.id)"
+                      class="ticket-action-menu__dropdown"
+                      @click.stop>
+                      <button
+                        v-if="canDeleteSupport"
+                        type="button"
+                        class="ticket-action-menu__item ticket-action-menu__item--danger"
+                        :disabled="isTicketActionLoading(t)"
+                        @click.stop="handleArchiveTicket(t)">
+                        <UiIconTrash />
+                        <span>Archive</span>
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -276,6 +359,51 @@
                   {{ ticket.counterparty_online ? "Online" : "Offline" }}
                 </span>
                 <span class="ticket-card__updated">{{ ticket.last_message_at }}</span>
+                <div class="ticket-admins ticket-admins--card">
+                  <span
+                    v-if="getTicketAdminParticipants(ticket).length === 0"
+                    class="ticket-admins__empty">
+                    No admins
+                  </span>
+                  <div
+                    v-for="admin in getTicketAdminParticipants(ticket)"
+                    :key="getAdminParticipantKey(ticket, admin)"
+                    class="ticket-admins__item"
+                    @mouseenter="activeAdminPopoverKey = getAdminParticipantKey(ticket, admin)"
+                    @mouseleave="activeAdminPopoverKey = ''"
+                    @click.stop>
+                    <button
+                      type="button"
+                      class="ticket-admin-avatar"
+                      :title="getAdminParticipantName(admin)"
+                      @click.stop="toggleAdminPopover(ticket, admin)">
+                      <img
+                        v-if="getAdminParticipantAvatarUrl(admin)"
+                        :src="getAdminParticipantAvatarUrl(admin)"
+                        :alt="getAdminParticipantName(admin)"
+                        class="h-full w-full object-cover" />
+                      <span v-else>{{ getAdminParticipantInitials(admin) }}</span>
+                    </button>
+                    <div
+                      v-if="activeAdminPopoverKey === getAdminParticipantKey(ticket, admin)"
+                      class="ticket-admin-popover"
+                      @click.stop>
+                      <div class="ticket-admin-popover__name">{{ getAdminParticipantName(admin) }}</div>
+                      <div
+                        v-if="getAdminParticipantEmail(admin)"
+                        class="ticket-admin-popover__email">
+                        {{ getAdminParticipantEmail(admin) }}
+                      </div>
+                      <button
+                        v-if="getAdminParticipantId(admin)"
+                        type="button"
+                        class="ticket-admin-popover__link"
+                        @click.stop="openAdminProfile(admin)">
+                        Open profile
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="ticket-card__actions-col">
@@ -283,7 +411,7 @@
                   <span
                     class="ticket-card__status-dot"
                     :class="getTicketStatusDotClass(ticket.status)" />
-                  {{ ticket.status }}
+                  {{ getTicketStatusLabel(ticket.status) }}
                 </span>
 
                 <div class="ticket-card__actions">
@@ -304,12 +432,41 @@
                     </span>
                     <UiIconChat class="!h-[20px] !w-[20px]" />
                   </button>
+                  <div class="ticket-status-actions">
+                    <button
+                      v-for="action in ticketStatusActions"
+                      :key="`${ticket.id}-${action.status}`"
+                      type="button"
+                      class="ticket-status-action"
+                      :class="[getTicketStatusActionClass(action.status), { 'is-active': isTicketStatusActive(ticket, action.status) }]"
+                      :title="`Set ${action.label}`"
+                      :disabled="!canUpdateSupport || isTicketStatusActive(ticket, action.status) || isTicketActionLoading(ticket)"
+                      @click.stop="handleChangeTicketStatus(ticket, action.status)">
+                      <component
+                        :is="action.icon"
+                        class="ticket-status-action__icon" />
+                    </button>
+                  </div>
                   <button
                     class="ticket-card__icon-btn"
                     aria-label="More"
-                    @click.stop>
+                    @click.stop="toggleTicketActionMenu(ticket.id)">
                     <UiIconDotsVertical />
                   </button>
+                  <div
+                    v-if="openTicketActionMenuId === String(ticket.id)"
+                    class="ticket-action-menu__dropdown"
+                    @click.stop>
+                    <button
+                      v-if="canDeleteSupport"
+                      type="button"
+                      class="ticket-action-menu__item ticket-action-menu__item--danger"
+                      :disabled="isTicketActionLoading(ticket)"
+                      @click.stop="handleArchiveTicket(ticket)">
+                      <UiIconTrash />
+                      <span>Archive</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -421,6 +578,10 @@
   import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import UiIconChat from "~/components/ui/UiIconChat.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+  import UiIconCheck from "~/components/ui/UiIconCheck.vue";
+  import UiIconClock from "~/components/ui/UiIconClock.vue";
+  import UiIconSupport from "~/components/ui/UiIconSupport.vue";
+  import UiIconTrash from "~/components/ui/UiIconTrash.vue";
   import ViewModeToggle from "~/components/block/controls/ViewModeToggle.vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
@@ -480,6 +641,12 @@
   const canUpdateSupport = computed(
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-support")
   );
+  const canDeleteSupport = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("delete-support") ||
+      adminAuthStore.hasPermission("update-support")
+  );
 
   const isLoading = ref(false);
   const search = ref("");
@@ -489,6 +656,9 @@
   const orderBy = ref("last_message_at");
   const orderDirection = ref(ORDER_DIRECTION_DESC);
   const currentRowActiveOptions = ref<number | null>(null);
+  const openTicketActionMenuId = ref("");
+  const ticketActionLoadingId = ref("");
+  const activeAdminPopoverKey = ref("");
   const VIEW_MODE_STORAGE_KEY = "admin_support_view_mode";
   const ADMIN_SUPPORT_LIST_REFRESH_MS = 60000;
   const SUPPORT_REALTIME_RETRY_MS = 30000;
@@ -569,6 +739,23 @@
           );
         },
       },
+    },
+  ];
+  const ticketStatusActions = [
+    {
+      status: "open",
+      label: "Open",
+      icon: UiIconSupport,
+    },
+    {
+      status: "pending",
+      label: "Pending",
+      icon: UiIconClock,
+    },
+    {
+      status: "closed",
+      label: "Completed",
+      icon: UiIconCheck,
     },
   ];
 
@@ -664,21 +851,51 @@
   const getTicketChannelBadgeClass = (channel: unknown, replyEmail?: unknown): string =>
     getTicketChannelKey(channel, replyEmail) === "email" ? "ticket-channel-badge--email" : "ticket-channel-badge--chat";
 
-  const getTicketStatusDotClass = (status: unknown) => {
+  const normalizeTicketStatus = (status: unknown): string => {
     const normalizedStatus = String(status ?? "")
       .trim()
-      .toLowerCase();
+      .toLowerCase()
+      .replace(/\s+/g, "_");
 
-    if (["open", "in_progress", "in progress", "pending", "active"].includes(normalizedStatus)) {
+    if (normalizedStatus === "resolved") {
+      return "closed";
+    }
+
+    return normalizedStatus || "open";
+  };
+
+  const getTicketStatusLabel = (status: unknown): string => {
+    const normalizedStatus = normalizeTicketStatus(status);
+    if (normalizedStatus === "closed") return "Completed";
+    if (normalizedStatus === "pending") return "Pending";
+    if (normalizedStatus === "in_progress") return "In progress";
+    if (normalizedStatus === "open") return "Open";
+
+    return normalizedStatus.replace(/_/g, " ");
+  };
+
+  const getTicketStatusDotClass = (status: unknown) => {
+    const normalizedStatus = normalizeTicketStatus(status);
+
+    if (normalizedStatus === "pending") {
+      return "bg-[var(--ui-sticker-warning)]";
+    }
+
+    if (["open", "in_progress", "active", "closed"].includes(normalizedStatus)) {
       return "bg-[var(--ui-sticker-success)]";
     }
 
-    if (["closed", "resolved", "cancelled", "rejected", "archived"].includes(normalizedStatus)) {
+    if (["cancelled", "rejected", "archived"].includes(normalizedStatus)) {
       return "bg-[var(--ui-sticker-danger)]";
     }
 
     return "bg-[var(--ui-text-secondary)]";
   };
+
+  const getTicketStatusActionClass = (status: string): string => `ticket-status-action--${normalizeTicketStatus(status)}`;
+
+  const isTicketStatusActive = (ticket: any, status: string): boolean =>
+    normalizeTicketStatus(ticket?.status) === normalizeTicketStatus(status);
 
   const getTicketClientAvatarUrl = (ticket: any): string => {
     const rawUrl = ticket?.creator?.photo_url ?? ticket?.creator_photo_url ?? "";
@@ -727,6 +944,51 @@
 
     return `Client #${String(ticket?.creator_id ?? ticket?.id ?? "")}`;
   };
+
+  const getTicketAdminParticipants = (ticket: any): any[] => {
+    const participants = Array.isArray(ticket?.participants) ? ticket.participants : [];
+
+    return participants.filter((participant: any) => {
+      const role = String(participant?.role_key ?? participant?.role ?? "")
+        .trim()
+        .toLowerCase();
+
+      return role === "agent" || role === "admin";
+    });
+  };
+
+  const getAdminParticipantId = (admin: any): string => String(admin?.admin_id ?? "").trim();
+
+  const getAdminParticipantKey = (ticket: any, admin: any): string =>
+    `${String(ticket?.id ?? "")}:${getAdminParticipantId(admin) || String(admin?.id ?? "")}`;
+
+  const getAdminParticipantName = (admin: any): string => {
+    const name = String(admin?.admin_name ?? admin?.name ?? "").trim();
+    if (name) return name;
+
+    const email = getAdminParticipantEmail(admin);
+    if (email) return email;
+
+    return "Admin";
+  };
+
+  const getAdminParticipantEmail = (admin: any): string => String(admin?.admin_email ?? admin?.email ?? "").trim();
+
+  const getAdminParticipantInitials = (admin: any): string => {
+    const directInitials = String(admin?.initials ?? "")
+      .trim()
+      .toUpperCase();
+    if (directInitials) return directInitials.slice(0, 2);
+
+    const name = getAdminParticipantName(admin).replace(/[^a-zA-Zа-яА-Я0-9\s]/g, "").trim();
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toUpperCase();
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+    return "AD";
+  };
+
+  const getAdminParticipantAvatarUrl = (admin: any): string => String(admin?.photo_url ?? "").trim();
 
   definePageMeta({ layout: "default", middleware: ["admin-middleware"] });
 
@@ -1161,6 +1423,115 @@
     await loadData();
   };
 
+  const closeFloatingTicketControls = () => {
+    openTicketActionMenuId.value = "";
+    activeAdminPopoverKey.value = "";
+  };
+
+  const toggleTicketActionMenu = (ticketId: unknown) => {
+    const normalizedTicketId = String(ticketId ?? "");
+    openTicketActionMenuId.value = openTicketActionMenuId.value === normalizedTicketId ? "" : normalizedTicketId;
+    activeAdminPopoverKey.value = "";
+  };
+
+  const toggleAdminPopover = (ticket: any, admin: any) => {
+    const key = getAdminParticipantKey(ticket, admin);
+    activeAdminPopoverKey.value = activeAdminPopoverKey.value === key ? "" : key;
+    openTicketActionMenuId.value = "";
+  };
+
+  const isTicketActionLoading = (ticket: any): boolean =>
+    ticketActionLoadingId.value.startsWith(`${String(ticket?.id ?? "")}:`);
+
+  const replaceTicketInList = (nextTicket: any) => {
+    const ticketId = String(nextTicket?.id ?? "");
+    if (!ticketId) return;
+
+    const index = tickets.findIndex((ticket: any) => String(ticket?.id ?? "") === ticketId);
+    if (index < 0) return;
+
+    tickets.splice(index, 1, {
+      ...tickets[index],
+      ...nextTicket,
+    });
+  };
+
+  const extractTicketPayload = (response: any): any => response?.data?.data ?? response?.data ?? response ?? null;
+
+  const handleChangeTicketStatus = async (ticket: any, status: string) => {
+    if (!canUpdateSupport.value || isTicketStatusActive(ticket, status)) return;
+
+    const ticketId = String(ticket?.id ?? "");
+    if (!ticketId) return;
+
+    const nextLabel = getTicketStatusLabel(status);
+    if (typeof window !== "undefined" && !window.confirm(`Change ticket status to ${nextLabel}?`)) {
+      return;
+    }
+
+    ticketActionLoadingId.value = `${ticketId}:status`;
+    openTicketActionMenuId.value = "";
+
+    try {
+      const response = await appCore.adminModules.tickets.updateStatus(ticketId, { status });
+      const nextTicket = extractTicketPayload(response);
+      if (nextTicket?.id) {
+        replaceTicketInList(nextTicket);
+      } else {
+        ticket.status = status;
+      }
+      toast.success("Ticket status updated.");
+      useEventBus.emit(SUPPORT_UNREAD_UPDATED_EVENT);
+    } catch (error) {
+      console.error("admin support status update failed", error);
+      toast.error("Failed to update ticket status.");
+    } finally {
+      ticketActionLoadingId.value = "";
+    }
+  };
+
+  const handleArchiveTicket = async (ticket: any) => {
+    if (!canDeleteSupport.value) return;
+
+    const ticketId = String(ticket?.id ?? "");
+    if (!ticketId) return;
+
+    if (typeof window !== "undefined" && !window.confirm("Archive this ticket?")) {
+      return;
+    }
+
+    ticketActionLoadingId.value = `${ticketId}:archive`;
+
+    try {
+      await appCore.adminModules.tickets.delete(ticketId);
+      const index = tickets.findIndex((item: any) => String(item?.id ?? "") === ticketId);
+      if (index >= 0) {
+        tickets.splice(index, 1);
+      }
+      total.value = Math.max(0, total.value - 1);
+      toast.success("Ticket archived.");
+      useEventBus.emit(SUPPORT_UNREAD_UPDATED_EVENT);
+    } catch (error) {
+      console.error("admin support archive failed", error);
+      toast.error("Failed to archive ticket.");
+    } finally {
+      ticketActionLoadingId.value = "";
+      openTicketActionMenuId.value = "";
+    }
+  };
+
+  const openAdminProfile = async (admin: any) => {
+    const adminId = getAdminParticipantId(admin);
+    if (!adminId) return;
+
+    await router.push(
+      localePath({
+        path: "/profile",
+        query: { adminId },
+      })
+    );
+  };
+
   const handleChangeFilterSortBy = async (value: string) => {
     if (orderBy.value === value)
       orderDirection.value = orderDirection.value === ORDER_DIRECTION_DESC ? ORDER_DIRECTION_ASC : ORDER_DIRECTION_DESC;
@@ -1249,6 +1620,7 @@
 
     await nextTick();
     await placeBottomLeft();
+    document.addEventListener("click", closeFloatingTicketControls);
     window.addEventListener("resize", handleWindowResize);
     await loadData();
     startAdminSupportListRefresh();
@@ -1262,6 +1634,7 @@
     detachSupportResumeListeners();
     stopSupportRealtimeRetry();
     stopAdminSupportListRefresh();
+    document.removeEventListener("click", closeFloatingTicketControls);
     window.removeEventListener("resize", handleWindowResize);
     document.body.style.userSelect = "";
     document.body.style.cursor = "";
@@ -1454,6 +1827,187 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .ticket-status-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ticket-status-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--ui-text-secondary);
+    background: transparent;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .ticket-status-action:not(:disabled):hover {
+    color: var(--ui-text-main);
+    border-color: var(--color-stroke-ui-light);
+    background: color-mix(in srgb, var(--color-stroke-ui-light) 42%, transparent);
+  }
+
+  .ticket-status-action:disabled {
+    cursor: default;
+    opacity: 0.48;
+  }
+
+  .ticket-status-action.is-active {
+    opacity: 1;
+    color: var(--ui-text-main);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 56%, transparent);
+    background: color-mix(in srgb, var(--ui-primary-main) 16%, transparent);
+  }
+
+  .ticket-status-action--pending.is-active {
+    border-color: color-mix(in srgb, var(--ui-sticker-warning) 60%, transparent);
+    background: color-mix(in srgb, var(--ui-sticker-warning) 18%, transparent);
+  }
+
+  .ticket-status-action--closed.is-active {
+    border-color: color-mix(in srgb, var(--ui-sticker-success) 60%, transparent);
+    background: color-mix(in srgb, var(--ui-sticker-success) 18%, transparent);
+  }
+
+  .ticket-status-action__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .ticket-action-menu__dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 60;
+    min-width: 150px;
+    padding: 6px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    border-radius: 10px;
+    background: var(--ui-background-panel);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+  }
+
+  .ticket-action-menu__item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    line-height: 1.2;
+    text-align: left;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .ticket-action-menu__item:not(:disabled):hover {
+    background: color-mix(in srgb, var(--color-stroke-ui-light) 42%, transparent);
+  }
+
+  .ticket-action-menu__item:disabled {
+    opacity: 0.5;
+  }
+
+  .ticket-action-menu__item--danger {
+    color: var(--ui-sticker-danger);
+  }
+
+  .ticket-admins {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding-left: 6px;
+  }
+
+  .ticket-admins--card {
+    padding-left: 0;
+  }
+
+  .ticket-admins__empty {
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .ticket-admins__item {
+    position: relative;
+    margin-left: -6px;
+  }
+
+  .ticket-admins__item:first-of-type {
+    margin-left: 0;
+  }
+
+  .ticket-admin-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    background: var(--ui-background);
+    color: var(--ui-text-main);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    box-shadow: 0 0 0 2px var(--ui-background-panel);
+  }
+
+  .ticket-admin-popover {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    z-index: 70;
+    width: max-content;
+    min-width: 190px;
+    max-width: 260px;
+    padding: 10px;
+    border: 1px solid var(--color-stroke-ui-dark);
+    border-radius: 10px;
+    background: var(--ui-background-panel);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+  }
+
+  .ticket-admin-popover__name {
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .ticket-admin-popover__email {
+    margin-top: 3px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .ticket-admin-popover__link {
+    margin-top: 8px;
+    color: var(--ui-primary-main);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
   }
 
   .ticket-card--full-row {

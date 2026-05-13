@@ -68,6 +68,10 @@ export class TicketsService {
     return await this.useApi.patch(`/admin/tickets/${id}`, data);
   }
 
+  async updateStatus(id: any, data: object = {}): Promise<any> {
+    return await this.useApi.patch(`/admin/tickets/${id}/status`, data);
+  }
+
   async delete(id: any): Promise<any> {
     return await this.useApi.delete(`/admin/tickets/${id}`);
   }

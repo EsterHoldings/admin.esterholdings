@@ -1793,11 +1793,11 @@
   .dashboard-chart-card__chart {
     min-height: 320px;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 62%, transparent);
-    border-radius: 18px;
-    background:
-      radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--ui-primary-main) 9%, transparent), transparent 32%),
-      color-mix(in srgb, var(--ui-background-card) 46%, transparent);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .admin-dashboard__filter :deep(.p-datepicker),
@@ -2124,6 +2124,10 @@
 
     .dashboard-chart-card {
       padding: 12px;
+    }
+
+    .dashboard-chart-card--chart {
+      padding: 0;
     }
 
     .dashboard-list-card {

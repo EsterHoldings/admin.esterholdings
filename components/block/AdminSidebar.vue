@@ -75,8 +75,9 @@
   const canReadSupportUnread = computed(
     () => adminAuthStore.hasPermission("view-support-unread") || adminAuthStore.hasPermission("view-support")
   );
+  const isSupportRoute = computed(() => String(route.path ?? "").includes("/support"));
   const supportMenuUnreadCount = computed(() =>
-    Math.max(supportUnreadCount.value, adminNotificationsStore.unreadSupportNotificationsCount)
+    isSupportRoute.value ? 0 : Number(adminNotificationsStore.unreadSupportNotificationsCount ?? 0)
   );
   let supportBadgeTimer: ReturnType<typeof setInterval> | null = null;
   let supportUnreadRafId: number | null = null;

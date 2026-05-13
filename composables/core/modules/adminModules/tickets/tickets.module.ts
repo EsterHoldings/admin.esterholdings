@@ -75,6 +75,10 @@ export class TicketsModule implements BasicModuleInterface {
     return await this.ticketsService.patch(id, data);
   }
 
+  async updateStatus(id: any, data: object = {}): Promise<any> {
+    return await this.ticketsService.updateStatus(id, data);
+  }
+
   async delete(id: any): Promise<any> {
     return await this.ticketsService.delete(id);
   }

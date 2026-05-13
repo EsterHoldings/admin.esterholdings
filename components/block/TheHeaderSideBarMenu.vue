@@ -40,7 +40,7 @@ import UiIconSupport from "~/components/ui/UiIconSupport.vue";
 import UiIconCheck from "~/components/ui/UiIconCheck.vue";
 import UiIconNews from "~/components/ui/UiIconNews.vue";
 
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
 import { computed } from "vue";
 import {useLocalePath} from "~/.nuxt/imports";
@@ -60,6 +60,7 @@ const hasPermission = (required?: string | string[]) => {
 };
 
 const router = useRouter();
+const route = useRoute();
 
 const props = defineProps({
   sideBarIsOpen: {
@@ -72,8 +73,9 @@ const props = defineProps({
   },
 });
 
+const isSupportRoute = computed(() => String(route.path ?? "").includes("/support"));
 const supportMenuUnreadCount = computed(() =>
-  Math.max(Number(props.supportUnreadCount ?? 0), Number(adminNotificationsStore.unreadSupportNotificationsCount ?? 0))
+  isSupportRoute.value ? 0 : Number(adminNotificationsStore.unreadSupportNotificationsCount ?? 0)
 );
 
 const menuItems = computed(() => [
