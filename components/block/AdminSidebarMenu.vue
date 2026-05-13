@@ -48,11 +48,13 @@
     defineProps<{
       supportUnreadCount?: number;
       verificationRequestsUnreadCount?: number;
+      payoutVerificationRequestsUnreadCount?: number;
       withdrawalRequestsUnreadCount?: number;
     }>(),
     {
       supportUnreadCount: 0,
       verificationRequestsUnreadCount: 0,
+      payoutVerificationRequestsUnreadCount: 0,
       withdrawalRequestsUnreadCount: 0,
     }
   );
@@ -63,6 +65,16 @@
   const router = useRouter();
   const sideBarIsOpen = ref(true);
   const adminAuthStore = useAdminAuthStore();
+  const menuText = (key: string, fallback: string): string => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
+  const payoutVerificationFallback = (): string => {
+    if (locale.value === "ru") return "Верификация реквизитов";
+    if (locale.value === "uk") return "Верифікація реквізитів";
+
+    return "Payment detail verifications";
+  };
 
   const hasPermission = (required?: string | string[]) => {
     if (!required) return true;
@@ -86,6 +98,13 @@
         icon: UiIconCheck,
         displayIfHasPermission: "view-verifications",
         notificationsCount: props.verificationRequestsUnreadCount,
+      },
+      {
+        title: menuText("admin.menu.payoutVerificationRequests", payoutVerificationFallback()),
+        to: localePath("/payout-verifications"),
+        icon: UiIconPayment,
+        displayIfHasPermission: "view-verifications",
+        notificationsCount: props.payoutVerificationRequestsUnreadCount,
       },
       {
         title: t("admin.menu.withdrawalRequests"),

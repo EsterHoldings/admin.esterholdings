@@ -19,8 +19,8 @@ export class AdminNotificationsModule {
     return await this.notificationsService.markAllRead();
   }
 
-  async markReadByTypes(types: string[]): Promise<any> {
-    return await this.notificationsService.markReadByTypes(types);
+  async markReadByTypes(types: string[], options: { verificationScope?: "identity" | "payout" } = {}): Promise<any> {
+    return await this.notificationsService.markReadByTypes(types, options);
   }
 
   async markRead(notificationId: string): Promise<any> {

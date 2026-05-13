@@ -39,6 +39,7 @@ import UiIconKeys from "~/components/ui/UiIconKeys.vue";
 import UiIconSupport from "~/components/ui/UiIconSupport.vue";
 import UiIconCheck from "~/components/ui/UiIconCheck.vue";
 import UiIconNews from "~/components/ui/UiIconNews.vue";
+import UiIconPayment from "~/components/ui/UiIconPayment.vue";
 
 import { useRoute, useRouter } from "vue-router";
 import { useAdminAuthStore } from "~/stores/adminAuthStore";
@@ -46,7 +47,7 @@ import { computed } from "vue";
 import {useLocalePath} from "~/.nuxt/imports";
 import { useAdminNotificationsStore } from "~/stores/adminNotificationsStore";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const store = useAdminAuthStore();
 const adminNotificationsStore = useAdminNotificationsStore();
@@ -77,6 +78,16 @@ const isSupportRoute = computed(() => String(route.path ?? "").includes("/suppor
 const supportMenuUnreadCount = computed(() =>
   isSupportRoute.value ? 0 : Number(adminNotificationsStore.unreadSupportNotificationsCount ?? 0)
 );
+const menuText = (key: string, fallback: string): string => {
+  const value = t(key);
+  return value === key ? fallback : value;
+};
+const payoutVerificationFallback = (): string => {
+  if (locale.value === "ru") return "Верификация реквизитов";
+  if (locale.value === "uk") return "Верифікація реквізитів";
+
+  return "Payment detail verifications";
+};
 
 const menuItems = computed(() => [
   {
@@ -90,7 +101,14 @@ const menuItems = computed(() => [
     to: localePath("/verifications"),
     icon: UiIconCheck,
     displayIfHasPermission: "view-verifications",
-    notificationsCount: adminNotificationsStore.unreadVerificationRequestsCount,
+    notificationsCount: adminNotificationsStore.unreadIdentityVerificationRequestsCount,
+  },
+  {
+    title: menuText("admin.menu.payoutVerificationRequests", payoutVerificationFallback()),
+    to: localePath("/payout-verifications"),
+    icon: UiIconPayment,
+    displayIfHasPermission: "view-verifications",
+    notificationsCount: adminNotificationsStore.unreadPayoutVerificationRequestsCount,
   },
   {
     title: t("admin.menu.withdrawalRequests"),

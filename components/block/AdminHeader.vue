@@ -265,6 +265,7 @@
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
   ];
+  const VERIFICATION_ADMIN_NOTIFICATION_TYPES = ["verification.request.created"];
   const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
   const props = withDefaults(
     defineProps<{
@@ -333,8 +334,25 @@
   };
 
   const hasAccessToken = () => Boolean(String(adminAuthStore.accessToken ?? "").trim());
+  const isIdentityVerificationRequestsRoute = computed(() => String(route.path ?? "").includes("/verifications"));
+  const isPayoutVerificationRequestsRoute = computed(() => String(route.path ?? "").includes("/payout-verifications"));
   const isWithdrawalRequestsRoute = computed(() => String(route.path ?? "").includes("/withdrawal-requests"));
   const isSupportRoute = computed(() => String(route.path ?? "").includes("/support"));
+  const resolveVerificationNotificationScope = (payload?: Record<string, any> | null): "identity" | "payout" => {
+    const step = String(payload?.step ?? "").trim().toLowerCase();
+
+    return step === "payout" ? "payout" : "identity";
+  };
+  const notificationMatchesVerificationScope = (
+    notification: Pick<AdminNotificationItem, "type" | "payload">,
+    scope?: "identity" | "payout"
+  ): boolean => {
+    if (!scope || !VERIFICATION_ADMIN_NOTIFICATION_TYPES.includes(String(notification.type ?? "").trim())) {
+      return true;
+    }
+
+    return resolveVerificationNotificationScope(notification.payload) === scope;
+  };
 
   const handleClickNotifications = () => uiStore.toggleNotifications();
   const handleClickProfileMenu = () => {
@@ -658,6 +676,8 @@
     adminNotificationsStore.applySummary({
       unread_count: 0,
       unread_verification_requests_count: 0,
+      unread_identity_verification_requests_count: 0,
+      unread_payout_verification_requests_count: 0,
       unread_withdrawal_requests_count: 0,
       unread_support_notifications_count: 0,
     });
@@ -679,7 +699,7 @@
 
     const prevItem = notifications.value[index];
     notifications.value.splice(index, 1, { ...prevItem, wasRead: true });
-    adminNotificationsStore.decrementForNotification(prevItem.type);
+    adminNotificationsStore.decrementForNotification(prevItem.type, prevItem.payload);
 
     if (!syncWithApi) return;
 
@@ -688,24 +708,32 @@
       adminNotificationsStore.applySummary(response?.data?.data ?? {});
     } catch {
       notifications.value.splice(index, 1, prevItem);
-      adminNotificationsStore.incrementForNotification(prevItem.type);
+      adminNotificationsStore.incrementForNotification(prevItem.type, prevItem.payload);
     }
   };
 
-  const markNotificationsByTypes = async (types: string[]) => {
+  const markNotificationsByTypes = async (
+    types: string[],
+    options: { verificationScope?: "identity" | "payout" } = {}
+  ) => {
     const normalizedTypes = types.map(item => String(item ?? "").trim()).filter(Boolean);
     if (normalizedTypes.length === 0) return;
 
     notifications.value = notifications.value.map(item =>
-      normalizedTypes.includes(item.type) ? { ...item, wasRead: true } : item
+      normalizedTypes.includes(item.type) && notificationMatchesVerificationScope(item, options.verificationScope)
+        ? { ...item, wasRead: true }
+        : item
     );
 
     try {
-      const response = await appCore.adminModules.notifications.markReadByTypes(normalizedTypes);
+      const response = await appCore.adminModules.notifications.markReadByTypes(normalizedTypes, {
+        verificationScope: options.verificationScope,
+      });
       const summary = response?.data?.data ?? {};
       adminNotificationsStore.applySummary(summary);
       useEventBus.emit(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, {
         types: normalizedTypes,
+        verificationScope: options.verificationScope,
         summary,
       });
     } catch {
@@ -714,6 +742,22 @@
   };
 
   const markCurrentSectionNotificationsSeen = async () => {
+    if (
+      isIdentityVerificationRequestsRoute.value &&
+      adminNotificationsStore.unreadIdentityVerificationRequestsCount > 0
+    ) {
+      await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES, { verificationScope: "identity" });
+      return;
+    }
+
+    if (
+      isPayoutVerificationRequestsRoute.value &&
+      adminNotificationsStore.unreadPayoutVerificationRequestsCount > 0
+    ) {
+      await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES, { verificationScope: "payout" });
+      return;
+    }
+
     if (isWithdrawalRequestsRoute.value && adminNotificationsStore.unreadWithdrawalRequestsCount > 0) {
       await markNotificationsByTypes(["payments.withdrawal.created"]);
       return;
@@ -779,7 +823,7 @@
     rememberNotifications([normalized]);
 
     if (!normalized.wasRead && !wasKnown) {
-      adminNotificationsStore.incrementForNotification(normalized.type);
+      adminNotificationsStore.incrementForNotification(normalized.type, normalized.payload);
       if (shouldToastNotification(normalized)) {
         showNotificationToast(normalized);
       }
@@ -788,6 +832,24 @@
     }
 
     if (isOpen.value) {
+      await markNotificationRead(normalized.id, true);
+      return;
+    }
+
+    if (
+      normalized.type === "verification.request.created" &&
+      isIdentityVerificationRequestsRoute.value &&
+      resolveVerificationNotificationScope(normalized.payload) === "identity"
+    ) {
+      await markNotificationRead(normalized.id, true);
+      return;
+    }
+
+    if (
+      normalized.type === "verification.request.created" &&
+      isPayoutVerificationRequestsRoute.value &&
+      resolveVerificationNotificationScope(normalized.payload) === "payout"
+    ) {
       await markNotificationRead(normalized.id, true);
       return;
     }
@@ -929,6 +991,32 @@
       }
 
       if (
+        isIdentityVerificationRequestsRoute.value &&
+        newUnreadItems.some(
+          item =>
+            item.type === "verification.request.created" &&
+            resolveVerificationNotificationScope(item.payload) === "identity" &&
+            !item.wasRead
+        )
+      ) {
+        await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES, { verificationScope: "identity" });
+        return;
+      }
+
+      if (
+        isPayoutVerificationRequestsRoute.value &&
+        newUnreadItems.some(
+          item =>
+            item.type === "verification.request.created" &&
+            resolveVerificationNotificationScope(item.payload) === "payout" &&
+            !item.wasRead
+        )
+      ) {
+        await markNotificationsByTypes(VERIFICATION_ADMIN_NOTIFICATION_TYPES, { verificationScope: "payout" });
+        return;
+      }
+
+      if (
         isWithdrawalRequestsRoute.value &&
         newUnreadItems.some(item => item.type === "payments.withdrawal.created" && !item.wasRead)
       ) {
@@ -990,11 +1078,17 @@
     }
   );
 
-  const handleMarkedByTypes = (payload?: { types?: string[]; summary?: Record<string, unknown> }) => {
+  const handleMarkedByTypes = (payload?: {
+    types?: string[];
+    verificationScope?: "identity" | "payout";
+    summary?: Record<string, unknown>;
+  }) => {
     const types = Array.isArray(payload?.types) ? payload?.types.map(item => String(item ?? "").trim()).filter(Boolean) : [];
     if (types.length > 0) {
       notifications.value = notifications.value.map(item =>
-        types.includes(item.type) ? { ...item, wasRead: true } : item
+        types.includes(item.type) && notificationMatchesVerificationScope(item, payload?.verificationScope)
+          ? { ...item, wasRead: true }
+          : item
       );
     }
 
@@ -1205,6 +1299,14 @@
 
       &__burger {
         display: inline-flex;
+      }
+    }
+  }
+
+  @media (max-width: 767px) {
+    .header {
+      &__breadcrumbs {
+        display: none;
       }
     }
   }

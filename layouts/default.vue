@@ -70,6 +70,7 @@
     support: resolveLabel("admin.menu.support", "Support"),
     access: resolveLabel("admin.menu.access", "Access"),
     verifications: resolveLabel("admin.menu.verificationRequests", "Verifications"),
+    "payout-verifications": resolveLabel("admin.menu.payoutVerificationRequests", "Payment detail verifications"),
     profile: resolveLabel("admin.menu.profile", "Profile"),
     news: resolveLabel("admin.menu.news", "News"),
   };
@@ -119,6 +120,7 @@
       routeKey === "dashboard" ||
       routeKey === "accounts" ||
       routeKey === "verifications" ||
+      routeKey === "payout-verifications" ||
       routeKey.endsWith("/verifications") ||
       /^clients\/[^/]+$/.test(routeKey)
     );

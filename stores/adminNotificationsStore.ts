@@ -9,25 +9,44 @@ const normalizeCount = (value: unknown): number => {
 export const ADMIN_WITHDRAWAL_NOTIFICATION_TYPES = ["payments.withdrawal.created"];
 export const ADMIN_VERIFICATION_NOTIFICATION_TYPES = ["verification.request.created"];
 export const ADMIN_SUPPORT_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
+export type AdminVerificationNotificationScope = "identity" | "payout";
+
+const resolveVerificationNotificationScope = (payload?: Record<string, any> | null): AdminVerificationNotificationScope => {
+  const step = String(payload?.step ?? "").trim().toLowerCase();
+
+  return step === "payout" ? "payout" : "identity";
+};
 
 export const useAdminNotificationsStore = defineStore("adminNotifications", () => {
   const unreadCount = ref(0);
   const unreadVerificationRequestsCount = ref(0);
+  const unreadIdentityVerificationRequestsCount = ref(0);
+  const unreadPayoutVerificationRequestsCount = ref(0);
   const unreadWithdrawalRequestsCount = ref(0);
   const unreadSupportNotificationsCount = ref(0);
 
   const applySummary = (payload?: any) => {
     unreadCount.value = normalizeCount(payload?.unread_count);
     unreadVerificationRequestsCount.value = normalizeCount(payload?.unread_verification_requests_count);
+    unreadIdentityVerificationRequestsCount.value = normalizeCount(
+      payload?.unread_identity_verification_requests_count ?? payload?.unread_verification_requests_count
+    );
+    unreadPayoutVerificationRequestsCount.value = normalizeCount(payload?.unread_payout_verification_requests_count);
     unreadWithdrawalRequestsCount.value = normalizeCount(payload?.unread_withdrawal_requests_count);
     unreadSupportNotificationsCount.value = normalizeCount(payload?.unread_support_notifications_count);
   };
 
-  const incrementForNotification = (type: string) => {
+  const incrementForNotification = (type: string, payload?: Record<string, any> | null) => {
     unreadCount.value += 1;
 
     if (ADMIN_VERIFICATION_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
       unreadVerificationRequestsCount.value += 1;
+
+      if (resolveVerificationNotificationScope(payload) === "payout") {
+        unreadPayoutVerificationRequestsCount.value += 1;
+      } else {
+        unreadIdentityVerificationRequestsCount.value += 1;
+      }
     }
 
     if (ADMIN_WITHDRAWAL_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
@@ -39,11 +58,17 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
     }
   };
 
-  const decrementForNotification = (type: string) => {
+  const decrementForNotification = (type: string, payload?: Record<string, any> | null) => {
     unreadCount.value = Math.max(0, unreadCount.value - 1);
 
     if (ADMIN_VERIFICATION_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
       unreadVerificationRequestsCount.value = Math.max(0, unreadVerificationRequestsCount.value - 1);
+
+      if (resolveVerificationNotificationScope(payload) === "payout") {
+        unreadPayoutVerificationRequestsCount.value = Math.max(0, unreadPayoutVerificationRequestsCount.value - 1);
+      } else {
+        unreadIdentityVerificationRequestsCount.value = Math.max(0, unreadIdentityVerificationRequestsCount.value - 1);
+      }
     }
 
     if (ADMIN_WITHDRAWAL_NOTIFICATION_TYPES.includes(String(type ?? "").trim())) {
@@ -58,6 +83,8 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
   const reset = () => {
     unreadCount.value = 0;
     unreadVerificationRequestsCount.value = 0;
+    unreadIdentityVerificationRequestsCount.value = 0;
+    unreadPayoutVerificationRequestsCount.value = 0;
     unreadWithdrawalRequestsCount.value = 0;
     unreadSupportNotificationsCount.value = 0;
   };
@@ -67,8 +94,11 @@ export const useAdminNotificationsStore = defineStore("adminNotifications", () =
     decrementForNotification,
     incrementForNotification,
     reset,
+    resolveVerificationNotificationScope,
     unreadCount,
     unreadVerificationRequestsCount,
+    unreadIdentityVerificationRequestsCount,
+    unreadPayoutVerificationRequestsCount,
     unreadSupportNotificationsCount,
     unreadWithdrawalRequestsCount,
   };

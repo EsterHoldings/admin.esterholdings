@@ -4,24 +4,17 @@
       class="verification-stat-grid"
       :aria-label="text('admin.verifications.stats.ariaLabel', 'Verification request filters')"
     >
-      <PrimeCard
+      <button
         v-for="card in statCards"
         :key="card.id"
+        type="button"
         class="verification-stat-card"
         :class="{ 'is-active': requestStateFilter === card.filter }"
+        @click="handleRequestStateFilter(card.filter)"
       >
-        <template #content>
-          <button
-            type="button"
-            class="verification-stat-card__button"
-            @click="handleRequestStateFilter(card.filter)"
-          >
-            <span class="verification-stat-card__label">{{ card.label }}</span>
-            <span class="verification-stat-card__value">{{ card.value }}</span>
-            <span class="verification-stat-card__hint">{{ card.hint }}</span>
-          </button>
-        </template>
-      </PrimeCard>
+        <span class="verification-stat-card__label">{{ card.label }}</span>
+        <span class="verification-stat-card__value">{{ card.value }}</span>
+      </button>
     </section>
 
     <section class="verification-toolbar">
@@ -34,15 +27,6 @@
         />
       </span>
 
-      <PrimeSelect
-        v-model="sortKey"
-        class="verification-toolbar__sort"
-        :options="sortOptions"
-        option-label="label"
-        option-value="value"
-        @update:model-value="handleSortChange"
-      />
-
       <PrimeButton
         class="verification-toolbar__refresh"
         icon="pi pi-refresh"
@@ -54,14 +38,10 @@
     </section>
 
     <div
-      v-if="requestStateFilter !== 'all'"
-      class="verification-active-filter"
-    >
-      <span>{{ text('admin.verifications.filters.active', 'Filter') }}: {{ requestStateText(requestStateFilter) }}</span>
-      <button type="button" @click="handleRequestStateFilter('all')">
-        {{ text('admin.verifications.filters.reset', 'Reset') }}
-      </button>
-    </div>
+      v-if="isLoading && requestItems.length > 0"
+      class="verification-loading-line"
+      aria-hidden="true"
+    />
 
     <section
       v-if="errorMessage"
@@ -123,13 +103,6 @@
           <div class="verification-request-card__main">
             <div class="verification-request-card__title-row">
               <h3>{{ displayClientName(requestItem) }}</h3>
-              <span
-                class="verification-status-line"
-                :class="requestStateClass(requestItem.request_state)"
-              >
-                <i aria-hidden="true" />
-                {{ requestStateText(requestItem.request_state) }}
-              </span>
             </div>
 
             <div class="verification-request-card__meta">
@@ -192,6 +165,13 @@
               @click="openRequestReviewConfirm(requestItem, 'rejected')"
             />
           </div>
+          <span
+            class="verification-status-line"
+            :class="requestStateClass(requestItem.request_state)"
+          >
+            <i aria-hidden="true" />
+            {{ requestStateText(requestItem.request_state) }}
+          </span>
         </div>
       </article>
     </section>
@@ -251,9 +231,11 @@ import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
 
 type RequestReviewState = "pending" | "approved" | "rejected";
+type RequestStateFilter = "pending" | "history" | "approved" | "rejected";
 type VerificationStatus = "pending" | "approved" | "rejected";
 type VerificationSectionTarget = "profile" | "documents" | "payout";
 type VerificationTabTarget = "client" | "payout" | "requests";
+type RequestScope = "identity" | "payout";
 
 interface VerificationRequestItem {
   id: string;
@@ -294,6 +276,14 @@ interface ReviewFocusItem {
 const emit = defineEmits<{
   (e: "loading", value: boolean): void;
 }>();
+const props = withDefaults(
+  defineProps<{
+    requestScope?: RequestScope;
+  }>(),
+  {
+    requestScope: "identity",
+  }
+);
 
 const appCore = useAppCore();
 const localePath = useLocalePath();
@@ -301,6 +291,7 @@ const toast = useToast();
 const { t, te, locale } = useI18n({ useScope: "global" });
 const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
 const ADMIN_NOTIFICATIONS_MARKED_EVENT = "admin-notifications-marked";
+const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
 const VERIFICATION_NOTIFICATION_TYPE = "verification.request.created";
 
 const page = ref(1);
@@ -310,8 +301,7 @@ const isLoading = ref(false);
 const errorMessage = ref("");
 const searchInput = ref("");
 const searchFilter = ref("");
-const requestStateFilter = ref<"all" | RequestReviewState>("pending");
-const sortKey = ref("updated_desc");
+const requestStateFilter = ref<RequestStateFilter>("pending");
 const requestItems = ref<VerificationRequestItem[]>([]);
 const summary = reactive<Record<string, number>>({
   all: 0,
@@ -336,43 +326,38 @@ let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const text = (key: string, fallback: string, params: Record<string, unknown> = {}): string =>
   te(key) ? String(t(key, params)) : fallback.replace(/\{(\w+)}/g, (_, name) => String(params[name] ?? ""));
+const normalizedRequestScope = computed<RequestScope>(() => (props.requestScope === "payout" ? "payout" : "identity"));
+const localizedFallback = (ru: string, uk: string, en: string): string => {
+  if (locale.value === "ru") return ru;
+  if (locale.value === "uk") return uk;
 
-const sortOptions = computed(() => [
-  { value: "updated_desc", label: text("admin.verifications.sort.newest", "Newest updated first") },
-  { value: "updated_asc", label: text("admin.verifications.sort.oldest", "Oldest updated first") },
-  { value: "client_asc", label: text("admin.verifications.sort.clientAsc", "Client name A-Z") },
-  { value: "client_desc", label: text("admin.verifications.sort.clientDesc", "Client name Z-A") },
-  { value: "request_state", label: text("admin.verifications.sort.state", "Request state") },
-]);
+  return en;
+};
 
 const statCards = computed(() => [
   {
-    id: "all",
-    filter: "all" as const,
-    label: text("admin.verifications.stats.all", "All"),
-    value: formatCount(summary.all),
-    hint: text("admin.verifications.stats.allHint", "All visible requests"),
-  },
-  {
     id: "pending",
     filter: "pending" as const,
-    label: text("admin.verifications.stats.pending", "Unprocessed"),
+    label: text("admin.verifications.filters.pending", localizedFallback("Требующие обработки", "Потребують обробки", "Requires processing")),
     value: formatCount(summary.pending),
-    hint: text("admin.verifications.stats.pendingHint", "Require admin decision"),
+  },
+  {
+    id: "history",
+    filter: "history" as const,
+    label: text("admin.verifications.filters.history", localizedFallback("История", "Історія", "History")),
+    value: formatCount(summary.all),
   },
   {
     id: "approved",
     filter: "approved" as const,
-    label: text("admin.verifications.stats.approved", "Confirmed"),
+    label: text("admin.verifications.filters.approved", localizedFallback("Подтвержденные", "Підтверджені", "Approved")),
     value: formatCount(summary.approved),
-    hint: text("admin.verifications.stats.approvedHint", "Approved requests"),
   },
   {
     id: "rejected",
     filter: "rejected" as const,
-    label: text("admin.verifications.stats.rejected", "Cancelled"),
+    label: text("admin.verifications.filters.rejected", localizedFallback("Отмененные", "Скасовані", "Cancelled")),
     value: formatCount(summary.rejected),
-    hint: text("admin.verifications.stats.rejectedHint", "Rejected requests"),
   },
 ]);
 
@@ -406,6 +391,14 @@ const mapNotificationStepToSection = (value: unknown): VerificationSectionTarget
   }
 
   return "profile";
+};
+
+const notificationSectionMatchesScope = (section: VerificationSectionTarget): boolean => {
+  if (normalizedRequestScope.value === "payout") {
+    return section === "payout";
+  }
+
+  return section !== "payout";
 };
 
 const normalizeUnreadVerificationNotification = (raw: any): AdminVerificationUnreadNotification | null => {
@@ -450,7 +443,9 @@ const hasUnreadVerificationSignal = (
   userId: string,
   section?: VerificationSectionTarget,
 ): boolean => unreadVerificationNotifications.value.some(item =>
-  item.userId === userId && (section === undefined || item.section === section)
+  item.userId === userId &&
+  notificationSectionMatchesScope(item.section) &&
+  (section === undefined || item.section === section)
 );
 
 const loadUnreadVerificationNotifications = async (): Promise<void> => {
@@ -463,7 +458,9 @@ const loadUnreadVerificationNotifications = async (): Promise<void> => {
     const rows = Array.isArray(response?.data?.data?.data) ? response.data.data.data : [];
     unreadVerificationNotifications.value = rows
       .map(normalizeUnreadVerificationNotification)
-      .filter((item: AdminVerificationUnreadNotification | null): item is AdminVerificationUnreadNotification => Boolean(item));
+      .filter((item: AdminVerificationUnreadNotification | null): item is AdminVerificationUnreadNotification =>
+        item !== null && notificationSectionMatchesScope(item.section)
+      );
   } catch {
     unreadVerificationNotifications.value = [];
   }
@@ -523,21 +520,10 @@ const formatDateTime = (value: string | null): string => {
 const formatUpdatedAt = (requestItem: VerificationRequestItem): string =>
   requestItem.updated_at ? formatDateTime(requestItem.updated_at) : (requestItem.updated_at_human || "-");
 
-const statusText = (status: VerificationStatus): string => {
-  switch (status) {
-    case "approved":
-      return text("admin.verifications.status.approved", "Approved");
-    case "rejected":
-      return text("admin.verifications.status.rejected", "Rejected");
-    default:
-      return text("admin.verifications.status.pending", "Pending");
-  }
-};
-
-const requestStateText = (state: "all" | RequestReviewState): string => {
+const requestStateText = (state: RequestStateFilter | RequestReviewState): string => {
   switch (state) {
-    case "all":
-      return text("admin.verifications.requestState.all", "All");
+    case "history":
+      return text("admin.verifications.requestState.history", localizedFallback("История", "Історія", "History"));
     case "approved":
       return text("admin.verifications.requestState.approved", "Confirmed");
     case "rejected":
@@ -549,35 +535,20 @@ const requestStateText = (state: "all" | RequestReviewState): string => {
 
 const requestStateClass = (state: RequestReviewState): string => `is-${normalizeRequestReviewState(state)}`;
 
-const resolveSortPayload = (value: string): { orderBy: string; orderDirection: "asc" | "desc" } => {
-  switch (value) {
-    case "updated_asc":
-      return { orderBy: "updated_at", orderDirection: "asc" };
-    case "client_asc":
-      return { orderBy: "client_name", orderDirection: "asc" };
-    case "client_desc":
-      return { orderBy: "client_name", orderDirection: "desc" };
-    case "request_state":
-      return { orderBy: "request_review_state", orderDirection: "asc" };
-    default:
-      return { orderBy: "updated_at", orderDirection: "desc" };
-  }
-};
-
 const loadList = async (): Promise<void> => {
   isLoading.value = true;
   emit("loading", true);
   errorMessage.value = "";
 
   try {
-    const sortPayload = resolveSortPayload(sortKey.value);
     const response = await appCore.adminModules.verificationRequests.getAll({
       page: page.value,
       perPage: perPage.value,
       searchFilter: searchFilter.value,
-      requestState: requestStateFilter.value === "all" ? "" : requestStateFilter.value,
-      orderBy: sortPayload.orderBy,
-      orderDirection: sortPayload.orderDirection,
+      requestState: requestStateFilter.value === "history" ? "" : requestStateFilter.value,
+      requestScope: normalizedRequestScope.value,
+      orderBy: "updated_at",
+      orderDirection: "desc",
     });
 
     const payload = response?.data?.data ?? {};
@@ -623,14 +594,8 @@ const loadList = async (): Promise<void> => {
   }
 };
 
-const handleRequestStateFilter = async (value: "all" | RequestReviewState): Promise<void> => {
+const handleRequestStateFilter = async (value: RequestStateFilter): Promise<void> => {
   requestStateFilter.value = value;
-  page.value = 1;
-  await loadList();
-};
-
-const handleSortChange = async (value: string | null): Promise<void> => {
-  sortKey.value = value || "updated_desc";
   page.value = 1;
   await loadList();
 };
@@ -654,6 +619,7 @@ const handleRequestReviewUpdate = async (
   try {
     await appCore.adminModules.verificationRequests.put(requestItem.id, {
       type: "request",
+      requestScope: normalizedRequestScope.value,
       updatedStatus: { status: nextState, comment: "" },
     });
 
@@ -721,11 +687,27 @@ const confirmRequestReviewUpdate = async (): Promise<void> => {
 };
 
 const requestFocusItems = (requestItem: VerificationRequestItem): ReviewFocusItem[] => {
-  if (requestItem.request_state !== "pending") {
-    return [];
-  }
-
   const items: ReviewFocusItem[] = [];
+
+  if (normalizedRequestScope.value === "payout") {
+    items.push({
+      id: "payout",
+      label:
+        requestItem.requisites_review_count > 0
+          ? text("admin.verifications.changes.requisites", "{count} payment detail(s) changed", {
+              count: requestItem.requisites_review_count,
+            })
+          : text(
+              "admin.verifications.changes.requisitesGeneric",
+              localizedFallback("Запрос по платежным реквизитам", "Запит по платіжних реквізитах", "Payment detail request")
+            ),
+      tab: "payout",
+      section: "payout",
+      icon: "pi pi-credit-card",
+    });
+
+    return items;
+  }
 
   if (requestItem.profile_review_required) {
     items.push({
@@ -749,15 +731,16 @@ const requestFocusItems = (requestItem: VerificationRequestItem): ReviewFocusIte
     });
   }
 
-  if (requestItem.requisites_review_count > 0) {
+  if (items.length === 0) {
     items.push({
-      id: "payout",
-      label: text("admin.verifications.changes.requisites", "{count} payment detail(s) changed", {
-        count: requestItem.requisites_review_count,
-      }),
-      tab: "payout",
-      section: "payout",
-      icon: "pi pi-credit-card",
+      id: "documents",
+      label: text(
+        "admin.verifications.changes.identityGeneric",
+        localizedFallback("Запрос по документам и профилю", "Запит по документах і профілю", "Documents and profile request")
+      ),
+      tab: "client",
+      section: "documents",
+      icon: "pi pi-id-card",
     });
   }
 
@@ -807,6 +790,10 @@ const handleAdminNotificationReceived = (payload?: { notification?: any }): void
     return;
   }
 
+  if (!notificationSectionMatchesScope(notification.section)) {
+    return;
+  }
+
   upsertUnreadVerificationNotification(notification);
   void loadList();
 };
@@ -817,6 +804,25 @@ const handleMarkedNotifications = (payload?: { ids?: string[] }): void => {
     : [];
 
   removeUnreadVerificationNotifications(ids);
+};
+
+const handleMarkedNotificationsByTypes = (payload?: {
+  types?: string[];
+  verificationScope?: RequestScope;
+}): void => {
+  const types = Array.isArray(payload?.types)
+    ? payload.types.map(item => String(item ?? "").trim()).filter(Boolean)
+    : [];
+
+  if (!types.includes(VERIFICATION_NOTIFICATION_TYPE)) {
+    return;
+  }
+
+  if (payload?.verificationScope && payload.verificationScope !== normalizedRequestScope.value) {
+    return;
+  }
+
+  void loadUnreadVerificationNotifications();
 };
 
 watch(searchInput, value => {
@@ -834,6 +840,7 @@ watch(searchInput, value => {
 onMounted(() => {
   useEventBus.on(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
   useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
+  useEventBus.on(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedNotificationsByTypes);
 
   void Promise.all([loadList(), loadUnreadVerificationNotifications()]);
 });
@@ -845,6 +852,7 @@ onBeforeUnmount(() => {
 
   useEventBus.off(ADMIN_NOTIFICATION_RECEIVED_EVENT, handleAdminNotificationReceived);
   useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_EVENT, handleMarkedNotifications);
+  useEventBus.off(ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT, handleMarkedNotificationsByTypes);
 });
 
 defineExpose({
@@ -854,114 +862,67 @@ defineExpose({
 
 <style lang="scss" scoped>
 .verification-queue-page {
-  --verification-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
-  --verification-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
-  --verification-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
-  --verification-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 18%, transparent);
+  --verification-line: color-mix(in srgb, var(--ui-primary-main) 18%, var(--color-stroke-ui-light));
 
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
   width: 100%;
 }
 
 .verification-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .verification-stat-card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  cursor: pointer;
-  border: 1px solid var(--verification-glass-border);
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 9%, transparent), transparent 38%),
-    linear-gradient(145deg, var(--verification-glass-bg), var(--verification-glass-bg-strong));
-  box-shadow: var(--verification-glass-shadow);
-  backdrop-filter: blur(22px) saturate(135%);
-  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid var(--color-stroke-ui-light);
+  border-radius: 999px;
+  color: var(--ui-text-secondary);
+  background: transparent;
   transition:
-    transform 0.18s ease,
     border-color 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.verification-stat-card :deep(.p-card-body),
-.verification-stat-card :deep(.p-card-content) {
-  padding: 0;
-}
-
-.verification-stat-card::after {
-  content: "";
-  position: absolute;
-  inset: -34% auto -34% -56%;
-  z-index: 0;
-  width: 38%;
-  pointer-events: none;
-  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
-  filter: blur(8px);
-  opacity: 0;
-  transform: rotate(12deg) translateX(-35%);
+    color 0.18s ease,
+    background-color 0.18s ease;
 }
 
 .verification-stat-card:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
-  box-shadow: 0 18px 52px color-mix(in srgb, var(--ui-primary-main) 7%, #000000 17%);
-}
-
-.verification-stat-card:hover::after {
-  animation: verification-queue-glint 1.45s ease both;
+  border-color: color-mix(in srgb, var(--ui-primary-main) 42%, var(--color-stroke-ui-light));
+  color: var(--ui-text-main);
 }
 
 .verification-stat-card.is-active {
   border-color: var(--ui-primary-main);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 22%, transparent),
-    var(--verification-glass-shadow);
-}
-
-.verification-stat-card__button {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 8px;
-  width: 100%;
-  min-height: 96px;
-  padding: 14px;
-  text-align: left;
+  background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
   color: var(--ui-text-main);
 }
 
-.verification-stat-card__label,
-.verification-stat-card__hint {
+.verification-stat-card__label {
   font-size: 12px;
-  color: var(--ui-text-secondary);
+  font-weight: 800;
 }
 
 .verification-stat-card__value {
-  font-size: clamp(24px, 4vw, 38px);
-  line-height: 0.95;
+  min-width: 18px;
+  font-size: 13px;
+  line-height: 1;
   font-weight: 800;
-  letter-spacing: -0.04em;
 }
 
 .verification-toolbar {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(190px, 260px) auto;
+  grid-template-columns: minmax(220px, 1fr) auto;
   gap: 10px;
   align-items: center;
-  padding: 10px;
-  border: 1px solid var(--verification-glass-border);
-  border-radius: 20px;
-  background: color-mix(in srgb, var(--ui-background-panel) 82%, transparent);
-  box-shadow: 0 12px 34px color-mix(in srgb, #000000 8%, transparent);
-  backdrop-filter: blur(18px) saturate(128%);
-  -webkit-backdrop-filter: blur(18px) saturate(128%);
+  padding: 0;
+  background: transparent;
 }
 
 .verification-toolbar__search {
@@ -982,13 +943,27 @@ defineExpose({
   padding-left: 40px;
 }
 
-.verification-toolbar__sort {
-  width: 100%;
-}
-
 .verification-toolbar__refresh {
   width: 42px;
   height: 42px;
+}
+
+.verification-loading-line {
+  position: relative;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+}
+
+.verification-loading-line::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 36%;
+  border-radius: inherit;
+  background: var(--ui-primary-main);
+  animation: verification-loading-line 1.05s ease-in-out infinite;
 }
 
 .verification-active-filter,
@@ -1028,61 +1003,63 @@ defineExpose({
 .verification-request-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
 }
 
 .verification-request-card {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-  padding: 14px;
-  overflow: hidden;
-  border: 1px solid var(--verification-glass-border);
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--ui-primary-main) 8%, transparent), transparent 32%),
-    linear-gradient(145deg, var(--verification-glass-bg), var(--verification-glass-bg-strong));
-  box-shadow: 0 14px 42px color-mix(in srgb, #000000 10%, transparent);
-  backdrop-filter: blur(20px) saturate(132%);
-  -webkit-backdrop-filter: blur(20px) saturate(132%);
+  gap: 18px;
+  align-items: flex-start;
+  padding: 18px 0 18px 28px;
+  border-bottom: 1px solid var(--color-stroke-ui-light);
+  background: transparent;
   cursor: pointer;
   transition:
-    transform 0.18s ease,
     border-color 0.18s ease,
-    background-color 0.18s ease,
-    box-shadow 0.18s ease;
+    background-color 0.18s ease;
 }
 
 .verification-request-card::after {
   content: "";
   position: absolute;
-  inset: -35% auto -35% -55%;
-  width: 38%;
-  background: linear-gradient(110deg, transparent, color-mix(in srgb, #ffffff 6%, transparent), transparent);
-  filter: blur(8px);
-  opacity: 0;
-  transform: rotate(12deg) translateX(-35%);
+  top: 0;
+  bottom: 0;
+  left: 8px;
+  width: 1px;
+  background: var(--verification-line);
   pointer-events: none;
 }
 
-.verification-request-card:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--ui-primary-main) 28%, var(--color-stroke-ui-light));
-  box-shadow: 0 18px 52px color-mix(in srgb, var(--ui-primary-main) 7%, #000000 17%);
+.verification-request-card::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  left: 3px;
+  z-index: 1;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--ui-background-admin);
+  border-radius: 999px;
+  background: var(--ui-primary-main);
 }
 
-.verification-request-card:hover::after {
-  animation: verification-queue-glint 1.45s ease both;
+.verification-request-card:hover {
+  border-color: color-mix(in srgb, var(--ui-primary-main) 26%, var(--color-stroke-ui-light));
+  background: color-mix(in srgb, var(--ui-primary-main) 4%, transparent);
 }
 
 .verification-request-card.is-pending-row {
-  border-color: color-mix(in srgb, var(--ui-warning-main, #f59e0b) 35%, var(--color-stroke-ui-light));
+  border-color: color-mix(in srgb, var(--ui-warning-main, #f59e0b) 28%, var(--color-stroke-ui-light));
+}
+
+.verification-request-card.is-pending-row::before {
+  background: var(--ui-warning-main, #f59e0b);
 }
 
 .verification-request-card.is-unread-notification {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 28%, transparent);
+  background: color-mix(in srgb, var(--ui-primary-main) 6%, transparent);
 }
 
 .verification-request-card__identity {
@@ -1166,17 +1143,12 @@ defineExpose({
     transform 0.18s ease;
 }
 
-@keyframes verification-queue-glint {
+@keyframes verification-loading-line {
   0% {
-    opacity: 0;
-    transform: rotate(12deg) translateX(-45%);
-  }
-  35% {
-    opacity: 0.24;
+    transform: translateX(-120%);
   }
   100% {
-    opacity: 0;
-    transform: rotate(12deg) translateX(280%);
+    transform: translateX(320%);
   }
 }
 
@@ -1201,12 +1173,14 @@ defineExpose({
   flex-direction: column;
   gap: 12px;
   align-items: flex-end;
+  justify-content: flex-start;
+  min-width: 210px;
 }
 
 .verification-request-card__actions {
   display: flex;
   gap: 8px;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
   flex-wrap: wrap;
 }
@@ -1265,11 +1239,23 @@ defineExpose({
   width: 100%;
 }
 
-@media (max-width: 1180px) {
-  .verification-stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+:deep(.p-paginator) {
+  justify-content: flex-start;
+  padding: 10px 0 0;
+  border: 0;
+  background: transparent;
+}
 
+:deep(.p-paginator .p-paginator-page),
+:deep(.p-paginator .p-paginator-next),
+:deep(.p-paginator .p-paginator-prev),
+:deep(.p-paginator .p-paginator-first),
+:deep(.p-paginator .p-paginator-last),
+:deep(.p-paginator .p-select) {
+  box-shadow: none;
+}
+
+@media (max-width: 1180px) {
   .verification-request-card {
     grid-template-columns: 1fr;
   }
@@ -1280,13 +1266,26 @@ defineExpose({
 }
 
 @media (max-width: 760px) {
-  .verification-stat-grid,
   .verification-toolbar {
     grid-template-columns: 1fr;
   }
 
+  .verification-stat-grid {
+    align-items: stretch;
+  }
+
+  .verification-stat-card {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
+  }
+
   .verification-request-card__identity {
     flex-direction: column;
+  }
+
+  .verification-request-card__side {
+    min-width: 0;
+    align-items: stretch;
   }
 
   .verification-request-card__actions :deep(.p-button) {

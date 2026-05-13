@@ -19,8 +19,11 @@ export class AdminNotificationsService {
     return await this.useApi.post("/admin/notifications/read-all");
   }
 
-  async markReadByTypes(types: string[]): Promise<any> {
-    return await this.useApi.post("/admin/notifications/read-by-types", { types });
+  async markReadByTypes(types: string[], options: { verificationScope?: "identity" | "payout" } = {}): Promise<any> {
+    return await this.useApi.post("/admin/notifications/read-by-types", {
+      types,
+      verification_scope: options.verificationScope,
+    });
   }
 
   async markRead(notificationId: string): Promise<any> {

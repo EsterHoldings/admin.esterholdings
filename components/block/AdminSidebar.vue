@@ -21,7 +21,8 @@
     <div class="side-bar-cabinet__content">
       <AdminSidebarMenu
         :supportUnreadCount="supportMenuUnreadCount"
-        :verificationRequestsUnreadCount="adminNotificationsStore.unreadVerificationRequestsCount"
+        :verificationRequestsUnreadCount="adminNotificationsStore.unreadIdentityVerificationRequestsCount"
+        :payoutVerificationRequestsUnreadCount="adminNotificationsStore.unreadPayoutVerificationRequestsCount"
         :withdrawalRequestsUnreadCount="adminNotificationsStore.unreadWithdrawalRequestsCount" />
     </div>
 

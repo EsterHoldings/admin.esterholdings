@@ -219,4 +219,19 @@
   .svg-invert {
     filter: invert(1);
   }
+
+  @media (max-width: 640px) {
+    .language-wrapper {
+      .dropdown.top {
+        position: fixed;
+        top: 80px;
+        right: auto;
+        bottom: auto;
+        left: 50%;
+        width: min(280px, calc(100vw - 40px));
+        max-height: min(70vh, 420px);
+        transform: translateX(-50%);
+      }
+    }
+  }
 </style>
