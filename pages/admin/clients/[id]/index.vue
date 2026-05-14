@@ -89,6 +89,7 @@
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
   import TabMetrics from "~/pages/admin/clients/[id]/components/TabMetrics.vue";
   import TabPaymentDetails from "~/pages/admin/clients/[id]/components/TabPaymentDetails.vue";
+  import TabPayments from "~/pages/admin/clients/[id]/components/TabPayments.vue";
   import TabReferrals from "~/pages/admin/clients/[id]/components/TabReferrals.vue";
   import TabSecurity from "~/pages/admin/clients/[id]/components/TabSecurity.vue";
   import TabSettings from "~/pages/admin/clients/[id]/components/TabSettings.vue";
@@ -159,6 +160,12 @@
       adminAuthStore.hasPermission("update-client-payment-details") ||
       adminAuthStore.hasPermission("delete-client-payment-details")
   );
+  const canViewClientPayments = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("view-payments") ||
+      adminAuthStore.hasPermission("view-withdrawal-requests")
+  );
   const canViewClientReferrals = computed(
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("view-referrals")
   );
@@ -225,6 +232,15 @@
           description: resolveText("admin.clients.tabsDescription.paymentDetails", "Withdrawal requisites and their moderation state."),
           icon: "pi pi-credit-card",
           component: TabPaymentDetails,
+        }]
+      : []),
+    ...(canViewClientPayments.value
+      ? [{
+          id: "payments",
+          label: resolveText("admin.clients.tabs.payments", "Платежки"),
+          description: resolveText("admin.clients.tabsDescription.payments", "All client payments."),
+          icon: "pi pi-receipt",
+          component: TabPayments,
         }]
       : []),
     {

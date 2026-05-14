@@ -77,7 +77,14 @@
 
         <div
           v-else
-          class="withdrawal-requests-list">
+          class="withdrawal-requests-list-wrap">
+          <div
+            v-if="isLoading"
+            class="withdrawal-requests-list__overlay">
+            <UiIconSpinnerDefault />
+          </div>
+
+          <div class="withdrawal-requests-list">
           <article
             v-for="requestItem in requests"
             :key="requestItem.id"
@@ -94,16 +101,44 @@
                 </div>
 
                 <div class="withdrawal-request-card__owner">
-                  <div class="withdrawal-request-card__owner-name">{{ requestItem.owner_name || "-" }}</div>
-                  <div class="withdrawal-request-card__owner-meta">
-                    <span>{{ requestItem.owner_email || "-" }}</span>
-                    <span v-if="requestItem.owner_phone">· {{ requestItem.owner_phone }}</span>
+                  <NuxtLink
+                    v-if="requestItem.user_id"
+                    :to="localePath(`/clients/${requestItem.user_id}`)"
+                    class="withdrawal-request-card__avatar">
+                    <img
+                      v-if="requestItem.owner_photo_path"
+                      :src="requestItem.owner_photo_path"
+                      :alt="requestItem.owner_name || requestItem.owner_email || 'Client'" />
+                    <span v-else>{{ ownerInitials(requestItem) }}</span>
+                    <i :class="requestItem.owner_is_online ? 'is-online' : 'is-offline'" />
+                  </NuxtLink>
+                  <div
+                    v-else
+                    class="withdrawal-request-card__avatar">
+                    <span>{{ ownerInitials(requestItem) }}</span>
+                    <i :class="requestItem.owner_is_online ? 'is-online' : 'is-offline'" />
+                  </div>
+                  <div class="withdrawal-request-card__owner-text">
                     <NuxtLink
                       v-if="requestItem.user_id"
                       :to="localePath(`/clients/${requestItem.user_id}`)"
-                      class="withdrawal-request-card__owner-link">
-                      {{ openClientText }}
+                      class="withdrawal-request-card__owner-name">
+                      {{ requestItem.owner_name || "-" }}
                     </NuxtLink>
+                    <div
+                      v-else
+                      class="withdrawal-request-card__owner-name">
+                      {{ requestItem.owner_name || "-" }}
+                    </div>
+                  <div class="withdrawal-request-card__owner-meta">
+                    <NuxtLink
+                      v-if="requestItem.user_id"
+                      :to="localePath(`/clients/${requestItem.user_id}`)">
+                      {{ requestItem.owner_email || "-" }}
+                    </NuxtLink>
+                    <span v-else>{{ requestItem.owner_email || "-" }}</span>
+                    <span v-if="requestItem.owner_phone">· {{ requestItem.owner_phone }}</span>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -134,7 +169,10 @@
                     <span>{{ notifyClientText }}</span>
                   </label>
 
-                  <div class="withdrawal-request-card__status-actions withdrawal-request-card__status-actions--top">
+                  <div
+                    class="withdrawal-request-card__status-actions withdrawal-request-card__status-actions--top"
+                    role="group"
+                    :aria-label="resolveText('admin.withdrawalRequests.actions.statusSelector', 'Status selector')">
                     <button
                       type="button"
                       class="withdrawal-status-action withdrawal-status-action--successful"
@@ -379,6 +417,16 @@
               </template>
             </div>
           </article>
+          </div>
+
+          <PrimePaginator
+            v-if="totalRows > perPage"
+            class="withdrawal-requests-pagination"
+            :first="(page - 1) * perPage"
+            :rows="perPage"
+            :total-records="totalRows"
+            :rows-per-page-options="[5, 10, 20, 50]"
+            @page="handlePaginatorPage" />
         </div>
       </div>
     </template>
@@ -418,6 +466,8 @@
     owner_name: string;
     owner_email: string;
     owner_phone: string;
+    owner_photo_path: string;
+    owner_is_online: boolean;
     account_id: string;
     account_number: string;
     account_balance: number;
@@ -470,6 +520,9 @@
   const errorMessage = ref("");
   const searchFilter = ref("");
   const statusFilter = ref("pending");
+  const page = ref(1);
+  const perPage = ref(5);
+  const totalRows = ref(0);
   const editingRequestId = ref("");
   const updatingRequestId = ref("");
   const auxiliaryLoadingUserId = ref("");
@@ -536,7 +589,6 @@
   const notifyClientText = computed(() =>
     resolveText("admin.withdrawalRequests.actions.notifyClient", "Notify client")
   );
-  const openClientText = computed(() => resolveText("admin.withdrawalRequests.actions.openClient", "Open client"));
   const editText = computed(() => resolveText("admin.withdrawalRequests.actions.edit", "Edit"));
   const cancelEditText = computed(() => resolveText("admin.withdrawalRequests.actions.cancelEdit", "Cancel"));
   const saveText = computed(() => resolveText("admin.withdrawalRequests.actions.save", "Save"));
@@ -649,6 +701,17 @@
     const normalized = String(value ?? "").trim();
     if (!normalized) return "-";
     return normalized.split("-").pop() ?? normalized;
+  };
+
+  const ownerInitials = (requestItem: WithdrawalRequestItem): string => {
+    const nameParts = String(requestItem.owner_name || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const initials = `${nameParts[0]?.charAt(0) ?? ""}${nameParts[1]?.charAt(0) ?? ""}`.toUpperCase();
+    if (initials) return initials;
+
+    return String(requestItem.owner_email || "CL").slice(0, 2).toUpperCase();
   };
 
   const formatDateTime = (value: string): string => {
@@ -803,6 +866,8 @@
     owner_name: String(row?.owner_name ?? ""),
     owner_email: String(row?.owner_email ?? ""),
     owner_phone: String(row?.owner_phone ?? ""),
+    owner_photo_path: String(row?.owner_photo_path ?? row?.owner_photo_url ?? ""),
+    owner_is_online: Boolean(row?.owner_is_online),
     account_id: String(row?.account_id ?? ""),
     account_number: String(row?.account_number ?? ""),
     account_balance: Number(row?.account_balance ?? 0),
@@ -852,15 +917,20 @@
 
     try {
       const response = await appCore.payments.getWithdrawalRequests({
-        perPage: 100,
-        page: 1,
+        perPage: perPage.value,
+        page: page.value,
         orderBy: "created_at",
         orderDirection: "desc",
         searchFilter: searchFilter.value.trim(),
         filters: statusFilter.value ? { status: statusFilter.value } : {},
       });
 
-      requests.value = extractRows(response).map(normalizeRequest);
+      const payload = response?.data?.data ?? {};
+      const rows = extractRows(response);
+      requests.value = rows.map(normalizeRequest);
+      totalRows.value = Number(payload?.total ?? rows.length);
+      page.value = Number(payload?.current_page ?? page.value);
+      perPage.value = Number(payload?.per_page ?? perPage.value);
       requests.value.forEach(requestItem => {
         if (typeof notifyClientByRequestId[requestItem.id] !== "boolean") {
           notifyClientByRequestId[requestItem.id] = true;
@@ -912,11 +982,19 @@
 
   const handleSearchInput = async (value: string): Promise<void> => {
     searchFilter.value = value;
+    page.value = 1;
     await loadRequests();
   };
 
   const handleStatCardClick = async (value: string): Promise<void> => {
     statusFilter.value = String(value ?? "");
+    page.value = 1;
+    await loadRequests();
+  };
+
+  const handlePaginatorPage = async (event: { page: number; rows: number }): Promise<void> => {
+    page.value = Number(event.page || 0) + 1;
+    perPage.value = Number(event.rows || perPage.value);
     await loadRequests();
   };
 
@@ -1019,6 +1097,38 @@
           requestItem.id
         )} ${resolveText("admin.withdrawalRequests.messages.confirmStatusChangeTo", "to status")} "${statusText(nextStatus)}"?`;
 
+  const isRejectionStatus = (status: WithdrawalStatusAction): boolean =>
+    ["failed", "cancelled", "rejected"].includes(status);
+
+  const resolveStatusUpdateComment = (
+    requestItem: WithdrawalRequestItem,
+    nextStatus: WithdrawalStatusAction
+  ): string | null => {
+    if (!isRejectionStatus(nextStatus)) {
+      return editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment;
+    }
+
+    const confirmed =
+      typeof window === "undefined" || window.confirm(buildStatusConfirmText(requestItem, nextStatus));
+    if (!confirmed) {
+      return null;
+    }
+
+    if (typeof window === "undefined") {
+      return requestItem.admin_comment;
+    }
+
+    const comment = window.prompt(
+      resolveText(
+        "admin.withdrawalRequests.messages.rejectReasonPrompt",
+        "Optional rejection reason. Leave empty to skip the comment."
+      ),
+      editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment
+    );
+
+    return comment === null ? null : comment.trim();
+  };
+
   const handleQuickStatusUpdate = async (
     requestItem: WithdrawalRequestItem,
     nextStatus: WithdrawalStatusAction,
@@ -1033,9 +1143,17 @@
       return;
     }
 
-    const isConfirmed = window.confirm(buildStatusConfirmText(requestItem, nextStatus));
-    if (!isConfirmed) {
+    const nextAdminComment = resolveStatusUpdateComment(requestItem, nextStatus);
+    if (nextAdminComment === null) {
       return;
+    }
+
+    if (!isRejectionStatus(nextStatus)) {
+      const isConfirmed =
+        typeof window === "undefined" || window.confirm(buildStatusConfirmText(requestItem, nextStatus));
+      if (!isConfirmed) {
+        return;
+      }
     }
 
     updatingRequestId.value = requestItem.id;
@@ -1043,8 +1161,7 @@
     try {
       await appCore.payments.updateWithdrawalRequestStatus(requestItem.id, {
         status: nextStatus,
-        admin_comment:
-          editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment,
+        admin_comment: nextAdminComment,
         notify_client: notifyClientByRequestId[requestItem.id] !== false,
         ...(executeTransfer ? { execute_transfer: true } : {}),
       });
@@ -1351,19 +1468,36 @@
   .withdrawal-requests-list {
     display: flex;
     flex-direction: column;
+    gap: 10px;
+  }
+
+  .withdrawal-requests-list-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     gap: 12px;
+  }
+
+  .withdrawal-requests-list__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ui-background) 48%, transparent);
+    backdrop-filter: blur(4px);
   }
 
   .withdrawal-request-card {
     border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 18px;
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--ui-background-card) 82%, transparent) 0%, transparent 100%),
-      var(--ui-background-panel);
-    padding: 18px;
+    border-radius: 14px;
+    background: var(--ui-background-panel);
+    padding: 13px 14px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 11px;
   }
 
   .withdrawal-request-card__top {
@@ -1421,7 +1555,64 @@
     color: #ef4444;
   }
 
+  .withdrawal-request-card__owner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .withdrawal-request-card__avatar {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    color: var(--ui-text-main);
+    background: var(--ui-background);
+    font-size: 13px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .withdrawal-request-card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .withdrawal-request-card__avatar i {
+    position: absolute;
+    right: 1px;
+    bottom: 1px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--ui-background-panel);
+    border-radius: 999px;
+    background: var(--ui-text-secondary);
+  }
+
+  .withdrawal-request-card__avatar i.is-online {
+    background: var(--ui-sticker-success);
+  }
+
+  .withdrawal-request-card__owner-text {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+  }
+
   .withdrawal-request-card__owner-name {
+    display: block;
+    overflow: hidden;
+    color: var(--ui-text-main);
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
@@ -1487,7 +1678,7 @@
   }
 
   .withdrawal-request-card__amount {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     white-space: nowrap;
     line-height: 1;
@@ -1500,10 +1691,10 @@
   }
 
   .withdrawal-request-card__cell {
-    padding: 12px 14px;
-    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 82%, transparent);
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--ui-background) 74%, transparent);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .withdrawal-request-card__label {
@@ -1520,14 +1711,14 @@
   }
 
   .withdrawal-request-card__comment {
-    padding: 12px 14px;
-    border-radius: 14px;
-    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 70%, transparent);
-    background: color-mix(in srgb, var(--ui-background) 82%, transparent);
+    padding: 0;
+    border-radius: 0;
+    border: 0;
+    background: transparent;
   }
 
   .withdrawal-request-card__comment--admin {
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 20%, transparent);
+    border: 0;
   }
 
   .withdrawal-request-card__comment-body {
@@ -1539,11 +1730,11 @@
   .withdrawal-request-card__details-panel {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 14px;
-    border: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 78%, transparent);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--ui-background) 78%, transparent);
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .withdrawal-request-card__details-header {
@@ -1571,9 +1762,9 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--ui-background-panel) 65%, transparent);
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .withdrawal-request-card__details-key {
@@ -1643,7 +1834,11 @@
   .withdrawal-request-card__status-actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 11px;
+    background: color-mix(in srgb, var(--ui-background) 74%, transparent);
   }
 
   .withdrawal-request-card__status-actions--top {
@@ -1729,6 +1924,17 @@
   .withdrawal-status-action--cancelled.is-active {
     background: color-mix(in srgb, #ef4444 22%, transparent);
     border-color: color-mix(in srgb, #ef4444 40%, transparent);
+  }
+
+  .withdrawal-requests-pagination {
+    align-self: stretch;
+  }
+
+  .withdrawal-requests-pagination :deep(.p-paginator) {
+    justify-content: flex-end;
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
   .withdrawal-request-card__edit {

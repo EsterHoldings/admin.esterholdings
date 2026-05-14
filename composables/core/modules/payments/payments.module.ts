@@ -41,6 +41,10 @@ export class PaymentsModule implements BasicModuleInterface {
     return await this.paymentsService.getWithdrawalRequests(params);
   }
 
+  async getClientPayments(clientId: any, params: object = {}): Promise<any> {
+    return await this.paymentsService.getClientPayments(clientId, params);
+  }
+
   async getWithdrawalRequestsStats(params: object = {}): Promise<any> {
     return await this.paymentsService.getWithdrawalRequestsStats(params);
   }

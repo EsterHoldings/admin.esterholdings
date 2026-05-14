@@ -3,14 +3,6 @@
     <div class="space-y-5">
       <div class="flex items-center justify-between w-full text-[var(--ui-text-main)]">
         <UiTextH4>{{ t("admin.support.title") }}</UiTextH4>
-
-        <UiButtonDefault
-          v-if="canCreateSupport"
-          state="info"
-          @click="handleClickCreateNewTicket">
-          <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]" />
-          <span>New ticket</span>
-        </UiButtonDefault>
       </div>
 
       <div class="flex items-center justify-between mb-5">
@@ -54,12 +46,16 @@
             bordered
             :modelValue="viewMode"
             :options="viewOptions"
-            @update:modelValue="viewMode = $event" />
+            @update:modelValue="handleViewModeChange" />
 
-          <UiButtonDefault state="info--small">
-            <UiIconFilters class="mr-2" />
-            <UiTextSmall>Filters</UiTextSmall>
-          </UiButtonDefault>
+          <button
+            type="button"
+            class="support-archive-filter"
+            :class="{ 'is-active': showArchived }"
+            @click="handleToggleArchived">
+            <span class="support-archive-filter__dot" />
+            <span>{{ showArchived ? "Archived" : "Active" }}</span>
+          </button>
         </div>
       </div>
 
@@ -79,10 +75,10 @@
             <thead class="bg-[var(--color-stroke-ui-light)] h-[46px]">
               <tr class="text-left">
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)]">ID Ticket</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-invert)]">Client</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)]">Subject of the appeal</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-invert)]">Ticket</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
                   <div class="flex items-center justify-start gap-2">
@@ -97,9 +93,6 @@
                       :direction="orderDirection"
                       @click="handleOrderByAndDirection('last_message_at')" />
                   </div>
-                </th>
-                <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">Counterparty</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
                   <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">Admins</UiTextSmall>
@@ -127,54 +120,49 @@
                 :key="t.id"
                 class="bg-[var(--ui-background-panel)] hover:bg-[var(--color-stroke-ui-dark)] h-[60px] cursor-pointer"
                 @click="handleClickRow(t.id)">
-                <td class="px-4 whitespace-nowrap">
-                  <div class="inline-flex items-center gap-2 min-w-0">
-                    <div
-                      class="h-[28px] w-[28px] rounded-full overflow-hidden border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background)] text-[10px] font-semibold text-[var(--ui-text-main)] flex items-center justify-center shrink-0 uppercase">
+                <td class="px-4">
+                  <div class="ticket-client-cell">
+                    <button
+                      class="ticket-card__icon-btn"
+                      aria-label="Copy ID"
+                      @click.stop>
+                      <UiIconCopy :text="String(t.id)" />
+                    </button>
+                    <div class="ticket-client-avatar">
                       <img
                         v-if="getTicketClientAvatarUrl(t)"
                         :src="getTicketClientAvatarUrl(t)"
                         :alt="getTicketClientName(t)"
                         class="h-full w-full object-cover" />
                       <span v-else>{{ getTicketClientInitials(t) }}</span>
+                      <i :class="t.counterparty_online ? 'is-online' : 'is-offline'" />
                     </div>
-                    <span class="truncate">{{ t.id }}</span>
-                    <span
-                      class="shrink-0 text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-main)]"
-                      title="Скопировать ID"
-                      @click.stop>
-                      <UiIconCopy :text="String(t.id)" />
-                    </span>
+                    <div class="ticket-client-cell__text">
+                      <strong>{{ getTicketClientName(t) }}</strong>
+                      <span>{{ getTicketClientEmail(t) || "-" }}</span>
+                    </div>
                   </div>
                 </td>
 
                 <td class="px-4">
-                  <div class="min-w-0">
-                    <div class="truncate">
-                      {{ t.subject }}
+                  <div class="ticket-subject-cell">
+                    <div class="ticket-subject-cell__title">
+                      <span class="truncate">{{ t.subject }}</span>
+                      <span
+                        class="ticket-channel-badge"
+                        :class="getTicketChannelBadgeClass(t.channel, t.reply_email)">
+                        {{ getTicketChannelLabel(t.channel, t.reply_email) }}
+                      </span>
                     </div>
-                    <span
-                      class="ticket-channel-badge mt-1"
-                      :class="getTicketChannelBadgeClass(t.channel, t.reply_email)">
-                      {{ getTicketChannelLabel(t.channel, t.reply_email) }}
-                    </span>
+                    <div class="ticket-subject-cell__preview">{{ getTicketPreview(t) || "No messages yet" }}</div>
                   </div>
                 </td>
 
                 <td class="px-4 whitespace-nowrap">
-                  {{ t.last_message_at }}
-                </td>
-
-                <td class="px-4">
-                  <span
-                    class="inline-flex items-center gap-1.5 text-xs text-[var(--ui-text-secondary)] whitespace-nowrap">
-                    <span
-                      class="h-1.5 w-1.5 rounded-full"
-                      :class="
-                        t.counterparty_online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
-                      " />
-                    {{ t.counterparty_online ? "Online" : "Offline" }}
-                  </span>
+                  <div class="ticket-time-cell">
+                    <strong>{{ t.last_message_at || "-" }}</strong>
+                    <span>{{ getTicketCreatedLabel(t) }}</span>
+                  </div>
                 </td>
 
                 <td class="px-4">
@@ -305,13 +293,7 @@
         <div
           v-if="tickets.length === 0"
           class="w-full h-[50vh] flex items-center justify-center">
-          <UiButtonDefault
-            v-if="canCreateSupport"
-            state="info"
-            @click="handleClickCreateNewTicket">
-            <UiIconPlus class="mr-2 fill-[var(--ui-text-main)]" />
-            <span>New ticket</span>
-          </UiButtonDefault>
+          <UiTextSmall>No tickets found</UiTextSmall>
         </div>
 
         <div
@@ -327,38 +309,46 @@
             ]"
             @click="handleClickRow(ticket.id)">
             <div class="ticket-card__header">
-              <div class="min-w-0">
-                <div class="ticket-card__subject-row">
-                  <div class="ticket-card__subject truncate">{{ ticket.subject }}</div>
-                  <span
-                    class="ticket-channel-badge"
-                    :class="getTicketChannelBadgeClass(ticket.channel, ticket.reply_email)">
-                    {{ getTicketChannelLabel(ticket.channel, ticket.reply_email) }}
-                  </span>
-                </div>
-                <div class="ticket-card__id-row">#{{ ticket.id }}</div>
-              </div>
-            </div>
-
-            <div class="ticket-card__meta-row">
-              <div class="ticket-card__counterparty-col">
-                <div class="ticket-card__avatar">
+              <div class="ticket-client-cell">
+                <button
+                  class="ticket-card__icon-btn"
+                  @click.stop
+                  aria-label="Copy ID">
+                  <UiIconCopy :text="String(ticket.id)" />
+                </button>
+                <div class="ticket-client-avatar">
                   <img
                     v-if="getTicketClientAvatarUrl(ticket)"
                     :src="getTicketClientAvatarUrl(ticket)"
                     :alt="getTicketClientName(ticket)"
                     class="h-full w-full object-cover" />
                   <span v-else>{{ getTicketClientInitials(ticket) }}</span>
+                  <i :class="ticket.counterparty_online ? 'is-online' : 'is-offline'" />
                 </div>
-                <span class="ticket-card__presence">
-                  <span
-                    class="ticket-card__presence-dot"
-                    :class="
-                      ticket.counterparty_online ? 'bg-[var(--ui-sticker-success)]' : 'bg-[var(--ui-text-secondary)]'
-                    " />
-                  {{ ticket.counterparty_online ? "Online" : "Offline" }}
-                </span>
-                <span class="ticket-card__updated">{{ ticket.last_message_at }}</span>
+                <div class="ticket-client-cell__text">
+                  <strong>{{ getTicketClientName(ticket) }}</strong>
+                  <span>{{ getTicketClientEmail(ticket) || "-" }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ticket-card__meta-row">
+              <div class="ticket-card__counterparty-col">
+                <div class="ticket-subject-cell">
+                  <div class="ticket-subject-cell__title">
+                    <span class="truncate">{{ ticket.subject }}</span>
+                    <span
+                      class="ticket-channel-badge"
+                      :class="getTicketChannelBadgeClass(ticket.channel, ticket.reply_email)">
+                      {{ getTicketChannelLabel(ticket.channel, ticket.reply_email) }}
+                    </span>
+                  </div>
+                  <div class="ticket-subject-cell__preview">{{ getTicketPreview(ticket) || "No messages yet" }}</div>
+                </div>
+                <div class="ticket-time-cell">
+                  <strong>{{ ticket.last_message_at || "-" }}</strong>
+                  <span>{{ getTicketCreatedLabel(ticket) }}</span>
+                </div>
                 <div class="ticket-admins ticket-admins--card">
                   <span
                     v-if="getTicketAdminParticipants(ticket).length === 0"
@@ -415,12 +405,6 @@
                 </span>
 
                 <div class="ticket-card__actions">
-                  <button
-                    class="ticket-card__icon-btn"
-                    @click.stop
-                    aria-label="Copy ID">
-                    <UiIconCopy :text="String(ticket.id)" />
-                  </button>
                   <button
                     class="ticket-card__icon-btn ticket-card__chat-btn"
                     @click.stop="handleChatIconClick(ticket)"
@@ -558,18 +542,15 @@
     onBeforeUnmount,
     computed as vComputed,
     reactive,
-    inject,
     watch,
     h,
   } from "vue";
   import { definePageMeta } from "~/.nuxt/imports";
   import { useNuxtApp } from "nuxt/app";
   import ChatDefault from "~/components/block/chats/ChatDefault.vue";
-  import UiIconPlus from "~/components/ui/UiIconPlus.vue";
   import UiButtonDefault from "~/components/ui/UiButtonDefault.vue";
   import UiIconUpdate from "~/components/ui/UiIconUpdate.vue";
   import UiSelect from "~/components/ui/UiSelect.vue";
-  import UiIconFilters from "~/components/ui/UiIconFilters.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
   import UiIconSortBy from "~/components/ui/UiIconSortBy.vue";
   import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
@@ -585,7 +566,6 @@
   import ViewModeToggle from "~/components/block/controls/ViewModeToggle.vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "vue-toastification";
-  import TicketsCreateNew from "~/pages/admin/support/components/TicketsCreateNew.vue";
   import { useRouter } from "vue-router";
   import useEventBus from "~/composables/useEventBus";
   import { useLocalePath } from "~/.nuxt/imports";
@@ -629,15 +609,11 @@
 
   const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
-  const { openModal } = inject("modalControl") as { openModal: Function };
 
   const appCore = useAppCore();
   const adminAuthStore = useAdminAuthStore();
   const router = useRouter();
   const localePath = useLocalePath();
-  const canCreateSupport = computed(
-    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("create-support")
-  );
   const canUpdateSupport = computed(
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-support")
   );
@@ -659,6 +635,7 @@
   const openTicketActionMenuId = ref("");
   const ticketActionLoadingId = ref("");
   const activeAdminPopoverKey = ref("");
+  const showArchived = ref(false);
   const VIEW_MODE_STORAGE_KEY = "admin_support_view_mode";
   const ADMIN_SUPPORT_LIST_REFRESH_MS = 60000;
   const SUPPORT_REALTIME_RETRY_MS = 30000;
@@ -826,7 +803,7 @@
 
   const filtered = computed(() =>
     tickets.filter(t =>
-      `${t.id} ${t.subject} ${t.last_message_at} ${t.status} ${t.channel ?? ""} ${t.reply_email ?? ""}`
+      `${t.id} ${t.subject} ${getTicketPreview(t)} ${getTicketClientName(t)} ${getTicketClientEmail(t)} ${t.last_message_at} ${t.status} ${t.channel ?? ""} ${t.reply_email ?? ""}`
         .toLowerCase()
         .includes(search.value.toLowerCase())
     )
@@ -943,6 +920,25 @@
     }
 
     return `Client #${String(ticket?.creator_id ?? ticket?.id ?? "")}`;
+  };
+
+  const getTicketClientEmail = (ticket: any): string =>
+    String(ticket?.creator?.email ?? ticket?.creator_email ?? "").trim();
+
+  const getTicketPreview = (ticket: any): string => {
+    const preview = String(ticket?.latest_message_preview ?? ticket?.last_message_preview ?? ticket?.preview ?? "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return preview;
+  };
+
+  const getTicketCreatedLabel = (ticket: any): string => {
+    const label = String(ticket?.created_at_label ?? "").trim();
+    if (label !== "") return `Created ${label}`;
+
+    const createdAt = String(ticket?.created_at ?? "").trim();
+    return createdAt !== "" ? `Created ${createdAt}` : "Created -";
   };
 
   const getTicketAdminParticipants = (ticket: any): any[] => {
@@ -1119,6 +1115,7 @@
           page: currentPage.value,
           orderBy: orderBy.value,
           orderDirection: orderDirection.value,
+          archived: showArchived.value ? 1 : 0,
         });
 
         perPage.value = response.data.meta.per_page;
@@ -1392,6 +1389,12 @@
     }
   };
 
+  const handleViewModeChange = (mode: string) => {
+    if (["table", "cards", "full"].includes(mode)) {
+      viewMode.value = mode as typeof viewMode.value;
+    }
+  };
+
   watch(viewMode, mode => {
     if (typeof window === "undefined") return;
     localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
@@ -1402,14 +1405,10 @@
     await placeBottomLeft();
   };
 
-  const handleClickCreateNewTicket = async () => {
-    if (!canCreateSupport.value) {
-      return;
-    }
-
-    openModal(TicketsCreateNew, {
-      title: "Создать новую заявку",
-    });
+  const handleToggleArchived = async () => {
+    showArchived.value = !showArchived.value;
+    currentPage.value = 1;
+    await loadData();
   };
 
   const handleInputSearch = async (value: string) => {
@@ -1697,6 +1696,150 @@
     border-color: color-mix(in srgb, var(--ui-sticker-warning) 55%, transparent);
   }
 
+  .support-archive-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    color: var(--ui-text-secondary);
+    background: color-mix(in srgb, var(--ui-background-panel) 82%, transparent);
+    font-size: 12px;
+    font-weight: 700;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .support-archive-filter.is-active {
+    color: var(--ui-text-main);
+    border-color: color-mix(in srgb, var(--ui-sticker-warning) 54%, transparent);
+    background: color-mix(in srgb, var(--ui-sticker-warning) 15%, transparent);
+  }
+
+  .support-archive-filter__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--ui-sticker-success);
+  }
+
+  .support-archive-filter.is-active .support-archive-filter__dot {
+    background: var(--ui-sticker-warning);
+  }
+
+  .ticket-client-cell {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .ticket-client-avatar {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 999px;
+    background: var(--ui-background);
+    color: var(--ui-text-main);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .ticket-client-avatar i {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--ui-background-panel);
+    border-radius: 999px;
+    background: var(--ui-text-secondary);
+  }
+
+  .ticket-client-avatar i.is-online {
+    background: var(--ui-sticker-success);
+  }
+
+  .ticket-client-cell__text {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .ticket-client-cell__text strong,
+  .ticket-client-cell__text span,
+  .ticket-subject-cell__preview,
+  .ticket-time-cell strong,
+  .ticket-time-cell span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ticket-client-cell__text strong {
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .ticket-client-cell__text span {
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .ticket-subject-cell {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .ticket-subject-cell__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: var(--ui-text-main);
+    font-weight: 800;
+  }
+
+  .ticket-subject-cell__preview {
+    max-width: 520px;
+    color: var(--ui-text-secondary);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .ticket-time-cell {
+    display: grid;
+    gap: 2px;
+    min-width: 130px;
+  }
+
+  .ticket-time-cell strong {
+    color: var(--ui-text-main);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .ticket-time-cell span {
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+  }
+
   .ticket-card__id-row {
     margin-top: 2px;
     color: var(--ui-text-secondary);
@@ -1833,6 +1976,10 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--ui-background) 74%, transparent);
   }
 
   .ticket-status-action {

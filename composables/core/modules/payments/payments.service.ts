@@ -34,6 +34,10 @@ export class PaymentsService {
     return await this.useApi.get("/admin/withdrawal-requests", params);
   }
 
+  async getClientPayments(clientId: any, params: object = {}): Promise<any> {
+    return await this.useApi.get(`/admin/clients/${clientId}/payments`, params);
+  }
+
   async getWithdrawalRequestsStats(params: object = {}): Promise<any> {
     return await this.useApi.get("/admin/withdrawal-requests/stats", params);
   }

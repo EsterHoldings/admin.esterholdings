@@ -1,5 +1,10 @@
 <template>
   <div class="client-accounts-tab">
+    <PrimeMenu
+      ref="actionMenu"
+      :model="actionMenuItems"
+      popup />
+
     <div class="client-accounts-tab__summary">
       <PrimeCard
         v-for="card in summaryCards"
@@ -80,12 +85,35 @@
                 class="client-inline-status client-inline-status--success">
                 {{ text("admin.clients.accounts.favorite", "Favorite") }}
               </span>
+
+              <PrimeButton
+                v-if="showAccountActions"
+                rounded
+                text
+                size="small"
+                icon="pi pi-ellipsis-v"
+                class="client-accounts-row__menu"
+                :aria-label="text('admin.accounts.actions.openActions', 'Open actions')"
+                @click.stop="toggleActionMenu($event, account)" />
             </div>
 
             <div class="client-accounts-row__grid">
               <div class="client-data-item">
                 <span class="client-data-item__label">{{ text("admin.clients.accounts.columns.balance", "Balance") }}</span>
-                <strong class="client-data-item__value">{{ formatMoney(account.balance, account.currency) }}</strong>
+                <strong class="client-data-item__value client-data-item__value--inline">
+                  {{ formatMoney(account.balance, account.currency) }}
+                  <PrimeButton
+                    v-if="canUpdateAccounts"
+                    rounded
+                    text
+                    size="small"
+                    icon="pi pi-refresh"
+                    class="client-accounts-row__refresh"
+                    :loading="refreshingAccountId === account.id"
+                    :disabled="refreshingAccountId === account.id"
+                    :aria-label="text('admin.accounts.actions.refreshBalance', 'Refresh balance')"
+                    @click.stop="handleRefreshBalance(account)" />
+                </strong>
               </div>
               <div class="client-data-item">
                 <span class="client-data-item__label">{{ text("admin.clients.accounts.columns.leverage", "Leverage") }}</span>
@@ -116,9 +144,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
+import AccountsPanelEdit from "~/pages/admin/accounts/components/AccountsPanelEdit.vue";
 import useAppCore from "~/composables/useAppCore";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
 interface AdminClientAccount {
   id: string;
@@ -139,12 +170,19 @@ const props = defineProps<{
 
 const appCore = useAppCore();
 const { t, te, locale } = useI18n({ useScope: "global" });
+const toast = useToast();
+const adminAuthStore = useAdminAuthStore();
+const { openModal } = inject("modalControl") as { openModal: Function };
 
 const accounts = ref<AdminClientAccount[]>([]);
 const page = ref(1);
 const perPage = ref(10);
 const totalRows = ref(0);
 const isLoading = ref(false);
+const refreshingAccountId = ref<string | null>(null);
+const deletingAccountId = ref<string | null>(null);
+const actionMenu = ref<any | null>(null);
+const activeActionAccount = ref<AdminClientAccount | null>(null);
 const searchInput = ref("");
 const searchFilter = ref("");
 
@@ -152,6 +190,37 @@ let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 const text = (key: string, fallback: string, params: Record<string, unknown> = {}): string =>
   te(key) ? String(t(key, params)) : fallback.replace(/\{(\w+)}/g, (_, name) => String(params[name] ?? ""));
+
+const canUpdateAccounts = computed(
+  () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-accounts")
+);
+const canDeleteAccounts = computed(
+  () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-accounts")
+);
+const showAccountActions = computed(() => canUpdateAccounts.value || canDeleteAccounts.value);
+
+const actionMenuItems = computed(() => {
+  const account = activeActionAccount.value;
+  if (!account) return [];
+
+  return [
+    canUpdateAccounts.value
+      ? {
+          label: text("admin.accounts.actions.edit", "Edit"),
+          icon: "pi pi-pencil",
+          command: () => handleOpenEditModal(account),
+        }
+      : null,
+    canDeleteAccounts.value
+      ? {
+          label: text("admin.accounts.actions.archiveDelete", "Archive (Delete)"),
+          icon: "pi pi-archive",
+          class: "account-action-danger",
+          command: () => handleDeleteAccount(account),
+        }
+      : null,
+  ].filter(Boolean);
+});
 
 const summaryCards = computed(() => {
   const totalBalance = accounts.value.reduce((sum, account) => sum + Number(account.balance || 0), 0);
@@ -259,6 +328,73 @@ const handlePaginatorPage = async (event: { page: number; rows: number }): Promi
   page.value = Number(event.page || 0) + 1;
   perPage.value = Number(event.rows || perPage.value);
   await loadAccounts();
+};
+
+const toggleActionMenu = (event: MouseEvent, account: AdminClientAccount): void => {
+  activeActionAccount.value = account;
+  actionMenu.value?.toggle(event);
+};
+
+const replaceAccountInList = (nextAccount: AdminClientAccount): void => {
+  accounts.value = accounts.value.map(account => (account.id === nextAccount.id ? { ...account, ...nextAccount } : account));
+};
+
+const handleOpenEditModal = (account: AdminClientAccount): void => {
+  if (!account.id || !canUpdateAccounts.value) return;
+
+  openModal(AccountsPanelEdit, {
+    id: account.id,
+    title: text("admin.accounts.form.titles.edit", "Edit account"),
+  });
+};
+
+const handleRefreshBalance = async (account: AdminClientAccount): Promise<void> => {
+  if (!account.id || !canUpdateAccounts.value || refreshingAccountId.value === account.id) return;
+
+  refreshingAccountId.value = account.id;
+
+  try {
+    const response = await appCore.adminModules.accounts.refreshBalance(account.id);
+    const refreshedAccount = response?.data?.data?.account;
+
+    if (refreshedAccount?.id) {
+      replaceAccountInList(normalizeAccount(refreshedAccount));
+    } else {
+      await loadAccounts();
+    }
+
+    toast.success(text("admin.accounts.messages.refreshSuccess", "Account balance updated."));
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.message || text("admin.accounts.messages.refreshError", "Failed to refresh account balance.")
+    );
+  } finally {
+    refreshingAccountId.value = null;
+  }
+};
+
+const handleDeleteAccount = async (account: AdminClientAccount): Promise<void> => {
+  if (!account.id || !canDeleteAccounts.value || deletingAccountId.value === account.id) return;
+  if (
+    typeof window !== "undefined" &&
+    !window.confirm(text("admin.accounts.messages.archiveConfirm", "Archive this account?"))
+  ) {
+    return;
+  }
+
+  deletingAccountId.value = account.id;
+
+  try {
+    await appCore.adminModules.accounts.delete(account.id);
+    toast.success(text("admin.accounts.messages.archiveSuccess", "Account archived."));
+    await loadAccounts();
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.message || text("admin.accounts.messages.archiveError", "Failed to archive account.")
+    );
+  } finally {
+    deletingAccountId.value = null;
+  }
 };
 
 watch(searchInput, value => {
@@ -419,6 +555,21 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+}
+
+.client-data-item__value--inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.client-accounts-row__refresh,
+.client-accounts-row__menu {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  color: var(--ui-text-secondary);
 }
 
 .client-accounts-empty__body {
