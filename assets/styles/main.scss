@@ -61,6 +61,51 @@ body {
   padding-right: env(safe-area-inset-right, 0px);
 }
 
+:root[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] .select,
+:root[data-theme="dark"] .select__search-input,
+:root[data-theme="dark"] .multi-select,
+:root[data-theme="dark"] .multi-select__search-input {
+  border-color: var(--ui-control-border) !important;
+  color: var(--ui-text-main) !important;
+  background: var(--ui-control-bg) !important;
+  caret-color: var(--ui-primary-main);
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder,
+:root[data-theme="dark"] .select__search-input::placeholder,
+:root[data-theme="dark"] .multi-select__search-input::placeholder {
+  color: var(--ui-control-placeholder) !important;
+}
+
+:root[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):hover,
+:root[data-theme="dark"] textarea:hover,
+:root[data-theme="dark"] select:hover,
+:root[data-theme="dark"] .select:hover,
+:root[data-theme="dark"] .multi-select:hover {
+  border-color: color-mix(in srgb, var(--ui-primary-main) 42%, var(--ui-control-border)) !important;
+}
+
+:root[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+:root[data-theme="dark"] textarea:focus,
+:root[data-theme="dark"] select:focus,
+:root[data-theme="dark"] .select[data-open],
+:root[data-theme="dark"] .multi-select.is-open {
+  border-color: var(--ui-primary-main) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary-main) 24%, transparent) !important;
+}
+
+:root[data-theme="dark"] input:disabled,
+:root[data-theme="dark"] textarea:disabled,
+:root[data-theme="dark"] select:disabled,
+:root[data-theme="dark"] .input .disabled {
+  color: var(--ui-text-secondary) !important;
+  background: var(--ui-control-bg-disabled) !important;
+}
+
 .pb-safe-area {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }

@@ -8,9 +8,18 @@ export const ADMIN_PAGE_PERMISSION_RULES: AdminPagePermissionRule[] = [
   { pattern: /^\/dashboard(?:\/|$)/, permissions: ["view-dashboard"], fallbackPath: "/dashboard" },
   { pattern: /^\/profile(?:\/|$)/, permissions: ["view-profile"], fallbackPath: "/profile" },
   { pattern: /^\/verifications(?:\/|$)/, permissions: ["view-verifications"], fallbackPath: "/verifications" },
+  {
+    pattern: /^\/payout-verifications(?:\/|$)/,
+    permissions: ["view-verifications"],
+    fallbackPath: "/payout-verifications",
+  },
   { pattern: /^\/clients(?:\/|$)/, permissions: ["view-clients"], fallbackPath: "/clients" },
   { pattern: /^\/accounts(?:\/|$)/, permissions: ["view-accounts"], fallbackPath: "/accounts" },
-  { pattern: /^\/withdrawal-requests(?:\/|$)/, permissions: ["view-withdrawal-requests"], fallbackPath: "/withdrawal-requests" },
+  {
+    pattern: /^\/withdrawal-requests(?:\/|$)/,
+    permissions: ["view-withdrawal-requests"],
+    fallbackPath: "/withdrawal-requests",
+  },
   { pattern: /^\/payments(?:\/|$)/, permissions: ["view-withdrawal-requests"], fallbackPath: "/withdrawal-requests" },
   { pattern: /^\/referral(?:\/|$)/, permissions: ["view-referrals"], fallbackPath: "/referral" },
   { pattern: /^\/settings(?:\/|$)/, permissions: ["view-settings"], fallbackPath: "/settings" },
@@ -51,10 +60,7 @@ export const canAccessAdminPath = (path: string, resolver: PermissionAccessResol
   return rule.permissions.some(permission => resolver.hasPermission(permission));
 };
 
-export const resolveFirstAllowedAdminRoute = (
-  resolver: PermissionAccessResolver,
-  localePrefix = ""
-): string | null => {
+export const resolveFirstAllowedAdminRoute = (resolver: PermissionAccessResolver, localePrefix = ""): string | null => {
   if (resolver.hasRole?.("super-admin")) {
     return `${localePrefix}/dashboard`;
   }

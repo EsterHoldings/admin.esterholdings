@@ -84,28 +84,42 @@
 }
 
 .p-inputtext,
-.p-select {
+.p-select,
+.p-textarea,
+.p-multiselect,
+.p-datepicker-input {
   min-height: 40px;
-  border-color: var(--color-stroke-ui-light);
+  border-color: var(--ui-control-border);
   color: var(--ui-text-main);
-  background: color-mix(in srgb, var(--ui-background-card) 94%, transparent);
+  background: var(--ui-control-bg);
 }
 
 .p-inputtext:hover,
-.p-select:not(.p-disabled):hover {
-  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
+.p-select:not(.p-disabled):hover,
+.p-textarea:hover,
+.p-multiselect:not(.p-disabled):hover,
+.p-datepicker-input:hover {
+  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--ui-control-border));
 }
 
 .p-inputtext:enabled:focus,
-.p-select.p-focus {
+.p-select.p-focus,
+.p-textarea:enabled:focus,
+.p-multiselect.p-focus,
+.p-datepicker:has(.p-datepicker-input:focus) {
   border-color: var(--ui-primary-main);
   box-shadow: none;
+}
+
+.p-inputtext::placeholder,
+.p-textarea::placeholder {
+  color: var(--ui-control-placeholder);
 }
 
 .p-select-overlay,
 .p-datepicker-panel {
   color: var(--ui-text-main);
-  border: 1px solid var(--color-stroke-ui-light);
+  border: 1px solid var(--ui-control-border);
   background: color-mix(in srgb, var(--ui-background-card) 96%, transparent);
   box-shadow: none;
   backdrop-filter: blur(10px);

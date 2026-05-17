@@ -24,6 +24,15 @@
         </span>
         <span class="admin-dashboard__updated-at">{{ lastUpdatedText }}</span>
         <PrimeButton
+          class="admin-dashboard__advanced-filter-toggle"
+          icon="pi pi-check"
+          :label="resolveText('admin.dashboard.filters.advanced', 'Расширеная фильтрация')"
+          size="small"
+          rounded
+          :outlined="!advancedFiltersVisible"
+          :text="!advancedFiltersVisible"
+          @click="toggleAdvancedFilters" />
+        <PrimeButton
           icon="pi pi-refresh"
           rounded
           text
@@ -87,7 +96,9 @@
                 border-radius="999px" />
             </div>
           </div>
-          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--skeleton">
+          <div
+            v-if="advancedFiltersVisible"
+            class="dashboard-chart-card__filters dashboard-chart-card__filters--skeleton">
             <PrimeSkeleton
               v-for="filter in 6"
               :key="`filter-skeleton-${item}-${filter}`"
@@ -197,7 +208,9 @@
             </div>
           </div>
 
-          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
+          <div
+            v-if="advancedFiltersVisible"
+            class="dashboard-chart-card__filters dashboard-chart-card__filters--online">
             <label class="admin-dashboard__filter">
               <span class="admin-dashboard__filter-label">
                 {{ resolveText("admin.dashboard.filters.from", "From") }}
@@ -318,7 +331,9 @@
             </div>
           </div>
 
-          <div class="dashboard-chart-card__filters dashboard-chart-card__filters--compact">
+          <div
+            v-if="advancedFiltersVisible"
+            class="dashboard-chart-card__filters dashboard-chart-card__filters--compact">
             <label class="admin-dashboard__filter">
               <span class="admin-dashboard__filter-label">
                 {{ resolveText("admin.dashboard.filters.from", "From") }}
@@ -508,6 +523,7 @@
   import useEventBus from "~/composables/useEventBus";
   import UiIconClients from "~/components/ui/UiIconClients.vue";
   import UiIconDocuments from "~/components/ui/UiIconDocuments.vue";
+  import UiIconPaymentDetail from "~/components/ui/UiIconPaymentDetail.vue";
   import UiIconTime from "~/components/ui/UiIconTime.vue";
   import { canAccessAdminPath } from "~/constants/adminPagePermissions";
   import useAppCore from "~/composables/useAppCore";
@@ -560,9 +576,10 @@
   const dashboard = ref<any>(null);
   const isLoading = ref(false);
   const hasLoadedDashboard = ref(false);
+  const advancedFiltersVisible = ref(false);
   const registrationsFilters = reactive<ChartFilters>(createChartFilters("30d"));
   const onlineFilters = reactive<OnlineChartFilters>(createOnlineChartFilters("7d"));
-  const summarySkeletonCards = [1, 2, 3];
+  const summarySkeletonCards = [1, 2, 3, 4];
   const chartSkeletonCards = [1, 2];
   const listSkeletonRows = [1, 2, 3, 4, 5];
 
@@ -1244,6 +1261,10 @@
     await loadDashboard({ silent: false });
   }
 
+  function toggleAdvancedFilters(): void {
+    advancedFiltersVisible.value = !advancedFiltersVisible.value;
+  }
+
   function handleNavigate(to?: string): void {
     if (!to) {
       return;
@@ -1273,6 +1294,16 @@
         icon: UiIconTime,
         to: "/payments",
         kind: "success",
+      },
+      {
+        id: "unprocessed_requisites",
+        label: resolveText("admin.dashboard.cards.unprocessedRequisites", "Необработанные реквизиты"),
+        value: formatNumber(
+          dashboard.value?.priority?.unprocessed_requisites ?? dashboard.value?.priority?.processing_requisites ?? 0
+        ),
+        icon: UiIconPaymentDetail,
+        to: "/payout-verifications",
+        kind: "info",
       },
       {
         id: "unprocessed_verifications",
@@ -1510,7 +1541,7 @@
 
   .admin-dashboard__summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
   }
 
@@ -1597,16 +1628,16 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 8px;
-    min-height: 72px;
-    padding: 12px;
+    gap: 6px;
+    min-height: 64px;
+    padding: 9px;
   }
 
   .dashboard-summary-card__top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
   }
 
   .dashboard-summary-card__copy {
@@ -1642,9 +1673,9 @@
   }
 
   .dashboard-summary-card__icon-wrap {
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1654,8 +1685,8 @@
   }
 
   .dashboard-summary-card__icon {
-    width: 17px;
-    height: 17px;
+    width: 16px;
+    height: 16px;
   }
 
   .dashboard-summary-card--primary {
@@ -2065,7 +2096,6 @@
   }
 
   @media (max-width: 1180px) {
-    .admin-dashboard__summary-grid,
     .admin-dashboard__panels {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -2077,6 +2107,10 @@
   }
 
   @media (max-width: 820px) {
+    .admin-dashboard__summary-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .admin-dashboard__header,
     .dashboard-chart-card__header,
     .dashboard-list-card__header {

@@ -3,11 +3,8 @@
   // Space step (padding, margin )
   --spacer: 10px;
   // ...
-  --default-transition: color 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    fill 0.2s ease,
+  --default-transition:
+    color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, fill 0.2s ease,
     stroke 0.2s ease;
   // ...
   --color-background: #f7f7f7;
@@ -30,6 +27,7 @@
   --color-ui-background: #ffffff;
   --color-ui-background-opacity-80: rgba(255, 255, 255, 0.82);
   --color-ui-background-opacity-95: rgba(255, 255, 255, 0.95);
+  --color-ui-text: var(--ui-text-main);
 
   --color-ui-primary: #0051ff;
   --color-ui-primary-defalt: #858282;
@@ -68,6 +66,8 @@
   --ui-text-secondary: #3c3c3c;
   --ui-control-bg: rgba(228, 228, 231, 0.6);
   --ui-control-bg-disabled: #e4e4e7;
+  --ui-control-border: var(--color-stroke-ui-light);
+  --ui-control-placeholder: var(--ui-text-secondary);
   --ui-date-input-icon-filter: brightness(0) saturate(100%) invert(0%);
   --ui-date-input-color-scheme: light;
 
@@ -104,6 +104,8 @@
   --ui-text-secondary: #b8b8c3;
   --ui-control-bg: #011644;
   --ui-control-bg-disabled: rgba(1, 22, 68, 0.6);
+  --ui-control-border: #002880;
+  --ui-control-placeholder: #b8b8c3;
   --ui-date-input-icon-filter: brightness(0) saturate(100%) invert(100%);
   --ui-date-input-color-scheme: dark;
 }
