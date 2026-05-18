@@ -59,6 +59,10 @@ export class ClientsService {
     return await this.useApi.get(`/admin/clients/${id}/visit-history`, params);
   }
 
+  async getActivityLog(id: any, params: object = {}) {
+    return await this.useApi.get(`/admin/clients/${id}/activity-log`, params);
+  }
+
   async getMetrics(id: any, params: object = {}) {
     return await this.useApi.get(`/admin/clients/${id}/metrics`, params);
   }

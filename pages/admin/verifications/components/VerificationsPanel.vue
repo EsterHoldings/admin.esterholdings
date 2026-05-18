@@ -185,6 +185,13 @@
 
       <template #footer>
         <div class="verification-confirm-dialog__footer">
+          <label class="verification-confirm-dialog__notify">
+            <input
+              v-model="requestReviewSendNotifications"
+              type="checkbox" />
+            <span>{{ text("admin.verifications.actions.sendNotifications", "Send notifications to client") }}</span>
+          </label>
+
           <PrimeButton
             severity="secondary"
             text
@@ -298,6 +305,7 @@
   const updatingState = reactive<Record<string, RequestReviewState | "">>({});
   const unreadVerificationNotifications = ref<AdminVerificationUnreadNotification[]>([]);
   const requestReviewDialogSubmitting = ref(false);
+  const requestReviewSendNotifications = ref(true);
   const requestReviewDialog = reactive<{
     visible: boolean;
     requestItem: VerificationRequestItem | null;
@@ -630,6 +638,7 @@
       await appCore.adminModules.verificationRequests.put(requestItem.id, {
         type: "request",
         requestScope: normalizedRequestScope.value,
+        sendNotifications: requestReviewSendNotifications.value,
         updatedStatus: { status: nextState, comment: "" },
       });
 
@@ -650,6 +659,7 @@
   ): void => {
     requestReviewDialog.requestItem = requestItem;
     requestReviewDialog.nextState = nextState;
+    requestReviewSendNotifications.value = true;
     requestReviewDialog.visible = true;
   };
 
@@ -1250,9 +1260,28 @@
 
   .verification-confirm-dialog__footer {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     justify-content: flex-end;
     gap: 10px;
     width: 100%;
+  }
+
+  .verification-confirm-dialog__notify {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: auto;
+    color: var(--ui-text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .verification-confirm-dialog__notify input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--ui-primary-main);
   }
 
   :deep(.p-paginator) {

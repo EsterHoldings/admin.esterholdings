@@ -1742,7 +1742,8 @@
         "metrics": "Метрики",
         "accounts": "Рахунки",
         "paymentDetails": "Платіжні реквізити",
-        "emails": "Листи"
+        "emails": "Листи",
+        "activityLog": "Лог дій"
       },
       "supportMode": {
         "label": "Режим підтримки",
@@ -1891,7 +1892,8 @@
         "security": "Пароль і керування двофакторною автентифікацією.",
         "accounts": "MT-рахунки, які належать цьому клієнту.",
         "paymentDetails": "Реквізити для виведення та їхній статус модерації.",
-        "emails": "Історія транзакційних листів, надісланих цьому клієнту."
+        "emails": "Історія транзакційних листів, надісланих цьому клієнту.",
+        "activityLog": "Детальні дії клієнта та технічні дані аудиту."
       },
       "common": {
         "emptyValue": "-",
@@ -2106,6 +2108,47 @@
           "support": "Підтримка",
           "transactional": "Транзакційний"
         }
+      },
+      "activityLog": {
+        "title": "Лог дій",
+        "subtitle": "Детальна активність клієнта з кабінету, верифікації, авторизації та дій адмінки.",
+        "empty": "Дій поки немає.",
+        "details": "Детальна інформація",
+        "actorUnknown": "Виконавця не вказано",
+        "groups": {
+          "verification": "Верифікація",
+          "auth": "Авторизація",
+          "ui": "Кабінет"
+        },
+        "errors": {
+          "load": "Не вдалося завантажити лог дій."
+        },
+        "events": {
+          "step_status_auto_synced": "Статус кроку верифікації синхронізовано автоматично: {step}",
+          "step_status_updated": "Змінено статус кроку верифікації: {step} - {status}",
+          "step_status_reset": "Скинуто крок верифікації: {step}",
+          "step_comment_cleared": "Очищено коментар до кроку верифікації: {step}",
+          "profile_submitted": "Змінив дані профілю",
+          "documents_uploaded": "Завантажив документи на верифікацію",
+          "document_deleted": "Видалив документ {document}",
+          "photo_uploaded": "Завантажив фото профілю",
+          "photo_deleted": "Видалив фото профілю",
+          "email_verification_sent": "Надіслано посилання підтвердження email",
+          "documents_bulk_updated": "Змінено статус документів: {status}",
+          "document_updated": "Змінено статус документа: {document} - {status}",
+          "payout_detail_submitted": "Надіслав платіжні реквізити {name}",
+          "payout_detail_updated": "Оновив платіжні реквізити {name}",
+          "payout_detail_status_updated": "Змінено статус платіжних реквізитів: {name} - {status}",
+          "payout_detail_comment_updated": "Змінено коментар до платіжних реквізитів: {name}",
+          "payout_detail_deleted": "Видалив платіжні реквізити {name}",
+          "payout_detail_restored": "Відновив платіжні реквізити {name}",
+          "client_login": "Увійшов до кабінету",
+          "social_login": "Увійшов через соціальний акаунт",
+          "admin_impersonation_login": "Адмін відкрив кабінет від імені клієнта",
+          "client_profile_page_opened": "Відкрив сторінку \"{page}\"",
+          "client_open_account_modal_opened": "Відкрив модальне вікно \"Новий рахунок\"",
+          "client_account_opened": "Відкрив новий рахунок #{account}"
+        }
       }
     },
     "verifications": {
@@ -2128,7 +2171,8 @@
         "approve": "Підтвердити",
         "reject": "Відхилити",
         "chooseDecision": "Оберіть рішення",
-        "cancel": "Скасувати"
+        "cancel": "Скасувати",
+        "sendNotifications": "Надсилати сповіщення клієнту"
       },
       "confirm": {
         "titleApprove": "Підтвердьте дію",

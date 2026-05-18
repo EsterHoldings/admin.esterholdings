@@ -85,6 +85,7 @@
   import { useAdminAuthStore } from "~/stores/adminAuthStore";
 
   import TabAccounts from "~/pages/admin/clients/[id]/components/TabAccounts.vue";
+  import TabActionLog from "~/pages/admin/clients/[id]/components/TabActionLog.vue";
   import TabEmails from "~/pages/admin/clients/[id]/components/TabEmails.vue";
   import TabKYC from "~/pages/admin/clients/[id]/components/TabKYC.vue";
   import TabMetrics from "~/pages/admin/clients/[id]/components/TabMetrics.vue";
@@ -187,7 +188,10 @@
 
   const clientInitials = computed(() => {
     const parts = clientName.value.split(/\s+/).filter(Boolean);
-    const initials = parts.slice(0, 2).map(part => part[0]).join("");
+    const initials = parts
+      .slice(0, 2)
+      .map(part => part[0])
+      .join("");
 
     return initials.toUpperCase() || "CL";
   });
@@ -203,79 +207,124 @@
     {
       id: "metrics",
       label: resolveText("admin.clients.tabs.metrics", "Metrics"),
-      description: resolveText("admin.clients.tabsDescription.metrics", "Online activity, sessions and device analytics."),
+      description: resolveText(
+        "admin.clients.tabsDescription.metrics",
+        "Online activity, sessions and device analytics."
+      ),
       icon: "pi pi-chart-line",
       component: TabMetrics,
     },
     ...(canViewClientVerification.value
-      ? [{
-          id: "verification",
-          label: resolveText("admin.clients.tabs.verification", "Verification"),
-          description: resolveText("admin.clients.tabsDescription.verification", "Moderation timeline for profile, documents and payment details."),
-          icon: "pi pi-verified",
-          component: TabVerification,
-        }]
+      ? [
+          {
+            id: "verification",
+            label: resolveText("admin.clients.tabs.verification", "Verification"),
+            description: resolveText(
+              "admin.clients.tabsDescription.verification",
+              "Moderation timeline for profile, documents and payment details."
+            ),
+            icon: "pi pi-verified",
+            component: TabVerification,
+          },
+        ]
       : []),
     ...(canViewClientAccounts.value
-      ? [{
-          id: "accounts",
-          label: resolveText("admin.clients.tabs.accounts", "Accounts"),
-          description: resolveText("admin.clients.tabsDescription.accounts", "MT accounts owned by this client."),
-          icon: "pi pi-wallet",
-          component: TabAccounts,
-        }]
+      ? [
+          {
+            id: "accounts",
+            label: resolveText("admin.clients.tabs.accounts", "Accounts"),
+            description: resolveText("admin.clients.tabsDescription.accounts", "MT accounts owned by this client."),
+            icon: "pi pi-wallet",
+            component: TabAccounts,
+          },
+        ]
       : []),
     ...(canViewClientPaymentDetails.value
-      ? [{
-          id: "payment-details",
-          label: resolveText("admin.clients.tabs.paymentDetails", "Payment details"),
-          description: resolveText("admin.clients.tabsDescription.paymentDetails", "Withdrawal requisites and their moderation state."),
-          icon: "pi pi-credit-card",
-          component: TabPaymentDetails,
-        }]
+      ? [
+          {
+            id: "payment-details",
+            label: resolveText("admin.clients.tabs.paymentDetails", "Payment details"),
+            description: resolveText(
+              "admin.clients.tabsDescription.paymentDetails",
+              "Withdrawal requisites and their moderation state."
+            ),
+            icon: "pi pi-credit-card",
+            component: TabPaymentDetails,
+          },
+        ]
       : []),
     ...(canViewClientPayments.value
-      ? [{
-          id: "payments",
-          label: resolveText("admin.clients.tabs.payments", "Платежки"),
-          description: resolveText("admin.clients.tabsDescription.payments", "All client payments."),
-          icon: "pi pi-receipt",
-          component: TabPayments,
-        }]
+      ? [
+          {
+            id: "payments",
+            label: resolveText("admin.clients.tabs.payments", "Платежки"),
+            description: resolveText("admin.clients.tabsDescription.payments", "All client payments."),
+            icon: "pi pi-receipt",
+            component: TabPayments,
+          },
+        ]
       : []),
+    {
+      id: "activity-log",
+      label: resolveText("admin.clients.tabs.activityLog", "Action log"),
+      description: resolveText(
+        "admin.clients.tabsDescription.activityLog",
+        "Detailed client actions and technical audit payloads."
+      ),
+      icon: "pi pi-history",
+      component: TabActionLog,
+    },
     {
       id: "emails",
       label: resolveText("admin.clients.tabs.emails", "Emails"),
-      description: resolveText("admin.clients.tabsDescription.emails", "Transactional email history sent to this client."),
+      description: resolveText(
+        "admin.clients.tabsDescription.emails",
+        "Transactional email history sent to this client."
+      ),
       icon: "pi pi-envelope",
       component: TabEmails,
     },
     ...(canViewClientReferrals.value
-      ? [{
-          id: "referrals",
-          label: resolveText("admin.clients.tabs.referrals", "Referrals"),
-          description: resolveText("admin.clients.tabsDescription.referrals", "Referral network and rewards for this client."),
-          icon: "pi pi-share-alt",
-          component: TabReferrals,
-        }]
+      ? [
+          {
+            id: "referrals",
+            label: resolveText("admin.clients.tabs.referrals", "Referrals"),
+            description: resolveText(
+              "admin.clients.tabsDescription.referrals",
+              "Referral network and rewards for this client."
+            ),
+            icon: "pi pi-share-alt",
+            component: TabReferrals,
+          },
+        ]
       : []),
     ...(canManageClientSettings.value
-      ? [{
-          id: "settings",
-          label: resolveText("admin.clients.tabs.settings", "Settings"),
-          description: resolveText("admin.clients.tabsDescription.settings", "Client support and cabinet configuration."),
-          icon: "pi pi-cog",
-          component: TabSettings,
-        }]
+      ? [
+          {
+            id: "settings",
+            label: resolveText("admin.clients.tabs.settings", "Settings"),
+            description: resolveText(
+              "admin.clients.tabsDescription.settings",
+              "Client support and cabinet configuration."
+            ),
+            icon: "pi pi-cog",
+            component: TabSettings,
+          },
+        ]
       : []),
     ...(canManageClientSecurity.value
-      ? [{
-          id: "security",
-          label: resolveText("admin.clients.tabs.security", "Security"),
-          description: resolveText("admin.clients.tabsDescription.security", "Password and two-factor authentication controls."),
-          icon: "pi pi-shield",
-          component: TabSecurity,
-        }]
+      ? [
+          {
+            id: "security",
+            label: resolveText("admin.clients.tabs.security", "Security"),
+            description: resolveText(
+              "admin.clients.tabsDescription.security",
+              "Password and two-factor authentication controls."
+            ),
+            icon: "pi pi-shield",
+            component: TabSecurity,
+          },
+        ]
       : []),
   ]);
 
@@ -668,7 +717,9 @@
 
   .client-detail__content > :deep(.v-enter-active),
   .client-detail__content > :deep(.v-leave-active) {
-    transition: opacity 0.16s ease, transform 0.16s ease;
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease;
   }
 
   .client-detail__content > :deep(.v-enter-from),

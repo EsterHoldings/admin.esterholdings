@@ -1455,7 +1455,8 @@
         "referrals": "Referrals",
         "accounts": "खाते",
         "paymentDetails": "भुगतान विवरण",
-        "emails": "ईमेल"
+        "emails": "ईमेल",
+        "activityLog": "Action log"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1521,7 +1522,8 @@
         "security": "Password and two-factor authentication controls.",
         "accounts": "इस ग्राहक के MT खाते.",
         "paymentDetails": "निकासी विवरण और उनकी मॉडरेशन स्थिति.",
-        "emails": "इस क्लाइंट को भेजे गए ट्रांज़ैक्शनल ईमेल का इतिहास।"
+        "emails": "इस क्लाइंट को भेजे गए ट्रांज़ैक्शनल ईमेल का इतिहास।",
+        "activityLog": "Detailed client actions and technical audit payloads."
       },
       "common": {
         "emptyValue": "-",
@@ -1736,6 +1738,47 @@
           "support": "सहायता",
           "transactional": "ट्रांज़ैक्शनल"
         }
+      },
+      "activityLog": {
+        "title": "Action log",
+        "subtitle": "Detailed client activity from cabinet, verification, auth and admin actions.",
+        "empty": "No actions logged yet.",
+        "details": "Detailed information",
+        "actorUnknown": "Actor is not specified",
+        "groups": {
+          "verification": "Verification",
+          "auth": "Authentication",
+          "ui": "Cabinet UI"
+        },
+        "errors": {
+          "load": "Failed to load action log."
+        },
+        "events": {
+          "step_status_auto_synced": "Verification step synced automatically: {step}",
+          "step_status_updated": "Verification step status changed: {step} - {status}",
+          "step_status_reset": "Verification step reset: {step}",
+          "step_comment_cleared": "Verification comment cleared: {step}",
+          "profile_submitted": "Changed profile data",
+          "documents_uploaded": "Uploaded documents for verification",
+          "document_deleted": "Deleted document {document}",
+          "photo_uploaded": "Uploaded profile photo",
+          "photo_deleted": "Deleted profile photo",
+          "email_verification_sent": "Email verification link sent",
+          "documents_bulk_updated": "Documents status changed: {status}",
+          "document_updated": "Document status changed: {document} - {status}",
+          "payout_detail_submitted": "Submitted payment details {name}",
+          "payout_detail_updated": "Updated payment details {name}",
+          "payout_detail_status_updated": "Payment details status changed: {name} - {status}",
+          "payout_detail_comment_updated": "Payment details comment changed: {name}",
+          "payout_detail_deleted": "Deleted payment details {name}",
+          "payout_detail_restored": "Restored payment details {name}",
+          "client_login": "Signed in to cabinet",
+          "social_login": "Signed in through social login",
+          "admin_impersonation_login": "Admin opened cabinet as client",
+          "client_profile_page_opened": "Opened page \"{page}\"",
+          "client_open_account_modal_opened": "Opened modal \"New account\"",
+          "client_account_opened": "Opened new account #{account}"
+        }
       }
     },
     "verifications": {
@@ -1757,7 +1800,8 @@
         "rejectAll": "सभी अस्वीकार करें",
         "approve": "स्वीकृत करें",
         "reject": "अस्वीकार करें",
-        "chooseDecision": "निर्णय चुनें"
+        "chooseDecision": "निर्णय चुनें",
+        "sendNotifications": "Send notifications to client"
       },
       "filters": {
         "active": "फ़िल्टर",

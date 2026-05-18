@@ -17,6 +17,38 @@ interface runtimeCfgInterface {
   baseApi: string;
 }
 
+const API_DATE_TIME_PATTERN = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?$/;
+
+const normalizeApiDateTimes = (payload: unknown, seen = new WeakSet<object>()): unknown => {
+  if (typeof payload === "string") {
+    return API_DATE_TIME_PATTERN.test(payload) ? `${payload.replace(" ", "T")}Z` : payload;
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return payload;
+  }
+
+  if (seen.has(payload)) {
+    return payload;
+  }
+
+  seen.add(payload);
+
+  if (Array.isArray(payload)) {
+    for (let index = 0; index < payload.length; index += 1) {
+      payload[index] = normalizeApiDateTimes(payload[index], seen);
+    }
+
+    return payload;
+  }
+
+  for (const key of Object.keys(payload as Record<string, unknown>)) {
+    (payload as Record<string, unknown>)[key] = normalizeApiDateTimes((payload as Record<string, unknown>)[key], seen);
+  }
+
+  return payload;
+};
+
 export class useApi {
   private readonly api: AxiosInstance;
 
@@ -63,7 +95,11 @@ export class useApi {
     });
 
     this.api.interceptors.response.use(
-      res => res,
+      res => {
+        normalizeApiDateTimes(res.data);
+
+        return res;
+      },
       async err => {
         const appCore = useAppCore();
         const authStore = forClient ? useAuthStore() : useAdminAuthStore();

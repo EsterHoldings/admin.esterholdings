@@ -55,6 +55,10 @@ export class ClientsModule {
     return await this.clientsService.getVisitHistory(id, params);
   }
 
+  async getActivityLog(id: any, params: object = {}): Promise<any> {
+    return await this.clientsService.getActivityLog(id, params);
+  }
+
   async getMetrics(id: any, params: object = {}): Promise<any> {
     return await this.clientsService.getMetrics(id, params);
   }

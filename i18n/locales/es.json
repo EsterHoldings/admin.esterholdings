@@ -1463,7 +1463,8 @@
         "referrals": "Referidos",
         "accounts": "Cuentas",
         "paymentDetails": "Datos de pago",
-        "emails": "Correos"
+        "emails": "Correos",
+        "activityLog": "Registro de acciones"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1529,7 +1530,8 @@
         "security": "Controles de contraseña y autenticación de dos factores.",
         "accounts": "Cuentas MT propiedad de este cliente.",
         "paymentDetails": "Datos de retiro y estado de moderación.",
-        "emails": "Historial de correos transaccionales enviados a este cliente."
+        "emails": "Historial de correos transaccionales enviados a este cliente.",
+        "activityLog": "Acciones detalladas del cliente y datos técnicos de auditoría."
       },
       "common": {
         "emptyValue": "-",
@@ -1744,6 +1746,47 @@
           "support": "Soporte",
           "transactional": "Transaccional"
         }
+      },
+      "activityLog": {
+        "title": "Registro de acciones",
+        "subtitle": "Actividad detallada del cliente desde gabinete, verificación, autenticación y acciones de admin.",
+        "empty": "Todavía no hay acciones registradas.",
+        "details": "Información detallada",
+        "actorUnknown": "Actor no especificado",
+        "groups": {
+          "verification": "Verificación",
+          "auth": "Autenticación",
+          "ui": "Gabinete"
+        },
+        "errors": {
+          "load": "No se pudo cargar el registro de acciones."
+        },
+        "events": {
+          "step_status_auto_synced": "Verification step synced automatically: {step}",
+          "step_status_updated": "Verification step status changed: {step} - {status}",
+          "step_status_reset": "Verification step reset: {step}",
+          "step_comment_cleared": "Verification comment cleared: {step}",
+          "profile_submitted": "Changed profile data",
+          "documents_uploaded": "Uploaded documents for verification",
+          "document_deleted": "Deleted document {document}",
+          "photo_uploaded": "Uploaded profile photo",
+          "photo_deleted": "Deleted profile photo",
+          "email_verification_sent": "Email verification link sent",
+          "documents_bulk_updated": "Documents status changed: {status}",
+          "document_updated": "Document status changed: {document} - {status}",
+          "payout_detail_submitted": "Submitted payment details {name}",
+          "payout_detail_updated": "Updated payment details {name}",
+          "payout_detail_status_updated": "Payment details status changed: {name} - {status}",
+          "payout_detail_comment_updated": "Payment details comment changed: {name}",
+          "payout_detail_deleted": "Deleted payment details {name}",
+          "payout_detail_restored": "Restored payment details {name}",
+          "client_login": "Signed in to cabinet",
+          "social_login": "Signed in through social login",
+          "admin_impersonation_login": "Admin opened cabinet as client",
+          "client_profile_page_opened": "Opened page \"{page}\"",
+          "client_open_account_modal_opened": "Opened modal \"New account\"",
+          "client_account_opened": "Opened new account #{account}"
+        }
       }
     },
     "verifications": {
@@ -1765,7 +1808,8 @@
         "rejectAll": "Rechazar todo",
         "approve": "Aprobar",
         "reject": "Rechazar",
-        "chooseDecision": "Elegir decisión"
+        "chooseDecision": "Elegir decisión",
+        "sendNotifications": "Enviar notificaciones al cliente"
       },
       "filters": {
         "active": "Filtro",

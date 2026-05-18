@@ -1455,7 +1455,8 @@
         "referrals": "Referrals",
         "accounts": "口座",
         "paymentDetails": "支払い詳細",
-        "emails": "メール"
+        "emails": "メール",
+        "activityLog": "アクションログ"
       },
       "supportMode": {
         "label": "Support mode",
@@ -1521,7 +1522,8 @@
         "security": "Password and two-factor authentication controls.",
         "accounts": "このクライアントのMT口座。",
         "paymentDetails": "出金先情報と審査ステータス。",
-        "emails": "この顧客に送信されたトランザクションメールの履歴。"
+        "emails": "この顧客に送信されたトランザクションメールの履歴。",
+        "activityLog": "クライアント操作と技術監査データの詳細。"
       },
       "common": {
         "emptyValue": "-",
@@ -1736,6 +1738,47 @@
           "support": "サポート",
           "transactional": "トランザクション"
         }
+      },
+      "activityLog": {
+        "title": "アクションログ",
+        "subtitle": "キャビネット、認証、検証、管理操作からの詳細なクライアント活動。",
+        "empty": "記録された操作はまだありません。",
+        "details": "詳細情報",
+        "actorUnknown": "実行者が指定されていません",
+        "groups": {
+          "verification": "検証",
+          "auth": "認証",
+          "ui": "キャビネット"
+        },
+        "errors": {
+          "load": "アクションログを読み込めませんでした。"
+        },
+        "events": {
+          "step_status_auto_synced": "Verification step synced automatically: {step}",
+          "step_status_updated": "Verification step status changed: {step} - {status}",
+          "step_status_reset": "Verification step reset: {step}",
+          "step_comment_cleared": "Verification comment cleared: {step}",
+          "profile_submitted": "Changed profile data",
+          "documents_uploaded": "Uploaded documents for verification",
+          "document_deleted": "Deleted document {document}",
+          "photo_uploaded": "Uploaded profile photo",
+          "photo_deleted": "Deleted profile photo",
+          "email_verification_sent": "Email verification link sent",
+          "documents_bulk_updated": "Documents status changed: {status}",
+          "document_updated": "Document status changed: {document} - {status}",
+          "payout_detail_submitted": "Submitted payment details {name}",
+          "payout_detail_updated": "Updated payment details {name}",
+          "payout_detail_status_updated": "Payment details status changed: {name} - {status}",
+          "payout_detail_comment_updated": "Payment details comment changed: {name}",
+          "payout_detail_deleted": "Deleted payment details {name}",
+          "payout_detail_restored": "Restored payment details {name}",
+          "client_login": "Signed in to cabinet",
+          "social_login": "Signed in through social login",
+          "admin_impersonation_login": "Admin opened cabinet as client",
+          "client_profile_page_opened": "Opened page \"{page}\"",
+          "client_open_account_modal_opened": "Opened modal \"New account\"",
+          "client_account_opened": "Opened new account #{account}"
+        }
       }
     },
     "verifications": {
@@ -1757,7 +1800,8 @@
         "rejectAll": "すべて拒否",
         "approve": "承認",
         "reject": "却下",
-        "chooseDecision": "判定を選択"
+        "chooseDecision": "判定を選択",
+        "sendNotifications": "クライアントに通知を送信"
       },
       "filters": {
         "active": "フィルター",

@@ -1685,7 +1685,8 @@
         "metrics": "Метрики",
         "accounts": "Счета",
         "paymentDetails": "Платежные реквизиты",
-        "emails": "Письма"
+        "emails": "Письма",
+        "activityLog": "Лог действий"
       },
       "supportMode": {
         "label": "Режим поддержки",
@@ -1892,7 +1893,8 @@
         "security": "Пароль и управление двухфакторной аутентификацией.",
         "accounts": "MT-счета, которые принадлежат этому клиенту.",
         "paymentDetails": "Реквизиты для вывода и их статус модерации.",
-        "emails": "История транзакционных писем, отправленных этому клиенту."
+        "emails": "История транзакционных писем, отправленных этому клиенту.",
+        "activityLog": "Детальные действия клиента и технические данные аудита."
       },
       "common": {
         "emptyValue": "-",
@@ -2107,6 +2109,47 @@
           "support": "Поддержка",
           "transactional": "Транзакционное"
         }
+      },
+      "activityLog": {
+        "title": "Лог действий",
+        "subtitle": "Детальная активность клиента из кабинета, верификации, авторизации и действий админки.",
+        "empty": "Действий пока нет.",
+        "details": "Детальная информация",
+        "actorUnknown": "Исполнитель не указан",
+        "groups": {
+          "verification": "Верификация",
+          "auth": "Авторизация",
+          "ui": "Кабинет"
+        },
+        "errors": {
+          "load": "Не удалось загрузить лог действий."
+        },
+        "events": {
+          "step_status_auto_synced": "Статус шага верификации синхронизирован автоматически: {step}",
+          "step_status_updated": "Изменен статус шага верификации: {step} - {status}",
+          "step_status_reset": "Сброшен шаг верификации: {step}",
+          "step_comment_cleared": "Очищен комментарий к шагу верификации: {step}",
+          "profile_submitted": "Изменил данные профиля",
+          "documents_uploaded": "Загрузил документы на верификацию",
+          "document_deleted": "Удалил документ {document}",
+          "photo_uploaded": "Загрузил фото профиля",
+          "photo_deleted": "Удалил фото профиля",
+          "email_verification_sent": "Отправлена ссылка подтверждения email",
+          "documents_bulk_updated": "Изменен статус документов: {status}",
+          "document_updated": "Изменен статус документа: {document} - {status}",
+          "payout_detail_submitted": "Отправил платежные реквизиты {name}",
+          "payout_detail_updated": "Обновил платежные реквизиты {name}",
+          "payout_detail_status_updated": "Изменен статус платежных реквизитов: {name} - {status}",
+          "payout_detail_comment_updated": "Изменен комментарий к платежным реквизитам: {name}",
+          "payout_detail_deleted": "Удалил платежные реквизиты {name}",
+          "payout_detail_restored": "Восстановил платежные реквизиты {name}",
+          "client_login": "Вошел в кабинет",
+          "social_login": "Вошел через социальный аккаунт",
+          "admin_impersonation_login": "Админ открыл кабинет от имени клиента",
+          "client_profile_page_opened": "Открыл страницу \"{page}\"",
+          "client_open_account_modal_opened": "Открыл модальное окно \"Новый счет\"",
+          "client_account_opened": "Открыл новый счет #{account}"
+        }
       }
     },
     "verifications": {
@@ -2129,7 +2172,8 @@
         "approve": "Подтвердить",
         "reject": "Отклонить",
         "chooseDecision": "Выберите решение",
-        "cancel": "Отмена"
+        "cancel": "Отмена",
+        "sendNotifications": "Отправлять уведомления клиенту"
       },
       "confirm": {
         "titleApprove": "Подтвердите действие",
