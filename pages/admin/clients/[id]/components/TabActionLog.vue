@@ -166,10 +166,33 @@
 
   const eventTitle = (row: ActivityLogRow): string => {
     if (row.title_key && te(row.title_key)) {
-      return String(t(row.title_key, row.title_params));
+      return String(t(row.title_key, eventTitleParams(row)));
     }
 
     return row.title || row.message || row.key;
+  };
+
+  const eventTitleParams = (row: ActivityLogRow): Record<string, string> => {
+    const params = { ...row.title_params };
+    const mappings: Array<[string, string]> = [
+      ["page", "pages"],
+      ["label", "labels"],
+      ["form", "forms"],
+      ["field", "fields"],
+      ["modal", "modals"],
+      ["tab", "tabs"],
+    ];
+
+    mappings.forEach(([paramName, groupName]) => {
+      const valueKey = String(params[`${paramName}_key`] ?? "").trim();
+      const translationKey = `admin.clients.activityLog.${groupName}.${valueKey}`;
+
+      if (valueKey && te(translationKey)) {
+        params[paramName] = String(t(translationKey));
+      }
+    });
+
+    return params;
   };
 
   const eventMeta = (row: ActivityLogRow): string => {

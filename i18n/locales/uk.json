@@ -2147,7 +2147,33 @@
           "admin_impersonation_login": "Адмін відкрив кабінет від імені клієнта",
           "client_profile_page_opened": "Відкрив сторінку \"{page}\"",
           "client_open_account_modal_opened": "Відкрив модальне вікно \"Новий рахунок\"",
-          "client_account_opened": "Відкрив новий рахунок #{account}"
+          "client_account_opened": "Відкрив новий рахунок #{account}",
+          "client_page_opened": "Відкрив сторінку \"{page}\"",
+          "client_button_clicked": "Натиснув \"{label}\"",
+          "client_link_opened": "Відкрив посилання \"{label}\"",
+          "client_tab_opened": "Відкрив вкладку \"{tab}\"",
+          "client_form_submitted": "Надіслав форму \"{form}\"",
+          "client_field_changed": "Змінив поле \"{field}\"",
+          "client_file_selected": "Вибрав файл у полі \"{field}\"",
+          "client_modal_opened": "Відкрив модальне вікно \"{modal}\"",
+          "client_modal_closed": "Закрив модальне вікно \"{modal}\"",
+          "client_copy_clicked": "Скопіював значення через \"{label}\""
+        },
+        "pages": {
+          "dashboard": "Панель керування",
+          "accounts": "Рахунки",
+          "account_details": "Деталі рахунку",
+          "payments": "Платежі",
+          "payment_create": "Створення платежу",
+          "payment_details": "Платіжні реквізити",
+          "payment_detail": "Платіжний реквізит",
+          "support": "Підтримка",
+          "support_ticket": "Тікет підтримки",
+          "referrals": "Реферали",
+          "profile": "Профіль",
+          "settings": "Налаштування",
+          "aml": "AML",
+          "unknown": "Невідома сторінка"
         }
       }
     },

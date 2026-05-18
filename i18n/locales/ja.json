@@ -1777,7 +1777,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "ページ「{page}」を開きました",
+          "client_button_clicked": "「{label}」をクリックしました",
+          "client_link_opened": "リンク「{label}」を開きました",
+          "client_tab_opened": "タブ「{tab}」を開きました",
+          "client_form_submitted": "フォーム「{form}」を送信しました",
+          "client_field_changed": "フィールド「{field}」を変更しました",
+          "client_file_selected": "「{field}」でファイルを選択しました",
+          "client_modal_opened": "モーダル「{modal}」を開きました",
+          "client_modal_closed": "モーダル「{modal}」を閉じました",
+          "client_copy_clicked": "「{label}」で値をコピーしました"
+        },
+        "pages": {
+          "dashboard": "ダッシュボード",
+          "accounts": "口座",
+          "account_details": "口座詳細",
+          "payments": "支払い",
+          "payment_create": "支払い作成",
+          "payment_details": "支払い詳細",
+          "payment_detail": "支払い詳細",
+          "support": "サポート",
+          "support_ticket": "サポートチケット",
+          "referrals": "紹介",
+          "profile": "プロフィール",
+          "settings": "設定",
+          "aml": "AML",
+          "unknown": "不明なページ"
         }
       }
     },

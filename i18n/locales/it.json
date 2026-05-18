@@ -1785,7 +1785,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "Ha aperto la pagina \"{page}\"",
+          "client_button_clicked": "Ha cliccato \"{label}\"",
+          "client_link_opened": "Ha aperto il link \"{label}\"",
+          "client_tab_opened": "Ha aperto la scheda \"{tab}\"",
+          "client_form_submitted": "Ha inviato il modulo \"{form}\"",
+          "client_field_changed": "Ha modificato il campo \"{field}\"",
+          "client_file_selected": "Ha selezionato un file in \"{field}\"",
+          "client_modal_opened": "Ha aperto la modale \"{modal}\"",
+          "client_modal_closed": "Ha chiuso la modale \"{modal}\"",
+          "client_copy_clicked": "Ha copiato il valore tramite \"{label}\""
+        },
+        "pages": {
+          "dashboard": "Dashboard",
+          "accounts": "Conti",
+          "account_details": "Dettagli conto",
+          "payments": "Pagamenti",
+          "payment_create": "Crea pagamento",
+          "payment_details": "Dettagli pagamento",
+          "payment_detail": "Dettaglio pagamento",
+          "support": "Supporto",
+          "support_ticket": "Ticket supporto",
+          "referrals": "Referral",
+          "profile": "Profilo",
+          "settings": "Impostazioni",
+          "aml": "AML",
+          "unknown": "Pagina sconosciuta"
         }
       }
     },

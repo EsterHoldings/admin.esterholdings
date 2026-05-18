@@ -1777,7 +1777,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "Seite \"{page}\" geöffnet",
+          "client_button_clicked": "Auf \"{label}\" geklickt",
+          "client_link_opened": "Link \"{label}\" geöffnet",
+          "client_tab_opened": "Tab \"{tab}\" geöffnet",
+          "client_form_submitted": "Formular \"{form}\" gesendet",
+          "client_field_changed": "Feld \"{field}\" geändert",
+          "client_file_selected": "Datei in \"{field}\" ausgewählt",
+          "client_modal_opened": "Modal \"{modal}\" geöffnet",
+          "client_modal_closed": "Modal \"{modal}\" geschlossen",
+          "client_copy_clicked": "Wert über \"{label}\" kopiert"
+        },
+        "pages": {
+          "dashboard": "Dashboard",
+          "accounts": "Konten",
+          "account_details": "Kontodetails",
+          "payments": "Zahlungen",
+          "payment_create": "Zahlung erstellen",
+          "payment_details": "Zahlungsdetails",
+          "payment_detail": "Zahlungsdetail",
+          "support": "Support",
+          "support_ticket": "Support-Ticket",
+          "referrals": "Empfehlungen",
+          "profile": "Profil",
+          "settings": "Einstellungen",
+          "aml": "AML",
+          "unknown": "Unbekannte Seite"
         }
       }
     },

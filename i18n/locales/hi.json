@@ -1777,7 +1777,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "पेज \"{page}\" खोला",
+          "client_button_clicked": "\"{label}\" पर क्लिक किया",
+          "client_link_opened": "लिंक \"{label}\" खोला",
+          "client_tab_opened": "टैब \"{tab}\" खोला",
+          "client_form_submitted": "फॉर्म \"{form}\" भेजा",
+          "client_field_changed": "फील्ड \"{field}\" बदली",
+          "client_file_selected": "\"{field}\" में फ़ाइल चुनी",
+          "client_modal_opened": "मोडल \"{modal}\" खोला",
+          "client_modal_closed": "मोडल \"{modal}\" बंद किया",
+          "client_copy_clicked": "\"{label}\" से मान कॉपी किया"
+        },
+        "pages": {
+          "dashboard": "डैशबोर्ड",
+          "accounts": "खाते",
+          "account_details": "खाते का विवरण",
+          "payments": "भुगतान",
+          "payment_create": "भुगतान बनाएं",
+          "payment_details": "भुगतान विवरण",
+          "payment_detail": "भुगतान विवरण",
+          "support": "सहायता",
+          "support_ticket": "सहायता टिकट",
+          "referrals": "रेफ़रल",
+          "profile": "प्रोफ़ाइल",
+          "settings": "सेटिंग्स",
+          "aml": "AML",
+          "unknown": "अज्ञात पेज"
         }
       }
     },

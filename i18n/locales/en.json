@@ -2144,7 +2144,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "Opened page \"{page}\"",
+          "client_button_clicked": "Clicked \"{label}\"",
+          "client_link_opened": "Opened link \"{label}\"",
+          "client_tab_opened": "Opened tab \"{tab}\"",
+          "client_form_submitted": "Submitted form \"{form}\"",
+          "client_field_changed": "Changed field \"{field}\"",
+          "client_file_selected": "Selected file in \"{field}\"",
+          "client_modal_opened": "Opened modal \"{modal}\"",
+          "client_modal_closed": "Closed modal \"{modal}\"",
+          "client_copy_clicked": "Copied value through \"{label}\""
+        },
+        "pages": {
+          "dashboard": "Dashboard",
+          "accounts": "Accounts",
+          "account_details": "Account details",
+          "payments": "Payments",
+          "payment_create": "Create payment",
+          "payment_details": "Payment details",
+          "payment_detail": "Payment detail",
+          "support": "Support",
+          "support_ticket": "Support ticket",
+          "referrals": "Referrals",
+          "profile": "Profile",
+          "settings": "Settings",
+          "aml": "AML",
+          "unknown": "Unknown page"
         }
       }
     },

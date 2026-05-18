@@ -1768,7 +1768,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "打开页面“{page}”",
+          "client_button_clicked": "点击“{label}”",
+          "client_link_opened": "打开链接“{label}”",
+          "client_tab_opened": "打开标签“{tab}”",
+          "client_form_submitted": "提交表单“{form}”",
+          "client_field_changed": "更改字段“{field}”",
+          "client_file_selected": "在“{field}”中选择文件",
+          "client_modal_opened": "打开弹窗“{modal}”",
+          "client_modal_closed": "关闭弹窗“{modal}”",
+          "client_copy_clicked": "通过“{label}”复制值"
+        },
+        "pages": {
+          "dashboard": "仪表盘",
+          "accounts": "账户",
+          "account_details": "账户详情",
+          "payments": "支付",
+          "payment_create": "创建支付",
+          "payment_details": "支付详情",
+          "payment_detail": "支付详情",
+          "support": "支持",
+          "support_ticket": "支持工单",
+          "referrals": "推荐",
+          "profile": "个人资料",
+          "settings": "设置",
+          "aml": "AML",
+          "unknown": "未知页面"
         }
       }
     },

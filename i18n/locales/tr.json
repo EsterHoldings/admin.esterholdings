@@ -1777,7 +1777,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "\"{page}\" sayfasını açtı",
+          "client_button_clicked": "\"{label}\" düğmesine tıkladı",
+          "client_link_opened": "\"{label}\" bağlantısını açtı",
+          "client_tab_opened": "\"{tab}\" sekmesini açtı",
+          "client_form_submitted": "\"{form}\" formunu gönderdi",
+          "client_field_changed": "\"{field}\" alanını değiştirdi",
+          "client_file_selected": "\"{field}\" alanında dosya seçti",
+          "client_modal_opened": "\"{modal}\" modalını açtı",
+          "client_modal_closed": "\"{modal}\" modalını kapattı",
+          "client_copy_clicked": "\"{label}\" üzerinden değeri kopyaladı"
+        },
+        "pages": {
+          "dashboard": "Kontrol paneli",
+          "accounts": "Hesaplar",
+          "account_details": "Hesap detayları",
+          "payments": "Ödemeler",
+          "payment_create": "Ödeme oluştur",
+          "payment_details": "Ödeme bilgileri",
+          "payment_detail": "Ödeme bilgisi",
+          "support": "Destek",
+          "support_ticket": "Destek talebi",
+          "referrals": "Referanslar",
+          "profile": "Profil",
+          "settings": "Ayarlar",
+          "aml": "AML",
+          "unknown": "Bilinmeyen sayfa"
         }
       }
     },

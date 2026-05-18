@@ -1773,7 +1773,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "פתח את הדף \"{page}\"",
+          "client_button_clicked": "לחץ על \"{label}\"",
+          "client_link_opened": "פתח קישור \"{label}\"",
+          "client_tab_opened": "פתח לשונית \"{tab}\"",
+          "client_form_submitted": "שלח טופס \"{form}\"",
+          "client_field_changed": "שינה שדה \"{field}\"",
+          "client_file_selected": "בחר קובץ בשדה \"{field}\"",
+          "client_modal_opened": "פתח חלון מודאלי \"{modal}\"",
+          "client_modal_closed": "סגר חלון מודאלי \"{modal}\"",
+          "client_copy_clicked": "העתיק ערך דרך \"{label}\""
+        },
+        "pages": {
+          "dashboard": "לוח בקרה",
+          "accounts": "חשבונות",
+          "account_details": "פרטי חשבון",
+          "payments": "תשלומים",
+          "payment_create": "יצירת תשלום",
+          "payment_details": "פרטי תשלום",
+          "payment_detail": "פרט תשלום",
+          "support": "תמיכה",
+          "support_ticket": "פניית תמיכה",
+          "referrals": "הפניות",
+          "profile": "פרופיל",
+          "settings": "הגדרות",
+          "aml": "AML",
+          "unknown": "דף לא ידוע"
         }
       }
     },

@@ -1781,7 +1781,33 @@
           "admin_impersonation_login": "Admin opened cabinet as client",
           "client_profile_page_opened": "Opened page \"{page}\"",
           "client_open_account_modal_opened": "Opened modal \"New account\"",
-          "client_account_opened": "Opened new account #{account}"
+          "client_account_opened": "Opened new account #{account}",
+          "client_page_opened": "A ouvert la page \"{page}\"",
+          "client_button_clicked": "A cliqué sur \"{label}\"",
+          "client_link_opened": "A ouvert le lien \"{label}\"",
+          "client_tab_opened": "A ouvert l’onglet \"{tab}\"",
+          "client_form_submitted": "A envoyé le formulaire \"{form}\"",
+          "client_field_changed": "A modifié le champ \"{field}\"",
+          "client_file_selected": "A sélectionné un fichier dans \"{field}\"",
+          "client_modal_opened": "A ouvert la fenêtre modale \"{modal}\"",
+          "client_modal_closed": "A fermé la fenêtre modale \"{modal}\"",
+          "client_copy_clicked": "A copié la valeur via \"{label}\""
+        },
+        "pages": {
+          "dashboard": "Tableau de bord",
+          "accounts": "Comptes",
+          "account_details": "Détails du compte",
+          "payments": "Paiements",
+          "payment_create": "Créer un paiement",
+          "payment_details": "Coordonnées de paiement",
+          "payment_detail": "Coordonnée de paiement",
+          "support": "Support",
+          "support_ticket": "Ticket support",
+          "referrals": "Parrainages",
+          "profile": "Profil",
+          "settings": "Paramètres",
+          "aml": "AML",
+          "unknown": "Page inconnue"
         }
       }
     },

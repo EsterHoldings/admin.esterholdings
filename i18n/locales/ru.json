@@ -2148,7 +2148,33 @@
           "admin_impersonation_login": "Админ открыл кабинет от имени клиента",
           "client_profile_page_opened": "Открыл страницу \"{page}\"",
           "client_open_account_modal_opened": "Открыл модальное окно \"Новый счет\"",
-          "client_account_opened": "Открыл новый счет #{account}"
+          "client_account_opened": "Открыл новый счет #{account}",
+          "client_page_opened": "Открыл страницу \"{page}\"",
+          "client_button_clicked": "Нажал \"{label}\"",
+          "client_link_opened": "Открыл ссылку \"{label}\"",
+          "client_tab_opened": "Открыл вкладку \"{tab}\"",
+          "client_form_submitted": "Отправил форму \"{form}\"",
+          "client_field_changed": "Изменил поле \"{field}\"",
+          "client_file_selected": "Выбрал файл в поле \"{field}\"",
+          "client_modal_opened": "Открыл модальное окно \"{modal}\"",
+          "client_modal_closed": "Закрыл модальное окно \"{modal}\"",
+          "client_copy_clicked": "Скопировал значение через \"{label}\""
+        },
+        "pages": {
+          "dashboard": "Панель управления",
+          "accounts": "Счета",
+          "account_details": "Детали счета",
+          "payments": "Платежи",
+          "payment_create": "Создание платежа",
+          "payment_details": "Платежные реквизиты",
+          "payment_detail": "Платежный реквизит",
+          "support": "Поддержка",
+          "support_ticket": "Тикет поддержки",
+          "referrals": "Рефералы",
+          "profile": "Профиль",
+          "settings": "Настройки",
+          "aml": "AML",
+          "unknown": "Неизвестная страница"
         }
       }
     },
