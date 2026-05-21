@@ -2175,6 +2175,39 @@
           "settings": "Настройки",
           "aml": "AML",
           "unknown": "Неизвестная страница"
+        },
+        "total": "Всего",
+        "actorTypes": {
+          "client": "Клиент",
+          "admin": "Админ",
+          "system": "Система"
+        },
+        "context": {
+          "page": "Страница",
+          "path": "Путь",
+          "label": "Элемент",
+          "modal": "Модальное окно",
+          "tab": "Вкладка",
+          "form": "Форма",
+          "field": "Поле",
+          "target": "Цель / ссылка",
+          "account": "Счет",
+          "status": "Статус",
+          "ip": "IP",
+          "device": "Устройство",
+          "browser": "Браузер",
+          "os": "ОС",
+          "timezone": "Часовой пояс",
+          "session": "Сессия",
+          "occurred_at": "Время события",
+          "received_at": "Получено сервером",
+          "viewport": "Размер окна"
+        },
+        "summaries": {
+          "interaction": "Элемент: {label}. Где: {place}",
+          "modal": "Модальное окно: {modal}. Где: {place}",
+          "field": "Поле: {field}. Где: {place}",
+          "place": "Контекст: {place}"
         }
       }
     },

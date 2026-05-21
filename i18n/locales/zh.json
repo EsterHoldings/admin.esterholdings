@@ -1795,6 +1795,39 @@
           "settings": "设置",
           "aml": "AML",
           "unknown": "未知页面"
+        },
+        "total": "Total",
+        "actorTypes": {
+          "client": "Client",
+          "admin": "Admin",
+          "system": "System"
+        },
+        "context": {
+          "page": "Page",
+          "path": "Path",
+          "label": "Element",
+          "modal": "Modal",
+          "tab": "Tab",
+          "form": "Form",
+          "field": "Field",
+          "target": "Target / link",
+          "account": "Account",
+          "status": "Status",
+          "ip": "IP",
+          "device": "Device",
+          "browser": "Browser",
+          "os": "OS",
+          "timezone": "Time zone",
+          "session": "Session",
+          "occurred_at": "Event time",
+          "received_at": "Server received",
+          "viewport": "Viewport"
+        },
+        "summaries": {
+          "interaction": "{label} on {place}",
+          "modal": "{modal} on {place}",
+          "field": "{field} on {place}",
+          "place": "Context: {place}"
         }
       }
     },

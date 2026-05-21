@@ -202,14 +202,22 @@ export default defineNuxtConfig({
     manifest: {
       name: "My App",
       short_name: "MyApp",
+      id: "/",
       start_url: "/",
+      scope: "/",
       display: "standalone",
       theme_color: "#0f172a",
       background_color: "#0b1220",
       icons: [
-        { src: "/favicon/favicon.png", sizes: "192x192", type: "image/png" },
-        { src: "/favicon/favicon.png", sizes: "512x512", type: "image/png" },
-        { src: "/favicon/favicon.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        { src: "/favicon/favicon-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+        { src: "/favicon/favicon-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+        { src: "/favicon/maskable-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        {
+          src: "/favicon/maskable-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable",
+        },
       ],
     },
     workbox: {
@@ -289,7 +297,14 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon/favicon.ico" }],
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon/favicon.ico" },
+        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon/favicon-32x32.png" },
+        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon/favicon-16x16.png" },
+        { rel: "icon", type: "image/png", sizes: "192x192", href: "/favicon/favicon-192x192.png" },
+        { rel: "icon", type: "image/png", sizes: "512x512", href: "/favicon/favicon-512x512.png" },
+        { rel: "apple-touch-icon", sizes: "180x180", href: "/favicon/apple-touch-icon.png" },
+      ],
       meta: [
         {
           name: "viewport",

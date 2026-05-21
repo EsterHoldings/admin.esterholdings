@@ -118,9 +118,14 @@
 
     return (
       routeKey === "dashboard" ||
+      routeKey === "access" ||
+      routeKey === "news" ||
+      routeKey === "profile" ||
       routeKey === "accounts" ||
       routeKey === "verifications" ||
       routeKey === "payout-verifications" ||
+      routeKey.startsWith("access/") ||
+      routeKey.startsWith("news/") ||
       routeKey.endsWith("/verifications") ||
       /^clients\/[^/]+$/.test(routeKey)
     );

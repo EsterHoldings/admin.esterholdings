@@ -2174,6 +2174,39 @@
           "settings": "Налаштування",
           "aml": "AML",
           "unknown": "Невідома сторінка"
+        },
+        "total": "Усього",
+        "actorTypes": {
+          "client": "Клієнт",
+          "admin": "Адмін",
+          "system": "Система"
+        },
+        "context": {
+          "page": "Сторінка",
+          "path": "Шлях",
+          "label": "Елемент",
+          "modal": "Модальне вікно",
+          "tab": "Вкладка",
+          "form": "Форма",
+          "field": "Поле",
+          "target": "Ціль / посилання",
+          "account": "Рахунок",
+          "status": "Статус",
+          "ip": "IP",
+          "device": "Пристрій",
+          "browser": "Браузер",
+          "os": "ОС",
+          "timezone": "Часовий пояс",
+          "session": "Сесія",
+          "occurred_at": "Час події",
+          "received_at": "Отримано сервером",
+          "viewport": "Розмір вікна"
+        },
+        "summaries": {
+          "interaction": "Елемент: {label}. Де: {place}",
+          "modal": "Модальне вікно: {modal}. Де: {place}",
+          "field": "Поле: {field}. Де: {place}",
+          "place": "Контекст: {place}"
         }
       }
     },

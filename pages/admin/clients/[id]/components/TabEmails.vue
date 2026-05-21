@@ -263,6 +263,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    padding: 14px;
   }
 
   .client-emails__summary {
