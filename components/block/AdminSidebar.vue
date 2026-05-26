@@ -629,6 +629,29 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
+
+        a {
+          display: inline-flex;
+          align-items: center;
+          border: 0;
+          border-radius: 0;
+          outline: none;
+          box-shadow: none;
+
+          &:focus,
+          &:focus-visible {
+            outline: none;
+            box-shadow: none;
+          }
+        }
+
+        :deep(svg),
+        :deep(img) {
+          border: 0;
+          border-radius: 0;
+          outline: none;
+          box-shadow: none;
+        }
       }
 
       &__profile {
