@@ -15,6 +15,10 @@ export class ClientsService {
     return await this.useApi.get("/admin/clients/stats", params);
   }
 
+  async getBirthdays(params: object = {}): Promise<any> {
+    return await this.useApi.get("/admin/birthdays", params);
+  }
+
   async getMeta(params: object = {}): Promise<any> {
     return await this.useApi.get("/admin/clients/meta", params);
   }

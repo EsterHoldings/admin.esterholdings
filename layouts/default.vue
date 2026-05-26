@@ -62,6 +62,7 @@
     admin: resolveLabel("admin.breadcrumbs.home", "Главная"),
     dashboard: resolveLabel("admin.breadcrumbs.home", "Главная"),
     clients: resolveLabel("admin.menu.clients", "Clients"),
+    birthdays: resolveLabel("admin.menu.birthdays", "Birthdays"),
     accounts: resolveLabel("admin.menu.accounts", "Accounts"),
     payments: resolveLabel("admin.menu.withdrawalRequests", "Withdrawal requests"),
     "withdrawal-requests": resolveLabel("admin.menu.withdrawalRequests", "Withdrawal requests"),
@@ -120,12 +121,14 @@
       routeKey === "dashboard" ||
       routeKey === "access" ||
       routeKey === "news" ||
+      routeKey === "birthdays" ||
       routeKey === "profile" ||
       routeKey === "accounts" ||
       routeKey === "verifications" ||
       routeKey === "payout-verifications" ||
       routeKey.startsWith("access/") ||
       routeKey.startsWith("news/") ||
+      routeKey.startsWith("birthdays/") ||
       routeKey.endsWith("/verifications") ||
       /^clients\/[^/]+$/.test(routeKey)
     );

@@ -100,6 +100,12 @@ export default defineNuxtConfig({
     langDir: "locales",
 
     strategy: "prefix",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "admin_locale",
+      redirectOn: "root",
+      alwaysRedirect: true,
+    },
     locales: [
       {
         code: "en",

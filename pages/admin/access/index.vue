@@ -1,4 +1,5 @@
 <template>
+  <div class="access-page-shell">
   <PageStructureDefault fluid>
     <template #header>
       <div class="flex w-full flex-col gap-1 text-[var(--ui-text-main)]">
@@ -41,6 +42,7 @@
       </div>
     </template>
   </PageStructureDefault>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -136,6 +138,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .access-page-shell {
+    padding: 10px;
+  }
+
   .access-page {
     display: flex;
     flex-direction: column;

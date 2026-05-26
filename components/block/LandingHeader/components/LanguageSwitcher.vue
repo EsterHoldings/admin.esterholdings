@@ -45,6 +45,7 @@
 
   const isOpen = ref(false);
   const wrapperRef = ref(null);
+  const ADMIN_LOCALE_STORAGE_KEY = "admin_locale";
 
   const languages = {
     en: "English",
@@ -102,7 +103,28 @@
     isOpen.value = !isOpen.value;
   };
 
+  const persistLanguage = code => {
+    if (!Object.prototype.hasOwnProperty.call(languages, code)) return;
+
+    localStorage.setItem(ADMIN_LOCALE_STORAGE_KEY, code);
+    document.cookie = `admin_locale=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `locale=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `i18n_redirected=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
+  };
+
+  const restorePersistedLanguage = async () => {
+    const saved = localStorage.getItem(ADMIN_LOCALE_STORAGE_KEY);
+    if (saved && Object.prototype.hasOwnProperty.call(languages, saved) && locale.value !== saved) {
+      persistLanguage(saved);
+      await setLocale(saved);
+      return;
+    }
+
+    persistLanguage(locale.value);
+  };
+
   const switchLanguage = async code => {
+    persistLanguage(code);
     await setLocale(code);
     isOpen.value = false;
   };
@@ -114,6 +136,7 @@
   };
 
   onMounted(() => {
+    restorePersistedLanguage().catch(() => {});
     document.addEventListener("click", handleClickOutside);
   });
   onBeforeUnmount(() => {

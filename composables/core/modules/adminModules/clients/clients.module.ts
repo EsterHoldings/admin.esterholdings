@@ -15,6 +15,10 @@ export class ClientsModule {
     return await this.clientsService.getStats(params);
   }
 
+  async getBirthdays(params: object = {}): Promise<any> {
+    return await this.clientsService.getBirthdays(params);
+  }
+
   async getById(id: any): Promise<any> {
     return await this.clientsService.getById(id);
   }

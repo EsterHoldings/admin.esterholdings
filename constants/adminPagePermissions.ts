@@ -14,6 +14,7 @@ export const ADMIN_PAGE_PERMISSION_RULES: AdminPagePermissionRule[] = [
     fallbackPath: "/payout-verifications",
   },
   { pattern: /^\/clients(?:\/|$)/, permissions: ["view-clients"], fallbackPath: "/clients" },
+  { pattern: /^\/birthdays(?:\/|$)/, permissions: ["view-birthdays", "view-clients"], fallbackPath: "/birthdays" },
   { pattern: /^\/accounts(?:\/|$)/, permissions: ["view-accounts"], fallbackPath: "/accounts" },
   {
     pattern: /^\/withdrawal-requests(?:\/|$)/,

@@ -228,7 +228,9 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
       localStorage.removeItem(ADMIN_ROLES_CACHE_KEY);
       localStorage.removeItem(ADMIN_PERMISSIONS_CACHE_KEY);
     }
-    navigateTo("/auth/login");
+    const rawLocale = process.client ? localStorage.getItem("admin_locale") || "en" : "en";
+    const savedLocale = /^[a-z]{2}$/i.test(rawLocale) ? rawLocale.toLowerCase() : "en";
+    navigateTo(`/${savedLocale}/auth/login`);
   }
 
   const hasPermission = computed(() => (permName: string): boolean => {

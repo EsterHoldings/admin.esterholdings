@@ -41,6 +41,7 @@
   import UiIconCheck from "~/components/ui/UiIconCheck.vue";
   import { useLocalePath } from "~/.nuxt/imports";
   import UiIconNews from "~/components/ui/UiIconNews.vue";
+  import UiIconClock from "~/components/ui/UiIconClock.vue";
 
   const { locale, t } = useI18n({ useScope: "global" });
   const localePath = useLocalePath();
@@ -74,6 +75,12 @@
     if (locale.value === "uk") return "Верифікація реквізитів";
 
     return "Payment detail verifications";
+  };
+  const birthdayFallback = (): string => {
+    if (locale.value === "ru") return "Дни рождения";
+    if (locale.value === "uk") return "Дні народження";
+
+    return "Birthdays";
   };
 
   const hasPermission = (required?: string | string[]) => {
@@ -118,6 +125,12 @@
         to: localePath("/clients"),
         icon: UiIconClients,
         displayIfHasPermission: "view-clients",
+      },
+      {
+        title: menuText("admin.menu.birthdays", birthdayFallback()),
+        to: localePath("/birthdays"),
+        icon: UiIconClock,
+        displayIfHasPermission: ["view-birthdays", "view-clients"],
       },
       {
         title: t("admin.menu.accounts"),

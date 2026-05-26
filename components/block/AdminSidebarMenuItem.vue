@@ -86,9 +86,18 @@
 
     &__icon {
       position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 22px;
+      width: 22px;
+      height: 22px;
       color: var(--ui-text-main);
 
       svg {
+        display: block;
+        width: 22px;
+        height: 22px;
         stroke: none;
         fill: currentColor;
       }
@@ -116,8 +125,9 @@
       transition: 3s;
       opacity: 1;
       white-space: nowrap;
-      text-align: center;
+      text-align: left;
       cursor: pointer;
+      line-height: 1.2;
 
       z-index: 3;
       display: flex;

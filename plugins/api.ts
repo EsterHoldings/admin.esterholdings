@@ -3,15 +3,19 @@ export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
     const resolveLocale = () => {
         const localeCookie = useCookie<string>("locale");
+        const adminLocaleCookie = useCookie<string>("admin_locale");
         const i18nRedirected = useCookie<string>("i18n_redirected");
         const nuxtApp = useNuxtApp();
         const i18n = (nuxtApp?.$i18n ?? null) as { locale?: string | { value: string } } | null;
         const i18nLocale =
             typeof i18n?.locale === "string" ? i18n.locale : i18n?.locale?.value;
-        const resolved = i18nLocale || localeCookie.value || i18nRedirected.value;
+        const resolved = adminLocaleCookie.value || i18nLocale || localeCookie.value || i18nRedirected.value;
 
         if (resolved && localeCookie.value !== resolved) {
             localeCookie.value = resolved;
+        }
+        if (resolved && adminLocaleCookie.value !== resolved) {
+            adminLocaleCookie.value = resolved;
         }
 
         return resolved;
@@ -25,11 +29,10 @@ export default defineNuxtPlugin(() => {
         onRequest({ options }) {
             const locale = resolveLocale();
             if (locale) {
-                options.headers = {
-                    ...options.headers,
-                    "X-Locale": locale,
-                    "Accept-Language": locale,
-                };
+                const headers = new Headers(options.headers as HeadersInit);
+                headers.set("X-Locale", locale);
+                headers.set("Accept-Language", locale);
+                options.headers = headers;
             }
         },
     })
