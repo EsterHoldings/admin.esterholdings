@@ -175,6 +175,18 @@
                                 : t("admin.clients.online.offlineNow", "Offline")
                             }}
                           </div>
+                          <div class="clients-client-badges">
+                            <span
+                              class="clients-client-badge"
+                              :class="`is-source-${normalizeBadgeValue(client.acquisition_source)}`">
+                              {{ acquisitionSourceLabel(client) }}
+                            </span>
+                            <span
+                              class="clients-client-badge"
+                              :class="`is-registration-${normalizeBadgeValue(client.registration_method)}`">
+                              {{ registrationMethodLabel(client) }}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -384,6 +396,13 @@
     created_at?: string;
     photo_url?: string;
     is_online?: boolean;
+    acquisition_source?: string;
+    acquisition_source_label?: string;
+    registration_method?: string;
+    registration_method_label?: string;
+    social_provider?: string | null;
+    referrer_email?: string | null;
+    referrer_name?: string | null;
   }
 
   interface ClientsStats {
@@ -1941,6 +1960,43 @@
 
   const fullName = (client: AdminClient) => `${client.first_name ?? ""} ${client.last_name ?? ""}`.trim() || "-";
 
+  const normalizeBadgeValue = (value?: string | null): string => {
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-");
+
+    return normalized || "unknown";
+  };
+
+  const formatProviderName = (provider?: string | null): string => {
+    const normalized = String(provider ?? "").trim();
+    if (!normalized) return "";
+
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+
+  const acquisitionSourceLabel = (client: AdminClient): string => {
+    const source = normalizeBadgeValue(client.acquisition_source);
+    if (source === "referral") {
+      return resolveText("admin.clients.origin.referral", "referral");
+    }
+
+    return resolveText("admin.clients.origin.organic", "organic");
+  };
+
+  const registrationMethodLabel = (client: AdminClient): string => {
+    const method = normalizeBadgeValue(client.registration_method);
+    if (method === "social") {
+      const provider = formatProviderName(client.social_provider);
+      const social = resolveText("admin.clients.registration.social", "social");
+
+      return provider ? `${social}: ${provider}` : social;
+    }
+
+    return resolveText("admin.clients.registration.basic", "basic");
+  };
+
   const getTwoCharsByFullName = (firstName?: string, lastName?: string): string => {
     const firstInitial = String(firstName ?? "").charAt(0);
     const lastInitial = String(lastName ?? "").charAt(0);
@@ -2269,6 +2325,38 @@
     font-size: 16px;
     line-height: 1;
     color: var(--ui-text-secondary);
+  }
+
+  .clients-client-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  .clients-client-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 18px;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: 2px 7px;
+    background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+    color: var(--ui-text-main);
+    font-size: 10px;
+    font-weight: 760;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .clients-client-badge.is-source-referral {
+    background: color-mix(in srgb, var(--ui-success-main, #26c281) 13%, transparent);
+    color: var(--ui-success-main, #26c281);
+  }
+
+  .clients-client-badge.is-registration-social {
+    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
+    color: var(--ui-primary-main);
   }
 
   .clients-online-dot {

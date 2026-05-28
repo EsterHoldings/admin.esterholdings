@@ -31,6 +31,18 @@
               <div class="client-card__name-row">
                 <div class="truncate font-semibold">{{ item.first_name }} {{ item.last_name }}</div>
               </div>
+              <div class="client-card__badges">
+                <span
+                  class="client-card__badge"
+                  :class="`is-source-${normalizeBadgeValue(item.acquisition_source)}`">
+                  {{ acquisitionSourceLabel(item) }}
+                </span>
+                <span
+                  class="client-card__badge"
+                  :class="`is-registration-${normalizeBadgeValue(item.registration_method)}`">
+                  {{ registrationMethodLabel(item) }}
+                </span>
+              </div>
               <div class="client-card__online-row">
                 <span
                   class="client-card__online-dot"
@@ -93,6 +105,13 @@
     created_at?: string;
     photo_url?: string;
     is_online?: boolean;
+    acquisition_source?: string;
+    acquisition_source_label?: string;
+    registration_method?: string;
+    registration_method_label?: string;
+    social_provider?: string | null;
+    referrer_email?: string | null;
+    referrer_name?: string | null;
   }
 
   const emit = defineEmits<{
@@ -113,6 +132,11 @@
   const { t } = useI18n({ useScope: "global" });
   const handleOpenClientPage = (id: string) => emit("click", id);
 
+  const resolveText = (key: string, fallback: string) => {
+    const value = t(key);
+    return value === key ? fallback : value;
+  };
+
   const getTwoCharsByFullName = (firstName: string, lastName: string): string => {
     const firstInitial = String(firstName ?? "").charAt(0);
     const lastInitial = String(lastName ?? "").charAt(0);
@@ -123,6 +147,43 @@
     if (!date) return "-";
     const d = new Date(date);
     return isNaN(d.getTime()) ? date : d.toLocaleString();
+  };
+
+  const normalizeBadgeValue = (value?: string | null): string => {
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-");
+
+    return normalized || "unknown";
+  };
+
+  const formatProviderName = (provider?: string | null): string => {
+    const normalized = String(provider ?? "").trim();
+    if (!normalized) return "";
+
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+
+  const acquisitionSourceLabel = (item: AdminClientCardItem): string => {
+    const source = normalizeBadgeValue(item.acquisition_source);
+    if (source === "referral") {
+      return resolveText("admin.clients.origin.referral", "referral");
+    }
+
+    return resolveText("admin.clients.origin.organic", "organic");
+  };
+
+  const registrationMethodLabel = (item: AdminClientCardItem): string => {
+    const method = normalizeBadgeValue(item.registration_method);
+    if (method === "social") {
+      const provider = formatProviderName(item.social_provider);
+      const social = resolveText("admin.clients.registration.social", "social");
+
+      return provider ? `${social}: ${provider}` : social;
+    }
+
+    return resolveText("admin.clients.registration.basic", "basic");
   };
 </script>
 
@@ -224,6 +285,38 @@
     gap: 6px;
     font-size: 11px;
     color: var(--ui-text-secondary);
+  }
+
+  .client-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .client-card__badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 19px;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: 2px 7px;
+    background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+    color: var(--ui-text-main);
+    font-size: 10px;
+    font-weight: 760;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .client-card__badge.is-source-referral {
+    background: color-mix(in srgb, var(--ui-success-main, #26c281) 13%, transparent);
+    color: var(--ui-success-main, #26c281);
+  }
+
+  .client-card__badge.is-registration-social {
+    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
+    color: var(--ui-primary-main);
   }
 
   .client-card__online-dot {

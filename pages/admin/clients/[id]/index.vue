@@ -13,6 +13,18 @@
         <div class="client-detail__heading">
           <h1 class="client-detail__title">{{ clientName }}</h1>
           <p class="client-detail__subtitle">{{ userData.email || "-" }}</p>
+          <div class="client-detail__badges">
+            <span
+              class="client-detail__badge"
+              :class="`is-source-${normalizeBadgeValue(userData.acquisition_source)}`">
+              {{ acquisitionSourceLabel }}
+            </span>
+            <span
+              class="client-detail__badge"
+              :class="`is-registration-${normalizeBadgeValue(userData.registration_method)}`">
+              {{ registrationMethodLabel }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -126,6 +138,16 @@
     state: null,
     support_mode: "simple",
     two_factor_enabled: false,
+    acquisition_source: "organic",
+    acquisition_source_label: "Organic",
+    registration_method: "basic",
+    registration_method_label: "Basic",
+    social_provider: null,
+    social_provider_id: null,
+    referrer_name: null,
+    referrer_email: null,
+    referral_id: null,
+    referral_agent_id: null,
     is_blocked: false,
     blocked_at: null,
     updated_at: null,
@@ -194,6 +216,43 @@
       .join("");
 
     return initials.toUpperCase() || "CL";
+  });
+
+  const normalizeBadgeValue = (value?: string | null): string => {
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-");
+
+    return normalized || "unknown";
+  };
+
+  const formatProviderName = (provider?: string | null): string => {
+    const normalized = String(provider ?? "").trim();
+    if (!normalized) return "";
+
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+
+  const acquisitionSourceLabel = computed(() => {
+    const source = normalizeBadgeValue(userData.acquisition_source);
+    if (source === "referral") {
+      return resolveText("admin.clients.origin.referral", "referral");
+    }
+
+    return resolveText("admin.clients.origin.organic", "organic");
+  });
+
+  const registrationMethodLabel = computed(() => {
+    const method = normalizeBadgeValue(userData.registration_method);
+    if (method === "social") {
+      const social = resolveText("admin.clients.registration.social", "social");
+      const provider = formatProviderName(userData.social_provider);
+
+      return provider ? `${social}: ${provider}` : social;
+    }
+
+    return resolveText("admin.clients.registration.basic", "basic");
   });
 
   const tabsList = computed(() => [
@@ -448,6 +507,37 @@
     color: var(--ui-text-secondary);
     font-size: 13px;
     line-height: 1.45;
+  }
+
+  .client-detail__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .client-detail__badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    border-radius: 999px;
+    padding: 3px 9px;
+    background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+    color: var(--ui-text-main);
+    font-size: 11px;
+    font-weight: 780;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .client-detail__badge.is-source-referral {
+    background: color-mix(in srgb, var(--ui-success-main, #26c281) 13%, transparent);
+    color: var(--ui-success-main, #26c281);
+  }
+
+  .client-detail__badge.is-registration-social {
+    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
+    color: var(--ui-primary-main);
   }
 
   .client-detail__status {

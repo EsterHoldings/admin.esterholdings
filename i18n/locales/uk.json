@@ -1734,6 +1734,14 @@
         "onlineNow": "Онлайн",
         "offlineNow": "Офлайн"
       },
+      "origin": {
+        "organic": "organic",
+        "referral": "referral"
+      },
+      "registration": {
+        "basic": "basic",
+        "social": "social"
+      },
       "tabs": {
         "verification": "Верифікація",
         "referrals": "Реферали",
@@ -1913,7 +1921,10 @@
           "createdAt": "Створено",
           "blockedAt": "Заблоковано",
           "contactSection": "Контакти та доступ",
-          "addressSection": "Адреса"
+          "addressSection": "Адреса",
+          "acquisitionSource": "Джерело клієнта",
+          "registrationMethod": "Реєстрація через",
+          "referrer": "Хто запросив"
         },
         "history": {
           "title": "Історія відвідувань",

@@ -1731,6 +1731,14 @@
         "onlineNow": "Online",
         "offlineNow": "Offline"
       },
+      "origin": {
+        "organic": "organic",
+        "referral": "referral"
+      },
+      "registration": {
+        "basic": "basic",
+        "social": "social"
+      },
       "tabs": {
         "verification": "Verification",
         "referrals": "Referrals",
@@ -1910,7 +1918,10 @@
           "createdAt": "Created at",
           "blockedAt": "Blocked at",
           "contactSection": "Contact and access",
-          "addressSection": "Address"
+          "addressSection": "Address",
+          "acquisitionSource": "Came from",
+          "registrationMethod": "Registered via",
+          "referrer": "Referrer"
         },
         "history": {
           "title": "Visit history",

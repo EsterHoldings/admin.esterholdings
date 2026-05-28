@@ -495,6 +495,51 @@
     return resolveText("admin.clients.online.offlineNow", "Offline");
   });
 
+  const normalizeBadgeValue = (value?: string | null): string => {
+    const normalized = String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-");
+
+    return normalized || "unknown";
+  };
+
+  const formatProviderName = (provider?: string | null): string => {
+    const normalized = String(provider ?? "").trim();
+    if (!normalized) return "";
+
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+
+  const acquisitionSourceText = computed(() => {
+    const source = normalizeBadgeValue(props.userData.acquisition_source);
+    if (source === "referral") {
+      return resolveText("admin.clients.origin.referral", "referral");
+    }
+
+    return resolveText("admin.clients.origin.organic", "organic");
+  });
+
+  const registrationMethodText = computed(() => {
+    const method = normalizeBadgeValue(props.userData.registration_method);
+    if (method === "social") {
+      const social = resolveText("admin.clients.registration.social", "social");
+      const provider = formatProviderName(props.userData.social_provider);
+
+      return provider ? `${social}: ${provider}` : social;
+    }
+
+    return resolveText("admin.clients.registration.basic", "basic");
+  });
+
+  const referrerText = computed(() => {
+    const name = String(props.userData.referrer_name ?? "").trim();
+    const email = String(props.userData.referrer_email ?? "").trim();
+
+    if (name && email) return `${name} (${email})`;
+    return name || email || emptyValue.value;
+  });
+
   const infoStatus = computed<VerificationStatus>(() =>
     normalizeStatus(
       verificationPayload.value?.info?.verification_status || verificationPayload.value?.info?.status || "pending"
@@ -546,6 +591,25 @@
 
   const profileDataItems = computed(() => [
     { key: "email", label: "Email", value: props.userData.email || emptyValue.value },
+    {
+      key: "acquisitionSource",
+      label: resolveText("admin.clients.kyc.profile.acquisitionSource", "Came from"),
+      value: acquisitionSourceText.value,
+    },
+    {
+      key: "registrationMethod",
+      label: resolveText("admin.clients.kyc.profile.registrationMethod", "Registered via"),
+      value: registrationMethodText.value,
+    },
+    ...(normalizeBadgeValue(props.userData.acquisition_source) === "referral"
+      ? [
+          {
+            key: "referrer",
+            label: resolveText("admin.clients.kyc.profile.referrer", "Referrer"),
+            value: referrerText.value,
+          },
+        ]
+      : []),
     {
       key: "emailVerified",
       label: resolveText("admin.clients.kyc.profile.emailVerifiedAt", "Email verified at"),

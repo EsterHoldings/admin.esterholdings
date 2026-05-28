@@ -1677,6 +1677,14 @@
         "onlineNow": "Онлайн",
         "offlineNow": "Оффлайн"
       },
+      "origin": {
+        "organic": "organic",
+        "referral": "referral"
+      },
+      "registration": {
+        "basic": "basic",
+        "social": "social"
+      },
       "tabs": {
         "verification": "Верификация",
         "referrals": "Рефералы",
@@ -1914,7 +1922,10 @@
           "createdAt": "Создан",
           "blockedAt": "Заблокирован",
           "contactSection": "Контакты и доступ",
-          "addressSection": "Адрес"
+          "addressSection": "Адрес",
+          "acquisitionSource": "Источник клиента",
+          "registrationMethod": "Регистрация через",
+          "referrer": "Кто пригласил"
         },
         "history": {
           "title": "История посещений",
