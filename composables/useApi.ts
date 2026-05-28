@@ -12,6 +12,7 @@ import { ADMIN_REFRESH_TOKEN } from "~/constants/auth";
 import useAppCore from "~/composables/useAppCore";
 import { useErrorStack } from "~/stores/errors";
 import { RuntimeConfig } from "nuxt/schema";
+import { normalizeAdminLocale, persistAdminLocale, readPersistedAdminLocale } from "~/utils/adminLocale";
 
 interface runtimeCfgInterface {
   baseApi: string;
@@ -73,13 +74,19 @@ export class useApi {
       const nuxtApp = useNuxtApp();
       const i18n = (nuxtApp?.$i18n ?? null) as { locale?: string | { value: string } } | null;
       const i18nLocale = typeof i18n?.locale === "string" ? i18n.locale : i18n?.locale?.value;
-      const resolved = adminLocaleCookie.value || i18nLocale || localeCookie.value || i18nRedirected.value;
+      const resolved = normalizeAdminLocale(readPersistedAdminLocale() || adminLocaleCookie.value || localeCookie.value || i18nRedirected.value || i18nLocale);
 
-      if (resolved && localeCookie.value !== resolved) {
-        localeCookie.value = resolved;
-      }
-      if (resolved && adminLocaleCookie.value !== resolved) {
-        adminLocaleCookie.value = resolved;
+      if (resolved) {
+        persistAdminLocale(resolved);
+        if (localeCookie.value !== resolved) {
+          localeCookie.value = resolved;
+        }
+        if (adminLocaleCookie.value !== resolved) {
+          adminLocaleCookie.value = resolved;
+        }
+        if (i18nRedirected.value !== resolved) {
+          i18nRedirected.value = resolved;
+        }
       }
 
       return resolved;

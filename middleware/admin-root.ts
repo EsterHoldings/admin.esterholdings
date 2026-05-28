@@ -1,10 +1,13 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
 import { useAdminAuthStore } from "../stores/adminAuthStore";
 import { resolveFirstAllowedAdminRoute } from "~/constants/adminPagePermissions";
+import { normalizeAdminLocale, readPersistedAdminLocale } from "~/utils/adminLocale";
 
 export default defineNuxtRouteMiddleware(async to => {
   const localeMatch = to.path.match(/^\/([a-z]{2})(\/|$)/i);
-  const localePrefix = localeMatch ? `/${localeMatch[1]}` : "";
+  const routeLocale = normalizeAdminLocale(localeMatch?.[1]);
+  const savedLocale = process.client ? readPersistedAdminLocale() : "";
+  const localePrefix = `/${savedLocale || routeLocale || "en"}`;
   const loginPath = `${localePrefix}/auth/login`;
 
   // On server we cannot reliably read localStorage token, so always redirect to login.

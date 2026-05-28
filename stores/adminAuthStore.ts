@@ -3,6 +3,7 @@ import { ref, computed, watch } from "vue";
 import useAppCore from "~/composables/useAppCore";
 import { navigateTo } from "nuxt/app";
 import { ADMIN_ACCESS_TOKEN } from "~/constants/auth";
+import { readPersistedAdminLocale } from "~/utils/adminLocale";
 
 interface Role {
   id: string;
@@ -228,8 +229,7 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
       localStorage.removeItem(ADMIN_ROLES_CACHE_KEY);
       localStorage.removeItem(ADMIN_PERMISSIONS_CACHE_KEY);
     }
-    const rawLocale = process.client ? localStorage.getItem("admin_locale") || "en" : "en";
-    const savedLocale = /^[a-z]{2}$/i.test(rawLocale) ? rawLocale.toLowerCase() : "en";
+    const savedLocale = process.client ? readPersistedAdminLocale() || "en" : "en";
     navigateTo(`/${savedLocale}/auth/login`);
   }
 

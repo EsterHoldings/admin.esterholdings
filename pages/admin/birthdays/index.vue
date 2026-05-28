@@ -17,8 +17,8 @@
       <button
         type="button"
         class="birthdays-page__refresh"
-        :disabled="isLoading"
-        @click="loadBirthdays">
+        :disabled="isBusy"
+        @click="reloadBirthdays">
         <span class="pi pi-refresh" />
         <span>{{ copy("Обновить", "Refresh", "Оновити") }}</span>
       </button>
@@ -50,23 +50,40 @@
           {{ option.label }}
         </button>
       </div>
+
+      <label class="birthdays-page__filter-group birthdays-page__filter-group--select">
+        <span class="birthdays-page__filter-label">{{ copy("Показывать", "Show", "Показувати") }}</span>
+        <select
+          v-model.number="perPage"
+          class="birthdays-page__select"
+          :disabled="isBusy">
+          <option
+            v-for="option in perPageOptions"
+            :key="option"
+            :value="option">
+            {{ option }}
+          </option>
+        </select>
+      </label>
     </div>
 
     <div class="birthdays-page__meta">
       <span>{{ copy("Год", "Year", "Рік") }}: {{ meta?.year || currentYear }}</span>
       <span>{{ copy("Период", "Range", "Період") }}: {{ formatDate(meta?.from) }} - {{ formatDate(meta?.to) }}</span>
-      <span>{{ copy("Найдено", "Found", "Знайдено") }}: {{ items.length }}</span>
+      <span>{{ copy("Найдено", "Found", "Знайдено") }}: {{ totalItems }}</span>
+      <span>{{ copy("Показано", "Shown", "Показано") }}: {{ shownItems }}</span>
+      <span>{{ copy("Страница", "Page", "Сторінка") }}: {{ currentPage }} / {{ lastPage }}</span>
     </div>
 
     <div
-      v-if="isLoading"
+      v-if="isLoading && items.length === 0"
       class="birthdays-page__state">
       <span class="pi pi-spin pi-spinner" />
       <span>{{ copy("Загружаю дни рождения...", "Loading birthdays...", "Завантажую дні народження...") }}</span>
     </div>
 
     <div
-      v-else-if="loadError"
+      v-else-if="loadError && items.length === 0"
       class="birthdays-page__state birthdays-page__state--danger">
       {{ loadError }}
     </div>
@@ -79,84 +96,131 @@
 
     <div
       v-else
-      class="birthdays-page__list">
-      <article
-        v-for="item in items"
-        :key="item.user_id"
-        class="birthday-card">
-        <div class="birthday-card__main">
-          <NuxtLink
-            class="birthday-card__avatar-link"
-            :to="clientLink(item.user_id)">
-            <img
-              v-if="item.photo_url"
-              :src="item.photo_url"
-              :alt="item.full_name"
-              class="birthday-card__avatar" />
-            <span
-              v-else
-              class="birthday-card__avatar birthday-card__avatar--placeholder">
-              {{ item.initials || initials(item.full_name) }}
-            </span>
-          </NuxtLink>
+      class="birthdays-page__results">
+      <div
+        v-if="loadError"
+        class="birthdays-page__inline-error">
+        {{ loadError }}
+      </div>
 
-          <div class="birthday-card__identity">
+      <div class="birthdays-page__list">
+        <article
+          v-for="item in items"
+          :key="item.user_id"
+          class="birthday-card">
+          <div class="birthday-card__main">
             <NuxtLink
-              class="birthday-card__name"
+              class="birthday-card__avatar-link"
               :to="clientLink(item.user_id)">
-              {{ item.full_name || "—" }}
-            </NuxtLink>
-            <NuxtLink
-              class="birthday-card__email"
-              :to="clientLink(item.user_id)">
-              {{ item.email || "—" }}
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div class="birthday-card__date">
-          <div class="birthday-card__date-day">{{ formatDayMonth(item.birthday_on) }}</div>
-          <div class="birthday-card__date-meta">
-            <span>{{ ageLabel(item.age) }}</span>
-            <span>{{ daysLabel(item.days_until) }}</span>
-          </div>
-        </div>
-
-        <div class="birthday-card__history">
-          <div class="birthday-card__history-title">
-            {{ copy("История писем", "Email history", "Історія листів") }}
-          </div>
-
-          <div
-            v-if="item.notifications.length === 0"
-            class="birthday-card__history-empty">
-            {{ copy("Писем пока нет", "No emails yet", "Листів поки немає") }}
-          </div>
-
-          <div
-            v-else
-            class="birthday-card__history-list">
-            <div
-              v-for="notification in item.notifications"
-              :key="notification.id"
-              class="birthday-card__history-row">
+              <img
+                v-if="item.photo_url"
+                :src="item.photo_url"
+                :alt="item.full_name"
+                class="birthday-card__avatar" />
               <span
-                class="birthday-card__status"
-                :class="`is-${notification.status}`">
-                {{ statusLabel(notification.status) }}
+                v-else
+                class="birthday-card__avatar birthday-card__avatar--placeholder">
+                {{ item.initials || initials(item.full_name) }}
               </span>
-              <span class="birthday-card__history-text">
-                {{ recipientLabel(notification.recipient_type) }} · {{ typeLabel(notification.notification_type) }}
-              </span>
-              <span class="birthday-card__history-subject">{{ notification.subject || "—" }}</span>
-              <span class="birthday-card__history-recipient">{{ notification.recipient_email }}</span>
-              <span class="birthday-card__history-time">
-                {{ formatDateTime(notification.sent_at || notification.queued_at || notification.created_at) }}
-              </span>
+            </NuxtLink>
+
+            <div class="birthday-card__identity">
+              <NuxtLink
+                class="birthday-card__name"
+                :to="clientLink(item.user_id)">
+                {{ item.full_name || "—" }}
+              </NuxtLink>
+              <NuxtLink
+                class="birthday-card__email"
+                :to="clientLink(item.user_id)">
+                {{ item.email || "—" }}
+              </NuxtLink>
             </div>
           </div>
-        </div>
-      </article>
+
+          <div class="birthday-card__date">
+            <div class="birthday-card__date-day">{{ formatDayMonth(item.birthday_on) }}</div>
+            <div class="birthday-card__date-meta">
+              <span>{{ ageLabel(item.age) }}</span>
+              <span>{{ daysLabel(item.days_until) }}</span>
+            </div>
+          </div>
+
+          <div class="birthday-card__history">
+            <div class="birthday-card__history-title">
+              {{ copy("История писем", "Email history", "Історія листів") }}
+            </div>
+
+            <div
+              v-if="item.notifications.length === 0"
+              class="birthday-card__history-empty">
+              {{ copy("Писем пока нет", "No emails yet", "Листів поки немає") }}
+            </div>
+
+            <div
+              v-else
+              class="birthday-card__history-list">
+              <div
+                v-for="notification in item.notifications"
+                :key="notification.id"
+                class="birthday-card__history-row">
+                <span
+                  class="birthday-card__status"
+                  :class="`is-${notification.status}`">
+                  {{ statusLabel(notification.status) }}
+                </span>
+                <span class="birthday-card__history-text">
+                  {{ recipientLabel(notification.recipient_type) }} · {{ typeLabel(notification.notification_type) }}
+                </span>
+                <span class="birthday-card__history-subject">{{ notification.subject || "—" }}</span>
+                <span class="birthday-card__history-recipient">{{ notification.recipient_email }}</span>
+                <span class="birthday-card__history-time">
+                  {{ formatDateTime(notification.sent_at || notification.queued_at || notification.created_at) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="birthdays-page__pagination">
+        <button
+          type="button"
+          class="birthdays-page__page-button"
+          :disabled="isBusy || currentPage <= 1"
+          @click="goToPage(currentPage - 1)">
+          <span class="pi pi-chevron-left" />
+        </button>
+        <button
+          v-for="pageNumber in pageNumbers"
+          :key="pageNumber"
+          type="button"
+          class="birthdays-page__page-button"
+          :class="{ 'is-active': currentPage === pageNumber }"
+          :disabled="isBusy"
+          @click="goToPage(pageNumber)">
+          {{ pageNumber }}
+        </button>
+        <button
+          type="button"
+          class="birthdays-page__page-button"
+          :disabled="isBusy || currentPage >= lastPage"
+          @click="goToPage(currentPage + 1)">
+          <span class="pi pi-chevron-right" />
+        </button>
+      </div>
+
+      <button
+        v-if="hasMore"
+        type="button"
+        class="birthdays-page__load-more"
+        :disabled="isBusy"
+        @click="loadMore">
+        <span
+          v-if="isLoadingMore"
+          class="pi pi-spin pi-spinner" />
+        <span>{{ copy("Загрузить еще", "Load more", "Завантажити ще") }}</span>
+      </button>
     </div>
   </section>
 </template>
@@ -198,6 +262,12 @@
     from: string;
     to: string;
     total: number;
+    page?: number;
+    per_page?: number;
+    last_page?: number;
+    has_more?: boolean;
+    items_from?: number;
+    items_to?: number;
     generated_at: string;
   };
 
@@ -210,9 +280,13 @@
   const { locale } = useI18n({ useScope: "global" });
   const currentYear = new Date().getFullYear();
   const isLoading = ref(false);
+  const isLoadingMore = ref(false);
   const loadError = ref("");
   const items = ref<BirthdayItem[]>([]);
   const meta = ref<BirthdaysMeta | null>(null);
+  const page = ref(1);
+  const perPage = ref(5);
+  const perPageOptions = [5, 10, 20, 50];
   const filters = reactive({
     period: "1y",
     scope: "future",
@@ -242,6 +316,33 @@
       value: "past",
     },
   ]);
+
+  const totalItems = computed(() => Number(meta.value?.total ?? items.value.length) || 0);
+  const shownItems = computed(() => {
+    if (items.value.length > Number(meta.value?.per_page ?? perPage.value)) {
+      return `1-${items.value.length}`;
+    }
+
+    if (meta.value?.items_from && meta.value?.items_to) {
+      return `${meta.value.items_from}-${meta.value.items_to}`;
+    }
+
+    return String(items.value.length);
+  });
+  const currentPage = computed(() => Number(meta.value?.page ?? page.value) || 1);
+  const lastPage = computed(() => Math.max(1, Number(meta.value?.last_page ?? 1) || 1));
+  const hasMore = computed(() => Boolean(meta.value?.has_more) && currentPage.value < lastPage.value);
+  const isBusy = computed(() => isLoading.value || isLoadingMore.value);
+  const pageNumbers = computed(() => {
+    const visiblePages = 5;
+    const last = lastPage.value;
+    const current = currentPage.value;
+    const half = Math.floor(visiblePages / 2);
+    const start = Math.max(1, Math.min(current - half, Math.max(1, last - visiblePages + 1)));
+    const end = Math.min(last, start + visiblePages - 1);
+
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  });
 
   const clientLink = (clientId: string) => localePath(`/clients/${clientId}`);
   const parseDate = (value?: string | null): Date | null => {
@@ -333,8 +434,13 @@
     return status;
   };
 
-  const loadBirthdays = async () => {
-    isLoading.value = true;
+  const loadBirthdays = async ({ append = false } = {}) => {
+    if (append) {
+      isLoadingMore.value = true;
+    } else {
+      isLoading.value = true;
+      items.value = [];
+    }
     loadError.value = "";
 
     try {
@@ -342,28 +448,60 @@
         period: filters.period,
         scope: filters.scope,
         year: currentYear,
+        page: page.value,
+        per_page: perPage.value,
       });
       const payload = response?.data?.data ?? {};
+      const nextItems = Array.isArray(payload.items) ? payload.items : [];
 
-      items.value = Array.isArray(payload.items) ? payload.items : [];
+      items.value = append ? [...items.value, ...nextItems] : nextItems;
       meta.value = payload.meta ?? null;
+      page.value = Number(meta.value?.page ?? page.value) || 1;
     } catch (error) {
       loadError.value =
         error instanceof Error
           ? error.message
           : copy("Не удалось загрузить дни рождения.", "Failed to load birthdays.", "Не вдалося завантажити дні народження.");
+
+      if (append) {
+        page.value = Number(meta.value?.page ?? 1) || 1;
+      }
     } finally {
-      isLoading.value = false;
+      if (append) {
+        isLoadingMore.value = false;
+      } else {
+        isLoading.value = false;
+      }
     }
   };
 
+  const reloadBirthdays = () => {
+    page.value = 1;
+    loadBirthdays();
+  };
+
+  const goToPage = (targetPage: number) => {
+    const nextPage = Math.min(Math.max(1, Number(targetPage) || 1), lastPage.value);
+    if (nextPage === currentPage.value && items.value.length > 0) return;
+
+    page.value = nextPage;
+    loadBirthdays();
+  };
+
+  const loadMore = () => {
+    if (!hasMore.value || isBusy.value) return;
+
+    page.value = currentPage.value + 1;
+    loadBirthdays({ append: true });
+  };
+
   watch(
-    () => [filters.period, filters.scope],
-    () => loadBirthdays()
+    () => [filters.period, filters.scope, perPage.value],
+    () => reloadBirthdays()
   );
 
   onMounted(() => {
-    loadBirthdays();
+    reloadBirthdays();
   });
 </script>
 
@@ -377,6 +515,7 @@
   .birthdays-page__header,
   .birthdays-page__filters,
   .birthdays-page__meta,
+  .birthdays-page__pagination,
   .birthday-card {
     border: 1px solid var(--color-stroke-ui-light);
     background: var(--ui-background-panel);
@@ -444,6 +583,10 @@
     gap: 8px;
   }
 
+  .birthdays-page__filter-group--select {
+    margin-left: auto;
+  }
+
   .birthdays-page__filter-label {
     color: var(--ui-text-secondary);
     font-size: 13px;
@@ -464,6 +607,22 @@
       border-color: var(--ui-primary-main);
       background: var(--ui-primary-main);
       color: #fff;
+    }
+  }
+
+  .birthdays-page__select {
+    min-height: 32px;
+    padding: 0 34px 0 12px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: var(--ui-background-panel);
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 700;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
   }
 
@@ -491,10 +650,74 @@
     color: var(--ui-sticker-danger);
   }
 
+  .birthdays-page__inline-error {
+    margin-top: 14px;
+    color: var(--ui-sticker-danger);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
   .birthdays-page__list {
     display: grid;
     gap: 12px;
     margin-top: 14px;
+  }
+
+  .birthdays-page__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  .birthdays-page__page-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ui-background-panel) 92%, var(--ui-primary-main));
+    color: var(--ui-text-main);
+    font-weight: 800;
+
+    &.is-active {
+      border-color: var(--ui-primary-main);
+      background: var(--ui-primary-main);
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  .birthdays-page__load-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: fit-content;
+    min-height: 38px;
+    margin: 14px auto 0;
+    padding: 0 18px;
+    border: 1px solid var(--ui-primary-main);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-primary-main);
+    font-weight: 800;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
   }
 
   .birthday-card {
@@ -668,6 +891,15 @@
 
     .birthdays-page__refresh {
       width: 100%;
+    }
+
+    .birthdays-page__filter-group--select,
+    .birthdays-page__select {
+      width: 100%;
+    }
+
+    .birthdays-page__pagination {
+      flex-wrap: wrap;
     }
 
     .birthday-card__history-row {

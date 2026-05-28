@@ -35,6 +35,7 @@
   import { ref, onMounted, onBeforeUnmount } from "vue";
   import { useI18n } from "vue-i18n";
   import UiIconGlobe from "~/components/ui/UiIconGlobe.vue";
+  import { normalizeAdminLocale, persistAdminLocale, readPersistedAdminLocale } from "~/utils/adminLocale";
 
   const props = defineProps({
     isInvert: Boolean,
@@ -45,7 +46,6 @@
 
   const isOpen = ref(false);
   const wrapperRef = ref(null);
-  const ADMIN_LOCALE_STORAGE_KEY = "admin_locale";
 
   const languages = {
     en: "English",
@@ -104,19 +104,19 @@
   };
 
   const persistLanguage = code => {
-    if (!Object.prototype.hasOwnProperty.call(languages, code)) return;
+    const normalizedLocale = normalizeAdminLocale(code);
+    if (!Object.prototype.hasOwnProperty.call(languages, normalizedLocale)) return "";
 
-    localStorage.setItem(ADMIN_LOCALE_STORAGE_KEY, code);
-    document.cookie = `admin_locale=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
-    document.cookie = `locale=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
-    document.cookie = `i18n_redirected=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
+    return persistAdminLocale(normalizedLocale);
   };
 
   const restorePersistedLanguage = async () => {
-    const saved = localStorage.getItem(ADMIN_LOCALE_STORAGE_KEY);
-    if (saved && Object.prototype.hasOwnProperty.call(languages, saved) && locale.value !== saved) {
+    const saved = readPersistedAdminLocale();
+    if (saved && Object.prototype.hasOwnProperty.call(languages, saved)) {
       persistLanguage(saved);
-      await setLocale(saved);
+      if (locale.value !== saved) {
+        await setLocale(saved);
+      }
       return;
     }
 
@@ -124,8 +124,10 @@
   };
 
   const switchLanguage = async code => {
-    persistLanguage(code);
-    await setLocale(code);
+    const savedLocale = persistLanguage(code);
+    if (savedLocale) {
+      await setLocale(savedLocale);
+    }
     isOpen.value = false;
   };
 

@@ -1,6 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
 import { useAdminAuthStore } from "../stores/adminAuthStore";
 import { ADMIN_ACCESS_TOKEN } from "~/constants/auth";
+import { normalizeAdminLocale, readPersistedAdminLocale } from "~/utils/adminLocale";
 
 export default defineNuxtRouteMiddleware((to) => {
   if (process.server) return;
@@ -15,6 +16,8 @@ export default defineNuxtRouteMiddleware((to) => {
   if (!adminAuthStore.isAuthenticated) return;
 
   const localeMatch = to.path.match(/^\/([a-z]{2})(\/|$)/i);
-  const localePrefix = localeMatch ? `/${localeMatch[1]}` : "";
+  const routeLocale = normalizeAdminLocale(localeMatch?.[1]);
+  const savedLocale = readPersistedAdminLocale();
+  const localePrefix = `/${savedLocale || routeLocale || "en"}`;
   return navigateTo(`${localePrefix}/dashboard`);
 });
