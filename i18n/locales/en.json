@@ -2801,10 +2801,66 @@
     "referral": {},
     "settings": {
       "title": "Settings",
+      "subtitle": "System settings, database backups and server monitoring.",
       "tabs": {
         "general": "General",
+        "systemMonitoring": "System monitoring",
         "appearance": "Appearance",
         "secure": "Security"
+      },
+      "tabsDescription": {
+        "general": "Database backups and storage state.",
+        "systemMonitoring": "CPU, RAM, disk and near real-time load history.",
+        "appearance": "Theme and interface settings.",
+        "secure": "Token lifetimes and access parameters."
+      },
+      "backups": {
+        "title": "Backup monitoring",
+        "subtitle": "Daily database backups to S3, queue state and storage for the last 7 days.",
+        "refresh": "Refresh",
+        "runNow": "Run backup",
+        "loadError": "Failed to load backups.",
+        "queueError": "Failed to queue backup.",
+        "summary": {
+          "last": "Last successful",
+          "stored": "Stored",
+          "active": "Queued/running",
+          "next": "Next run"
+        },
+        "status": {
+          "queued": "Queued",
+          "running": "Running",
+          "completed": "Completed",
+          "failed": "Failed"
+        },
+        "columns": {
+          "status": "Status",
+          "file": "File",
+          "size": "Size",
+          "started": "Started",
+          "completed": "Completed",
+          "error": "Error"
+        }
+      },
+      "monitoring": {
+        "title": "System monitoring",
+        "subtitle": "Near real-time CPU load, memory, disk and snapshot history.",
+        "refresh": "Refresh",
+        "chartTitle": "Load history",
+        "chartSubtitle": "CPU, RAM and disk by snapshot time.",
+        "updated": "Updated",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "disk": "Disk",
+        "loadAverage": "Load average",
+        "loadError": "Failed to load system monitoring.",
+        "ranges": {
+          "1h": "1 hour",
+          "6h": "6 hours",
+          "12h": "12 hours",
+          "24h": "24 hours",
+          "7d": "7 days"
+        }
       },
       "tables": {
         "appearance": {

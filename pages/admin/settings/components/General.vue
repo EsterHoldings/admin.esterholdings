@@ -1,60 +1,7 @@
 <template>
-  <UiContainer>
-    <div class="general">
-      <div class="general__title">
-        <UiTextH4>General settings</UiTextH4>
-      </div>
-      <div class="general__content">
-        <UiTextH1>Coming Soon</UiTextH1>
-        <UiTextParagraph
-          >Our team is completing the system upgrade. This section will be
-          available soon, we will notify you by email and in the notifications
-          section.
-        </UiTextParagraph>
-      </div>
-    </div>
-  </UiContainer>
+  <Backups />
 </template>
 
-<script setup>
-import UiTextH1 from "~/components/ui/UiTextH1.vue";
-import UiContainer from "~/components/ui/UiContainer.vue";
-import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-import UiTextH4 from "~/components/ui/UiTextH4.vue";
+<script setup lang="ts">
+import Backups from "./Backups.vue";
 </script>
-
-<style scoped lang="scss">
-.general {
-  padding-bottom: 40px;
-
-  &__title {
-    margin-bottom: 20px;
-
-    h4 {
-      color: var(--ui-text-main);
-    }
-  }
-
-  &__content {
-    height: 80vh;
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-direction: column;
-
-    p {
-      margin-top: 20px;
-      width: 300px;
-      text-align: center;
-    }
-
-    h1,
-    p {
-      color: var(--ui-text-main);
-    }
-  }
-}
-</style>
