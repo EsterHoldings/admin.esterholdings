@@ -9,6 +9,27 @@
       :class="viewMode === 'full' ? 'client-card--full' : ''"
       @click="handleOpenClientPage(item.id)">
       <div
+        class="client-card__actions"
+        @click.stop>
+        <button
+          type="button"
+          class="client-card__actions-button"
+          :aria-label="resolveText('admin.clients.actions.openMenu', 'Open menu')"
+          @click.stop="toggleActionMenu(item.id)">
+          <UiIconDotsVertical class="!h-4 !w-4" />
+        </button>
+        <div
+          v-if="activeMenuId === item.id"
+          class="client-card__actions-menu">
+          <button
+            type="button"
+            class="client-card__actions-item is-danger"
+            @click.stop="handleFullDelete(item)">
+            {{ resolveText("admin.clients.actions.fullDelete", "Full deletion") }}
+          </button>
+        </div>
+      </div>
+      <div
         class="client-card__body"
         :class="viewMode === 'full' ? 'client-card__body--row' : ''">
         <div class="client-card__user">
@@ -90,9 +111,11 @@
 </template>
 
 <script lang="ts" setup>
+  import { onBeforeUnmount, onMounted, ref } from "vue";
   import { useI18n } from "vue-i18n";
   import UiImageCircle from "~/components/ui/UiImageCircle.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
+  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
 
   interface AdminClientCardItem {
@@ -116,6 +139,7 @@
 
   const emit = defineEmits<{
     (e: "click", id: string): void;
+    (e: "fullDelete", client: AdminClientCardItem): void;
   }>();
 
   const props = withDefaults(
@@ -130,7 +154,22 @@
   );
 
   const { t } = useI18n({ useScope: "global" });
+  const activeMenuId = ref<string | null>(null);
   const handleOpenClientPage = (id: string) => emit("click", id);
+
+  const toggleActionMenu = (id?: string) => {
+    if (!id) return;
+    activeMenuId.value = activeMenuId.value === id ? null : id;
+  };
+
+  const handleFullDelete = (item: AdminClientCardItem) => {
+    activeMenuId.value = null;
+    emit("fullDelete", item);
+  };
+
+  const closeActionMenu = () => {
+    activeMenuId.value = null;
+  };
 
   const resolveText = (key: string, fallback: string) => {
     const value = t(key);
@@ -185,6 +224,14 @@
 
     return resolveText("admin.clients.registration.basic", "basic");
   };
+
+  onMounted(() => {
+    document.addEventListener("click", closeActionMenu);
+  });
+
+  onBeforeUnmount(() => {
+    document.removeEventListener("click", closeActionMenu);
+  });
 </script>
 
 <style scoped lang="scss">
@@ -221,7 +268,7 @@
     background: var(--ui-background-panel);
     border-bottom: 1px solid var(--color-stroke-ui-light);
     border-radius: 10px;
-    padding: 10px 14px;
+    padding: 10px 44px 10px 14px;
     transition:
       background-color 0.2s ease,
       opacity 0.2s ease;
@@ -363,6 +410,66 @@
   }
 
   .card-with-action {
-    padding-right: 14px;
+    padding-right: 44px;
+  }
+
+  .client-card__actions {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 3;
+  }
+
+  .client-card__actions-button {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: var(--ui-background-panel);
+    color: var(--ui-text-secondary);
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease,
+      background 0.18s ease;
+  }
+
+  .client-card__actions-button:hover {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 38%, transparent);
+    color: var(--ui-text-main);
+    background: var(--color-stroke-ui-dark);
+  }
+
+  .client-card__actions-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 178px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: var(--ui-background-panel);
+    box-shadow: 0 16px 36px color-mix(in srgb, var(--ui-background) 82%, transparent);
+    padding: 5px;
+  }
+
+  .client-card__actions-item {
+    width: 100%;
+    min-height: 34px;
+    border-radius: 6px;
+    padding: 0 10px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--ui-text-main);
+  }
+
+  .client-card__actions-item:hover {
+    background: var(--color-stroke-ui-dark);
+  }
+
+  .client-card__actions-item.is-danger {
+    color: var(--ui-danger-main, #ff5f73);
   }
 </style>

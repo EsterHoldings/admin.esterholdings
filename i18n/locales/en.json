@@ -1739,6 +1739,15 @@
         "basic": "basic",
         "social": "social"
       },
+      "actions": {
+        "openMenu": "Open menu",
+        "fullDelete": "Full deletion"
+      },
+      "delete": {
+        "confirm": "Fully delete client {client}? Profile, documents, history and related data will be deleted. MT4 accounts will stay in the system without a linked client.",
+        "success": "Client fully deleted.",
+        "error": "Failed to delete client."
+      },
       "tabs": {
         "verification": "Verification",
         "referrals": "Referrals",

@@ -113,7 +113,8 @@
             <ClientsContent
               :data="clientsData"
               :viewMode="viewMode"
-              @click="handleOpenClientPage" />
+              @click="handleOpenClientPage"
+              @full-delete="handleFullDeleteClient" />
           </div>
 
           <div
@@ -142,6 +143,7 @@
                       {{ t("admin.accounts.components.accounts-panel.columns.created_at") }}
                     </th>
                     <th class="px-4 py-3 text-center font-normal w-[60px]">ID</th>
+                    <th class="px-3 py-3 text-center font-normal w-[54px]"></th>
                   </tr>
                 </template>
 
@@ -212,6 +214,35 @@
                           v-if="client.id"
                           :text="client.id" />
                         <span v-else>-</span>
+                      </div>
+                    </td>
+                    <td
+                      class="px-3 py-3"
+                      @click.stop>
+                      <div class="clients-row-actions">
+                        <button
+                          type="button"
+                          class="clients-row-actions__button"
+                          :disabled="deletingClientId === client.id"
+                          :aria-label="resolveText('admin.clients.actions.openMenu', 'Open menu')"
+                          @click.stop="toggleClientActionMenu(client.id)">
+                          <UiIconSpinnerDefault
+                            v-if="deletingClientId === client.id"
+                            class="!h-4 !w-4" />
+                          <UiIconDotsVertical
+                            v-else
+                            class="!h-4 !w-4" />
+                        </button>
+                        <div
+                          v-if="activeClientMenuId === client.id"
+                          class="clients-row-actions__menu">
+                          <button
+                            type="button"
+                            class="clients-row-actions__item is-danger"
+                            @click.stop="handleFullDeleteClient(client)">
+                            {{ resolveText("admin.clients.actions.fullDelete", "Full deletion") }}
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -362,6 +393,7 @@
   import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
   import { useRoute, useRouter, type LocationQuery, type LocationQueryRaw } from "vue-router";
   import { useI18n } from "vue-i18n";
+  import { useToast } from "vue-toastification";
   import { debounce } from "~/utils/helper/debounce";
   import { navigateTo } from "nuxt/app";
   import { useLocalePath } from "~/.nuxt/imports";
@@ -384,6 +416,7 @@
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import UiImageCircle from "~/components/ui/UiImageCircle.vue";
   import UiIconFilters from "~/components/ui/UiIconFilters.vue";
+  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
 
   type ViewMode = "cards" | "table" | "full";
 
@@ -728,6 +761,7 @@
   const router = useRouter();
   const localePath = useLocalePath();
   const appCore = useAppCore();
+  const toast = useToast();
   const { $echo } = useNuxtApp() as unknown as { $echo?: any };
 
   const getNormalizedRoutePath = () => {
@@ -778,6 +812,8 @@
   const appliedFilters = ref<ClientFilters>(createEmptyFilters());
   const draftFilters = ref<ClientFilters>(createEmptyFilters());
   const isFiltersPopoverOpen = ref(false);
+  const activeClientMenuId = ref<string | null>(null);
+  const deletingClientId = ref<string | null>(null);
   const filtersTriggerRef = ref<HTMLElement | null>(null);
   const filtersPopoverPanelRef = ref<HTMLElement | null>(null);
   const filtersPopoverStyle = ref<Record<string, string>>({});
@@ -1427,6 +1463,46 @@
     navigateTo(localePath(`/clients/${id}`));
   };
 
+  const toggleClientActionMenu = (id?: string) => {
+    if (!id || deletingClientId.value === id) return;
+    activeClientMenuId.value = activeClientMenuId.value === id ? null : id;
+  };
+
+  const buildFullDeleteConfirmText = (client: AdminClient) => {
+    const clientLabel = fullName(client) !== "-" ? fullName(client) : client.email || client.id;
+    const fallback = `Fully delete client ${clientLabel}? Profile, documents, history and related data will be deleted. MT4 accounts will stay in the system without a linked client.`;
+
+    return resolveText("admin.clients.delete.confirm", fallback).replace("{client}", clientLabel);
+  };
+
+  const handleFullDeleteClient = async (client: AdminClient) => {
+    if (!client?.id || deletingClientId.value === client.id) return;
+
+    activeClientMenuId.value = null;
+    const confirmed = typeof window === "undefined" || window.confirm(buildFullDeleteConfirmText(client));
+    if (!confirmed) return;
+
+    deletingClientId.value = client.id;
+
+    try {
+      await appCore.adminModules.clients.delete(client.id);
+
+      if (clientsData.value.length === 1 && page.value > DEFAULT_PAGE) {
+        page.value -= 1;
+      }
+
+      await loadAll();
+      await syncStateToUrl();
+      toast.success(resolveText("admin.clients.delete.success", "Client fully deleted."));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || resolveText("admin.clients.delete.error", "Failed to delete client.")
+      );
+    } finally {
+      deletingClientId.value = null;
+    }
+  };
+
   const handleChangePerPage = async (value: number) => {
     perPage.value = value;
     await loadData({ resetPage: true });
@@ -1636,6 +1712,10 @@
     if (!clickedOnTrigger && !clickedOnPopover) {
       isFiltersPopoverOpen.value = false;
     }
+  };
+
+  const handleClickOutsideClientMenu = () => {
+    activeClientMenuId.value = null;
   };
 
   const handleMetricCardClick = async (cardId: string) => {
@@ -2043,6 +2123,7 @@
     }
 
     document.addEventListener("click", handleClickOutsideFilters);
+    document.addEventListener("click", handleClickOutsideClientMenu);
     window.addEventListener("resize", handleFiltersPopoverViewportChange, { passive: true });
     window.addEventListener("scroll", handleFiltersPopoverViewportChange, true);
   });
@@ -2085,6 +2166,7 @@
     window.removeEventListener("focus", handleWindowFocus);
     detachRealtimeResumeListeners();
     document.removeEventListener("click", handleClickOutsideFilters);
+    document.removeEventListener("click", handleClickOutsideClientMenu);
     window.removeEventListener("resize", handleFiltersPopoverViewportChange);
     window.removeEventListener("scroll", handleFiltersPopoverViewportChange, true);
     filterSearchTimers.forEach(timerId => window.clearTimeout(timerId));
@@ -2376,5 +2458,71 @@
 
   .clients-online-dot.is-offline {
     background: var(--ui-text-secondary);
+  }
+
+  .clients-row-actions {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .clients-row-actions__button {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: var(--ui-background-panel);
+    color: var(--ui-text-secondary);
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease,
+      background 0.18s ease;
+  }
+
+  .clients-row-actions__button:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 38%, transparent);
+    color: var(--ui-text-main);
+    background: var(--color-stroke-ui-dark);
+  }
+
+  .clients-row-actions__button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+
+  .clients-row-actions__menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 30;
+    min-width: 178px;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 8px;
+    background: var(--ui-background-panel);
+    box-shadow: 0 16px 36px color-mix(in srgb, var(--ui-background) 82%, transparent);
+    padding: 5px;
+  }
+
+  .clients-row-actions__item {
+    width: 100%;
+    min-height: 34px;
+    border-radius: 6px;
+    padding: 0 10px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--ui-text-main);
+  }
+
+  .clients-row-actions__item:hover {
+    background: var(--color-stroke-ui-dark);
+  }
+
+  .clients-row-actions__item.is-danger {
+    color: var(--ui-danger-main, #ff5f73);
   }
 </style>
