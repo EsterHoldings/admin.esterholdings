@@ -153,6 +153,12 @@
                         :class="getTicketChannelBadgeClass(t.channel, t.reply_email)">
                         {{ getTicketChannelLabel(t.channel, t.reply_email) }}
                       </span>
+                      <span
+                        v-if="getTicketSourceKey(t) !== 'cabinet'"
+                        class="ticket-source-badge"
+                        :class="getTicketSourceBadgeClass(t)">
+                        {{ getTicketSourceLabel(t) }}
+                      </span>
                     </div>
                     <div class="ticket-subject-cell__preview">{{ getTicketPreview(t) || "No messages yet" }}</div>
                   </div>
@@ -341,6 +347,12 @@
                       class="ticket-channel-badge"
                       :class="getTicketChannelBadgeClass(ticket.channel, ticket.reply_email)">
                       {{ getTicketChannelLabel(ticket.channel, ticket.reply_email) }}
+                    </span>
+                    <span
+                      v-if="getTicketSourceKey(ticket) !== 'cabinet'"
+                      class="ticket-source-badge"
+                      :class="getTicketSourceBadgeClass(ticket)">
+                      {{ getTicketSourceLabel(ticket) }}
                     </span>
                   </div>
                   <div class="ticket-subject-cell__preview">{{ getTicketPreview(ticket) || "No messages yet" }}</div>
@@ -803,7 +815,7 @@
 
   const filtered = computed(() =>
     tickets.filter(t =>
-      `${t.id} ${t.subject} ${getTicketPreview(t)} ${getTicketClientName(t)} ${getTicketClientEmail(t)} ${t.last_message_at} ${t.status} ${t.channel ?? ""} ${t.reply_email ?? ""}`
+      `${t.id} ${t.subject} ${getTicketPreview(t)} ${getTicketClientName(t)} ${getTicketClientEmail(t)} ${t.last_message_at} ${t.status} ${t.channel ?? ""} ${t.source ?? ""} ${t.reply_email ?? ""}`
         .toLowerCase()
         .includes(search.value.toLowerCase())
     )
@@ -827,6 +839,30 @@
 
   const getTicketChannelBadgeClass = (channel: unknown, replyEmail?: unknown): string =>
     getTicketChannelKey(channel, replyEmail) === "email" ? "ticket-channel-badge--email" : "ticket-channel-badge--chat";
+
+  const getTicketSourceKey = (ticket: any): "cabinet" | "landing" | "admin" => {
+    const source = String(ticket?.source ?? "")
+      .trim()
+      .toLowerCase();
+
+    if (source === "landing") return "landing";
+    if (source === "admin") return "admin";
+
+    return "cabinet";
+  };
+
+  const getTicketSourceLabel = (ticket: any): string => {
+    const label = String(ticket?.source_label ?? "").trim();
+    if (label) return label;
+
+    const source = getTicketSourceKey(ticket);
+    if (source === "landing") return "Landing";
+    if (source === "admin") return "Admin";
+
+    return "Cabinet";
+  };
+
+  const getTicketSourceBadgeClass = (ticket: any): string => `ticket-source-badge--${getTicketSourceKey(ticket)}`;
 
   const normalizeTicketStatus = (status: unknown): string => {
     const normalizedStatus = String(status ?? "")
@@ -1694,6 +1730,31 @@
     color: var(--ui-text-main);
     background: color-mix(in srgb, var(--ui-sticker-warning) 22%, transparent);
     border-color: color-mix(in srgb, var(--ui-sticker-warning) 55%, transparent);
+  }
+
+  .ticket-source-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  .ticket-source-badge--landing {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-sticker-success) 20%, transparent);
+    border-color: color-mix(in srgb, var(--ui-sticker-success) 56%, transparent);
+  }
+
+  .ticket-source-badge--admin {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
+    border-color: color-mix(in srgb, var(--ui-primary-main) 46%, transparent);
   }
 
   .support-archive-filter {

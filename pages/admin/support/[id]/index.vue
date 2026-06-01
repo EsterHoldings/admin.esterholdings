@@ -489,6 +489,12 @@
                   {{ supportText.replyToLabel }}:
                   <strong>{{ ticketReplyEmail || supportText.notProvided }}</strong>
                 </div>
+                <div
+                  v-if="ticketSourceLabel"
+                  class="support-email__source">
+                  {{ supportText.sourceLabel }}:
+                  <strong>{{ ticketSourceLabel }}</strong>
+                </div>
               </div>
               <button
                 type="button"
@@ -708,6 +714,7 @@
     sendingReply: "",
     emailReplySent: "",
     emailReplyFailed: "",
+    sourceLabel: "",
   });
   const syncSupportText = () => {
     supportText.ticket = resolveText("support.chat.ticket", "Ticket");
@@ -764,6 +771,7 @@
     supportText.sendingReply = resolveText("support.chat.sendingReply", "Sending...");
     supportText.emailReplySent = resolveText("support.chat.emailReplySent", "Reply sent.");
     supportText.emailReplyFailed = resolveText("support.chat.emailReplyFailed", "Failed to send reply.");
+    supportText.sourceLabel = resolveText("support.chat.sourceLabel", "Source");
   };
   syncSupportText();
 
@@ -805,6 +813,7 @@
   const subject = ref("");
   const ticketChannel = ref<"chat" | "email">("chat");
   const ticketReplyEmail = ref("");
+  const ticketSourceLabel = ref("");
   const isEmailThreadLoading = ref(false);
   const isEmailReplySending = ref(false);
   const emailReplyDraft = ref("");
@@ -916,6 +925,16 @@
   const firstUpper = (value: string): string => value.charAt(0).toUpperCase();
   const buildFullName = (firstName?: string | null, lastName?: string | null): string => {
     return [normalizeText(firstName), normalizeText(lastName)].filter(Boolean).join(" ").trim();
+  };
+  const resolveTicketSourceLabel = (ticket: any): string => {
+    const label = normalizeText(ticket?.source_label);
+    if (label) return label;
+
+    const source = normalizeText(ticket?.source).toLowerCase();
+    if (source === "landing") return "Landing";
+    if (source === "admin") return "Admin";
+
+    return "";
   };
   const buildParticipantInitials = (
     firstName?: string | null,
@@ -2187,6 +2206,7 @@
     status.value = ticket?.status ?? "open";
     subject.value = ticket?.subject ?? "-";
     ticketChannel.value = isEmailByPayload ? "email" : "chat";
+    ticketSourceLabel.value = resolveTicketSourceLabel(ticket);
     if (ticketChannel.value === "email") {
       linkItems.value = [];
       mediaItems.value = [];
@@ -2586,7 +2606,8 @@
     color: var(--ui-text-main);
   }
 
-  .support-email__reply-to {
+  .support-email__reply-to,
+  .support-email__source {
     margin-top: 4px;
     font-size: 13px;
     line-height: 1.4;

@@ -56,6 +56,7 @@ import { useI18n } from "vue-i18n";
 import { definePageMeta } from "~/.nuxt/imports";
 
 import Appearance from "./components/Appearance.vue";
+import FaqSettings from "./components/FaqSettings.vue";
 import General from "./components/General.vue";
 import Secure from "./components/Secure.vue";
 import SystemMonitoring from "./components/SystemMonitoring.vue";
@@ -92,6 +93,13 @@ const tabsList = computed(() => {
       ),
       icon: "pi pi-chart-line",
       component: SystemMonitoring,
+    },
+    {
+      id: "faq",
+      label: resolveText("admin.settings.tabs.faq", "FAQ Settings"),
+      description: resolveText("admin.settings.tabsDescription.faq", "Landing FAQ answers and Help page content."),
+      icon: "pi pi-question-circle",
+      component: FaqSettings,
     },
     {
       id: "appearance",
