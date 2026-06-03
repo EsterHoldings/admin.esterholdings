@@ -1,45 +1,9 @@
 import { defineNuxtPlugin } from "nuxt/app";
-
-const RECOVERY_KEY = "ester-admin-pwa-recovered";
-
-const clearServiceWorkerState = async () => {
-  const registrations = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistrations() : [];
-  await Promise.all(registrations.map(registration => registration.unregister()));
-
-  if ("caches" in window) {
-    const cacheNames = await caches.keys();
-    await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-  }
-};
-
-const shouldRecoverFromError = (message: string) => {
-  const normalized = message.toLowerCase();
-
-  return (
-    normalized.includes("failed to fetch dynamically imported module") ||
-    normalized.includes("importing a module script failed") ||
-    normalized.includes("loading chunk") ||
-    normalized.includes("chunkloaderror") ||
-    normalized.includes("/_nuxt/")
-  );
-};
+import { clearAdminBootRecoveryFlag, isAdminAssetFailure, recoverAdminBoot } from "~/utils/adminBootRecovery";
 
 export default defineNuxtPlugin(nuxtApp => {
   const recover = async (reason: string) => {
-    if (sessionStorage.getItem(RECOVERY_KEY) === "1") return;
-
-    sessionStorage.setItem(RECOVERY_KEY, "1");
-    console.warn("Recovering Ester Admin after stale PWA asset failure:", reason);
-
-    try {
-      await clearServiceWorkerState();
-    } finally {
-      window.location.reload();
-    }
-  };
-
-  const clearRecoveryFlag = () => {
-    sessionStorage.removeItem(RECOVERY_KEY);
+    await recoverAdminBoot(reason);
   };
 
   window.addEventListener("vite:preloadError", event => {
@@ -52,7 +16,7 @@ export default defineNuxtPlugin(nuxtApp => {
     event => {
       const target = event.target as HTMLElement | null;
       const isAssetError =
-        target?.tagName === "SCRIPT" || target?.tagName === "LINK" || shouldRecoverFromError(event.message || "");
+        target?.tagName === "SCRIPT" || target?.tagName === "LINK" || isAdminAssetFailure(event.message || "");
 
       if (isAssetError) {
         void recover(event.message || "asset load error");
@@ -64,11 +28,11 @@ export default defineNuxtPlugin(nuxtApp => {
   window.addEventListener("unhandledrejection", event => {
     const reason = event.reason instanceof Error ? event.reason.message : String(event.reason || "");
 
-    if (shouldRecoverFromError(reason)) {
+    if (isAdminAssetFailure(reason)) {
       event.preventDefault();
       void recover(reason);
     }
   });
 
-  nuxtApp.hook("app:mounted", clearRecoveryFlag);
+  nuxtApp.hook("app:mounted", clearAdminBootRecoveryFlag);
 });
