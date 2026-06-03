@@ -528,6 +528,15 @@
     background: var(--ui-background-panel);
   }
 
+  .birthdays-page__header,
+  .birthdays-page__filters,
+  .birthdays-page__meta,
+  .birthdays-page__pagination {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
   .birthdays-page__header {
     display: flex;
     align-items: flex-start;
