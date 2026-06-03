@@ -91,7 +91,13 @@
     <div
       v-else-if="items.length === 0"
       class="birthdays-page__state">
-      {{ copy("На выбранный период дней рождения нет.", "No birthdays for the selected period.", "На вибраний період днів народження немає.") }}
+      {{
+        copy(
+          "На выбранный период дней рождения нет.",
+          "No birthdays for the selected period.",
+          "На вибраний період днів народження немає."
+        )
+      }}
     </div>
 
     <div
@@ -397,7 +403,8 @@
   };
 
   const ageLabel = (age: number): string => {
-    if (!Number.isFinite(Number(age)) || Number(age) <= 0) return copy("Возраст не указан", "Age unknown", "Вік не вказано");
+    if (!Number.isFinite(Number(age)) || Number(age) <= 0)
+      return copy("Возраст не указан", "Age unknown", "Вік не вказано");
 
     return copy(`${age} лет`, `${age} y.o.`, `${age} років`);
   };
@@ -461,7 +468,11 @@
       loadError.value =
         error instanceof Error
           ? error.message
-          : copy("Не удалось загрузить дни рождения.", "Failed to load birthdays.", "Не вдалося завантажити дні народження.");
+          : copy(
+              "Не удалось загрузить дни рождения.",
+              "Failed to load birthdays.",
+              "Не вдалося завантажити дні народження."
+            );
 
       if (append) {
         page.value = Number(meta.value?.page ?? 1) || 1;
@@ -512,10 +523,6 @@
     color: var(--ui-text-main);
   }
 
-  .birthdays-page__header,
-  .birthdays-page__filters,
-  .birthdays-page__meta,
-  .birthdays-page__pagination,
   .birthday-card {
     border: 1px solid var(--color-stroke-ui-light);
     background: var(--ui-background-panel);
@@ -553,7 +560,7 @@
     gap: 8px;
     min-height: 38px;
     padding: 0 14px;
-    border: 1px solid var(--color-stroke-ui-light);
+    border: 0;
     border-radius: 8px;
     background: var(--ui-primary-main);
     color: #fff;
@@ -597,8 +604,8 @@
     min-height: 32px;
     padding: 0 12px;
     border-radius: 999px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: color-mix(in srgb, var(--ui-background-panel) 92%, var(--ui-primary-main));
+    border: 1px solid transparent;
+    background: transparent;
     color: var(--ui-text-main);
     font-size: 13px;
     font-weight: 700;
@@ -613,9 +620,9 @@
   .birthdays-page__select {
     min-height: 32px;
     padding: 0 34px 0 12px;
-    border: 1px solid var(--color-stroke-ui-light);
+    border: 1px solid transparent;
     border-radius: 8px;
-    background: var(--ui-background-panel);
+    background: transparent;
     color: var(--ui-text-main);
     font-size: 13px;
     font-weight: 700;
@@ -681,9 +688,9 @@
     min-width: 34px;
     height: 34px;
     padding: 0 10px;
-    border: 1px solid var(--color-stroke-ui-light);
+    border: 1px solid transparent;
     border-radius: 8px;
-    background: color-mix(in srgb, var(--ui-background-panel) 92%, var(--ui-primary-main));
+    background: transparent;
     color: var(--ui-text-main);
     font-weight: 800;
 
