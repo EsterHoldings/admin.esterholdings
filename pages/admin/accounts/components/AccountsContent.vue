@@ -252,31 +252,45 @@
   }
 
   .account-card {
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 12px;
+    background: var(--ui-background-panel);
+    color: var(--ui-text-main);
     cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+
+  .account-card:hover {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 40%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-primary-main) 8%, var(--ui-background-panel));
   }
 
   .account-card :deep(.p-card-body),
   .account-card :deep(.p-card-content) {
     height: 100%;
+    padding: 0;
   }
 
   .account-card__content {
     position: relative;
     display: grid;
-    gap: 14px;
+    gap: 16px;
     min-height: 100%;
     padding: 14px;
   }
 
   .account-card--full .account-card__content {
-    grid-template-columns: minmax(240px, 1.2fr) minmax(0, 3fr) auto;
+    grid-template-columns: minmax(260px, 1.1fr) minmax(0, 2.4fr) auto;
     align-items: center;
   }
 
   .account-card__owner {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-width: 0;
   }
 
@@ -286,8 +300,8 @@
   }
 
   .account-card__avatar {
-    width: 42px;
-    height: 42px;
+    width: 54px;
+    height: 54px;
     flex: 0 0 auto;
   }
 
@@ -312,10 +326,18 @@
     line-height: 1.25;
   }
 
+  .account-card__owner-text strong,
+  .account-data-item strong {
+    color: var(--ui-text-main);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
   .account-card__data {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 12px 16px;
     min-width: 0;
   }
 
@@ -340,7 +362,7 @@
     width: 28px;
     height: 28px;
     flex: 0 0 auto;
-    color: var(--ui-text-secondary);
+    color: var(--ui-primary-main);
   }
 
   .account-card__menu-toggle {
@@ -349,7 +371,7 @@
     right: 10px;
     width: 32px;
     height: 32px;
-    color: var(--ui-text-secondary);
+    color: var(--ui-text-main);
   }
 
   .account-card--full .account-card__menu-toggle {

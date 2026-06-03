@@ -1741,7 +1741,7 @@
   .accounts-metrics-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
   }
 
   @media (min-width: 700px) {
@@ -1766,58 +1766,33 @@
   }
 
   .accounts-metric-card {
-    --accounts-metric-accent: var(--color-info, var(--ui-primary-main));
-
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
     height: 100%;
-    border-color: color-mix(in srgb, var(--accounts-metric-accent) 18%, var(--color-stroke-ui-light));
-    border-radius: 22px;
-    background:
-      radial-gradient(
-        circle at 16% 0%,
-        color-mix(in srgb, var(--accounts-metric-accent) 10%, transparent),
-        transparent 38%
-      ),
-      linear-gradient(
-        145deg,
-        color-mix(in srgb, var(--ui-background-card) 74%, transparent),
-        color-mix(in srgb, var(--ui-background-panel) 86%, transparent)
-      );
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 12px;
+    background: var(--ui-background-panel);
     transition:
       border-color 0.18s ease,
+      background-color 0.18s ease,
       transform 0.18s ease;
 
+    :deep(.p-card-body),
     :deep(.p-card-content) {
       padding: 0;
     }
   }
 
   .accounts-metric-card::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: 1;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      var(--accounts-metric-accent),
-      color-mix(in srgb, var(--accounts-metric-accent) 24%, transparent)
-    );
+    display: none;
   }
 
   .accounts-metric-card__body {
-    position: relative;
-    z-index: 2;
-    min-height: 72px;
+    min-height: 74px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 12px;
+    gap: 12px;
+    padding: 14px;
   }
 
   .accounts-metric-card__copy {
@@ -1828,47 +1803,60 @@
 
   .accounts-metric-card__copy span {
     color: var(--ui-text-secondary);
-    font-size: 11px;
-    font-weight: 760;
+    font-size: 12px;
+    font-weight: 700;
     line-height: 1.3;
   }
 
   .accounts-metric-card__copy strong {
     color: var(--ui-text-main);
-    font-size: clamp(22px, 1.85vw, 30px);
-    font-weight: 880;
+    font-size: 22px;
+    font-weight: 800;
     line-height: 1;
   }
 
   .accounts-metric-card__icon {
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    color: var(--accounts-metric-accent);
-    background: color-mix(in srgb, var(--accounts-metric-accent) 13%, transparent);
+    border-radius: 10px;
+    color: var(--ui-primary-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 14%, var(--ui-background-panel));
     font-size: 15px;
   }
 
   .accounts-metric-button:hover .accounts-metric-card,
   .accounts-metric-button.is-active .accounts-metric-card {
-    border-color: color-mix(in srgb, var(--accounts-metric-accent) 58%, var(--color-stroke-ui-light));
+    border-color: var(--ui-primary-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 8%, var(--ui-background-panel));
+  }
+
+  .accounts-metric-button:hover .accounts-metric-card {
     transform: translateY(-1px);
+  }
+
+  .accounts-metric-button.is-active .accounts-metric-card__icon {
+    color: #fff;
+    background: var(--ui-primary-main);
   }
 
   .accounts-balance {
     display: grid;
     gap: 10px;
-    padding: 0;
+    padding: 10px 12px;
+    border: 0 !important;
+    border-radius: 10px;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   .accounts-balance__header {
     color: var(--ui-text-secondary);
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
   }
 
   .accounts-balance__grid {
@@ -1889,11 +1877,13 @@
 
     span {
       color: var(--ui-text-secondary);
-      font-size: 11px;
+      font-size: 12px;
     }
 
     strong {
-      font-size: clamp(18px, 2vw, 26px);
+      color: var(--ui-text-main);
+      font-size: 18px;
+      font-weight: 800;
       line-height: 1.1;
     }
   }
@@ -1903,12 +1893,17 @@
     z-index: 2;
     display: grid;
     gap: 10px;
+    padding: 12px;
+    border: 0 !important;
+    border-radius: 12px;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   .accounts-toolbar {
     display: grid;
     grid-template-columns: minmax(220px, 1fr);
-    gap: 10px;
+    gap: 12px;
     align-items: center;
   }
 
@@ -1935,6 +1930,7 @@
 
   .accounts-search__input {
     width: 100%;
+    min-height: 36px;
     padding-left: 38px;
     padding-right: 38px;
   }
@@ -1959,6 +1955,42 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+  }
+
+  .accounts-toolbar :deep(.p-inputtext),
+  .accounts-toolbar :deep(.p-select) {
+    min-height: 36px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .accounts-toolbar :deep(.p-inputtext:enabled:focus),
+  .accounts-toolbar :deep(.p-select.p-focus) {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 55%, transparent);
+    box-shadow: none;
+  }
+
+  .accounts-toolbar :deep(.p-button) {
+    min-height: 36px;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+
+  .accounts-toolbar :deep(.p-button-outlined),
+  .accounts-filter-chips :deep(.p-button) {
+    border-color: transparent;
+    background: transparent;
+    color: var(--ui-text-main);
+  }
+
+  .accounts-toolbar :deep(.p-button:not(.p-button-outlined):not(.p-button-text)) {
+    border-color: var(--ui-primary-main);
+    background: var(--ui-primary-main);
+    color: #fff;
   }
 
   .accounts-filters {
@@ -2036,36 +2068,55 @@
     :deep(.p-datatable-table) {
       min-width: 1120px;
       overflow: hidden;
-      border-radius: 16px;
+      border-collapse: separate;
+      border-spacing: 0 10px;
     }
 
     :deep(.p-datatable-table-container) {
-      border: 1px solid var(--color-stroke-ui-light);
-      border-radius: 16px;
-      background: var(--ui-background-panel);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
     }
 
     :deep(.p-datatable-thead > tr > th) {
-      background: color-mix(in srgb, var(--ui-background-card) 94%, transparent);
+      padding: 0 12px 4px;
+      background: transparent;
       color: var(--ui-text-secondary);
-      border-color: var(--color-stroke-ui-light);
+      border: 0;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     :deep(.p-datatable-tbody > tr) {
-      background: color-mix(in srgb, var(--ui-background-panel) 96%, transparent);
+      background: transparent;
       color: var(--ui-text-main);
       cursor: pointer;
     }
 
     :deep(.p-datatable-tbody > tr > td) {
+      border-top: 1px solid var(--color-stroke-ui-light);
+      border-bottom: 1px solid var(--color-stroke-ui-light);
+      background: var(--ui-background-panel);
       border-color: var(--color-stroke-ui-light);
-      padding: 10px 12px;
+      padding: 14px 12px;
+      transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease;
     }
 
-    :deep(.p-datatable-tbody > tr:hover) {
+    :deep(.p-datatable-tbody > tr > td:first-child) {
+      border-left: 1px solid var(--color-stroke-ui-light);
+      border-radius: 12px 0 0 12px;
+    }
+
+    :deep(.p-datatable-tbody > tr > td:last-child) {
+      border-right: 1px solid var(--color-stroke-ui-light);
+      border-radius: 0 12px 12px 0;
+    }
+
+    :deep(.p-datatable-tbody > tr:hover > td) {
       background: color-mix(in srgb, var(--ui-primary-main) 8%, var(--ui-background-panel));
+      border-color: color-mix(in srgb, var(--ui-primary-main) 40%, var(--color-stroke-ui-light));
     }
   }
 
@@ -2158,6 +2209,38 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    padding: 10px 12px;
+    border: 0 !important;
+    border-radius: 10px;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .accounts-pagination :deep(.p-paginator) {
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .accounts-pagination :deep(.p-paginator-page),
+  .accounts-pagination :deep(.p-paginator-next),
+  .accounts-pagination :deep(.p-paginator-prev),
+  .accounts-pagination :deep(.p-paginator-first),
+  .accounts-pagination :deep(.p-paginator-last) {
+    min-width: 34px;
+    height: 34px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-text-main);
+    font-weight: 800;
+  }
+
+  .accounts-pagination :deep(.p-paginator-page.p-paginator-page-selected) {
+    border-color: var(--ui-primary-main);
+    background: var(--ui-primary-main);
+    color: #fff;
   }
 
   .accounts-pagination__report {
