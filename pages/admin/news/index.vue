@@ -17,5 +17,6 @@
   .admin-news-route {
     width: 100%;
     min-height: 100%;
+    padding: 1rem;
   }
 </style>

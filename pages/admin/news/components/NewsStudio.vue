@@ -135,7 +135,17 @@
                 class="news-prime-post-card"
                 @click="openPreview(article, true)">
                 <template #content>
-                  <article class="news-prime-post-card__body">
+                  <article
+                    class="news-prime-post-card__body"
+                    :class="{ 'has-image': article.cover_image_url }">
+                    <div
+                      v-if="article.cover_image_url"
+                      class="news-prime-post-card__thumb">
+                      <img
+                        :src="article.cover_image_url"
+                        :alt="article.title || article.slug" />
+                    </div>
+
                     <div class="news-prime-post-card__main">
                       <div class="news-prime-post-card__meta">
                         <PrimeTag
@@ -292,25 +302,61 @@
                             text
                             severity="secondary"
                             label="H2"
-                            @click="insertMarkup(manualContentRef, manualForm.content, value => (manualForm.content = value), '## ', '', 'Heading')" />
+                            @click="
+                              insertMarkup(
+                                manualContentRef,
+                                manualForm.content,
+                                value => (manualForm.content = value),
+                                '## ',
+                                '',
+                                'Heading'
+                              )
+                            " />
                           <PrimeButton
                             size="small"
                             text
                             severity="secondary"
                             label="B"
-                            @click="insertMarkup(manualContentRef, manualForm.content, value => (manualForm.content = value), '**', '**', 'important text')" />
+                            @click="
+                              insertMarkup(
+                                manualContentRef,
+                                manualForm.content,
+                                value => (manualForm.content = value),
+                                '**',
+                                '**',
+                                'important text'
+                              )
+                            " />
                           <PrimeButton
                             size="small"
                             text
                             severity="secondary"
                             icon="pi pi-link"
-                            @click="insertMarkup(manualContentRef, manualForm.content, value => (manualForm.content = value), '[', '](https://example.com)', 'link text')" />
+                            @click="
+                              insertMarkup(
+                                manualContentRef,
+                                manualForm.content,
+                                value => (manualForm.content = value),
+                                '[',
+                                '](https://example.com)',
+                                'link text'
+                              )
+                            " />
                           <PrimeButton
                             size="small"
                             text
                             severity="secondary"
                             icon="pi pi-list"
-                            @click="insertMarkup(manualContentRef, manualForm.content, value => (manualForm.content = value), '- ', '', 'list item')" />
+                            @click="
+                              insertMarkup(
+                                manualContentRef,
+                                manualForm.content,
+                                value => (manualForm.content = value),
+                                '- ',
+                                '',
+                                'list item'
+                              )
+                            " />
                         </div>
                       </div>
                       <PrimeTextarea
@@ -507,10 +553,30 @@
                 class="news-prime-draft-card"
                 @click="openPreview(draftArticle, true)">
                 <template #content>
+                  <div
+                    v-if="draftMediaImages.length"
+                    class="news-prime-draft-card__media">
+                    <img
+                      :src="draftMediaImages[0]"
+                      :alt="draftArticle.title || draftArticle.slug"
+                      class="news-prime-draft-card__cover" />
+                    <div
+                      v-if="draftMediaImages.length > 1"
+                      class="news-prime-draft-card__gallery">
+                      <img
+                        v-for="image in draftMediaImages.slice(1, 4)"
+                        :key="image"
+                        :src="image"
+                        :alt="draftArticle.title || draftArticle.slug" />
+                    </div>
+                  </div>
+
                   <div class="news-prime-draft-card__body">
                     <div>
                       <strong>{{ draftArticle.title || draftArticle.slug }}</strong>
-                      <p>{{ draftArticle.excerpt || t("admin.news.chatWorkspace.previewHint", "Open draft preview") }}</p>
+                      <p>
+                        {{ draftArticle.excerpt || t("admin.news.chatWorkspace.previewHint", "Open draft preview") }}
+                      </p>
                     </div>
                     <PrimeTag
                       :value="statusLabel(draftArticle.effective_status)"
@@ -758,22 +824,29 @@
     { value: "table" as const, label: t("admin.news.views.table", "Table"), icon: "pi pi-table" },
   ]);
 
-  const seoTextFields = computed<Array<{ key: SeoStringKey; label: string; textarea?: boolean; full?: boolean }>>(() => [
-    { key: "canonical_url", label: t("admin.news.seo.canonicalUrl", "Canonical URL") },
-    { key: "robots", label: t("admin.news.seo.robots", "Robots") },
-    { key: "schema_type", label: t("admin.news.seo.schemaType", "Schema type") },
-    { key: "og_title", label: t("admin.news.seo.ogTitle", "Open Graph title") },
-    { key: "og_description", label: t("admin.news.seo.ogDescription", "Open Graph description"), textarea: true, full: true },
-    { key: "og_image_url", label: t("admin.news.seo.ogImageUrl", "Open Graph image"), full: true },
-    { key: "twitter_title", label: t("admin.news.seo.twitterTitle", "Twitter title") },
-    {
-      key: "twitter_description",
-      label: t("admin.news.seo.twitterDescription", "Twitter description"),
-      textarea: true,
-      full: true,
-    },
-    { key: "twitter_image_url", label: t("admin.news.seo.twitterImageUrl", "Twitter image"), full: true },
-  ]);
+  const seoTextFields = computed<Array<{ key: SeoStringKey; label: string; textarea?: boolean; full?: boolean }>>(
+    () => [
+      { key: "canonical_url", label: t("admin.news.seo.canonicalUrl", "Canonical URL") },
+      { key: "robots", label: t("admin.news.seo.robots", "Robots") },
+      { key: "schema_type", label: t("admin.news.seo.schemaType", "Schema type") },
+      { key: "og_title", label: t("admin.news.seo.ogTitle", "Open Graph title") },
+      {
+        key: "og_description",
+        label: t("admin.news.seo.ogDescription", "Open Graph description"),
+        textarea: true,
+        full: true,
+      },
+      { key: "og_image_url", label: t("admin.news.seo.ogImageUrl", "Open Graph image"), full: true },
+      { key: "twitter_title", label: t("admin.news.seo.twitterTitle", "Twitter title") },
+      {
+        key: "twitter_description",
+        label: t("admin.news.seo.twitterDescription", "Twitter description"),
+        textarea: true,
+        full: true,
+      },
+      { key: "twitter_image_url", label: t("admin.news.seo.twitterImageUrl", "Twitter image"), full: true },
+    ]
+  );
 
   const phaseTexts = computed(() => [
     t("admin.news.phases.analyzing", "Analyzing your request"),
@@ -783,6 +856,13 @@
   ]);
 
   const currentPhase = computed(() => phaseTexts.value[currentPhaseIndex.value] || phaseTexts.value[0]);
+  const draftMediaImages = computed(() => {
+    if (!draftArticle.value) return [];
+
+    return [draftArticle.value.cover_image_url, ...(draftArticle.value.gallery_images || [])]
+      .filter((image): image is string => typeof image === "string" && image.trim() !== "")
+      .filter((image, index, list) => list.indexOf(image) === index);
+  });
 
   function createEmptyManualForm(): ManualPostForm {
     return {
@@ -1187,7 +1267,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: clamp(12px, 1.35vw, 22px);
+    padding: 0;
     color: var(--ui-text-main);
     animation: news-enter 0.28s ease both;
   }
@@ -1199,7 +1279,12 @@
     z-index: 2;
     pointer-events: none;
     border-radius: 24px;
-    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ui-primary-main) 7%, transparent), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--ui-primary-main) 7%, transparent),
+      transparent
+    );
     animation: news-sheen 1.35s ease infinite;
   }
 
@@ -1440,10 +1525,35 @@
     padding: 13px;
   }
 
+  .news-prime-post-card__body.has-image {
+    grid-template-columns: 96px minmax(0, 1fr) auto;
+  }
+
   .news-prime__posts.is-grid .news-prime-post-card__body {
     grid-template-columns: 1fr;
     align-items: stretch;
     min-height: 190px;
+  }
+
+  .news-prime-post-card__thumb {
+    width: 96px;
+    height: 70px;
+    overflow: hidden;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+  }
+
+  .news-prime__posts.is-grid .news-prime-post-card__thumb {
+    width: 100%;
+    height: 138px;
   }
 
   .news-prime-post-card__main {
@@ -1646,6 +1756,37 @@
 
   .news-prime-draft-card {
     cursor: pointer;
+  }
+
+  .news-prime-draft-card__media {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .news-prime-draft-card__cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: block;
+    object-fit: cover;
+    border: 1px solid var(--color-stroke-ui-light);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
+  }
+
+  .news-prime-draft-card__gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+
+    img {
+      width: 100%;
+      aspect-ratio: 1.35;
+      display: block;
+      object-fit: cover;
+      border: 1px solid var(--color-stroke-ui-light);
+      border-radius: 10px;
+    }
   }
 
   .news-prime-draft-card__body {
