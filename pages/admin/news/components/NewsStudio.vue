@@ -52,7 +52,7 @@
 
       <PrimeTabPanels>
         <PrimeTabPanel value="library">
-          <section class="news-prime__section">
+          <section class="news-prime__section news-prime__section--library">
             <div class="news-prime__section-head">
               <div>
                 <h2 class="news-prime__section-title">{{ t("admin.news.library.title", "All posts") }}</h2>
@@ -115,7 +115,7 @@
                 v-for="item in 5"
                 :key="item"
                 height="92px"
-                border-radius="22px" />
+                border-radius="12px" />
             </div>
 
             <div
@@ -1256,10 +1256,11 @@
 
 <style scoped lang="scss">
   .news-prime {
-    --news-glass-bg: color-mix(in srgb, var(--ui-background-card) 74%, transparent);
-    --news-glass-bg-strong: color-mix(in srgb, var(--ui-background-panel) 86%, transparent);
-    --news-glass-border: color-mix(in srgb, var(--ui-primary-main) 16%, var(--color-stroke-ui-light));
-    --news-glass-shadow: 0 18px 56px color-mix(in srgb, #000000 20%, transparent);
+    --news-card-bg: var(--ui-background-panel);
+    --news-card-border: var(--color-stroke-ui-light);
+    --news-card-radius: 12px;
+    --news-card-hover-bg: color-mix(in srgb, var(--ui-primary-main) 8%, var(--ui-background-panel));
+    --news-card-hover-border: color-mix(in srgb, var(--ui-primary-main) 40%, var(--color-stroke-ui-light));
 
     position: relative;
     width: 100%;
@@ -1307,10 +1308,10 @@
   .news-prime__title {
     margin: 0;
     color: var(--ui-text-main);
-    font-size: clamp(24px, 2.1vw, 36px);
-    font-weight: 850;
-    line-height: 1.02;
-    letter-spacing: -0.035em;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0;
   }
 
   .news-prime__subtitle,
@@ -1327,8 +1328,35 @@
   .news-prime__section-subtitle,
   .news-prime-composer__bottom p {
     margin: 6px 0 0;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.45;
+  }
+
+  .news-prime :deep(.p-button) {
+    min-height: 38px;
+    border-radius: 8px;
+    box-shadow: none;
+    font-weight: 700;
+  }
+
+  .news-prime :deep(.p-button:not(.p-button-outlined):not(.p-button-text)) {
+    border-color: var(--ui-primary-main);
+    background: var(--ui-primary-main);
+    color: #fff;
+  }
+
+  .news-prime :deep(.p-button.p-button-outlined),
+  .news-prime :deep(.p-button.p-button-text) {
+    border-color: transparent;
+    background: transparent;
+    color: var(--ui-text-main);
+  }
+
+  .news-prime :deep(.p-button.p-button-outlined:not(:disabled):hover),
+  .news-prime :deep(.p-button.p-button-text:not(:disabled):hover) {
+    border-color: var(--ui-control-hover-border);
+    background: var(--ui-control-option-hover);
+    color: var(--ui-text-main);
   }
 
   .news-prime__header-actions,
@@ -1360,16 +1388,16 @@
       gap: 8px;
       min-height: 40px;
       padding: 0 14px;
-      border: 1px solid var(--news-glass-border);
+      border: 1px solid transparent;
       border-radius: 999px;
       color: var(--ui-text-secondary);
-      background: var(--news-glass-bg);
-      font-weight: 750;
+      background: transparent;
+      font-weight: 800;
     }
 
     :deep(.p-tab-active) {
       color: #ffffff;
-      border-color: color-mix(in srgb, var(--ui-primary-main) 48%, var(--color-stroke-ui-light));
+      border-color: var(--ui-primary-main);
       background: var(--ui-primary-main);
     }
 
@@ -1378,7 +1406,6 @@
     }
   }
 
-  .news-prime__section,
   .news-prime-post-card,
   .news-prime-filter-card,
   .news-prime-composer,
@@ -1387,21 +1414,23 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border: 1px solid var(--news-glass-border);
-    border-radius: 22px;
-    background:
-      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 10%, transparent), transparent 38%),
-      linear-gradient(145deg, var(--news-glass-bg), var(--news-glass-bg-strong));
-    box-shadow: var(--news-glass-shadow);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--news-card-border);
+    border-radius: var(--news-card-radius);
+    background: var(--news-card-bg);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .news-prime__section {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 14px;
+    padding: 0;
+    border: 0 !important;
+    border-radius: 12px;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   .news-prime__section--chat {
@@ -1411,10 +1440,10 @@
   .news-prime__section-title {
     margin: 0;
     color: var(--ui-text-main);
-    font-size: clamp(19px, 1.5vw, 26px);
-    font-weight: 840;
-    line-height: 1.12;
-    letter-spacing: -0.025em;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0;
   }
 
   .news-prime__filters {
@@ -1424,33 +1453,29 @@
   }
 
   .news-prime-filter-card {
-    min-height: 86px;
+    min-height: 76px;
     padding: 12px;
     cursor: pointer;
     text-align: left;
     transition:
-      transform 0.18s ease,
       border-color 0.18s ease,
-      box-shadow 0.18s ease;
+      background-color 0.18s ease;
   }
 
   .news-prime-filter-card:hover,
   .news-prime-filter-card.is-active {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--ui-primary-main) 42%, var(--color-stroke-ui-light));
+    border-color: var(--ui-primary-main);
   }
 
   .news-prime-filter-card.is-active {
-    background:
-      radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--ui-primary-main) 18%, transparent), transparent 42%),
-      linear-gradient(145deg, var(--news-glass-bg), var(--news-glass-bg-strong));
+    background: var(--news-card-hover-bg);
   }
 
   .news-prime-filter-card__label {
     display: block;
     color: var(--ui-text-main);
-    font-size: 17px;
-    font-weight: 830;
+    font-size: 16px;
+    font-weight: 800;
   }
 
   .news-prime-filter-card__hint {
@@ -1471,9 +1496,15 @@
     align-items: center;
     gap: 8px;
     padding: 0 12px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--ui-background-card) 90%, transparent);
+    border: 1px solid var(--ui-control-border);
+    border-radius: 10px;
+    background: var(--ui-control-bg);
+    color: var(--ui-text-main);
+
+    &:focus-within {
+      border-color: var(--ui-control-focus-border);
+      box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
+    }
 
     :deep(.p-inputtext) {
       width: 100%;
@@ -1503,14 +1534,14 @@
   .news-prime-post-card {
     cursor: pointer;
     transition:
-      transform 0.18s ease,
       border-color 0.18s ease,
-      box-shadow 0.18s ease;
+      background-color 0.18s ease;
   }
 
   .news-prime-post-card:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--ui-primary-main) 36%, var(--color-stroke-ui-light));
+    transform: none;
+    border-color: var(--news-card-hover-border);
+    background: var(--news-card-hover-bg);
   }
 
   .news-prime-post-card :deep(.p-card-body) {
@@ -1522,7 +1553,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;
     align-items: center;
-    padding: 13px;
+    padding: 14px;
   }
 
   .news-prime-post-card__body.has-image {
@@ -1539,9 +1570,9 @@
     width: 96px;
     height: 70px;
     overflow: hidden;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--ui-background-card) 92%, transparent);
+    border: 1px solid var(--news-card-border);
+    border-radius: 10px;
+    background: var(--ui-background-card);
 
     img {
       width: 100%;
@@ -1574,7 +1605,7 @@
     margin: 0;
     color: var(--ui-text-main);
     font-size: 18px;
-    font-weight: 830;
+    font-weight: 800;
     line-height: 1.2;
   }
 
@@ -1611,12 +1642,40 @@
 
   .news-prime__paginator {
     align-self: center;
+
+    :deep(.p-paginator) {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
   }
 
   .news-prime__inner-tabs {
     :deep(.p-tabpanels),
     :deep(.p-tablist) {
       background: transparent;
+    }
+
+    :deep(.p-tablist-tab-list) {
+      gap: 8px;
+      border: 0;
+      background: transparent;
+    }
+
+    :deep(.p-tab) {
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ui-text-secondary);
+      font-weight: 800;
+    }
+
+    :deep(.p-tab-active) {
+      border-color: var(--ui-primary-main);
+      background: var(--ui-primary-main);
+      color: #fff;
     }
 
     :deep(.p-tabpanels) {
@@ -1701,14 +1760,15 @@
   .news-prime-message {
     width: min(760px, 92%);
     padding: 12px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 18px;
-    background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
+    border: 1px solid var(--news-card-border);
+    border-radius: var(--news-card-radius);
+    background: var(--ui-background-card);
   }
 
   .news-prime-message.is-user {
     align-self: flex-end;
-    background: color-mix(in srgb, var(--ui-primary-main) 16%, var(--ui-background-card));
+    border-color: var(--ui-primary-main);
+    background: var(--news-card-hover-bg);
   }
 
   .news-prime-message__head {
@@ -1769,9 +1829,9 @@
     aspect-ratio: 16 / 9;
     display: block;
     object-fit: cover;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--ui-background-card) 88%, transparent);
+    border: 1px solid var(--news-card-border);
+    border-radius: 10px;
+    background: var(--ui-background-card);
   }
 
   .news-prime-draft-card__gallery {
@@ -1784,7 +1844,7 @@
       aspect-ratio: 1.35;
       display: block;
       object-fit: cover;
-      border: 1px solid var(--color-stroke-ui-light);
+      border: 1px solid var(--news-card-border);
       border-radius: 10px;
     }
   }
