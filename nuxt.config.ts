@@ -233,9 +233,26 @@ export default defineNuxtConfig({
     workbox: {
       cleanupOutdatedCaches: true,
       clientsClaim: true,
-      globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
+      globPatterns: ["**/*.{js,css,svg,png,ico,woff2}"],
       navigateFallback: "/en/auth/login",
       navigateFallbackDenylist: [/^\/api\//, /^\/_nuxt\//, /^\/favicon\//],
+      runtimeCaching: [
+        {
+          urlPattern: ({ request }) => request.mode === "navigate",
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "ester-admin-navigations",
+            networkTimeoutSeconds: 3,
+            cacheableResponse: {
+              statuses: [200],
+            },
+            expiration: {
+              maxEntries: 12,
+              maxAgeSeconds: 60 * 60,
+            },
+          },
+        },
+      ],
       skipWaiting: true,
     },
     devOptions: { enabled: false },

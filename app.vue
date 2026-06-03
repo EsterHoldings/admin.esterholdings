@@ -45,6 +45,7 @@
 
   import ModalRightSideDefault from "./components/block/modals/ModalRightSideDefault.vue";
   import { useThemeStore } from "./stores/themeStore";
+  import { markAdminAppReady, recoverAdminBoot } from "./utils/adminBootRecovery";
 
   import "vue-draggable-resizable/style.css";
 
@@ -57,6 +58,7 @@
   const nuxtApp = useNuxtApp();
   const router = useRouter();
   let routeLoaderTimer: ReturnType<typeof setTimeout> | null = null;
+  let bootRecoveryTimer: ReturnType<typeof setTimeout> | null = null;
   let bootFrame = 0;
 
   const showBootLoader = computed(() => isAppBooting.value || isRouteLoading.value);
@@ -89,8 +91,28 @@
 
     bootFrame = window.requestAnimationFrame(() => {
       isAppBooting.value = false;
-      document.documentElement.dataset.adminAppReady = "true";
+      clearBootRecoveryTimer();
+      markAdminAppReady();
     });
+  };
+
+  const clearBootRecoveryTimer = () => {
+    if (!bootRecoveryTimer) return;
+
+    clearTimeout(bootRecoveryTimer);
+    bootRecoveryTimer = null;
+  };
+
+  const scheduleBootRecovery = () => {
+    if (!process.client) return;
+
+    clearBootRecoveryTimer();
+    bootRecoveryTimer = setTimeout(() => {
+      const isReady = document.documentElement.dataset.adminAppReady === "true";
+      if (isReady) return;
+
+      void recoverAdminBoot("admin boot timeout");
+    }, 18000);
   };
 
   nuxtApp.hook("page:start", () => {
@@ -109,8 +131,10 @@
 
   nuxtApp.hook("app:error", () => {
     clearRouteLoaderTimer();
+    clearBootRecoveryTimer();
     isRouteLoading.value = false;
     isAppBooting.value = false;
+    markAdminAppReady();
   });
 
   useHead({
@@ -121,6 +145,8 @@
   });
 
   onMounted(() => {
+    scheduleBootRecovery();
+
     const themeStore = useThemeStore();
     themeStore.initTheme();
 
@@ -131,6 +157,7 @@
 
   onBeforeUnmount(() => {
     clearRouteLoaderTimer();
+    clearBootRecoveryTimer();
 
     if (bootFrame) {
       window.cancelAnimationFrame(bootFrame);
