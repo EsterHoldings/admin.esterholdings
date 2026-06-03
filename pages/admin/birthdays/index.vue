@@ -1,5 +1,80 @@
 <template>
   <section class="birthdays-page">
+    <header class="birthdays-page__header">
+      <div>
+        <h1 class="birthdays-page__title">{{ copy("Дни рождения", "Birthdays", "Дні народження") }}</h1>
+        <p class="birthdays-page__subtitle">
+          {{
+            copy(
+              "Клиенты с ближайшими днями рождения и история отправленных писем клиенту и саппорту.",
+              "Upcoming client birthdays and the history of support/client emails.",
+              "Клієнти з найближчими днями народження та історія листів клієнту і підтримці."
+            )
+          }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="birthdays-page__refresh"
+        :disabled="isBusy"
+        @click="reloadBirthdays">
+        <span class="pi pi-refresh" />
+        <span>{{ copy("Обновить", "Refresh", "Оновити") }}</span>
+      </button>
+    </header>
+
+    <div class="birthdays-page__filters">
+      <div class="birthdays-page__filter-group">
+        <span class="birthdays-page__filter-label">{{ copy("Период", "Period", "Період") }}</span>
+        <button
+          v-for="option in periodOptions"
+          :key="option.value"
+          type="button"
+          class="birthdays-page__chip"
+          :class="{ 'is-active': filters.period === option.value }"
+          @click="filters.period = option.value">
+          {{ option.label }}
+        </button>
+      </div>
+
+      <div class="birthdays-page__filter-group">
+        <span class="birthdays-page__filter-label">{{ copy("Группа", "Group", "Група") }}</span>
+        <button
+          v-for="option in scopeOptions"
+          :key="option.value"
+          type="button"
+          class="birthdays-page__chip"
+          :class="{ 'is-active': filters.scope === option.value }"
+          @click="filters.scope = option.value">
+          {{ option.label }}
+        </button>
+      </div>
+
+      <label class="birthdays-page__filter-group birthdays-page__filter-group--select">
+        <span class="birthdays-page__filter-label">{{ copy("Показывать", "Show", "Показувати") }}</span>
+        <select
+          v-model.number="perPage"
+          class="birthdays-page__select"
+          :disabled="isBusy">
+          <option
+            v-for="option in perPageOptions"
+            :key="option"
+            :value="option">
+            {{ option }}
+          </option>
+        </select>
+      </label>
+    </div>
+
+    <div class="birthdays-page__meta">
+      <span>{{ copy("Год", "Year", "Рік") }}: {{ meta?.year || currentYear }}</span>
+      <span>{{ copy("Период", "Range", "Період") }}: {{ formatDate(meta?.from) }} - {{ formatDate(meta?.to) }}</span>
+      <span>{{ copy("Найдено", "Found", "Знайдено") }}: {{ totalItems }}</span>
+      <span>{{ copy("Показано", "Shown", "Показано") }}: {{ shownItems }}</span>
+      <span>{{ copy("Страница", "Page", "Сторінка") }}: {{ currentPage }} / {{ lastPage }}</span>
+    </div>
+
     <div
       v-if="isLoading && items.length === 0"
       class="birthdays-page__state">
@@ -114,6 +189,33 @@
         </article>
       </div>
 
+      <div class="birthdays-page__pagination">
+        <button
+          type="button"
+          class="birthdays-page__page-button"
+          :disabled="isBusy || currentPage <= 1"
+          @click="goToPage(currentPage - 1)">
+          <span class="pi pi-chevron-left" />
+        </button>
+        <button
+          v-for="pageNumber in pageNumbers"
+          :key="pageNumber"
+          type="button"
+          class="birthdays-page__page-button"
+          :class="{ 'is-active': currentPage === pageNumber }"
+          :disabled="isBusy"
+          @click="goToPage(pageNumber)">
+          {{ pageNumber }}
+        </button>
+        <button
+          type="button"
+          class="birthdays-page__page-button"
+          :disabled="isBusy || currentPage >= lastPage"
+          @click="goToPage(currentPage + 1)">
+          <span class="pi pi-chevron-right" />
+        </button>
+      </div>
+
       <button
         v-if="hasMore"
         type="button"
@@ -130,7 +232,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, ref } from "vue";
+  import { computed, onMounted, reactive, ref, watch } from "vue";
   import { useI18n } from "vue-i18n";
   import { definePageMeta, useLocalePath } from "~/.nuxt/imports";
   import useAppCore from "~/composables/useAppCore";
@@ -190,10 +292,11 @@
   const meta = ref<BirthdaysMeta | null>(null);
   const page = ref(1);
   const perPage = ref(5);
-  const filters = {
+  const perPageOptions = [5, 10, 20, 50];
+  const filters = reactive({
     period: "1y",
     scope: "future",
-  };
+  });
 
   const copy = (ru: string, en: string, uk?: string): string => {
     if (locale.value === "ru") return ru;
@@ -202,10 +305,50 @@
     return en;
   };
 
+  const periodOptions = computed(() => [
+    { label: copy("1м", "1m", "1м"), value: "1m" },
+    { label: copy("3м", "3m", "3м"), value: "3m" },
+    { label: copy("6м", "6m", "6м"), value: "6m" },
+    { label: copy("1г", "1y", "1р"), value: "1y" },
+  ]);
+
+  const scopeOptions = computed(() => [
+    {
+      label: copy("Будущие дни рождения", "Upcoming birthdays", "Майбутні дні народження"),
+      value: "future",
+    },
+    {
+      label: copy("Прошедшие дни рождения", "Past birthdays", "Минулі дні народження"),
+      value: "past",
+    },
+  ]);
+
+  const totalItems = computed(() => Number(meta.value?.total ?? items.value.length) || 0);
+  const shownItems = computed(() => {
+    if (items.value.length > Number(meta.value?.per_page ?? perPage.value)) {
+      return `1-${items.value.length}`;
+    }
+
+    if (meta.value?.items_from && meta.value?.items_to) {
+      return `${meta.value.items_from}-${meta.value.items_to}`;
+    }
+
+    return String(items.value.length);
+  });
   const currentPage = computed(() => Number(meta.value?.page ?? page.value) || 1);
   const lastPage = computed(() => Math.max(1, Number(meta.value?.last_page ?? 1) || 1));
   const hasMore = computed(() => Boolean(meta.value?.has_more) && currentPage.value < lastPage.value);
   const isBusy = computed(() => isLoading.value || isLoadingMore.value);
+  const pageNumbers = computed(() => {
+    const visiblePages = 5;
+    const last = lastPage.value;
+    const current = currentPage.value;
+    const half = Math.floor(visiblePages / 2);
+    const start = Math.max(1, Math.min(current - half, Math.max(1, last - visiblePages + 1)));
+    const end = Math.min(last, start + visiblePages - 1);
+
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  });
 
   const clientLink = (clientId: string) => localePath(`/clients/${clientId}`);
   const parseDate = (value?: string | null): Date | null => {
@@ -214,6 +357,17 @@
     const date = new Date(normalized);
 
     return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const formatDate = (value?: string | null): string => {
+    const date = parseDate(value);
+    if (!date) return "—";
+
+    return new Intl.DateTimeFormat(locale.value || "en", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
   };
 
   const formatDayMonth = (value?: string | null): string => {
@@ -337,12 +491,25 @@
     loadBirthdays();
   };
 
+  const goToPage = (targetPage: number) => {
+    const nextPage = Math.min(Math.max(1, Number(targetPage) || 1), lastPage.value);
+    if (nextPage === currentPage.value && items.value.length > 0) return;
+
+    page.value = nextPage;
+    loadBirthdays();
+  };
+
   const loadMore = () => {
     if (!hasMore.value || isBusy.value) return;
 
     page.value = currentPage.value + 1;
     loadBirthdays({ append: true });
   };
+
+  watch(
+    () => [filters.period, filters.scope, perPage.value],
+    () => reloadBirthdays()
+  );
 
   onMounted(() => {
     reloadBirthdays();
@@ -361,6 +528,122 @@
     background: var(--ui-background-panel);
   }
 
+  .birthdays-page__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 12px;
+  }
+
+  .birthdays-page__title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--ui-text-main);
+  }
+
+  .birthdays-page__subtitle {
+    max-width: 780px;
+    margin: 6px 0 0;
+    color: var(--ui-text-secondary);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .birthdays-page__refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--ui-primary-main);
+    color: #fff;
+    font-weight: 700;
+    transition: opacity 0.2s ease;
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+  }
+
+  .birthdays-page__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .birthdays-page__filter-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .birthdays-page__filter-group--select {
+    margin-left: auto;
+  }
+
+  .birthdays-page__filter-label {
+    color: var(--ui-text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .birthdays-page__chip {
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 700;
+
+    &.is-active {
+      border-color: var(--ui-primary-main);
+      background: var(--ui-primary-main);
+      color: #fff;
+    }
+  }
+
+  .birthdays-page__select {
+    min-height: 32px;
+    padding: 0 34px 0 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-text-main);
+    font-size: 13px;
+    font-weight: 700;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+  }
+
+  .birthdays-page__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--ui-text-secondary);
+    font-size: 13px;
+  }
+
   .birthdays-page__state {
     min-height: 280px;
     display: flex;
@@ -375,7 +658,7 @@
   }
 
   .birthdays-page__inline-error {
-    margin-bottom: 14px;
+    margin-top: 14px;
     color: var(--ui-sticker-danger);
     text-align: center;
     font-size: 13px;
@@ -385,6 +668,42 @@
   .birthdays-page__list {
     display: grid;
     gap: 12px;
+    margin-top: 14px;
+  }
+
+  .birthdays-page__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  .birthdays-page__page-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-text-main);
+    font-weight: 800;
+
+    &.is-active {
+      border-color: var(--ui-primary-main);
+      background: var(--ui-primary-main);
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
   }
 
   .birthdays-page__load-more {
@@ -572,6 +891,24 @@
   }
 
   @media (max-width: 640px) {
+    .birthdays-page__header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .birthdays-page__refresh {
+      width: 100%;
+    }
+
+    .birthdays-page__filter-group--select,
+    .birthdays-page__select {
+      width: 100%;
+    }
+
+    .birthdays-page__pagination {
+      flex-wrap: wrap;
+    }
+
     .birthday-card__history-row {
       grid-template-columns: 1fr;
       align-items: flex-start;
