@@ -1841,12 +1841,12 @@
   .admin-dashboard__filter :deep(.p-datepicker-input),
   .admin-dashboard__filter :deep(.p-select-label) {
     color: var(--ui-text-main);
-    background: color-mix(in srgb, var(--ui-background-card) 78%, transparent);
+    background: var(--ui-control-bg);
   }
 
   .admin-dashboard__filter :deep(.p-inputtext),
   .admin-dashboard__filter :deep(.p-select) {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 18%, var(--color-stroke-ui-light));
+    border-color: var(--ui-control-border);
     box-shadow: none;
   }
 
@@ -1857,14 +1857,14 @@
 
   .admin-dashboard__filter :deep(.p-inputtext:enabled:hover),
   .admin-dashboard__filter :deep(.p-select:not(.p-disabled):hover) {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
+    border-color: var(--ui-control-hover-border);
   }
 
   .admin-dashboard__filter :deep(.p-inputtext:enabled:focus),
   .admin-dashboard__filter :deep(.p-select.p-focus),
   .admin-dashboard__filter :deep(.p-datepicker:has(.p-inputtext:focus)) {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 50%, var(--color-stroke-ui-light));
-    box-shadow: none;
+    border-color: var(--ui-control-focus-border);
+    box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
   }
 
   .admin-dashboard__filter :deep(.p-select-dropdown),

@@ -325,44 +325,48 @@ onBeforeUnmount(() => {
 :deep(.p-multiselect),
 :deep(.p-password-input) {
   min-height: 44px;
-  border-color: var(--color-stroke-ui-light);
+  border-color: var(--ui-control-border);
   color: var(--ui-text-main);
-  background: color-mix(in srgb, var(--ui-background-card) 94%, transparent);
+  background: var(--ui-control-bg);
 }
 
 :deep(.p-multiselect:hover),
 :deep(.p-password-input:hover) {
-  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--color-stroke-ui-light));
+  border-color: var(--ui-control-hover-border);
 }
 
 :deep(.p-multiselect.p-focus),
 :deep(.p-password-input:enabled:focus) {
-  border-color: var(--ui-primary-main);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  border-color: var(--ui-control-focus-border);
+  box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
 }
 
 :deep(.p-multiselect-label),
 :deep(.p-password-input::placeholder) {
-  color: var(--ui-text-secondary);
+  color: var(--ui-control-placeholder);
 }
 
 :deep(.p-multiselect-chip) {
+  border: 1px solid var(--ui-control-chip-border);
   border-radius: 999px;
+  background: var(--ui-control-chip-bg);
+  color: var(--ui-text-main);
 }
 
 :deep(.admins-create-modal__roles-overlay) {
   z-index: 4;
   margin-top: 6px;
-  border: 1px solid var(--color-stroke-ui-light);
-  border-radius: 18px;
+  border: 1px solid var(--ui-control-border);
+  border-radius: 12px;
   background: color-mix(in srgb, var(--ui-background-card) 97%, transparent);
-  box-shadow: 0 18px 42px color-mix(in srgb, #000000 18%, transparent);
+  box-shadow: none;
+  backdrop-filter: blur(10px);
   overflow: hidden;
 }
 
 :deep(.admins-create-modal__roles-overlay .p-multiselect-header) {
-  border-bottom: 1px solid var(--color-stroke-ui-light);
-  background: color-mix(in srgb, var(--ui-background) 94%, transparent);
+  border-bottom: 1px solid var(--ui-control-border);
+  background: color-mix(in srgb, var(--ui-background-card) 98%, transparent);
 }
 
 :deep(.admins-create-modal__roles-overlay .p-multiselect-list-container) {
@@ -374,11 +378,11 @@ onBeforeUnmount(() => {
 }
 
 :deep(.admins-create-modal__roles-overlay .p-multiselect-option.p-focus) {
-  background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+  background: var(--ui-control-option-hover);
 }
 
 :deep(.admins-create-modal__roles-overlay .p-multiselect-option.p-multiselect-option-selected) {
-  background: color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  background: var(--ui-control-option-active);
 }
 
 :deep(.p-message) {

@@ -5,7 +5,7 @@
     <button
       ref="body"
       type="button"
-      class="select outline-none inline-flex h-10 w-full items-center justify-start gap-2 rounded-[8px] border bg-[var(--color-stroke-ui-dark)] px-5 text-[var(--color-ui-text)] transition border-[var(--color-stroke-ui-light)]"
+      class="select outline-none inline-flex h-10 w-full items-center justify-start gap-2 border px-4 transition"
       :class="{
         '!border-none !bg-[transparent]': withoutOverlay,
         'cursor-not-allowed opacity-60 pointer-events-none': props.disabled,
@@ -36,7 +36,7 @@
     <div
       v-if="isOpen"
       ref="menu"
-      class="absolute left-0 z-50 w-full overflow-y-auto rounded border bg-[var(--color-stroke-ui-dark)] p-2 shadow-lg border-[var(--color-stroke-ui-light)] data-[down=true]:top-full data-[down=true]:mt-2 data-[up=true]:bottom-full data-[up=true]:mb-2"
+      class="select__menu absolute left-0 z-50 w-full overflow-y-auto p-2 data-[down=true]:top-full data-[down=true]:mt-2 data-[up=true]:bottom-full data-[up=true]:mb-2"
       role="listbox"
       :data-down="!dropup || null"
       :data-up="dropup || null"
@@ -59,8 +59,8 @@
 
       <UiTextSmall
         v-if="!withoutNoSelect"
-        class="select__option flex items-center justify-start mb-1 h-10 cursor-pointer rounded px-5 text-[var(--color-ui-text)] font-semibold text-[0.8125rem] hover:bg-[var(--color-stroke-ui-light)]"
-        :class="{ 'opacity-80': internalValue === null }"
+        class="select__option mb-1 flex h-10 cursor-pointer items-center justify-start px-4 text-[0.8125rem] font-semibold"
+        :class="{ 'is-selected': internalValue === null }"
         role="option"
         :aria-selected="internalValue === null ? 'true' : 'false'"
         @click="choose(null)">
@@ -70,8 +70,8 @@
       <UiTextSmall
         v-for="item in data"
         :key="item.value"
-        class="select__option flex items-center justify-start mb-1 h-10 cursor-pointer rounded px-5 text-[var(--color-ui-text)] hover:bg-[var(--color-stroke-ui-light)] last:mb-0"
-        :class="{ 'font-semibold': internalValue === item.value }"
+        class="select__option mb-1 flex h-10 cursor-pointer items-center justify-start px-4 last:mb-0"
+        :class="{ 'is-selected font-semibold': internalValue === item.value }"
         role="option"
         :aria-selected="internalValue === item.value ? 'true' : 'false'"
         v-html="item.text"
@@ -312,6 +312,29 @@
 </script>
 
 <style scoped>
+  .select {
+    border-radius: 10px;
+    border-color: var(--ui-control-border);
+    background: var(--ui-control-bg);
+    color: var(--ui-text-main);
+    font-size: 14px;
+    font-weight: 600;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .select:hover {
+    border-color: var(--ui-control-hover-border);
+  }
+
+  .select[data-open] {
+    border-color: var(--ui-primary-main);
+    box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
+  }
+
   .select[data-invalid] {
     border-color: var(--color-danger) !important;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-danger) 30%, transparent);
@@ -322,15 +345,51 @@
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-success) 25%, transparent);
   }
 
+  .select__menu {
+    border: 1px solid var(--ui-control-border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ui-background-card) 97%, transparent);
+    color: var(--ui-text-main);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+  }
+
+  .select__option {
+    border-radius: 8px;
+    color: var(--ui-text-main);
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease;
+  }
+
+  .select__option:hover {
+    background: var(--ui-control-option-hover);
+  }
+
+  .select__option.is-selected {
+    background: var(--ui-control-option-active);
+    color: var(--ui-text-main);
+  }
+
   .select__search-input {
     width: 100%;
     height: 36px;
     border-radius: 8px;
-    border: 1px solid var(--color-stroke-ui-light);
-    background: var(--color-stroke-ui-dark);
-    color: var(--color-ui-text);
+    border: 1px solid var(--ui-control-border);
+    background: var(--ui-control-bg);
+    color: var(--ui-text-main);
     padding: 0 10px;
     outline: none;
     font-size: 13px;
+    caret-color: var(--ui-primary-main);
+  }
+
+  .select__search-input::placeholder {
+    color: var(--ui-control-placeholder);
+  }
+
+  .select__search-input:focus {
+    border-color: var(--ui-primary-main);
+    box-shadow: 0 0 0 2px var(--ui-control-focus-ring);
   }
 </style>

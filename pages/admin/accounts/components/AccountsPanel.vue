@@ -1960,18 +1960,23 @@
   .accounts-toolbar :deep(.p-inputtext),
   .accounts-toolbar :deep(.p-select) {
     min-height: 36px;
-    border: 1px solid transparent;
+    border: 1px solid var(--ui-control-border);
     border-radius: 8px;
-    background: transparent;
+    background: var(--ui-control-bg);
     color: var(--ui-text-main);
     font-size: 13px;
     font-weight: 700;
   }
 
+  .accounts-toolbar :deep(.p-inputtext:enabled:hover),
+  .accounts-toolbar :deep(.p-select:not(.p-disabled):hover) {
+    border-color: var(--ui-control-hover-border);
+  }
+
   .accounts-toolbar :deep(.p-inputtext:enabled:focus),
   .accounts-toolbar :deep(.p-select.p-focus) {
-    border-color: color-mix(in srgb, var(--ui-primary-main) 55%, transparent);
-    box-shadow: none;
+    border-color: var(--ui-control-focus-border);
+    box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
   }
 
   .accounts-toolbar :deep(.p-button) {

@@ -123,9 +123,12 @@ const handleClickRemove = (id: string) => emit("remove", id);
 <style lang="scss" scoped>
 .multi-select {
   border-radius: var(--ui-input--border-radius);
-  border: 1px solid var(--color-stroke-ui-dark);
-  padding: 15px;
+  border: 1px solid var(--ui-control-border);
+  padding: 10px 12px;
   min-height: 40px;
+  background: var(--ui-control-bg);
+  color: var(--ui-text-main);
+  cursor: pointer;
 
   flex-wrap: wrap;
   gap: 8px;
@@ -133,11 +136,20 @@ const handleClickRemove = (id: string) => emit("remove", id);
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+
+  &:hover {
+    border-color: var(--ui-control-hover-border);
+  }
 
   &__placeholder {
     font-size: 14px;
-    font-weight: 300;
-    color: var(--color-text-muted);
+    font-weight: 500;
+    color: var(--ui-control-placeholder);
   }
 
   &__item {
@@ -151,8 +163,8 @@ const handleClickRemove = (id: string) => emit("remove", id);
       width: 14px;
       top: -7px;
       right: 1px;
-      border: 1px solid #d77272;
-      background-color: #f7f7f7;
+      border: 1px solid color-mix(in srgb, var(--ui-sticker-danger) 42%, var(--ui-control-border));
+      background: var(--ui-background-card);
       border-radius: 50%;
       font-size: 14px;
       font-weight: 200;
@@ -162,20 +174,28 @@ const handleClickRemove = (id: string) => emit("remove", id);
       align-items: center;
       justify-content: center;
       text-align: center;
-      color: red;
+      color: var(--ui-sticker-danger);
       line-height: 10px;
+      transition:
+        background-color 0.16s ease,
+        color 0.16s ease,
+        border-color 0.16s ease;
 
       &:hover {
-        background-color: #d77272;
+        border-color: var(--ui-sticker-danger);
+        background: color-mix(in srgb, var(--ui-sticker-danger) 13%, var(--ui-background-card));
         cursor: pointer;
       }
     }
 
     &__text {
-      border: 1px solid var(--color-stroke-ui-dark);
-      border-radius: 5px;
+      border: 1px solid var(--ui-control-chip-border);
+      border-radius: 999px;
+      background: var(--ui-control-chip-bg);
+      color: var(--ui-text-main);
       font-size: 12px;
-      padding: 4px 6px;
+      font-weight: 700;
+      padding: 5px 8px;
       margin-right: 4px;
       white-space: pre;
       display: flex;
@@ -185,12 +205,13 @@ const handleClickRemove = (id: string) => emit("remove", id);
   }
 
   &.is-open {
-    border-bottom: none;
-    border-radius: var(--ui-input--border-radius) var(--ui-input--border-radius) 0 0;
+    border-color: var(--ui-primary-main);
+    box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
   }
 
   &.is-invalid {
-    border: 1px solid red;
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-danger) 20%, transparent);
   }
 
   &__list {
@@ -199,36 +220,40 @@ const handleClickRemove = (id: string) => emit("remove", id);
     left: 0;
     position: absolute;
     width: 100%;
-    border: 1px solid var(--color-stroke-ui-dark);
+    border: 1px solid var(--ui-control-border);
     overflow-y: auto;
     overflow-x: hidden;
     max-height: min(420px, 50vh);
-    border-radius: 0 0 var(--ui-input--border-radius) var(--ui-input--border-radius);
-    background-color: var(--ui-background);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ui-background-card) 97%, transparent);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+    z-index: 50;
 
     &-wrapper {
       position: relative;
     }
 
     &__item {
-      background-color: var(--color-stroke-ui-dark);
+      border-radius: 8px;
+      background: transparent;
       margin-bottom: 1px;
-      height: 30px;
+      min-height: 36px;
       padding: 0 15px;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       transition: background-color 0.3s;
-      font-weight: 200;
-      font-size: 16px;
+      font-weight: 600;
+      font-size: 14px;
 
       &.is-select {
-        background-color: var(--color-stroke-ui-dark) !important;
+        background: var(--ui-control-option-active);
       }
 
       &:hover {
         cursor: pointer;
-        opacity: 0.5;
+        background: var(--ui-control-option-hover);
       }
 
       &:last-child {
@@ -237,14 +262,16 @@ const handleClickRemove = (id: string) => emit("remove", id);
     }
 
     &__empty {
-      background-color: var(--color-stroke-ui-dark);
+      border-radius: 8px;
+      background: transparent;
       min-height: 44px;
       padding: 0 15px;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      font-weight: 200;
-      font-size: 16px;
+      color: var(--ui-text-secondary);
+      font-weight: 500;
+      font-size: 14px;
     }
   }
 
@@ -258,21 +285,31 @@ const handleClickRemove = (id: string) => emit("remove", id);
     left: 0;
     width: 100%;
     padding: 8px;
-    border: 1px solid var(--color-stroke-ui-dark);
+    border: 1px solid var(--ui-control-border);
     border-bottom: none;
-    border-radius: 0 0 0 0;
-    background-color: var(--ui-background);
+    border-radius: 12px 12px 0 0;
+    background: color-mix(in srgb, var(--ui-background-card) 97%, transparent);
     z-index: 2;
 
     &-input {
       width: 100%;
       min-height: 40px;
-      border: 1px solid var(--color-stroke-ui-dark);
+      border: 1px solid var(--ui-control-border);
       border-radius: 10px;
       padding: 0 12px;
-      background-color: var(--color-stroke-ui-dark);
+      background: var(--ui-control-bg);
       color: var(--ui-text-main);
       outline: none;
+      caret-color: var(--ui-primary-main);
+
+      &::placeholder {
+        color: var(--ui-control-placeholder);
+      }
+
+      &:focus {
+        border-color: var(--ui-primary-main);
+        box-shadow: 0 0 0 2px var(--ui-control-focus-ring);
+      }
     }
   }
 }

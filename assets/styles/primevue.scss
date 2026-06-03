@@ -92,6 +92,7 @@
   border-color: var(--ui-control-border);
   color: var(--ui-text-main);
   background: var(--ui-control-bg);
+  box-shadow: none;
 }
 
 .p-inputtext:hover,
@@ -99,7 +100,7 @@
 .p-textarea:hover,
 .p-multiselect:not(.p-disabled):hover,
 .p-datepicker-input:hover {
-  border-color: color-mix(in srgb, var(--ui-primary-main) 34%, var(--ui-control-border));
+  border-color: var(--ui-control-hover-border);
 }
 
 .p-inputtext:enabled:focus,
@@ -107,8 +108,8 @@
 .p-textarea:enabled:focus,
 .p-multiselect.p-focus,
 .p-datepicker:has(.p-datepicker-input:focus) {
-  border-color: var(--ui-primary-main);
-  box-shadow: none;
+  border-color: var(--ui-control-focus-border);
+  box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
 }
 
 .p-inputtext::placeholder,
@@ -116,7 +117,35 @@
   color: var(--ui-control-placeholder);
 }
 
+.p-select-label,
+.p-multiselect-label {
+  color: var(--ui-text-main);
+}
+
+.p-select-label.p-placeholder,
+.p-multiselect-label.p-placeholder {
+  color: var(--ui-control-placeholder);
+}
+
+.p-select-dropdown,
+.p-multiselect-dropdown,
+.p-datepicker-dropdown {
+  color: var(--ui-text-main);
+}
+
+.p-select.p-disabled,
+.p-multiselect.p-disabled,
+.p-inputtext:disabled,
+.p-textarea:disabled,
+.p-datepicker-input:disabled {
+  color: var(--ui-text-secondary);
+  background: var(--ui-control-bg-disabled);
+  border-color: var(--ui-control-border);
+  opacity: 0.72;
+}
+
 .p-select-overlay,
+.p-multiselect-overlay,
 .p-datepicker-panel {
   color: var(--ui-text-main);
   border: 1px solid var(--ui-control-border);
@@ -125,22 +154,90 @@
   backdrop-filter: blur(10px);
 }
 
-.p-select-option,
-.p-datepicker-day {
+.p-select-list,
+.p-multiselect-list {
+  padding: 6px;
+}
+
+.p-select-list-container,
+.p-multiselect-list-container {
+  background: transparent;
+}
+
+.p-multiselect-header {
+  border-bottom: 1px solid var(--ui-control-border);
+  background: color-mix(in srgb, var(--ui-background-card) 98%, transparent);
+}
+
+.p-multiselect-filter {
+  border-color: var(--ui-control-border);
   color: var(--ui-text-main);
+  background: var(--ui-control-bg);
+}
+
+.p-multiselect-filter::placeholder {
+  color: var(--ui-control-placeholder);
+}
+
+.p-multiselect-filter:enabled:focus {
+  border-color: var(--ui-control-focus-border);
+  box-shadow: 0 0 0 3px var(--ui-control-focus-ring);
+}
+
+.p-select-option,
+.p-multiselect-option,
+.p-datepicker-day {
+  border-radius: 10px;
+  color: var(--ui-text-main);
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
 }
 
 .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus,
 .p-select-option:not(.p-select-option-selected):not(.p-disabled):hover,
+.p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus,
+.p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled):hover,
 .p-datepicker-day:not(.p-disabled):hover {
-  background: color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+  background: var(--ui-control-option-hover);
   color: var(--ui-text-main);
 }
 
 .p-select-option-selected,
+.p-multiselect-option-selected,
 .p-datepicker-day-selected {
-  background: color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  background: var(--ui-control-option-active);
   color: var(--ui-text-main);
+}
+
+.p-multiselect-chip {
+  border: 1px solid var(--ui-control-chip-border);
+  border-radius: 999px;
+  background: var(--ui-control-chip-bg);
+  color: var(--ui-text-main);
+  font-weight: 700;
+}
+
+.p-multiselect-chip-icon {
+  color: var(--ui-text-secondary);
+}
+
+.p-checkbox-box {
+  border-color: var(--ui-control-border);
+  background: var(--ui-control-bg);
+}
+
+.p-checkbox:not(.p-disabled) .p-checkbox-box:hover {
+  border-color: var(--ui-control-hover-border);
+}
+
+.p-checkbox-checked .p-checkbox-box {
+  border-color: var(--ui-primary-main);
+  background: var(--ui-primary-main);
+}
+
+.p-checkbox-icon {
+  color: #ffffff;
 }
 
 .p-tag {

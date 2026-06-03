@@ -68,6 +68,13 @@
   --ui-control-bg-disabled: #e4e4e7;
   --ui-control-border: var(--color-stroke-ui-light);
   --ui-control-placeholder: var(--ui-text-secondary);
+  --ui-control-hover-border: color-mix(in srgb, var(--ui-primary-main) 34%, var(--ui-control-border));
+  --ui-control-focus-border: var(--ui-primary-main);
+  --ui-control-focus-ring: color-mix(in srgb, var(--ui-primary-main) 18%, transparent);
+  --ui-control-option-hover: color-mix(in srgb, var(--ui-primary-main) 9%, transparent);
+  --ui-control-option-active: color-mix(in srgb, var(--ui-primary-main) 16%, transparent);
+  --ui-control-chip-bg: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+  --ui-control-chip-border: color-mix(in srgb, var(--ui-primary-main) 24%, var(--ui-control-border));
   --ui-date-input-icon-filter: brightness(0) saturate(100%) invert(0%);
   --ui-date-input-color-scheme: light;
 
@@ -106,6 +113,13 @@
   --ui-control-bg-disabled: rgba(1, 22, 68, 0.6);
   --ui-control-border: #002880;
   --ui-control-placeholder: #b8b8c3;
+  --ui-control-hover-border: color-mix(in srgb, var(--ui-primary-main) 42%, var(--ui-control-border));
+  --ui-control-focus-border: var(--ui-primary-main);
+  --ui-control-focus-ring: color-mix(in srgb, var(--ui-primary-main) 24%, transparent);
+  --ui-control-option-hover: color-mix(in srgb, var(--ui-primary-main) 13%, transparent);
+  --ui-control-option-active: color-mix(in srgb, var(--ui-primary-main) 20%, transparent);
+  --ui-control-chip-bg: color-mix(in srgb, var(--ui-primary-main) 16%, transparent);
+  --ui-control-chip-border: color-mix(in srgb, var(--ui-primary-main) 32%, var(--ui-control-border));
   --ui-date-input-icon-filter: brightness(0) saturate(100%) invert(100%);
   --ui-date-input-color-scheme: dark;
 }
