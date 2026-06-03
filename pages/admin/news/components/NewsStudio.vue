@@ -15,40 +15,43 @@
         </p>
       </div>
 
-      <div class="news-prime__header-actions">
-        <PrimeButton
-          v-if="canCreate"
-          size="small"
-          icon="pi pi-plus"
-          :label="t('admin.news.actions.createPost', 'Create post')"
-          @click="openManualComposer" />
-        <PrimeButton
-          size="small"
-          severity="secondary"
-          outlined
-          icon="pi pi-refresh"
-          :loading="isListLoading"
-          @click="loadArticles(true)" />
-      </div>
     </div>
 
     <PrimeTabs
       v-model:value="activeWorkspace"
       class="news-prime__tabs">
-      <PrimeTabList>
-        <PrimeTab value="library">
-          <i class="pi pi-list"></i>
-          <span>{{ t("admin.news.tabs.library", "Posts") }}</span>
-        </PrimeTab>
-        <PrimeTab value="manual">
-          <i class="pi pi-file-edit"></i>
-          <span>{{ t("admin.news.tabs.manual", "New post") }}</span>
-        </PrimeTab>
-        <PrimeTab value="gpt">
-          <i class="pi pi-sparkles"></i>
-          <span>{{ t("admin.news.tabs.gpt", "GPT draft") }}</span>
-        </PrimeTab>
-      </PrimeTabList>
+      <div class="news-prime__tabs-bar">
+        <PrimeTabList>
+          <PrimeTab value="library">
+            <i class="pi pi-list"></i>
+            <span>{{ t("admin.news.tabs.library", "Posts") }}</span>
+          </PrimeTab>
+          <PrimeTab value="manual">
+            <i class="pi pi-file-edit"></i>
+            <span>{{ t("admin.news.tabs.manual", "New post") }}</span>
+          </PrimeTab>
+          <PrimeTab value="gpt">
+            <i class="pi pi-sparkles"></i>
+            <span>{{ t("admin.news.tabs.gpt", "GPT draft") }}</span>
+          </PrimeTab>
+        </PrimeTabList>
+
+        <div class="news-prime__header-actions news-prime__header-actions--tabs">
+          <PrimeButton
+            v-if="canCreate"
+            size="small"
+            icon="pi pi-plus"
+            :label="t('admin.news.actions.createPost', 'Create post')"
+            @click="openManualComposer" />
+          <PrimeButton
+            size="small"
+            severity="secondary"
+            outlined
+            icon="pi pi-refresh"
+            :loading="isListLoading"
+            @click="loadArticles(true)" />
+        </div>
+      </div>
 
       <PrimeTabPanels>
         <PrimeTabPanel value="library">
@@ -1373,9 +1376,26 @@
   }
 
   .news-prime__tabs {
+    .news-prime__tabs-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .news-prime__header-actions--tabs {
+      flex: 0 0 auto;
+    }
+
     :deep(.p-tablist),
     :deep(.p-tabpanels) {
       background: transparent;
+    }
+
+    :deep(.p-tablist) {
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     :deep(.p-tablist-tab-list) {
@@ -1954,6 +1974,11 @@
     .news-prime-post-card__body,
     .news-prime__posts.is-table .news-prime-post-card__body {
       grid-template-columns: 1fr;
+    }
+
+    .news-prime__tabs-bar,
+    .news-prime__tabs :deep(.p-tablist) {
+      width: 100%;
     }
 
     .news-prime__header-actions,
