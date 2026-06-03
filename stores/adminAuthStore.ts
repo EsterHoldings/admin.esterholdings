@@ -45,6 +45,7 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
   const LEGACY_ADMIN_ACCESS_TOKEN_KEY = "access_token";
   const ADMIN_ROLES_CACHE_KEY = "admin_roles_cache";
   const ADMIN_PERMISSIONS_CACHE_KEY = "admin_permissions_cache";
+  const INIT_AUTH_TIMEOUT_MS = 15000;
   const accessToken = ref("");
   const roles = ref<Role[]>([]);
   const permissions = ref<Permission[]>([]);
@@ -159,6 +160,22 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
     }
   }
 
+  function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        reject(new Error(message));
+      }, timeoutMs);
+    });
+
+    return Promise.race([promise, timeoutPromise]).finally(() => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    });
+  }
+
   async function initAuth(options: { force?: boolean } = {}) {
     if (!process.client) return;
     if (!accessToken.value) {
@@ -187,10 +204,11 @@ export const useAdminAuthStore = defineStore("adminAuth", () => {
 
     initAuthPromise = (async () => {
       try {
-        const [permissionsResponse, userResponse] = await Promise.all([
-          appCore.adminModules.auth.getAvailablePermissions(),
-          appCore.adminModules.auth.getAuthUser(),
-        ]);
+        const [permissionsResponse, userResponse] = await withTimeout(
+          Promise.all([appCore.adminModules.auth.getAvailablePermissions(), appCore.adminModules.auth.getAuthUser()]),
+          INIT_AUTH_TIMEOUT_MS,
+          "Admin auth initialization timed out"
+        );
 
         setRoles(permissionsResponse?.data?.data?.roles || []);
         setPermissions(permissionsResponse?.data?.data?.permissions || []);

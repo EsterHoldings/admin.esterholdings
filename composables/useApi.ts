@@ -8,15 +8,9 @@ import {
   ROUTE_AUTH_REFRESH,
 } from "~/constants/routes";
 import { useCookie, useNuxtApp, useRuntimeConfig } from "nuxt/app";
-import { ADMIN_REFRESH_TOKEN } from "~/constants/auth";
 import useAppCore from "~/composables/useAppCore";
 import { useErrorStack } from "~/stores/errors";
-import { RuntimeConfig } from "nuxt/schema";
 import { normalizeAdminLocale, persistAdminLocale, readPersistedAdminLocale } from "~/utils/adminLocale";
-
-interface runtimeCfgInterface {
-  baseApi: string;
-}
 
 const API_DATE_TIME_PATTERN = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)?$/;
 
@@ -56,12 +50,14 @@ export class useApi {
   constructor(forClient = false) {
     const config = useRuntimeConfig();
     // @ts-ignore
-    const { baseApi } = config.public as { baseApi: string };
+    const { baseApi, apiTimeoutMs } = config.public as { baseApi: string; apiTimeoutMs?: string | number };
+    const timeout = Number(apiTimeoutMs || 15000);
 
     this.api = axios.create({
       baseURL: baseApi,
       // headers: {"Content-Type": "application/json"},
       withCredentials: true,
+      timeout: Number.isFinite(timeout) && timeout > 0 ? timeout : 15000,
     });
 
     const errorsStack = useErrorStack();
@@ -74,7 +70,13 @@ export class useApi {
       const nuxtApp = useNuxtApp();
       const i18n = (nuxtApp?.$i18n ?? null) as { locale?: string | { value: string } } | null;
       const i18nLocale = typeof i18n?.locale === "string" ? i18n.locale : i18n?.locale?.value;
-      const resolved = normalizeAdminLocale(readPersistedAdminLocale() || adminLocaleCookie.value || localeCookie.value || i18nRedirected.value || i18nLocale);
+      const resolved = normalizeAdminLocale(
+        readPersistedAdminLocale() ||
+          adminLocaleCookie.value ||
+          localeCookie.value ||
+          i18nRedirected.value ||
+          i18nLocale
+      );
 
       if (resolved) {
         persistAdminLocale(resolved);
