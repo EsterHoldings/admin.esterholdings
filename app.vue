@@ -111,7 +111,14 @@
       const isReady = document.documentElement.dataset.adminAppReady === "true";
       if (isReady) return;
 
-      void recoverAdminBoot("admin boot timeout");
+      void recoverAdminBoot("admin boot timeout").then(recovered => {
+        if (recovered) return;
+
+        clearRouteLoaderTimer();
+        isRouteLoading.value = false;
+        isAppBooting.value = false;
+        markAdminAppReady();
+      });
     }, 18000);
   };
 

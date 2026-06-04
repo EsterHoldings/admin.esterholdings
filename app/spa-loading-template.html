@@ -106,6 +106,48 @@
     animation: admin-spa-bar 1.35s ease-in-out infinite;
   }
 
+  .admin-spa-loader__fallback {
+    display: none;
+    max-width: min(360px, calc(100vw - 48px));
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .admin-spa-loader.is-recovery-visible .admin-spa-loader__bar {
+    display: none;
+  }
+
+  .admin-spa-loader.is-recovery-visible .admin-spa-loader__fallback {
+    display: grid;
+    gap: 12px;
+    justify-items: center;
+  }
+
+  .admin-spa-loader__fallback-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .admin-spa-loader__fallback-button {
+    min-height: 38px;
+    border: 1px solid rgba(91, 141, 255, 0.42);
+    border-radius: 10px;
+    padding: 0 14px;
+    color: #ffffff;
+    background: rgba(37, 89, 255, 0.28);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .admin-spa-loader__fallback-button:hover {
+    background: rgba(37, 89, 255, 0.42);
+  }
+
   @keyframes admin-spa-logo-pulse {
     0%,
     100% {
@@ -170,7 +212,10 @@
     };
 
     const recover = async reason => {
-      if (sessionStorage.getItem(RECOVERY_KEY) === "1") return;
+      if (sessionStorage.getItem(RECOVERY_KEY) === "1") {
+        showRecoveryFallback(reason);
+        return;
+      }
 
       sessionStorage.setItem(RECOVERY_KEY, "1");
       console.warn("Recovering Ester Admin static boot:", reason);
@@ -180,6 +225,41 @@
       } finally {
         window.location.reload();
       }
+    };
+
+    const showRecoveryFallback = reason => {
+      const loader = document.querySelector(".admin-spa-loader");
+      const content = document.querySelector(".admin-spa-loader__content");
+      if (!loader || !content || content.querySelector(".admin-spa-loader__fallback")) return;
+
+      loader.classList.add("is-recovery-visible");
+
+      const fallback = document.createElement("div");
+      fallback.className = "admin-spa-loader__fallback";
+      fallback.innerHTML = `
+        <div>Admin panel did not load. Clear the local app cache and reload the page.</div>
+        <div class="admin-spa-loader__fallback-actions">
+          <button class="admin-spa-loader__fallback-button" type="button" data-action="reload">Reload</button>
+          <button class="admin-spa-loader__fallback-button" type="button" data-action="clear">Clear cache and reload</button>
+        </div>
+      `;
+      content.appendChild(fallback);
+
+      fallback.querySelector('[data-action="reload"]')?.addEventListener("click", () => {
+        sessionStorage.removeItem(RECOVERY_KEY);
+        window.location.reload();
+      });
+
+      fallback.querySelector('[data-action="clear"]')?.addEventListener("click", async () => {
+        sessionStorage.removeItem(RECOVERY_KEY);
+        try {
+          await clearServiceWorkerState();
+        } finally {
+          window.location.reload();
+        }
+      });
+
+      console.warn("Ester Admin static boot fallback shown:", reason);
     };
 
     const removeWhenNuxtRendered = () => {
