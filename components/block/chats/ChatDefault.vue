@@ -427,13 +427,14 @@
           </div>
         </div>
         <div
-          class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
+          class="chat-composer-inner relative flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]"
+          :class="{ 'is-join-locked': isAdminJoinLocked }">
           <input
             v-if="mobileTextInputMode"
             ref="inputRef"
             v-model="draft"
             type="text"
-            :disabled="!props.canReply"
+            :disabled="!effectiveCanReply"
             @keydown.enter.prevent="send"
             class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
             :placeholder="chatText.writeMessage" />
@@ -442,7 +443,7 @@
             ref="inputRef"
             v-model="draft"
             rows="1"
-            :disabled="!props.canReply"
+            :disabled="!effectiveCanReply"
             @keydown.enter.prevent="send"
             @keydown.shift.enter.stop
             class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
@@ -456,7 +457,7 @@
               :title="chatText.addAttachment"
               aria-haspopup="menu"
               :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
-              :disabled="isSending || !props.canReply"
+              :disabled="isSending || !effectiveCanReply"
               @click="toggleAttachMenu">
               <svg
                 viewBox="0 0 24 24"
@@ -540,6 +541,17 @@
               fill="currentColor">
               <path d="m2.01 21 20-9L2.01 3 2 10l15 2-15 2z" />
             </svg>
+          </button>
+          <button
+            v-if="isAdminJoinLocked"
+            type="button"
+            class="chat-join-button no-drag"
+            :disabled="isJoiningAdminChat"
+            @click="joinAdminChat">
+            <UiIconSpinnerDefault
+              v-if="isJoiningAdminChat"
+              class="!h-4 !w-4 !text-current" />
+            <span v-else>{{ chatText.joinChat }}</span>
           </button>
         </div>
       </div>
@@ -967,13 +979,14 @@
                 </div>
               </div>
               <div
-                class="flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]">
+                class="chat-composer-inner relative flex items-center gap-2 rounded-2xl bg-[var(--ui-background-panel)] p-2 ring-1 ring-[var(--color-stroke-ui-light)]"
+                :class="{ 'is-join-locked': isAdminJoinLocked }">
                 <input
                   v-if="mobileTextInputMode"
                   ref="inputRef"
                   v-model="draft"
                   type="text"
-                  :disabled="!props.canReply"
+                  :disabled="!effectiveCanReply"
                   @keydown.enter.prevent="send"
                   class="no-drag max-h-28 flex-1 bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
                   :placeholder="chatText.writeMessage" />
@@ -982,7 +995,7 @@
                   ref="inputRef"
                   v-model="draft"
                   rows="1"
-                  :disabled="!props.canReply"
+                  :disabled="!effectiveCanReply"
                   @keydown.enter.prevent="send"
                   @keydown.shift.enter.stop
                   class="no-drag max-h-28 flex-1 resize-none bg-transparent py-2 text-[15px] text-[var(--ui-text-main)] placeholder:text-[var(--ui-text-secondary)] outline-none"
@@ -996,7 +1009,7 @@
                     :title="chatText.addAttachment"
                     aria-haspopup="menu"
                     :aria-expanded="isAttachMenuOpen ? 'true' : 'false'"
-                    :disabled="isSending || !props.canReply"
+                    :disabled="isSending || !effectiveCanReply"
                     @click="toggleAttachMenu">
                     <svg
                       viewBox="0 0 24 24"
@@ -1080,6 +1093,17 @@
                     fill="currentColor">
                     <path d="m2.01 21 20-9L2.01 3 2 10l15 2-15 2z" />
                   </svg>
+                </button>
+                <button
+                  v-if="isAdminJoinLocked"
+                  type="button"
+                  class="chat-join-button no-drag"
+                  :disabled="isJoiningAdminChat"
+                  @click="joinAdminChat">
+                  <UiIconSpinnerDefault
+                    v-if="isJoiningAdminChat"
+                    class="!h-4 !w-4 !text-current" />
+                  <span v-else>{{ chatText.joinChat }}</span>
                 </button>
               </div>
             </div>
@@ -1219,6 +1243,8 @@
     writeMessage: resolveText("support.chat.writeMessage", "Write your message"),
     addAttachment: resolveText("support.chat.addAttachment", "Add attachment"),
     send: resolveText("support.chat.send", "Send"),
+    joinChat: resolveText("support.chat.joinChat", "Join chat"),
+    joinChatFailed: resolveText("support.chat.joinChatFailed", "Failed to join chat."),
     mobileBackAria: resolveText("support.chat.mobileBackAria", "Back to tickets"),
     toggleDetailsAria: resolveText("support.chat.toggleDetailsAria", "Toggle details"),
     attachment: resolveText("support.chat.attachment", "Attachment"),
@@ -1331,6 +1357,8 @@
       mobileControls?: boolean;
       mobilePanelExpanded?: boolean;
       canReply?: boolean;
+      adminJoined?: boolean;
+      requireExplicitAdminJoin?: boolean;
     }>(),
     {
       asBlock: false,
@@ -1339,6 +1367,8 @@
       mobileControls: false,
       mobilePanelExpanded: false,
       canReply: true,
+      adminJoined: false,
+      requireExplicitAdminJoin: true,
     }
   );
   const emit = defineEmits<{
@@ -1347,7 +1377,15 @@
     (e: "mobile-toggle-panel"): void;
     (e: "mobile-header-swipe", direction: "up" | "down"): void;
     (e: "mobile-input-swipe-up"): void;
+    (e: "admin-joined", payload: any): void;
   }>();
+
+  const adminJoinedLocally = ref(Boolean(props.adminJoined));
+  const isJoiningAdminChat = ref(false);
+  const isAdminJoinLocked = computed(
+    () => props.adminChat && props.requireExplicitAdminJoin && props.canReply && !adminJoinedLocally.value
+  );
+  const effectiveCanReply = computed(() => props.canReply && !isAdminJoinLocked.value);
 
   const mounted = ref(false);
   const minW = 320,
@@ -2008,7 +2046,7 @@
     );
   };
   const canSend = computed(() => {
-    if (!props.canReply) return false;
+    if (!effectiveCanReply.value) return false;
     if (isSending.value) return false;
 
     const hasBody = draft.value.trim().length > 0;
@@ -2534,6 +2572,8 @@
   };
 
   const sendTypingState = async (isTyping: boolean) => {
+    if (isAdminJoinLocked.value) return;
+
     const payload = { is_typing: isTyping };
     try {
       if (props.adminChat) {
@@ -2554,6 +2594,8 @@
   };
 
   const startTyping = async () => {
+    if (isAdminJoinLocked.value) return;
+
     const now = Date.now();
 
     if (!localTypingSent || now - localTypingLastPingAt >= LOCAL_TYPING_HEARTBEAT_MS) {
@@ -3412,6 +3454,9 @@
   }
 
   let hb: any = null;
+  const shouldUsePresenceHeartbeat = () =>
+    !props.adminChat || !props.requireExplicitAdminJoin || adminJoinedLocally.value;
+
   async function apiOpen(ticketId: string) {
     const response = props.adminChat
       ? await appCore.adminModules.tickets.presencePing(ticketId)
@@ -3419,6 +3464,27 @@
 
     applyPresencePayload(response?.data ?? response);
   }
+
+  async function joinAdminChat() {
+    if (!props.adminChat || isJoiningAdminChat.value || adminJoinedLocally.value) return;
+
+    isJoiningAdminChat.value = true;
+    try {
+      const response = await appCore.adminModules.tickets.joinCurrentAdmin(props.ticketId);
+      const payload = response?.data?.data ?? response?.data ?? response ?? {};
+      adminJoinedLocally.value = true;
+      applyPresencePayload(payload);
+      emit("admin-joined", payload);
+      await startPresenceHeartbeat(props.ticketId);
+      scheduleMarkVisibleMessagesAsRead();
+    } catch (error) {
+      console.error("[ChatDefault] joinAdminChat failed", error);
+      toast.error(chatText.value.joinChatFailed);
+    } finally {
+      isJoiningAdminChat.value = false;
+    }
+  }
+
   async function apiClose(ticketId: string) {
     if (props.adminChat) {
       await appCore.adminModules.tickets.presenceLeave(ticketId);
@@ -3439,6 +3505,15 @@
     () => props.ticketId,
     () => {
       emitSupportPresencePayload();
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => props.adminJoined,
+    value => {
+      if (!props.adminChat) return;
+      adminJoinedLocally.value = Boolean(value);
     },
     { immediate: true }
   );
@@ -3575,8 +3650,19 @@
     activeRealtimeTicketId = ticketId;
 
     stopPresenceHeartbeat();
-    await startPresenceHeartbeat(ticketId);
+    if (shouldUsePresenceHeartbeat()) {
+      await startPresenceHeartbeat(ticketId);
+    }
   };
+
+  watch(adminJoinedLocally, joined => {
+    if (!joined || !props.adminChat) return;
+    if (activeRealtimeTicketId !== props.ticketId || hb) return;
+
+    void startPresenceHeartbeat(props.ticketId).catch(error => {
+      console.error("[ChatDefault] startPresenceHeartbeat after join failed", error);
+    });
+  });
 
   const handleRealtimeResume = async () => {
     if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
@@ -3668,6 +3754,8 @@
   }
 
   async function markVisibleMessagesAsRead() {
+    if (isAdminJoinLocked.value) return;
+
     const lastVisibleId = getLastVisibleIncomingMessageId();
     if (!lastVisibleId) return;
 
@@ -4088,6 +4176,41 @@
   .chat-attach-menu-item:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  .chat-composer-inner.is-join-locked > :not(.chat-join-button) {
+    filter: blur(4px);
+    opacity: 0.58;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .chat-join-button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 5;
+    display: inline-flex;
+    min-height: 38px;
+    max-width: calc(100% - 24px);
+    transform: translate(-50%, -50%);
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 12px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-primary-main);
+    color: #fff;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(37, 86, 255, 0.24);
+    white-space: nowrap;
+  }
+
+  .chat-join-button:disabled {
+    cursor: wait;
+    opacity: 0.8;
   }
 
   @media (max-width: 767px) {

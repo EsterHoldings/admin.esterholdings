@@ -11,7 +11,7 @@
             class="w-full max-w-[240px]"
             @input="handleInputSearch"
             :value="search"
-            :placeholder="'Search'">
+            :placeholder="supportListText.searchPlaceholder">
             <template #icon-left>
               <UiIconSearch />
             </template>
@@ -54,7 +54,7 @@
             :class="{ 'is-active': showArchived }"
             @click="handleToggleArchived">
             <span class="support-archive-filter__dot" />
-            <span>{{ showArchived ? "Archived" : "Active" }}</span>
+            <span>{{ showArchived ? supportListText.archived : supportListText.active }}</span>
           </button>
         </div>
       </div>
@@ -75,17 +75,17 @@
             <thead class="bg-[var(--color-stroke-ui-light)] h-[46px]">
               <tr class="text-left">
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)]">Client</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-invert)]">{{ supportListText.client }}</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)]">Ticket</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-invert)]">{{ supportListText.ticket }}</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
                   <div class="flex items-center justify-start gap-2">
                     <UiTextSmall
                       @click="handleOrderByAndDirection('last_message_at')"
                       class="!text-[var(--ui-text-invert)]">
-                      Last Update
+                      {{ supportListText.lastUpdate }}
                     </UiTextSmall>
                     <UiIconSort
                       class="!text-[var(--ui-text-invert)]"
@@ -95,14 +95,14 @@
                   </div>
                 </th>
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">Admins</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">{{ supportListText.admins }}</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
                   <div class="flex items-center justify-start gap-2">
                     <UiTextSmall
                       @click="handleOrderByAndDirection('status')"
                       class="!text-[var(--ui-text-invert)]">
-                      Status
+                      {{ supportListText.status }}
                     </UiTextSmall>
                     <UiIconSort
                       class="!text-[var(--ui-text-invert)]"
@@ -121,10 +121,16 @@
                 class="bg-[var(--ui-background-panel)] hover:bg-[var(--color-stroke-ui-dark)] h-[60px] cursor-pointer"
                 @click="handleClickRow(t.id)">
                 <td class="px-4">
-                  <div class="ticket-client-cell">
+                  <div
+                    class="ticket-client-cell"
+                    role="button"
+                    tabindex="0"
+                    @click.stop="openTicketClient(t)"
+                    @keydown.enter.stop.prevent="openTicketClient(t)"
+                    @keydown.space.stop.prevent="openTicketClient(t)">
                     <button
                       class="ticket-card__icon-btn"
-                      aria-label="Copy ID"
+                      :aria-label="supportListText.copyId"
                       @click.stop>
                       <UiIconCopy :text="String(t.id)" />
                     </button>
@@ -160,7 +166,7 @@
                         {{ getTicketSourceLabel(t) }}
                       </span>
                     </div>
-                    <div class="ticket-subject-cell__preview">{{ getTicketPreview(t) || "No messages yet" }}</div>
+                    <div class="ticket-subject-cell__preview">{{ getTicketPreview(t) || supportListText.noMessages }}</div>
                   </div>
                 </td>
 
@@ -178,7 +184,7 @@
                     <span
                       v-if="getTicketAdminParticipants(t).length === 0"
                       class="ticket-admins__empty">
-                      None
+                      {{ supportListText.none }}
                     </span>
                     <div
                       v-for="admin in getTicketAdminParticipants(t)"
@@ -213,7 +219,7 @@
                           type="button"
                           class="ticket-admin-popover__link"
                           @click.stop="openAdminProfile(admin)">
-                          Open profile
+                          {{ supportListText.openProfile }}
                         </button>
                       </div>
                     </div>
@@ -251,7 +257,7 @@
                         type="button"
                         class="ticket-status-action"
                         :class="[getTicketStatusActionClass(action.status), { 'is-active': isTicketStatusActive(t, action.status) }]"
-                        :title="`Set ${action.label}`"
+                        :title="supportListText.setStatusTitle.replace('{status}', action.label)"
                         :disabled="!canUpdateSupport || isTicketStatusActive(t, action.status) || isTicketActionLoading(t)"
                         @click.stop="handleChangeTicketStatus(t, action.status)">
                         <component
@@ -261,7 +267,7 @@
                     </div>
                     <button
                       class="ticket-card__icon-btn"
-                      aria-label="More"
+                      :aria-label="supportListText.more"
                       @click.stop="toggleTicketActionMenu(t.id)">
                       <UiIconDotsVertical />
                     </button>
@@ -276,7 +282,7 @@
                         :disabled="isTicketActionLoading(t)"
                         @click.stop="handleArchiveTicket(t)">
                         <UiIconTrash />
-                        <span>Archive</span>
+                        <span>{{ supportListText.archive }}</span>
                       </button>
                     </div>
                   </div>
@@ -299,7 +305,7 @@
         <div
           v-if="tickets.length === 0"
           class="w-full h-[50vh] flex items-center justify-center">
-          <UiTextSmall>No tickets found</UiTextSmall>
+          <UiTextSmall>{{ supportListText.noTickets }}</UiTextSmall>
         </div>
 
         <div
@@ -315,11 +321,17 @@
             ]"
             @click="handleClickRow(ticket.id)">
             <div class="ticket-card__header">
-              <div class="ticket-client-cell">
+              <div
+                class="ticket-client-cell"
+                role="button"
+                tabindex="0"
+                @click.stop="openTicketClient(ticket)"
+                @keydown.enter.stop.prevent="openTicketClient(ticket)"
+                @keydown.space.stop.prevent="openTicketClient(ticket)">
                 <button
                   class="ticket-card__icon-btn"
                   @click.stop
-                  aria-label="Copy ID">
+                  :aria-label="supportListText.copyId">
                   <UiIconCopy :text="String(ticket.id)" />
                 </button>
                 <div class="ticket-client-avatar">
@@ -355,7 +367,7 @@
                       {{ getTicketSourceLabel(ticket) }}
                     </span>
                   </div>
-                  <div class="ticket-subject-cell__preview">{{ getTicketPreview(ticket) || "No messages yet" }}</div>
+                  <div class="ticket-subject-cell__preview">{{ getTicketPreview(ticket) || supportListText.noMessages }}</div>
                 </div>
                 <div class="ticket-time-cell">
                   <strong>{{ ticket.last_message_at || "-" }}</strong>
@@ -365,7 +377,7 @@
                   <span
                     v-if="getTicketAdminParticipants(ticket).length === 0"
                     class="ticket-admins__empty">
-                    No admins
+                    {{ supportListText.noAdmins }}
                   </span>
                   <div
                     v-for="admin in getTicketAdminParticipants(ticket)"
@@ -401,7 +413,7 @@
                         type="button"
                         class="ticket-admin-popover__link"
                         @click.stop="openAdminProfile(admin)">
-                        Open profile
+                        {{ supportListText.openProfile }}
                       </button>
                     </div>
                   </div>
@@ -420,7 +432,7 @@
                   <button
                     class="ticket-card__icon-btn ticket-card__chat-btn"
                     @click.stop="handleChatIconClick(ticket)"
-                    aria-label="Open chat">
+                    :aria-label="supportListText.chat">
                     <span
                       v-if="ticket.unread_messages_count > 0"
                       class="ticket-card__chat-badge">
@@ -435,7 +447,7 @@
                       type="button"
                       class="ticket-status-action"
                       :class="[getTicketStatusActionClass(action.status), { 'is-active': isTicketStatusActive(ticket, action.status) }]"
-                      :title="`Set ${action.label}`"
+                      :title="supportListText.setStatusTitle.replace('{status}', action.label)"
                       :disabled="!canUpdateSupport || isTicketStatusActive(ticket, action.status) || isTicketActionLoading(ticket)"
                       @click.stop="handleChangeTicketStatus(ticket, action.status)">
                       <component
@@ -445,7 +457,7 @@
                   </div>
                   <button
                     class="ticket-card__icon-btn"
-                    aria-label="More"
+                    :aria-label="supportListText.more"
                     @click.stop="toggleTicketActionMenu(ticket.id)">
                     <UiIconDotsVertical />
                   </button>
@@ -460,7 +472,7 @@
                       :disabled="isTicketActionLoading(ticket)"
                       @click.stop="handleArchiveTicket(ticket)">
                       <UiIconTrash />
-                      <span>Archive</span>
+                      <span>{{ supportListText.archive }}</span>
                     </button>
                   </div>
                 </div>
@@ -473,7 +485,7 @@
       <!-- Пагінація -->
       <div class="px-5 h-[50px] mt-2 flex items-center justify-between">
         <div class="p-0 flex items-center justify-center [&>div]:h-[33px] [&>div]:w-[33px]">
-          <UiTextSmall class="mr-2">Per page:</UiTextSmall>
+          <UiTextSmall class="mr-2">{{ supportListText.perPage }}</UiTextSmall>
           <UiSelect
             class="!w-min flex items-center justify-center !h-[32px]"
             :data="perPageList"
@@ -534,7 +546,9 @@
         :ticket-id="currentTicketIdForChat"
         :currentUser="currentUser"
         :can-reply="canUpdateSupport"
+        :admin-joined="isCurrentAdminTicketParticipant(currentChatTicket)"
         @close="handleCloseChat"
+        @admin-joined="handleFloatingChatJoined"
         class="fixed inset-0 z-[12000]" />
     </div>
   </UiContainer>
@@ -588,6 +602,54 @@
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const { $echo } = useNuxtApp() as { $echo?: any };
+  const { t } = useI18n({ useScope: "global" });
+  const resolveText = (key: string, fallback: string): string => {
+    const translated = t(key);
+    return translated === key ? fallback : translated;
+  };
+
+  const supportListText = computed(() => ({
+    searchPlaceholder: resolveText("admin.support.searchPlaceholder", "Search"),
+    client: resolveText("admin.support.client", "Client"),
+    ticket: resolveText("admin.support.ticket", "Ticket"),
+    lastUpdate: resolveText("admin.support.lastUpdate", "Last update"),
+    admins: resolveText("admin.support.admins", "Admins"),
+    status: resolveText("admin.support.status", "Status"),
+    active: resolveText("admin.support.active", "Active"),
+    archived: resolveText("admin.support.archived", "Archived"),
+    noMessages: resolveText("admin.support.noMessages", "No messages yet"),
+    noTickets: resolveText("admin.support.noTickets", "No tickets found"),
+    none: resolveText("admin.support.none", "None"),
+    noAdmins: resolveText("admin.support.noAdmins", "No admins"),
+    openProfile: resolveText("admin.support.openProfile", "Open profile"),
+    copyId: resolveText("admin.support.copyId", "Copy ID"),
+    more: resolveText("admin.support.more", "More"),
+    archive: resolveText("admin.support.archive", "Archive"),
+    archiveConfirm: resolveText("admin.support.archiveConfirm", "Archive this ticket?"),
+    archivedToast: resolveText("admin.support.archivedToast", "Ticket archived."),
+    archiveFailed: resolveText("admin.support.archiveFailed", "Failed to archive ticket."),
+    perPage: resolveText("admin.support.perPage", "Per page:"),
+    created: resolveText("admin.support.created", "Created"),
+    createdEmpty: resolveText("admin.support.createdEmpty", "Created -"),
+    sortLastCreated: resolveText("admin.support.sortLastCreated", "Last created"),
+    sortLastUpdated: resolveText("admin.support.sortLastUpdated", "Last updated"),
+    statusOpen: resolveText("admin.support.statusOpen", "Open"),
+    statusPending: resolveText("admin.support.statusPending", "Pending"),
+    statusCompleted: resolveText("admin.support.statusCompleted", "Completed"),
+    statusInProgress: resolveText("admin.support.statusInProgress", "In progress"),
+    setStatusTitle: resolveText("admin.support.setStatusTitle", "Set {status}"),
+    confirmStatusChange: resolveText("admin.support.confirmStatusChange", "Change ticket status to {status}?"),
+    confirmStatusNotify: resolveText(
+      "admin.support.confirmStatusNotify",
+      "Send a notification to the client about this status change?"
+    ),
+    statusUpdated: resolveText("admin.support.statusUpdated", "Ticket status updated."),
+    statusUpdateFailed: resolveText("admin.support.statusUpdateFailed", "Failed to update ticket status."),
+    email: resolveText("admin.support.email", "Email"),
+    chat: resolveText("admin.support.chat", "Chat"),
+    roleAdmin: resolveText("support.chat.roleAdmin", "Admin"),
+    roleClient: resolveText("support.chat.roleClient", "Client"),
+  }));
 
   const tickets = reactive([]);
 
@@ -601,25 +663,23 @@
     photoUrl: null,
   });
 
-  const sortByFilterData = reactive([
+  const sortByFilterData = computed(() => [
     {
       id: "created_at",
       value: "created_at",
-      text: "Last created",
+      text: supportListText.value.sortLastCreated,
     },
     {
       id: "last_message_at",
       value: "last_message_at",
-      text: "Last updated",
+      text: supportListText.value.sortLastUpdated,
     },
     {
       id: "status",
       value: "status",
-      text: "Status",
+      text: supportListText.value.status,
     },
   ]);
-
-  const { t } = useI18n({ useScope: "global" });
   const toast = useToast();
 
   const appCore = useAppCore();
@@ -730,23 +790,23 @@
       },
     },
   ];
-  const ticketStatusActions = [
+  const ticketStatusActions = computed(() => [
     {
       status: "open",
-      label: "Open",
+      label: supportListText.value.statusOpen,
       icon: UiIconSupport,
     },
     {
       status: "pending",
-      label: "Pending",
+      label: supportListText.value.statusPending,
       icon: UiIconClock,
     },
     {
       status: "closed",
-      label: "Completed",
+      label: supportListText.value.statusCompleted,
       icon: UiIconCheck,
     },
-  ];
+  ]);
 
   const perPageList = reactive([
     { id: 1, value: 1, text: "1" },
@@ -812,6 +872,9 @@
   // ---
 
   const currentTicketIdForChat = ref<string | null>(null);
+  const currentChatTicket = computed(
+    () => tickets.find((ticket: any) => String(ticket?.id ?? "") === String(currentTicketIdForChat.value ?? "")) ?? null
+  );
 
   const filtered = computed(() =>
     tickets.filter(t =>
@@ -835,7 +898,7 @@
   };
 
   const getTicketChannelLabel = (channel: unknown, replyEmail?: unknown): string =>
-    getTicketChannelKey(channel, replyEmail) === "email" ? "Email" : "Chat";
+    getTicketChannelKey(channel, replyEmail) === "email" ? supportListText.value.email : supportListText.value.chat;
 
   const getTicketChannelBadgeClass = (channel: unknown, replyEmail?: unknown): string =>
     getTicketChannelKey(channel, replyEmail) === "email" ? "ticket-channel-badge--email" : "ticket-channel-badge--chat";
@@ -879,10 +942,10 @@
 
   const getTicketStatusLabel = (status: unknown): string => {
     const normalizedStatus = normalizeTicketStatus(status);
-    if (normalizedStatus === "closed") return "Completed";
-    if (normalizedStatus === "pending") return "Pending";
-    if (normalizedStatus === "in_progress") return "In progress";
-    if (normalizedStatus === "open") return "Open";
+    if (normalizedStatus === "closed") return supportListText.value.statusCompleted;
+    if (normalizedStatus === "pending") return supportListText.value.statusPending;
+    if (normalizedStatus === "in_progress") return supportListText.value.statusInProgress;
+    if (normalizedStatus === "open") return supportListText.value.statusOpen;
 
     return normalizedStatus.replace(/_/g, " ");
   };
@@ -955,11 +1018,13 @@
       return email;
     }
 
-    return `Client #${String(ticket?.creator_id ?? ticket?.id ?? "")}`;
+    return `${supportListText.value.roleClient} #${String(ticket?.creator_id ?? ticket?.id ?? "")}`;
   };
 
   const getTicketClientEmail = (ticket: any): string =>
     String(ticket?.creator?.email ?? ticket?.creator_email ?? "").trim();
+
+  const getTicketClientId = (ticket: any): string => String(ticket?.creator?.id ?? ticket?.creator_id ?? "").trim();
 
   const getTicketPreview = (ticket: any): string => {
     const preview = String(ticket?.latest_message_preview ?? ticket?.last_message_preview ?? ticket?.preview ?? "")
@@ -971,10 +1036,10 @@
 
   const getTicketCreatedLabel = (ticket: any): string => {
     const label = String(ticket?.created_at_label ?? "").trim();
-    if (label !== "") return `Created ${label}`;
+    if (label !== "") return `${supportListText.value.created} ${label}`;
 
     const createdAt = String(ticket?.created_at ?? "").trim();
-    return createdAt !== "" ? `Created ${createdAt}` : "Created -";
+    return createdAt !== "" ? `${supportListText.value.created} ${createdAt}` : supportListText.value.createdEmpty;
   };
 
   const getTicketAdminParticipants = (ticket: any): any[] => {
@@ -1001,7 +1066,7 @@
     const email = getAdminParticipantEmail(admin);
     if (email) return email;
 
-    return "Admin";
+    return supportListText.value.roleAdmin;
   };
 
   const getAdminParticipantEmail = (admin: any): string => String(admin?.admin_email ?? admin?.email ?? "").trim();
@@ -1021,6 +1086,23 @@
   };
 
   const getAdminParticipantAvatarUrl = (admin: any): string => String(admin?.photo_url ?? "").trim();
+
+  const isCurrentAdminTicketParticipant = (ticket: any): boolean => {
+    if (!ticket) return false;
+
+    const currentAdminId = String(currentUser.id ?? "").trim();
+    const linkedUserId = String(currentUser.linkedUserId ?? "").trim();
+
+    return getTicketAdminParticipants(ticket).some((admin: any) => {
+      const participantId = String(admin?.id ?? "").trim();
+      const adminId = String(admin?.admin_id ?? "").trim();
+
+      return Boolean(
+        (linkedUserId && participantId === linkedUserId) ||
+          (currentAdminId && (adminId === currentAdminId || participantId === currentAdminId))
+      );
+    });
+  };
 
   definePageMeta({ layout: "default", middleware: ["admin-middleware"] });
 
@@ -1500,26 +1582,35 @@
     if (!ticketId) return;
 
     const nextLabel = getTicketStatusLabel(status);
-    if (typeof window !== "undefined" && !window.confirm(`Change ticket status to ${nextLabel}?`)) {
-      return;
+    let notifyClient = false;
+    if (typeof window !== "undefined") {
+      const confirmChangeText = supportListText.value.confirmStatusChange.replace("{status}", nextLabel);
+      if (!window.confirm(confirmChangeText)) {
+        return;
+      }
+
+      notifyClient = window.confirm(supportListText.value.confirmStatusNotify);
     }
 
     ticketActionLoadingId.value = `${ticketId}:status`;
     openTicketActionMenuId.value = "";
 
     try {
-      const response = await appCore.adminModules.tickets.updateStatus(ticketId, { status });
+      const response = await appCore.adminModules.tickets.updateStatus(ticketId, {
+        status,
+        notify_client: notifyClient,
+      });
       const nextTicket = extractTicketPayload(response);
       if (nextTicket?.id) {
         replaceTicketInList(nextTicket);
       } else {
         ticket.status = status;
       }
-      toast.success("Ticket status updated.");
+      toast.success(supportListText.value.statusUpdated);
       useEventBus.emit(SUPPORT_UNREAD_UPDATED_EVENT);
     } catch (error) {
       console.error("admin support status update failed", error);
-      toast.error("Failed to update ticket status.");
+      toast.error(supportListText.value.statusUpdateFailed);
     } finally {
       ticketActionLoadingId.value = "";
     }
@@ -1531,7 +1622,7 @@
     const ticketId = String(ticket?.id ?? "");
     if (!ticketId) return;
 
-    if (typeof window !== "undefined" && !window.confirm("Archive this ticket?")) {
+    if (typeof window !== "undefined" && !window.confirm(supportListText.value.archiveConfirm)) {
       return;
     }
 
@@ -1544,11 +1635,11 @@
         tickets.splice(index, 1);
       }
       total.value = Math.max(0, total.value - 1);
-      toast.success("Ticket archived.");
+      toast.success(supportListText.value.archivedToast);
       useEventBus.emit(SUPPORT_UNREAD_UPDATED_EVENT);
     } catch (error) {
       console.error("admin support archive failed", error);
-      toast.error("Failed to archive ticket.");
+      toast.error(supportListText.value.archiveFailed);
     } finally {
       ticketActionLoadingId.value = "";
       openTicketActionMenuId.value = "";
@@ -1591,25 +1682,26 @@
   };
 
   const buildSupportRoute = (ticketId: string) => localePath(`/support/${ticketId}`);
+  const buildClientRoute = (clientId: string) => localePath(`/clients/${clientId}`);
 
   const handleClickRow = (ticketId: string) => router.push(buildSupportRoute(ticketId));
+
+  const openTicketClient = (ticket: any) => {
+    const clientId = getTicketClientId(ticket);
+    if (!clientId) return;
+
+    router.push(buildClientRoute(clientId));
+  };
 
   const handleChatIconClick = (ticket: any) => {
     const ticketId = String(ticket?.id ?? "");
     if (!ticketId) return;
 
-    const channel = getTicketChannelKey(ticket?.channel, ticket?.reply_email);
-    if (channel === "email") {
-      router.push(buildSupportRoute(ticketId));
-      return;
-    }
+    router.push(buildSupportRoute(ticketId));
+  };
 
-    if (isMobileViewport.value) {
-      router.push(buildSupportRoute(ticketId));
-      return;
-    }
-
-    currentTicketIdForChat.value = ticketId;
+  const handleFloatingChatJoined = async () => {
+    await loadData();
   };
 
   const handleSupportListReload = () => {

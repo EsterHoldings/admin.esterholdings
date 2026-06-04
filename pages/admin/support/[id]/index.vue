@@ -471,9 +471,11 @@
             :ticket-id="id"
             :currentUser="currentUser"
             :can-reply="canUpdateSupport"
+            :admin-joined="currentAdminJoined"
             :counterparty-online="counterpartyOnline"
             :mobile-controls="isMobileViewport && isMobileFullscreenChat"
             :mobile-panel-expanded="isSideExpanded"
+            @admin-joined="handleAdminChatJoined"
             @mobile-back="handleMobileBack"
             @mobile-toggle-panel="toggleSideExpanded"
             @mobile-header-swipe="handleMobileHeaderSwipe"
@@ -519,13 +521,47 @@
                 rows="4"
                 :disabled="!canUpdateSupport"
                 :placeholder="supportText.replyPlaceholder"></textarea>
-              <button
-                type="submit"
-                class="support-email__reply-submit"
-                :disabled="!canUpdateSupport || isEmailReplySending || !emailReplyDraft.trim()">
-                <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
-                <span v-else>{{ supportText.sendReply }}</span>
-              </button>
+              <div
+                v-if="emailReplyAttachments.length"
+                class="support-email__reply-files">
+                <div
+                  v-for="attachment in emailReplyAttachments"
+                  :key="attachment.id"
+                  class="support-email__reply-file">
+                  <UiIconDocuments class="h-4 w-4 shrink-0" />
+                  <span class="truncate">{{ attachment.name }}</span>
+                  <span class="support-email__reply-file-size">{{ formatFileSize(attachment.size) }}</span>
+                  <button
+                    type="button"
+                    class="support-email__reply-file-remove"
+                    :aria-label="supportText.emailRemoveAttachment"
+                    :disabled="isEmailReplySending"
+                    @click="removeEmailReplyAttachment(attachment.id)">
+                    ×
+                  </button>
+                </div>
+              </div>
+              <div class="support-email__reply-actions">
+                <label
+                  class="support-email__reply-attach"
+                  :class="{ 'is-disabled': !canUpdateSupport || isEmailReplySending }">
+                  <input
+                    ref="emailReplyFileInputRef"
+                    type="file"
+                    multiple
+                    :disabled="!canUpdateSupport || isEmailReplySending"
+                    @change="handleEmailReplyFilesSelected" />
+                  <UiIconDocuments class="h-4 w-4" />
+                  <span>{{ supportText.emailAttachFiles }}</span>
+                </label>
+                <button
+                  type="submit"
+                  class="support-email__reply-submit"
+                  :disabled="!canUpdateSupport || isEmailReplySending || !canSendEmailReply">
+                  <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
+                  <span v-else>{{ supportText.sendReply }}</span>
+                </button>
+              </div>
             </form>
 
             <div class="support-email__thread">
@@ -714,6 +750,10 @@
     sendingReply: "",
     emailReplySent: "",
     emailReplyFailed: "",
+    emailAttachFiles: "",
+    emailRemoveAttachment: "",
+    emailAttachmentTooLarge: "",
+    emailReplyNeedsContent: "",
     sourceLabel: "",
   });
   const syncSupportText = () => {
@@ -771,6 +811,16 @@
     supportText.sendingReply = resolveText("support.chat.sendingReply", "Sending...");
     supportText.emailReplySent = resolveText("support.chat.emailReplySent", "Reply sent.");
     supportText.emailReplyFailed = resolveText("support.chat.emailReplyFailed", "Failed to send reply.");
+    supportText.emailAttachFiles = resolveText("support.chat.emailAttachFiles", "Attach files");
+    supportText.emailRemoveAttachment = resolveText("support.chat.emailRemoveAttachment", "Remove attachment");
+    supportText.emailAttachmentTooLarge = resolveText(
+      "support.chat.emailAttachmentTooLarge",
+      "File is larger than 200 MB:"
+    );
+    supportText.emailReplyNeedsContent = resolveText(
+      "support.chat.emailReplyNeedsContent",
+      "Write a reply or attach at least one file."
+    );
     supportText.sourceLabel = resolveText("support.chat.sourceLabel", "Source");
   };
   syncSupportText();
@@ -790,6 +840,8 @@
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
   const SUPPORT_MESSAGE_UPDATED_EVENT = "support-message-updated";
+  const MAX_EMAIL_REPLY_ATTACHMENT_BYTES = 200 * 1024 * 1024;
+  const MAX_EMAIL_REPLY_ATTACHMENTS = 10;
 
   const isLoading = ref(false);
   const supportGridRef = ref<HTMLElement | null>(null);
@@ -817,6 +869,18 @@
   const isEmailThreadLoading = ref(false);
   const isEmailReplySending = ref(false);
   const emailReplyDraft = ref("");
+  const emailReplyFileInputRef = ref<HTMLInputElement | null>(null);
+  type EmailReplyAttachment = {
+    id: string;
+    file: File;
+    name: string;
+    size: number;
+    type: string;
+  };
+  const emailReplyAttachments = ref<EmailReplyAttachment[]>([]);
+  const canSendEmailReply = computed(
+    () => emailReplyDraft.value.trim().length > 0 || emailReplyAttachments.value.length > 0
+  );
   type EmailThreadAttachment = {
     id: string;
     title: string;
@@ -894,6 +958,9 @@
   );
   const onlineParticipantsCount = computed(() => participants.value.filter(participant => participant.online).length);
   const totalParticipantsCount = computed(() => participants.value.length);
+  const currentAdminJoined = computed(() =>
+    participants.value.some(participant => participant.roleKey === "agent" && participant.isYou)
+  );
   const counterpartyOnline = computed(() => {
     return participants.value.some(participant => participant.online && !participant.isYou);
   });
@@ -1881,18 +1948,72 @@
     await loadEmailThread();
   };
 
+  const clearEmailReplyAttachments = () => {
+    emailReplyAttachments.value = [];
+    if (emailReplyFileInputRef.value) {
+      emailReplyFileInputRef.value.value = "";
+    }
+  };
+
+  const removeEmailReplyAttachment = (attachmentId: string) => {
+    emailReplyAttachments.value = emailReplyAttachments.value.filter(attachment => attachment.id !== attachmentId);
+  };
+
+  const handleEmailReplyFilesSelected = (event: Event) => {
+    const input = event.target as HTMLInputElement | null;
+    const files = Array.from(input?.files ?? []);
+    if (!files.length) return;
+
+    const availableSlots = Math.max(0, MAX_EMAIL_REPLY_ATTACHMENTS - emailReplyAttachments.value.length);
+    const acceptedFiles = files.slice(0, availableSlots);
+
+    const nextAttachments: EmailReplyAttachment[] = [];
+    for (const file of acceptedFiles) {
+      if (file.size > MAX_EMAIL_REPLY_ATTACHMENT_BYTES) {
+        toast.warning(`${supportText.emailAttachmentTooLarge} ${file.name}`);
+        continue;
+      }
+
+      nextAttachments.push({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        file,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      });
+    }
+
+    emailReplyAttachments.value = [...emailReplyAttachments.value, ...nextAttachments];
+
+    if (input) {
+      input.value = "";
+    }
+  };
+
   const sendEmailReply = async () => {
     if (!isEmailTicket.value || !canUpdateSupport.value) return;
     const body = emailReplyDraft.value.trim();
-    if (!body || isEmailReplySending.value) return;
+    const attachments = [...emailReplyAttachments.value];
+    if ((!body && attachments.length === 0) || isEmailReplySending.value) {
+      toast.info(supportText.emailReplyNeedsContent);
+      return;
+    }
 
     isEmailReplySending.value = true;
     try {
-      await appCore.adminModules.tickets.storeTicketMessage(id.value, {
-        type: "text",
-        body,
-      });
+      const formData = new FormData();
+      formData.append("type", attachments.length > 0 ? "attachment" : "text");
+      formData.append("display_as", "file");
+      if (body) {
+        formData.append("body", body);
+      }
+      for (const attachment of attachments) {
+        formData.append("files[]", attachment.file, attachment.name);
+      }
+
+      await appCore.adminModules.tickets.storeTicketMessage(id.value, formData);
       emailReplyDraft.value = "";
+      clearEmailReplyAttachments();
       toast.success(supportText.emailReplySent);
       await loadEmailThread();
     } catch {
@@ -2225,22 +2346,6 @@
       applyParticipantsPayload(serverParticipants);
     } else {
       const fallbackParticipants: Array<Record<string, unknown>> = [];
-      const currentParticipantId = normalizeText(currentUser.linkedUserId) || normalizeText(currentUser.id);
-      if (currentParticipantId) {
-        fallbackParticipants.push({
-          id: currentParticipantId,
-          role_key: "agent",
-          role: supportText.roleAdmin,
-          name: normalizeText(currentUser.name) || supportText.roleAdmin,
-          first_name: currentUser.firstName,
-          last_name: currentUser.lastName,
-          email: currentUser.email,
-          initials: buildParticipantInitials(currentUser.firstName, currentUser.lastName, currentUser.email, "AD"),
-          photo_url: currentUser.photoUrl,
-          online: true,
-        });
-      }
-
       const creatorId = normalizeText(ticket?.creator_id);
       if (creatorId) {
         fallbackParticipants.push({
@@ -2315,6 +2420,17 @@
     }
 
     updateParticipantsOnlineFromPresence(payload as Record<string, unknown>);
+  };
+
+  const handleAdminChatJoined = (payload?: any) => {
+    if (payload && typeof payload === "object") {
+      handleSupportPresenceUpdated({
+        ...payload,
+        ticket_id: id.value,
+      });
+    }
+
+    void refreshParticipantsFromTicket();
   };
 
   const resolveEchoClient = () => {
@@ -2731,8 +2847,76 @@
     line-height: 1.45;
   }
 
+  .support-email__reply-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .support-email__reply-file {
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-panel);
+    color: var(--ui-text-main);
+    padding: 7px 8px;
+    font-size: 13px;
+  }
+
+  .support-email__reply-file-size {
+    flex-shrink: 0;
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+  }
+
+  .support-email__reply-file-remove {
+    display: inline-flex;
+    height: 22px;
+    width: 22px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: var(--ui-background-card);
+    color: var(--ui-text-secondary);
+  }
+
+  .support-email__reply-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .support-email__reply-attach {
+    display: inline-flex;
+    min-height: 36px;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--color-stroke-ui-light);
+    background: var(--ui-background-panel);
+    color: var(--ui-text-main);
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .support-email__reply-attach input {
+    display: none;
+  }
+
+  .support-email__reply-attach.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
   .support-email__reply-submit {
-    align-self: flex-end;
     display: inline-flex;
     align-items: center;
     justify-content: center;

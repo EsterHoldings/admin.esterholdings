@@ -56,6 +56,10 @@ export class TicketsService {
     return await this.useApi.post(`/admin/tickets/${ticketId}/participants/agents`, payload);
   }
 
+  async joinCurrentAdmin(ticketId: string, payload: any = {}): Promise<any> {
+    return await this.useApi.post(`/admin/tickets/${ticketId}/participants/join`, payload);
+  }
+
   async post(data: object = {}): Promise<any> {
     return await this.useApi.post("/admin/tickets", data);
   }
