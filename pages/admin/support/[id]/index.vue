@@ -515,51 +515,69 @@
             <form
               class="support-email__reply"
               @submit.prevent="sendEmailReply">
-              <textarea
-                v-model="emailReplyDraft"
-                class="support-email__reply-input"
-                rows="4"
-                :disabled="!canUpdateSupport"
-                :placeholder="supportText.replyPlaceholder"></textarea>
               <div
-                v-if="emailReplyAttachments.length"
-                class="support-email__reply-files">
+                class="support-email__reply-inner"
+                :class="{ 'is-join-locked': isEmailReplyJoinLocked }">
+                <textarea
+                  v-model="emailReplyDraft"
+                  class="support-email__reply-input"
+                  rows="4"
+                  :disabled="!canUseEmailReply"
+                  :placeholder="supportText.replyPlaceholder"></textarea>
                 <div
-                  v-for="attachment in emailReplyAttachments"
-                  :key="attachment.id"
-                  class="support-email__reply-file">
-                  <UiIconDocuments class="h-4 w-4 shrink-0" />
-                  <span class="truncate">{{ attachment.name }}</span>
-                  <span class="support-email__reply-file-size">{{ formatFileSize(attachment.size) }}</span>
+                  v-if="emailReplyAttachments.length"
+                  class="support-email__reply-files">
+                  <div
+                    v-for="attachment in emailReplyAttachments"
+                    :key="attachment.id"
+                    class="support-email__reply-file">
+                    <UiIconDocuments class="h-4 w-4 shrink-0" />
+                    <span class="truncate">{{ attachment.name }}</span>
+                    <span class="support-email__reply-file-size">{{ formatFileSize(attachment.size) }}</span>
+                    <button
+                      type="button"
+                      class="support-email__reply-file-remove"
+                      :aria-label="supportText.emailRemoveAttachment"
+                      :disabled="isEmailReplySending || isEmailReplyJoinLocked"
+                      @click="removeEmailReplyAttachment(attachment.id)">
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div class="support-email__reply-actions">
+                  <label
+                    class="support-email__reply-attach"
+                    :class="{ 'is-disabled': !canUseEmailReply || isEmailReplySending }">
+                    <input
+                      ref="emailReplyFileInputRef"
+                      type="file"
+                      multiple
+                      :disabled="!canUseEmailReply || isEmailReplySending"
+                      @change="handleEmailReplyFilesSelected" />
+                    <UiIconDocuments class="h-4 w-4" />
+                    <span>{{ supportText.emailAttachFiles }}</span>
+                  </label>
                   <button
-                    type="button"
-                    class="support-email__reply-file-remove"
-                    :aria-label="supportText.emailRemoveAttachment"
-                    :disabled="isEmailReplySending"
-                    @click="removeEmailReplyAttachment(attachment.id)">
-                    ×
+                    type="submit"
+                    class="support-email__reply-submit"
+                    :disabled="!canUseEmailReply || isEmailReplySending || !canSendEmailReply">
+                    <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
+                    <span v-else>{{ supportText.sendReply }}</span>
                   </button>
                 </div>
               </div>
-              <div class="support-email__reply-actions">
-                <label
-                  class="support-email__reply-attach"
-                  :class="{ 'is-disabled': !canUpdateSupport || isEmailReplySending }">
-                  <input
-                    ref="emailReplyFileInputRef"
-                    type="file"
-                    multiple
-                    :disabled="!canUpdateSupport || isEmailReplySending"
-                    @change="handleEmailReplyFilesSelected" />
-                  <UiIconDocuments class="h-4 w-4" />
-                  <span>{{ supportText.emailAttachFiles }}</span>
-                </label>
+              <div
+                v-if="isEmailReplyJoinLocked"
+                class="support-email__join-overlay">
                 <button
-                  type="submit"
-                  class="support-email__reply-submit"
-                  :disabled="!canUpdateSupport || isEmailReplySending || !canSendEmailReply">
-                  <span v-if="isEmailReplySending">{{ supportText.sendingReply }}</span>
-                  <span v-else>{{ supportText.sendReply }}</span>
+                  type="button"
+                  class="support-email__join-button"
+                  :disabled="isJoiningEmailTicket"
+                  @click="joinEmailTicket">
+                  <UiIconSpinnerDefault
+                    v-if="isJoiningEmailTicket"
+                    class="!h-4 !w-4" />
+                  <span>{{ supportText.joinChat }}</span>
                 </button>
               </div>
             </form>
@@ -754,6 +772,8 @@
     emailRemoveAttachment: "",
     emailAttachmentTooLarge: "",
     emailReplyNeedsContent: "",
+    joinChat: "",
+    joinChatFailed: "",
     sourceLabel: "",
   });
   const syncSupportText = () => {
@@ -821,6 +841,8 @@
       "support.chat.emailReplyNeedsContent",
       "Write a reply or attach at least one file."
     );
+    supportText.joinChat = resolveText("support.chat.joinChat", "Join chat");
+    supportText.joinChatFailed = resolveText("support.chat.joinChatFailed", "Failed to join chat.");
     supportText.sourceLabel = resolveText("support.chat.sourceLabel", "Source");
   };
   syncSupportText();
@@ -868,6 +890,7 @@
   const ticketSourceLabel = ref("");
   const isEmailThreadLoading = ref(false);
   const isEmailReplySending = ref(false);
+  const isJoiningEmailTicket = ref(false);
   const emailReplyDraft = ref("");
   const emailReplyFileInputRef = ref<HTMLInputElement | null>(null);
   type EmailReplyAttachment = {
@@ -933,6 +956,7 @@
   const activeMetaTooltip = ref<MetaTooltipField | null>(null);
   type ParticipantItem = {
     id: string;
+    adminId: string;
     name: string;
     role: string;
     roleKey: "agent" | "customer";
@@ -961,6 +985,10 @@
   const currentAdminJoined = computed(() =>
     participants.value.some(participant => participant.roleKey === "agent" && participant.isYou)
   );
+  const isEmailReplyJoinLocked = computed(
+    () => isEmailTicket.value && canUpdateSupport.value && !currentAdminJoined.value
+  );
+  const canUseEmailReply = computed(() => canUpdateSupport.value && !isEmailReplyJoinLocked.value);
   const counterpartyOnline = computed(() => {
     return participants.value.some(participant => participant.online && !participant.isYou);
   });
@@ -1031,16 +1059,22 @@
   const resolveParticipantRoleLabel = (roleKey: "agent" | "customer"): string => {
     return roleKey === "agent" ? supportText.roleAdmin : supportText.roleClient;
   };
-  const isParticipantCurrentUser = (participantId: string): boolean => {
+  const isParticipantCurrentUser = (participantId: string, adminId = ""): boolean => {
     const currentId = normalizeText(currentUser.id);
     const linkedUserId = normalizeText(currentUser.linkedUserId);
-    return participantId !== "" && (participantId === currentId || participantId === linkedUserId);
+    const normalizedAdminId = normalizeText(adminId);
+
+    return (
+      (participantId !== "" && (participantId === currentId || participantId === linkedUserId)) ||
+      (normalizedAdminId !== "" && normalizedAdminId === currentId)
+    );
   };
   const mapParticipantsFromPayload = (payload: Array<Record<string, unknown>>): ParticipantItem[] => {
     return payload
       .map(raw => {
         const participantId = normalizeText(raw.id);
         if (!participantId) return null;
+        const adminId = normalizeText(raw.admin_id);
 
         const roleKey = normalizeParticipantRoleKey(raw.role_key ?? raw.role);
         const firstName = normalizeText(raw.first_name);
@@ -1058,12 +1092,13 @@
 
         return {
           id: participantId,
+          adminId,
           name,
           role: resolveParticipantRoleLabel(roleKey),
           roleKey,
           initials: initials.slice(0, 2),
           online: Boolean(raw.online),
-          isYou: isParticipantCurrentUser(participantId),
+          isYou: isParticipantCurrentUser(participantId, adminId),
           photoUrl,
         } as ParticipantItem;
       })
@@ -1110,7 +1145,7 @@
     const onlineCustomerId = normalizeText((onlineClientRaw as Record<string, unknown> | null)?.id);
     participants.value = participants.value.map(participant => ({
       ...participant,
-      isYou: isParticipantCurrentUser(participant.id),
+      isYou: isParticipantCurrentUser(participant.id, participant.adminId),
       online:
         participant.roleKey === "agent" ? onlineAgentIds.has(participant.id) : participant.id === onlineCustomerId,
     }));
@@ -1960,6 +1995,7 @@
   };
 
   const handleEmailReplyFilesSelected = (event: Event) => {
+    if (!canUseEmailReply.value) return;
     const input = event.target as HTMLInputElement | null;
     const files = Array.from(input?.files ?? []);
     if (!files.length) return;
@@ -1990,8 +2026,30 @@
     }
   };
 
+  const joinEmailTicket = async () => {
+    if (!isEmailTicket.value || !canUpdateSupport.value || currentAdminJoined.value || isJoiningEmailTicket.value) {
+      return;
+    }
+
+    isJoiningEmailTicket.value = true;
+    try {
+      const response = await appCore.adminModules.tickets.joinCurrentAdmin(id.value);
+      const payload = response?.data ?? response;
+      handleAdminChatJoined(payload);
+    } catch {
+      toast.error(supportText.joinChatFailed);
+    } finally {
+      isJoiningEmailTicket.value = false;
+    }
+  };
+
   const sendEmailReply = async () => {
     if (!isEmailTicket.value || !canUpdateSupport.value) return;
+    if (isEmailReplyJoinLocked.value) {
+      await joinEmailTicket();
+      return;
+    }
+
     const body = emailReplyDraft.value.trim();
     const attachments = [...emailReplyAttachments.value];
     if ((!body && attachments.length === 0) || isEmailReplySending.value) {
@@ -2393,7 +2451,6 @@
 
   const startParticipantsPresencePoll = () => {
     stopParticipantsPresencePoll();
-    if (isEmailTicket.value) return;
 
     participantsPresencePollTimer = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
@@ -2459,7 +2516,7 @@
   };
 
   const connectSupportPresenceRealtime = () => {
-    if (!id.value || isEmailTicket.value || supportTicketChannel) return;
+    if (!id.value || supportTicketChannel) return;
 
     const echoClient = resolveEchoClient();
     if (!echoClient) return;
@@ -2536,8 +2593,8 @@
       await loadEmailThread();
     } else {
       await loadLibraryFromChat();
-      connectSupportPresenceRealtime();
     }
+    connectSupportPresenceRealtime();
     startParticipantsPresencePoll();
     scheduleDesktopGridMeasure();
     window.addEventListener("pointerdown", handleParticipantsPointerDown);
@@ -2557,7 +2614,6 @@
     }));
     if (isEmailTicket.value) {
       void loadEmailThread();
-      disconnectSupportPresenceRealtime();
     } else {
       connectSupportPresenceRealtime();
     }
@@ -2826,12 +2882,58 @@
   }
 
   .support-email__reply {
+    position: relative;
     border-top: 1px solid var(--color-stroke-ui-light);
     padding: 12px 16px;
+    background: var(--ui-background-card);
+  }
+
+  .support-email__reply-inner {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: var(--ui-background-card);
+    transition:
+      filter 180ms ease,
+      opacity 180ms ease;
+  }
+
+  .support-email__reply-inner.is-join-locked {
+    pointer-events: none;
+    user-select: none;
+    filter: blur(3px);
+    opacity: 0.52;
+  }
+
+  .support-email__join-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: color-mix(in srgb, var(--ui-background-card) 34%, transparent);
+  }
+
+  .support-email__join-button {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 42%, transparent);
+    background: var(--ui-primary-main);
+    color: var(--ui-text-main);
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 14px 32px color-mix(in srgb, var(--ui-primary-main) 20%, transparent);
+  }
+
+  .support-email__join-button:disabled {
+    cursor: wait;
+    opacity: 0.78;
   }
 
   .support-email__reply-input {
