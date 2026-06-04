@@ -123,11 +123,6 @@
 
         <div class="access-entity-card__grid">
           <div>
-            <div class="access-entity-card__label">{{ t("admin.access.components.admins-panel.columns.id") }}</div>
-            <div class="access-entity-card__value">{{ admin.id }}</div>
-          </div>
-
-          <div>
             <div class="access-entity-card__label">
               {{ resolveText("admin.access.components.admins-panel.columns.lastSeen", "Last seen") }}
             </div>
