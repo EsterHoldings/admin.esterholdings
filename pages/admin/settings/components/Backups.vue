@@ -23,7 +23,7 @@
           @click="loadBackups()" />
         <PrimeButton
           icon="pi pi-database"
-          :label="resolveText('admin.settings.backups.runNow', 'Запустить бэкап')"
+          :label="resolveText('admin.settings.backups.runNow', 'Сделать бэкап сейчас')"
           size="small"
           :loading="isQueueing"
           @click="queueBackup" />

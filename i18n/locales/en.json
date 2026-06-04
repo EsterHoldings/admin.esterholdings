@@ -2818,7 +2818,7 @@
         "title": "Backup monitoring",
         "subtitle": "Daily database backups to S3, queue state and storage for the last 7 days.",
         "refresh": "Refresh",
-        "runNow": "Run backup",
+        "runNow": "Create backup now",
         "loadError": "Failed to load backups.",
         "queueError": "Failed to queue backup.",
         "summary": {
