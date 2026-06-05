@@ -75,43 +75,43 @@
             <thead class="bg-[var(--color-stroke-ui-light)] h-[46px]">
               <tr class="text-left">
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)]">{{ supportListText.client }}</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-main)]">{{ supportListText.client }}</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)]">{{ supportListText.ticket }}</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-main)]">{{ supportListText.ticket }}</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
                   <div class="flex items-center justify-start gap-2">
                     <UiTextSmall
                       @click="handleOrderByAndDirection('last_message_at')"
-                      class="!text-[var(--ui-text-invert)]">
+                      class="!text-[var(--ui-text-main)]">
                       {{ supportListText.lastUpdate }}
                     </UiTextSmall>
                     <UiIconSort
-                      class="!text-[var(--ui-text-invert)]"
+                      class="!text-[var(--ui-text-main)]"
                       :active="orderBy === 'last_message_at'"
                       :direction="orderDirection"
                       @click="handleOrderByAndDirection('last_message_at')" />
                   </div>
                 </th>
                 <th class="px-4 font-semibold">
-                  <UiTextSmall class="!text-[var(--ui-text-invert)] whitespace-nowrap">{{ supportListText.admins }}</UiTextSmall>
+                  <UiTextSmall class="!text-[var(--ui-text-main)] whitespace-nowrap">{{ supportListText.admins }}</UiTextSmall>
                 </th>
                 <th class="px-4 font-semibold">
                   <div class="flex items-center justify-start gap-2">
                     <UiTextSmall
                       @click="handleOrderByAndDirection('status')"
-                      class="!text-[var(--ui-text-invert)]">
+                      class="!text-[var(--ui-text-main)]">
                       {{ supportListText.status }}
                     </UiTextSmall>
                     <UiIconSort
-                      class="!text-[var(--ui-text-invert)]"
+                      class="!text-[var(--ui-text-main)]"
                       :active="orderBy === 'status'"
                       :direction="orderDirection"
                       @click="handleOrderByAndDirection('status')" />
                   </div>
                 </th>
-                <th class="px-2 font-semibold !text-[var(--ui-text-invert)]">...</th>
+                <th class="px-2 font-semibold !text-[var(--ui-text-main)]">...</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[var(--color-stroke-ui-dark)]">

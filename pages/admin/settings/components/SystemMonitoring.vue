@@ -153,12 +153,30 @@
   ]);
 
   const chartPoints = computed(() => {
-    const points = [...history.value];
-    if (current.value?.captured_at) {
-      points.push(current.value);
+    const pointsByTime = new Map<string, MonitorSnapshot>();
+
+    for (const point of history.value) {
+      if (point?.captured_at) {
+        pointsByTime.set(point.captured_at, point);
+      }
     }
 
-    return points;
+    if (current.value?.captured_at) {
+      pointsByTime.set(current.value.captured_at, current.value);
+    }
+
+    return Array.from(pointsByTime.values()).sort((first, second) => {
+      const firstTime = new Date(first.captured_at || "").getTime();
+      const secondTime = new Date(second.captured_at || "").getTime();
+
+      return firstTime - secondTime;
+    });
+  });
+
+  const chartPointRadius = computed(() => {
+    const pointCount = chartPoints.value.length;
+
+    return pointCount <= 1 ? 4 : 2;
   });
 
   const chartData = computed(() => ({
@@ -170,7 +188,9 @@
         borderColor: "#2563eb",
         backgroundColor: "rgba(37, 99, 235, 0.12)",
         tension: 0.35,
-        pointRadius: 0,
+        pointRadius: chartPointRadius.value,
+        pointHoverRadius: 5,
+        spanGaps: true,
       },
       {
         label: "RAM",
@@ -178,7 +198,9 @@
         borderColor: "#16a34a",
         backgroundColor: "rgba(22, 163, 74, 0.12)",
         tension: 0.35,
-        pointRadius: 0,
+        pointRadius: chartPointRadius.value,
+        pointHoverRadius: 5,
+        spanGaps: true,
       },
       {
         label: "Disk",
@@ -186,7 +208,9 @@
         borderColor: "#f97316",
         backgroundColor: "rgba(249, 115, 22, 0.12)",
         tension: 0.35,
-        pointRadius: 0,
+        pointRadius: chartPointRadius.value,
+        pointHoverRadius: 5,
+        spanGaps: true,
       },
     ],
   }));
