@@ -14,12 +14,21 @@
       </div>
 
       <div class="system-monitoring__actions">
-        <PrimeSelect
-          v-model="range"
-          :options="rangeOptions"
-          option-label="label"
-          option-value="value"
-          size="small" />
+        <div
+          class="system-monitoring__range-badges"
+          role="radiogroup">
+          <button
+            v-for="option in rangeOptions"
+            :key="option.value"
+            type="button"
+            class="system-monitoring__range-badge"
+            :class="{ 'system-monitoring__range-badge--active': range === option.value }"
+            :aria-checked="range === option.value"
+            role="radio"
+            @click="range = option.value">
+            {{ option.label }}
+          </button>
+        </div>
         <PrimeButton
           icon="pi pi-refresh"
           :label="resolveText('admin.settings.monitoring.refresh', 'Обновить')"
@@ -124,6 +133,10 @@
     { label: resolveText("admin.settings.monitoring.ranges.12h", "12 часов"), value: "12h" },
     { label: resolveText("admin.settings.monitoring.ranges.24h", "24 часа"), value: "24h" },
     { label: resolveText("admin.settings.monitoring.ranges.7d", "7 дней"), value: "7d" },
+    { label: resolveText("admin.settings.monitoring.ranges.30d", "30 дней"), value: "30d" },
+    { label: resolveText("admin.settings.monitoring.ranges.90d", "90 дней"), value: "90d" },
+    { label: resolveText("admin.settings.monitoring.ranges.180d", "6 мес."), value: "180d" },
+    { label: resolveText("admin.settings.monitoring.ranges.1y", "1 год"), value: "1y" },
   ]);
 
   const metricCards = computed(() => [
@@ -180,7 +193,7 @@
   });
 
   const chartData = computed(() => ({
-    labels: chartPoints.value.map(point => formatTime(point.captured_at)),
+    labels: chartPoints.value.map(point => formatChartTime(point.captured_at)),
     datasets: [
       {
         label: "CPU",
@@ -256,7 +269,7 @@
     try {
       const response = await appCore.adminModules.system.getMonitoring({
         range: range.value,
-        limit: range.value === "7d" ? 1000 : 360,
+        limit: rangeLimit.value,
       });
       const payload = response?.data?.data ?? {};
       current.value = payload.current ?? {};
@@ -337,6 +350,23 @@
     }).format(date);
   }
 
+  function formatChartTime(value?: string | null): string {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+
+    if (["30d", "90d", "180d", "1y"].includes(range.value)) {
+      return new Intl.DateTimeFormat(undefined, {
+        day: "2-digit",
+        month: "2-digit",
+      }).format(date);
+    }
+
+    return formatTime(value);
+  }
+
+  const rangeLimit = computed(() => (["7d", "30d", "90d", "180d", "1y"].includes(range.value) ? 1000 : 360));
+
   function getCssVar(name: string, fallback: string): string {
     if (typeof window === "undefined") return fallback;
     const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -395,6 +425,44 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  .system-monitoring__range-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .system-monitoring__range-badge {
+    min-height: 34px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 20%, var(--color-stroke-ui-light));
+    border-radius: 999px;
+    background: var(--color-fill-ui-main);
+    color: var(--ui-text-main);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 760;
+    line-height: 1;
+    padding: 0 12px;
+    transition:
+      background-color 0.16s ease,
+      border-color 0.16s ease,
+      color 0.16s ease,
+      box-shadow 0.16s ease;
+    white-space: nowrap;
+  }
+
+  .system-monitoring__range-badge:hover {
+    border-color: color-mix(in srgb, var(--ui-primary-main) 42%, var(--color-stroke-ui-light));
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--ui-primary-main) 10%, transparent);
+  }
+
+  .system-monitoring__range-badge--active {
+    border-color: var(--ui-primary-main);
+    background: var(--ui-primary-main);
+    color: var(--ui-text-invert);
+    box-shadow: 0 10px 22px color-mix(in srgb, var(--ui-primary-main) 22%, transparent);
   }
 
   .system-monitoring__metrics {
@@ -469,9 +537,13 @@
 
   @media (max-width: 640px) {
     .system-monitoring__actions,
-    .system-monitoring__actions :deep(.p-select),
+    .system-monitoring__range-badges,
     .system-monitoring__actions :deep(.p-button) {
       width: 100%;
+    }
+
+    .system-monitoring__range-badges {
+      justify-content: flex-start;
     }
   }
 </style>
