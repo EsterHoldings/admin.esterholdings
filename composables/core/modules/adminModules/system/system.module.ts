@@ -19,6 +19,18 @@ export class SystemModule {
     return await this.systemService.getMonitoring(params);
   }
 
+  async getLandingSeoSettings(): Promise<any> {
+    return await this.systemService.getLandingSeoSettings();
+  }
+
+  async updateLandingSeoSettings(data: object = {}): Promise<any> {
+    return await this.systemService.updateLandingSeoSettings(data);
+  }
+
+  async warmLandingSeoCache(): Promise<any> {
+    return await this.systemService.warmLandingSeoCache();
+  }
+
   async getFaqs(params: object = {}): Promise<any> {
     return await this.systemService.getFaqs(params);
   }

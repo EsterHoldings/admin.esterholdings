@@ -19,6 +19,18 @@ export class AdminSystemService {
     return await this.useApi.get("/admin/system/monitoring", params);
   }
 
+  async getLandingSeoSettings(): Promise<any> {
+    return await this.useApi.get("/admin/system/landing-seo");
+  }
+
+  async updateLandingSeoSettings(data: object = {}): Promise<any> {
+    return await this.useApi.put("/admin/system/landing-seo", data);
+  }
+
+  async warmLandingSeoCache(): Promise<any> {
+    return await this.useApi.post("/admin/system/landing-seo/cache");
+  }
+
   async getFaqs(params: object = {}): Promise<any> {
     return await this.useApi.get("/admin/faqs", params);
   }
