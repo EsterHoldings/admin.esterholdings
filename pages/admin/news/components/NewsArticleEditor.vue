@@ -9,7 +9,7 @@
           severity="secondary"
           text
           icon="pi pi-arrow-left"
-          :label="t('admin.news.editor.back', 'Back to News')"
+          :label="backLabel"
           @click="goBack" />
 
         <h1 class="news-editor__title">{{ form.title || t("admin.news.editor.untitled", "Untitled article") }}</h1>
@@ -320,6 +320,7 @@
   import useAppCore from "~/composables/useAppCore";
   import type {
     AdminNewsArticle,
+    NewsArticleType,
     NewsSeoPayload,
     UpsertNewsArticlePayload,
   } from "~/composables/core/modules/news/news.types";
@@ -331,6 +332,8 @@
 
   const props = defineProps<{
     articleId: string;
+    articleType?: NewsArticleType;
+    baseRoute?: string;
   }>();
 
   const appCore = useAppCore();
@@ -380,6 +383,12 @@
   );
   const canDelete = computed(
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-news")
+  );
+  const resolvedArticleType = computed<NewsArticleType>(() => props.articleType || "news");
+  const resolvedBaseRoute = computed(() => props.baseRoute || "/news");
+  const isBlog = computed(() => resolvedArticleType.value === "trader_blog");
+  const backLabel = computed(() =>
+    isBlog.value ? t("admin.blog.editor.back", "Back to Blog") : t("admin.news.editor.back", "Back to News")
   );
 
   const localeOptions = computed(() => [
@@ -467,7 +476,7 @@
     isLoading.value = true;
 
     try {
-      const response = await appCore.news.getById(props.articleId);
+      const response = await appCore.news.getById(props.articleId, resolvedArticleType.value);
       applyArticle(response.data.data as AdminNewsArticle);
     } catch (error) {
       toast.error(resolveApiErrorMessage(error, t("admin.news.messages.loadOneFailed", "Failed to load article.")));
@@ -497,6 +506,7 @@
   function buildPayload(status: PersistStatus): UpsertNewsArticlePayload {
     return {
       title: form.title.trim(),
+      article_type: resolvedArticleType.value,
       slug: form.slug.trim() || null,
       excerpt: form.excerpt.trim() || null,
       content: form.content.trim(),
@@ -547,9 +557,9 @@
     isArchiving.value = true;
 
     try {
-      const response = await appCore.news.delete(article.value.id);
+      const response = await appCore.news.delete(article.value.id, resolvedArticleType.value);
       toast.success(response.data.message || t("admin.news.messages.deleted", "News article archived."));
-      await navigateTo(localePath("/news"));
+      await navigateTo(localePath(resolvedBaseRoute.value));
     } catch (error) {
       toast.error(resolveApiErrorMessage(error, t("admin.news.messages.deleteFailed", "Failed to archive article.")));
     } finally {
@@ -558,7 +568,7 @@
   }
 
   function goBack(): void {
-    navigateTo(localePath("/news"));
+    navigateTo(localePath(resolvedBaseRoute.value));
   }
 
   function statusLabel(status: string): string {

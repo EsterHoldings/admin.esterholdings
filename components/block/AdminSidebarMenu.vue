@@ -164,6 +164,12 @@
         displayIfHasPermission: "view-news",
       },
       {
+        title: menuText("admin.menu.blog", "Blog"),
+        to: localePath("/blog"),
+        icon: UiIconNews,
+        displayIfHasPermission: "view-news",
+      },
+      {
         title: t("admin.menu.access"),
         to: localePath("/access"),
         icon: UiIconKeys,

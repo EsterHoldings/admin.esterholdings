@@ -74,6 +74,7 @@
     "payout-verifications": resolveLabel("admin.menu.payoutVerificationRequests", "Payment detail verifications"),
     profile: resolveLabel("admin.menu.profile", "Profile"),
     news: resolveLabel("admin.menu.news", "News"),
+    blog: resolveLabel("admin.menu.blog", "Blog"),
   };
 
   const breadcrumbs = computed(() => {
@@ -121,6 +122,7 @@
       routeKey === "dashboard" ||
       routeKey === "access" ||
       routeKey === "news" ||
+      routeKey === "blog" ||
       routeKey === "birthdays" ||
       routeKey === "profile" ||
       routeKey === "accounts" ||
@@ -128,6 +130,7 @@
       routeKey === "payout-verifications" ||
       routeKey.startsWith("access/") ||
       routeKey.startsWith("news/") ||
+      routeKey.startsWith("blog/") ||
       routeKey.startsWith("birthdays/") ||
       routeKey.endsWith("/verifications") ||
       /^clients\/[^/]+$/.test(routeKey)

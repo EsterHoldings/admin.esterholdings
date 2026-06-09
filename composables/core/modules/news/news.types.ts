@@ -1,6 +1,7 @@
 export type NewsPersistedStatus = "draft" | "scheduled" | "published";
 export type NewsStatus = NewsPersistedStatus | "archived";
 export type NewsTone = "professional" | "neutral" | "promotional" | "analytical";
+export type NewsArticleType = "news" | "trader_blog";
 
 export interface NewsSeoPayload {
   meta_title?: string | null;
@@ -19,6 +20,7 @@ export interface NewsSeoPayload {
 
 export interface AdminNewsArticle {
   id: string;
+  article_type: NewsArticleType;
   title: string;
   slug: string;
   excerpt: string | null;
@@ -56,6 +58,7 @@ export interface AdminNewsListResponse {
 
 export interface GenerateNewsDraftPayload {
   topic: string;
+  article_type?: NewsArticleType;
   locale: string;
   tone: NewsTone;
   angle?: string | null;
@@ -79,6 +82,7 @@ export interface GeneratedNewsDraft {
 }
 
 export interface UpsertNewsArticlePayload {
+  article_type?: NewsArticleType;
   title: string;
   slug?: string | null;
   excerpt?: string | null;
@@ -95,6 +99,7 @@ export interface UpsertNewsArticlePayload {
 
 export interface SendNewsChatMessagePayload {
   message: string;
+  article_type?: NewsArticleType;
   locale?: string;
   generate_images?: boolean;
   include_video_links?: boolean;

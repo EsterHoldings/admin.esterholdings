@@ -26,6 +26,7 @@ export const ADMIN_PAGE_PERMISSION_RULES: AdminPagePermissionRule[] = [
   { pattern: /^\/settings(?:\/|$)/, permissions: ["view-settings"], fallbackPath: "/settings" },
   { pattern: /^\/support(?:\/|$)/, permissions: ["view-support"], fallbackPath: "/support" },
   { pattern: /^\/news(?:\/|$)/, permissions: ["view-news"], fallbackPath: "/news" },
+  { pattern: /^\/blog(?:\/|$)/, permissions: ["view-news"], fallbackPath: "/blog" },
   { pattern: /^\/access(?:\/|$)/, permissions: ["view-access"], fallbackPath: "/access" },
   { pattern: /^\/rolesAndPermissions(?:\/|$)/, permissions: ["view-access"], fallbackPath: "/access" },
 ];

@@ -160,6 +160,12 @@ const menuItems = computed(() => [
     icon: UiIconNews,
     displayIfHasPermission: "view-news",
   },
+  {
+    title: menuText("admin.menu.blog", "Blog"),
+    to: localePath("/blog"),
+    icon: UiIconNews,
+    displayIfHasPermission: "view-news",
+  },
 ]);
 
 const menuList = computed(() => {

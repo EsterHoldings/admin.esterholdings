@@ -1152,9 +1152,38 @@
       "settings": "Settings",
       "support": "Support",
       "news": "News",
+      "blog": "Blog",
       "mail": "Mails",
       "access": "Access",
       "withdrawalRequests": "Withdrawal requests"
+    },
+    "blog": {
+      "title": "Blog",
+      "subtitle": "Manage trader blog posts, media, SEO, publication timing and GPT-assisted drafts from one workspace.",
+      "tabs": {
+        "library": "All Blog Posts"
+      },
+      "library": {
+        "title": "All blog posts",
+        "subtitle": "Filter trader blog drafts, scheduled posts and published articles, then open preview or editing.",
+        "empty": "No blog posts found for the selected filters."
+      },
+      "manual": {
+        "title": "Create blog post manually",
+        "subtitle": "Prepare a trader blog article directly. Save as draft, publish immediately or schedule publication."
+      },
+      "chatWorkspace": {
+        "title": "Create a GPT blog draft",
+        "subtitleNew": "Describe the trader topic, angle and visuals. GPT will create a blog article with SEO metadata.",
+        "subtitleExisting": "Ask GPT to reshape the current trader blog draft. The latest article state stays in context.",
+        "empty": "No blog draft yet. Start with a prompt describing the trader topic, tone, media and SEO requirements.",
+        "hintExisting": "Ask GPT to tighten the structure, add trader examples, improve the headline or refine SEO.",
+        "hintNew": "The first prompt creates a new blog draft. Every next prompt edits the same article."
+      },
+      "chatPlaceholder": "Example: Create a practical risk-management blog post for new traders with one cover image and full SEO.",
+      "editor": {
+        "back": "Back to Blog"
+      }
     },
     "news": {
       "title": "News Workspace",

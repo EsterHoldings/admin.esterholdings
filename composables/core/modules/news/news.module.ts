@@ -1,5 +1,10 @@
 import NewsService from "./news.service";
-import type { GenerateNewsDraftPayload, SendNewsChatMessagePayload, UpsertNewsArticlePayload } from "./news.types";
+import type {
+  GenerateNewsDraftPayload,
+  NewsArticleType,
+  SendNewsChatMessagePayload,
+  UpsertNewsArticlePayload,
+} from "./news.types";
 
 export class NewsModule {
   private newsService: NewsService;
@@ -9,17 +14,24 @@ export class NewsModule {
   }
 
   async getList(
-    params: { page?: number; perPage?: number; search?: string; status?: string | null; locale?: string | null } = {}
+    params: {
+      page?: number;
+      perPage?: number;
+      search?: string;
+      status?: string | null;
+      locale?: string | null;
+      articleType?: NewsArticleType;
+    } = {}
   ) {
     return await this.newsService.list(params);
   }
 
-  async getById(id: string) {
-    return await this.newsService.getById(id);
+  async getById(id: string, articleType?: NewsArticleType) {
+    return await this.newsService.getById(id, articleType);
   }
 
-  async getMessages(id: string) {
-    return await this.newsService.getMessages(id);
+  async getMessages(id: string, articleType?: NewsArticleType) {
+    return await this.newsService.getMessages(id, articleType);
   }
 
   async create(payload: UpsertNewsArticlePayload) {
@@ -30,8 +42,8 @@ export class NewsModule {
     return await this.newsService.update(id, payload);
   }
 
-  async delete(id: string) {
-    return await this.newsService.delete(id);
+  async delete(id: string, articleType?: NewsArticleType) {
+    return await this.newsService.delete(id, articleType);
   }
 
   async generateDraft(payload: GenerateNewsDraftPayload) {

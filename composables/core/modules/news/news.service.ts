@@ -4,6 +4,7 @@ import type {
   AdminNewsStudioResponse,
   GenerateNewsDraftPayload,
   GeneratedNewsDraft,
+  NewsArticleType,
   SendNewsChatMessagePayload,
   UpsertNewsArticlePayload,
   AdminNewsChatMessage,
@@ -17,48 +18,60 @@ export class NewsService {
   }
 
   async list(
-    params: { page?: number; perPage?: number; search?: string; status?: string | null; locale?: string | null } = {}
+    params: {
+      page?: number;
+      perPage?: number;
+      search?: string;
+      status?: string | null;
+      locale?: string | null;
+      articleType?: NewsArticleType;
+    } = {}
   ): Promise<{ data: { data: AdminNewsListResponse } }> {
-    return await this.useApi.get("/admin/news", params);
+    const { articleType, ...query } = params;
+    return await this.useApi.get(this.basePath(articleType), query);
   }
 
-  async getById(id: string): Promise<{ data: { data: any } }> {
-    return await this.useApi.get(`/admin/news/${id}`);
+  async getById(id: string, articleType?: NewsArticleType): Promise<{ data: { data: any } }> {
+    return await this.useApi.get(`${this.basePath(articleType)}/${id}`);
   }
 
-  async getMessages(id: string): Promise<{ data: { data: AdminNewsChatMessage[] } }> {
-    return await this.useApi.get(`/admin/news/${id}/messages`);
+  async getMessages(id: string, articleType?: NewsArticleType): Promise<{ data: { data: AdminNewsChatMessage[] } }> {
+    return await this.useApi.get(`${this.basePath(articleType)}/${id}/messages`);
   }
 
   async create(payload: UpsertNewsArticlePayload): Promise<{ data: { data: any; message?: string } }> {
-    return await this.useApi.post("/admin/news", payload);
+    return await this.useApi.post(this.basePath(payload.article_type), payload);
   }
 
   async update(id: string, payload: UpsertNewsArticlePayload): Promise<{ data: { data: any; message?: string } }> {
-    return await this.useApi.patch(`/admin/news/${id}`, payload);
+    return await this.useApi.patch(`${this.basePath(payload.article_type)}/${id}`, payload);
   }
 
-  async delete(id: string): Promise<{ data: { message?: string } }> {
-    return await this.useApi.delete(`/admin/news/${id}`);
+  async delete(id: string, articleType?: NewsArticleType): Promise<{ data: { message?: string } }> {
+    return await this.useApi.delete(`${this.basePath(articleType)}/${id}`);
   }
 
   async generateDraft(
     payload: GenerateNewsDraftPayload
   ): Promise<{ data: { data: GeneratedNewsDraft; message?: string } }> {
-    return await this.useApi.post("/admin/news/generate", payload);
+    return await this.useApi.post(`${this.basePath(payload.article_type)}/generate`, payload);
   }
 
   async startChat(
     payload: SendNewsChatMessagePayload
   ): Promise<{ data: { data: AdminNewsStudioResponse; message?: string } }> {
-    return await this.useApi.post("/admin/news/chat", payload);
+    return await this.useApi.post(`${this.basePath(payload.article_type)}/chat`, payload);
   }
 
   async continueChat(
     id: string,
     payload: SendNewsChatMessagePayload
   ): Promise<{ data: { data: AdminNewsStudioResponse; message?: string } }> {
-    return await this.useApi.post(`/admin/news/${id}/chat`, payload);
+    return await this.useApi.post(`${this.basePath(payload.article_type)}/${id}/chat`, payload);
+  }
+
+  private basePath(articleType: NewsArticleType = "news"): string {
+    return articleType === "trader_blog" ? "/admin/trader-blog" : "/admin/news";
   }
 }
 

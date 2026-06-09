@@ -4,14 +4,9 @@
     :class="{ 'news-prime--busy': isListLoading || isChatLoading }">
     <div class="news-prime__header">
       <div class="news-prime__heading">
-        <h1 class="news-prime__title">{{ t("admin.news.title", "News Workspace") }}</h1>
+        <h1 class="news-prime__title">{{ studioCopy.title }}</h1>
         <p class="news-prime__subtitle">
-          {{
-            t(
-              "admin.news.subtitle",
-              "Manage posts, publication timing, SEO and GPT-assisted drafts from one wide newsroom workspace."
-            )
-          }}
+          {{ studioCopy.subtitle }}
         </p>
       </div>
 
@@ -24,7 +19,7 @@
         <PrimeTabList>
           <PrimeTab value="library">
             <i class="pi pi-list"></i>
-            <span>{{ t("admin.news.tabs.library", "Posts") }}</span>
+            <span>{{ studioCopy.libraryTab }}</span>
           </PrimeTab>
           <PrimeTab value="manual">
             <i class="pi pi-file-edit"></i>
@@ -58,14 +53,9 @@
           <section class="news-prime__section news-prime__section--library">
             <div class="news-prime__section-head">
               <div>
-                <h2 class="news-prime__section-title">{{ t("admin.news.library.title", "All posts") }}</h2>
+                <h2 class="news-prime__section-title">{{ studioCopy.libraryTitle }}</h2>
                 <p class="news-prime__section-subtitle">
-                  {{
-                    t(
-                      "admin.news.library.subtitle",
-                      "Filter published, unpublished and scheduled posts, preview content and jump into editing."
-                    )
-                  }}
+                  {{ studioCopy.librarySubtitle }}
                 </p>
               </div>
             </div>
@@ -125,7 +115,7 @@
               v-else-if="!articles.length"
               class="news-prime-empty">
               <i class="pi pi-inbox"></i>
-              <span>{{ t("admin.news.library.empty", "No posts found for the selected filters.") }}</span>
+              <span>{{ studioCopy.empty }}</span>
             </div>
 
             <div
@@ -201,15 +191,10 @@
             <div class="news-prime__section-head">
               <div>
                 <h2 class="news-prime__section-title">
-                  {{ t("admin.news.manual.title", "Create post manually") }}
+                  {{ studioCopy.manualTitle }}
                 </h2>
                 <p class="news-prime__section-subtitle">
-                  {{
-                    t(
-                      "admin.news.manual.subtitle",
-                      "Fill the article, media and SEO data directly. Save as draft, publish immediately or schedule publication."
-                    )
-                  }}
+                  {{ studioCopy.manualSubtitle }}
                 </p>
               </div>
 
@@ -466,19 +451,13 @@
             <div class="news-prime__section-head">
               <div>
                 <h2 class="news-prime__section-title">
-                  {{ draftArticle?.title || t("admin.news.chatWorkspace.title", "Create a GPT draft") }}
+                  {{ draftArticle?.title || studioCopy.chatTitle }}
                 </h2>
                 <p class="news-prime__section-subtitle">
                   {{
                     draftArticle
-                      ? t(
-                          "admin.news.chatWorkspace.subtitleExisting",
-                          "Ask GPT to reshape the current draft. The latest article state stays in context."
-                        )
-                      : t(
-                          "admin.news.chatWorkspace.subtitleNew",
-                          "Describe the topic, tone and assets. GPT will create an article draft with SEO metadata."
-                        )
+                      ? studioCopy.chatSubtitleExisting
+                      : studioCopy.chatSubtitleNew
                   }}
                 </p>
               </div>
@@ -513,8 +492,8 @@
                   <span>
                     {{
                       t(
-                        "admin.news.chatWorkspace.empty",
-                        "No draft yet. Start with a prompt describing the story, tone, media and SEO requirements."
+                        isBlog ? "admin.blog.chatWorkspace.empty" : "admin.news.chatWorkspace.empty",
+                        studioCopy.chatEmpty
                       )
                     }}
                   </span>
@@ -615,10 +594,7 @@
                   rows="5"
                   class="news-prime-composer__input"
                   :placeholder="
-                    t(
-                      'admin.news.chatPlaceholder',
-                      'Example: Create a calm market update about the ECB meeting with one cover image and full SEO.'
-                    )
+                    studioCopy.chatPlaceholder
                   "
                   @keydown.enter.exact.prevent="handleSendMessage" />
 
@@ -627,12 +603,12 @@
                     {{
                       draftArticle
                         ? t(
-                            "admin.news.chatWorkspace.hintExisting",
-                            "Ask GPT to rewrite the headline, shorten the intro, add visuals or improve SEO."
+                            isBlog ? "admin.blog.chatWorkspace.hintExisting" : "admin.news.chatWorkspace.hintExisting",
+                            studioCopy.chatHintExisting
                           )
                         : t(
-                            "admin.news.chatWorkspace.hintNew",
-                            "The first prompt creates a new draft. Every next prompt edits the same article."
+                            isBlog ? "admin.blog.chatWorkspace.hintNew" : "admin.news.chatWorkspace.hintNew",
+                            studioCopy.chatHintNew
                           )
                     }}
                   </p>
@@ -672,6 +648,7 @@
     AdminNewsArticle,
     AdminNewsChatMessage,
     AdminNewsStudioResponse,
+    NewsArticleType,
     NewsPersistedStatus,
     NewsSeoPayload,
     NewsStatus,
@@ -721,6 +698,17 @@
   const toast = useToast();
   const { t } = useI18n({ useScope: "global" });
 
+  const props = withDefaults(
+    defineProps<{
+      articleType?: NewsArticleType;
+      baseRoute?: string;
+    }>(),
+    {
+      articleType: "news",
+      baseRoute: "/news",
+    }
+  );
+
   const activeWorkspace = ref<WorkspaceTab>("library");
   const manualTab = ref<ManualTab>("content");
   const search = ref("");
@@ -762,6 +750,85 @@
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-news")
   );
   const canChat = computed(() => (draftArticle.value ? canUpdate.value : canCreate.value));
+  const isBlog = computed(() => props.articleType === "trader_blog");
+
+  const studioCopy = computed(() => ({
+    title: isBlog.value ? t("admin.blog.title", "Blog") : t("admin.news.title", "News Workspace"),
+    subtitle: isBlog.value
+      ? t(
+          "admin.blog.subtitle",
+          "Manage trader blog posts, publication timing, SEO and GPT-assisted drafts from one focused workspace."
+        )
+      : t(
+          "admin.news.subtitle",
+          "Manage posts, publication timing, SEO and GPT-assisted drafts from one wide newsroom workspace."
+        ),
+    libraryTab: isBlog.value ? t("admin.blog.tabs.library", "All Blog Posts") : t("admin.news.tabs.library", "Posts"),
+    libraryTitle: isBlog.value ? t("admin.blog.library.title", "All blog posts") : t("admin.news.library.title", "All posts"),
+    librarySubtitle: isBlog.value
+      ? t(
+          "admin.blog.library.subtitle",
+          "Filter trader blog drafts, scheduled posts and published articles, then open preview or editing."
+        )
+      : t(
+          "admin.news.library.subtitle",
+          "Filter published, unpublished and scheduled posts, preview content and jump into editing."
+        ),
+    empty: isBlog.value
+      ? t("admin.blog.library.empty", "No blog posts found for the selected filters.")
+      : t("admin.news.library.empty", "No posts found for the selected filters."),
+    manualTitle: isBlog.value
+      ? t("admin.blog.manual.title", "Create blog post manually")
+      : t("admin.news.manual.title", "Create post manually"),
+    manualSubtitle: isBlog.value
+      ? t(
+          "admin.blog.manual.subtitle",
+          "Prepare a trader blog article directly. Save as draft, publish immediately or schedule publication."
+        )
+      : t(
+          "admin.news.manual.subtitle",
+          "Fill the article, media and SEO data directly. Save as draft, publish immediately or schedule publication."
+        ),
+    chatTitle: isBlog.value
+      ? t("admin.blog.chatWorkspace.title", "Create a GPT blog draft")
+      : t("admin.news.chatWorkspace.title", "Create a GPT draft"),
+    chatSubtitleNew: isBlog.value
+      ? t(
+          "admin.blog.chatWorkspace.subtitleNew",
+          "Describe the trader topic, angle and visuals. GPT will create a blog article with SEO metadata."
+        )
+      : t(
+          "admin.news.chatWorkspace.subtitleNew",
+          "Describe the topic, tone and assets. GPT will create an article draft with SEO metadata."
+        ),
+    chatSubtitleExisting: isBlog.value
+      ? t(
+          "admin.blog.chatWorkspace.subtitleExisting",
+          "Ask GPT to reshape the current trader blog draft. The latest article state stays in context."
+        )
+      : t(
+          "admin.news.chatWorkspace.subtitleExisting",
+          "Ask GPT to reshape the current draft. The latest article state stays in context."
+        ),
+    chatEmpty: isBlog.value
+      ? "No blog draft yet. Start with a prompt describing the trader topic, tone, media and SEO requirements."
+      : "No draft yet. Start with a prompt describing the story, tone, media and SEO requirements.",
+    chatPlaceholder: isBlog.value
+      ? t(
+          "admin.blog.chatPlaceholder",
+          "Example: Create a practical risk-management blog post for new traders with one cover image and full SEO."
+        )
+      : t(
+          "admin.news.chatPlaceholder",
+          "Example: Create a calm market update about the ECB meeting with one cover image and full SEO."
+        ),
+    chatHintExisting: isBlog.value
+      ? "Ask GPT to tighten the structure, add trader examples, improve the headline or refine SEO."
+      : "Ask GPT to rewrite the headline, shorten the intro, add visuals or improve SEO.",
+    chatHintNew: isBlog.value
+      ? "The first prompt creates a new blog draft. Every next prompt edits the same article."
+      : "The first prompt creates a new draft. Every next prompt edits the same article.",
+  }));
 
   const manualForm = reactive<ManualPostForm>(createEmptyManualForm());
 
@@ -912,6 +979,7 @@
         search: search.value || undefined,
         status: statusFilter.value === "all" ? null : statusFilter.value,
         locale: localeFilter.value || null,
+        articleType: props.articleType,
       });
       const payload = response.data.data;
       articles.value = payload.data || [];
@@ -960,6 +1028,7 @@
       video_links: parseMultiline(manualForm.video_links),
       status: manualForm.status,
       effective_status: manualForm.status,
+      article_type: props.articleType,
       published_at: dateToIso(manualPublishedAt.value),
       seo: buildSeoPayload(manualForm.seo),
       meta: {},
@@ -999,6 +1068,7 @@
   function buildManualPayload(status: NewsPersistedStatus): UpsertNewsArticlePayload {
     return {
       title: manualForm.title.trim(),
+      article_type: props.articleType,
       slug: manualForm.slug.trim() || null,
       excerpt: manualForm.excerpt.trim() || null,
       content: manualForm.content.trim(),
@@ -1038,7 +1108,7 @@
 
   async function goToEdit(id: string): Promise<void> {
     if (!id || id === "preview") return;
-    await navigateTo(localePath(`/news/${id}`));
+    await navigateTo(localePath(`${props.baseRoute}/${id}`));
   }
 
   function statusLabel(status: string): string {
@@ -1206,6 +1276,7 @@
     try {
       const payload: SendNewsChatMessagePayload = {
         message,
+        article_type: props.articleType,
         locale: draftArticle.value?.locale || draftLocale.value,
         generate_images: generateImages.value,
         include_video_links: includeVideoLinks.value,
