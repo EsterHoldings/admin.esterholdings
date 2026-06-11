@@ -9,7 +9,6 @@
           {{ studioCopy.subtitle }}
         </p>
       </div>
-
     </div>
 
     <PrimeTabs
@@ -130,12 +129,12 @@
                 <template #content>
                   <article
                     class="news-prime-post-card__body"
-                    :class="{ 'has-image': article.cover_image_url }">
+                    :class="{ 'has-image': articlePreviewImage(article) }">
                     <div
-                      v-if="article.cover_image_url"
+                      v-if="articlePreviewImage(article)"
                       class="news-prime-post-card__thumb">
                       <img
-                        :src="article.cover_image_url"
+                        :src="articlePreviewImage(article)!"
                         :alt="article.title || article.slug" />
                     </div>
 
@@ -162,13 +161,36 @@
                         severity="secondary"
                         text
                         icon="pi pi-eye"
+                        :aria-label="t('admin.news.actions.preview', 'Preview')"
+                        :title="t('admin.news.actions.preview', 'Preview')"
                         @click="openPreview(article, true)" />
                       <PrimeButton
-                        v-if="canUpdate"
+                        v-if="canUpdate && article.effective_status !== 'archived'"
                         size="small"
                         icon="pi pi-pencil"
-                        :label="viewMode === 'grid' ? '' : t('admin.news.actions.editArticle', 'Edit')"
+                        :aria-label="t('admin.news.actions.editArticle', 'Edit')"
+                        :title="t('admin.news.actions.editArticle', 'Edit')"
                         @click="goToEdit(article.id)" />
+                      <PrimeButton
+                        v-if="canDelete && article.effective_status !== 'archived'"
+                        size="small"
+                        severity="secondary"
+                        outlined
+                        icon="pi pi-archive"
+                        :aria-label="t('admin.news.actions.archive', 'Archive')"
+                        :title="t('admin.news.actions.archive', 'Archive')"
+                        :loading="actionArticleId === article.id"
+                        @click="handleArchiveArticle(article)" />
+                      <PrimeButton
+                        v-if="canDelete"
+                        size="small"
+                        severity="danger"
+                        outlined
+                        icon="pi pi-trash"
+                        :aria-label="t('admin.news.actions.delete', 'Delete')"
+                        :title="t('admin.news.actions.delete', 'Delete')"
+                        :loading="actionArticleId === article.id"
+                        @click="handlePermanentDeleteArticle(article)" />
                     </div>
                   </article>
                 </template>
@@ -454,11 +476,7 @@
                   {{ draftArticle?.title || studioCopy.chatTitle }}
                 </h2>
                 <p class="news-prime__section-subtitle">
-                  {{
-                    draftArticle
-                      ? studioCopy.chatSubtitleExisting
-                      : studioCopy.chatSubtitleNew
-                  }}
+                  {{ draftArticle ? studioCopy.chatSubtitleExisting : studioCopy.chatSubtitleNew }}
                 </p>
               </div>
 
@@ -593,9 +611,7 @@
                   v-model="chatInput"
                   rows="5"
                   class="news-prime-composer__input"
-                  :placeholder="
-                    studioCopy.chatPlaceholder
-                  "
+                  :placeholder="studioCopy.chatPlaceholder"
                   @keydown.enter.exact.prevent="handleSendMessage" />
 
                 <div class="news-prime-composer__bottom">
@@ -722,6 +738,7 @@
   const totalRows = ref(0);
   const isListLoading = ref(false);
   const isCreating = ref(false);
+  const actionArticleId = ref<string | null>(null);
 
   const draftArticle = ref<AdminNewsArticle | null>(null);
   const messages = ref<AdminNewsChatMessage[]>([]);
@@ -749,6 +766,9 @@
   const canUpdate = computed(
     () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("update-news")
   );
+  const canDelete = computed(
+    () => adminAuthStore.hasRole("super-admin") || adminAuthStore.hasPermission("delete-news")
+  );
   const canChat = computed(() => (draftArticle.value ? canUpdate.value : canCreate.value));
   const isBlog = computed(() => props.articleType === "trader_blog");
 
@@ -764,7 +784,9 @@
           "Manage posts, publication timing, SEO and GPT-assisted drafts from one wide newsroom workspace."
         ),
     libraryTab: isBlog.value ? t("admin.blog.tabs.library", "All Blog Posts") : t("admin.news.tabs.library", "Posts"),
-    libraryTitle: isBlog.value ? t("admin.blog.library.title", "All blog posts") : t("admin.news.library.title", "All posts"),
+    libraryTitle: isBlog.value
+      ? t("admin.blog.library.title", "All blog posts")
+      : t("admin.news.library.title", "All posts"),
     librarySubtitle: isBlog.value
       ? t(
           "admin.blog.library.subtitle",
@@ -982,13 +1004,47 @@
         articleType: props.articleType,
       });
       const payload = response.data.data;
-      articles.value = payload.data || [];
+      articles.value = (payload.data || []).filter(isListArticleVisible);
       totalRows.value = payload.meta?.total || 0;
     } catch (error) {
       toast.error(resolveApiErrorMessage(error, t("admin.news.messages.loadFailed", "Failed to load news articles.")));
     } finally {
       isListLoading.value = false;
     }
+  }
+
+  function isListArticleVisible(article: AdminNewsArticle | null | undefined): article is AdminNewsArticle {
+    if (!article?.id) {
+      return false;
+    }
+
+    return statusFilter.value === "archived" || article.effective_status !== "archived";
+  }
+
+  function articlePreviewImage(article: AdminNewsArticle): string | null {
+    return (
+      article.cover_image_url ||
+      article.seo?.og_image_url ||
+      article.seo?.twitter_image_url ||
+      article.gallery_images?.find(Boolean) ||
+      extractFirstImage(article.content) ||
+      "/static/newsBg.jpg"
+    );
+  }
+
+  function extractFirstImage(content: string | null | undefined): string | null {
+    const decoded = decodeHtmlEntities(content || "");
+    const match = decoded.match(/<img[^>]+(?:src|data-src)=["']([^"']+)["']/i);
+    return match?.[1] || null;
+  }
+
+  function decodeHtmlEntities(value: string): string {
+    return value
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;|&apos;/g, "'")
+      .replace(/&amp;/g, "&");
   }
 
   function handlePaginatorPage(event: { page: number; rows: number }): void {
@@ -1102,13 +1158,77 @@
 
   function openPreview(article: AdminNewsArticle, canEdit = false): void {
     previewArticle.value = article;
-    previewCanEdit.value = canEdit && article.id !== "preview";
+    previewCanEdit.value = canEdit && article.id !== "preview" && article.effective_status !== "archived";
     isPreviewOpen.value = true;
   }
 
   async function goToEdit(id: string): Promise<void> {
     if (!id || id === "preview") return;
     await navigateTo(localePath(`${props.baseRoute}/${id}`));
+  }
+
+  async function handleArchiveArticle(article: AdminNewsArticle): Promise<void> {
+    if (!canDelete.value || article.effective_status === "archived") {
+      return;
+    }
+
+    if (!confirmAction(t("admin.news.messages.archiveConfirm", "Archive this article?"))) {
+      return;
+    }
+
+    actionArticleId.value = article.id;
+
+    try {
+      const response = await appCore.news.delete(article.id, props.articleType);
+      toast.success(response.data.message || t("admin.news.messages.archived", "News article archived."));
+      await loadArticles(true);
+    } catch (error) {
+      toast.error(
+        resolveApiErrorMessage(error, t("admin.news.messages.archiveFailed", "Failed to archive news article."))
+      );
+    } finally {
+      actionArticleId.value = null;
+    }
+  }
+
+  async function handlePermanentDeleteArticle(article: AdminNewsArticle): Promise<void> {
+    if (!canDelete.value) {
+      return;
+    }
+
+    if (
+      !confirmAction(
+        t(
+          "admin.news.messages.permanentDeleteConfirm",
+          "Permanently delete this article? This action cannot be undone."
+        )
+      )
+    ) {
+      return;
+    }
+
+    actionArticleId.value = article.id;
+
+    try {
+      const response = await appCore.news.forceDelete(article.id, props.articleType);
+      toast.success(
+        response.data.message || t("admin.news.messages.permanentlyDeleted", "News article permanently deleted.")
+      );
+      await loadArticles(true);
+    } catch (error) {
+      toast.error(
+        resolveApiErrorMessage(
+          error,
+          t("admin.news.messages.permanentDeleteFailed", "Failed to permanently delete news article.")
+        )
+      );
+    } finally {
+      actionArticleId.value = null;
+    }
+  }
+
+  function confirmAction(message: string): boolean {
+    return typeof window === "undefined" || window.confirm(message);
   }
 
   function statusLabel(status: string): string {

@@ -46,6 +46,10 @@ export class NewsModule {
     return await this.newsService.delete(id, articleType);
   }
 
+  async forceDelete(id: string, articleType?: NewsArticleType) {
+    return await this.newsService.forceDelete(id, articleType);
+  }
+
   async generateDraft(payload: GenerateNewsDraftPayload) {
     return await this.newsService.generateDraft(payload);
   }

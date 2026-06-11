@@ -1,7 +1,7 @@
 <template>
   <div
     class="news-editor"
-    :class="{ 'news-editor--busy': isSaving || isArchiving }">
+    :class="{ 'news-editor--busy': isSaving || isArchiving || isDeleting }">
     <div class="news-editor__header">
       <div class="news-editor__heading">
         <PrimeButton
@@ -12,17 +12,14 @@
           :label="backLabel"
           @click="goBack" />
 
-        <h1 class="news-editor__title">{{ form.title || t("admin.news.editor.untitled", "Untitled article") }}</h1>
+        <h1 class="news-editor__title">{{ editorTitle }}</h1>
         <p class="news-editor__subtitle">
-          {{
-            t(
-              "admin.news.editor.pageSubtitle",
-              "Use the article and SEO tabs to prepare the draft for publication."
-            )
-          }}
+          {{ editorSubtitle }}
         </p>
 
-        <div class="news-editor__meta">
+        <div
+          v-if="article"
+          class="news-editor__meta">
           <PrimeTag
             :value="statusLabel(article?.effective_status || form.status)"
             :severity="statusSeverity(article?.effective_status || form.status)" />
@@ -33,7 +30,9 @@
         </div>
       </div>
 
-      <div class="news-editor__actions">
+      <div
+        v-if="article"
+        class="news-editor__actions">
         <PrimeButton
           severity="secondary"
           outlined
@@ -41,13 +40,23 @@
           :label="t('admin.news.actions.preview', 'Preview')"
           @click="isPreviewOpen = true" />
         <PrimeButton
-          v-if="canDelete"
+          v-if="canDelete && article?.effective_status !== 'archived'"
           severity="danger"
           outlined
           icon="pi pi-archive"
-          :label="t('admin.news.actions.archive', 'Archive')"
+          :aria-label="t('admin.news.actions.archive', 'Archive')"
+          :title="t('admin.news.actions.archive', 'Archive')"
           :loading="isArchiving"
           @click="handleArchive" />
+        <PrimeButton
+          v-if="canDelete"
+          severity="danger"
+          outlined
+          icon="pi pi-trash"
+          :aria-label="t('admin.news.actions.delete', 'Delete')"
+          :title="t('admin.news.actions.delete', 'Delete')"
+          :loading="isDeleting"
+          @click="handlePermanentDelete" />
         <PrimeButton
           v-if="canUpdate"
           severity="secondary"
@@ -84,7 +93,14 @@
       v-else-if="!article"
       class="news-editor-empty">
       <i class="pi pi-exclamation-circle"></i>
-      <span>{{ t("admin.news.messages.loadOneFailed", "Failed to load article.") }}</span>
+      <span>{{ t("admin.news.messages.notFound", "Article was not found or is no longer available.") }}</span>
+      <PrimeButton
+        size="small"
+        severity="secondary"
+        outlined
+        icon="pi pi-arrow-left"
+        :label="backLabel"
+        @click="goBack" />
     </div>
 
     <PrimeTabs
@@ -157,7 +173,9 @@
                     v-model="form.excerpt"
                     rows="3"
                     auto-resize
-                    :placeholder="t('admin.news.placeholders.excerpt', 'Short article summary for cards and previews')" />
+                    :placeholder="
+                      t('admin.news.placeholders.excerpt', 'Short article summary for cards and previews')
+                    " />
                 </label>
 
                 <label class="news-editor-field news-editor-field--full">
@@ -179,10 +197,10 @@
                 </label>
 
                 <div
-                  v-if="form.cover_image_url"
+                  v-if="coverPreviewImage"
                   class="news-editor__cover">
                   <img
-                    :src="form.cover_image_url"
+                    :src="coverPreviewImage"
                     alt="cover preview"
                     class="news-editor__cover-image" />
                 </div>
@@ -347,6 +365,7 @@
   const isLoading = ref(false);
   const isSaving = ref(false);
   const isArchiving = ref(false);
+  const isDeleting = ref(false);
   const isPreviewOpen = ref(false);
   const galleryImagesInput = ref("");
   const videoLinksInput = ref("");
@@ -390,6 +409,27 @@
   const backLabel = computed(() =>
     isBlog.value ? t("admin.blog.editor.back", "Back to Blog") : t("admin.news.editor.back", "Back to News")
   );
+  const editorTitle = computed(() => {
+    if (isLoading.value) {
+      return t("admin.news.editor.loading", "Loading article...");
+    }
+
+    if (!article.value) {
+      return t("admin.news.editor.notFoundTitle", "Article not found");
+    }
+
+    return form.title || t("admin.news.editor.untitled", "Untitled article");
+  });
+  const editorSubtitle = computed(() => {
+    if (!article.value && !isLoading.value) {
+      return t(
+        "admin.news.editor.notFoundSubtitle",
+        "This article may have been archived, deleted or imported incorrectly."
+      );
+    }
+
+    return t("admin.news.editor.pageSubtitle", "Use the article and SEO tabs to prepare the draft for publication.");
+  });
 
   const localeOptions = computed(() => [
     { label: "English", value: "en" },
@@ -441,6 +481,17 @@
     };
   });
 
+  const coverPreviewImage = computed(() => {
+    return (
+      form.cover_image_url ||
+      seo.og_image_url ||
+      seo.twitter_image_url ||
+      parseMultiline(galleryImagesInput.value)[0] ||
+      extractFirstImage(form.content) ||
+      ""
+    );
+  });
+
   function applySeo(value: NewsSeoPayload | null | undefined): void {
     seo.meta_title = value?.meta_title || "";
     seo.meta_description = value?.meta_description || "";
@@ -472,8 +523,24 @@
     applySeo(value.seo);
   }
 
+  function extractFirstImage(content: string | null | undefined): string | null {
+    const decoded = decodeHtmlEntities(content || "");
+    const match = decoded.match(/<img[^>]+(?:src|data-src)=["']([^"']+)["']/i);
+    return match?.[1] || null;
+  }
+
+  function decodeHtmlEntities(value: string): string {
+    return value
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;|&apos;/g, "'")
+      .replace(/&amp;/g, "&");
+  }
+
   async function loadArticle(): Promise<void> {
     isLoading.value = true;
+    article.value = null;
 
     try {
       const response = await appCore.news.getById(props.articleId, resolvedArticleType.value);
@@ -554,17 +621,61 @@
       return;
     }
 
+    if (!confirmAction(t("admin.news.messages.archiveConfirm", "Archive this article?"))) {
+      return;
+    }
+
     isArchiving.value = true;
 
     try {
       const response = await appCore.news.delete(article.value.id, resolvedArticleType.value);
-      toast.success(response.data.message || t("admin.news.messages.deleted", "News article archived."));
+      toast.success(response.data.message || t("admin.news.messages.archived", "News article archived."));
       await navigateTo(localePath(resolvedBaseRoute.value));
     } catch (error) {
-      toast.error(resolveApiErrorMessage(error, t("admin.news.messages.deleteFailed", "Failed to archive article.")));
+      toast.error(resolveApiErrorMessage(error, t("admin.news.messages.archiveFailed", "Failed to archive article.")));
     } finally {
       isArchiving.value = false;
     }
+  }
+
+  async function handlePermanentDelete(): Promise<void> {
+    if (!article.value || !canDelete.value) {
+      return;
+    }
+
+    if (
+      !confirmAction(
+        t(
+          "admin.news.messages.permanentDeleteConfirm",
+          "Permanently delete this article? This action cannot be undone."
+        )
+      )
+    ) {
+      return;
+    }
+
+    isDeleting.value = true;
+
+    try {
+      const response = await appCore.news.forceDelete(article.value.id, resolvedArticleType.value);
+      toast.success(
+        response.data.message || t("admin.news.messages.permanentlyDeleted", "News article permanently deleted.")
+      );
+      await navigateTo(localePath(resolvedBaseRoute.value));
+    } catch (error) {
+      toast.error(
+        resolveApiErrorMessage(
+          error,
+          t("admin.news.messages.permanentDeleteFailed", "Failed to permanently delete article.")
+        )
+      );
+    } finally {
+      isDeleting.value = false;
+    }
+  }
+
+  function confirmAction(message: string): boolean {
+    return typeof window === "undefined" || window.confirm(message);
   }
 
   function goBack(): void {
@@ -670,7 +781,12 @@
     z-index: 2;
     pointer-events: none;
     border-radius: 24px;
-    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ui-primary-main) 7%, transparent), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--ui-primary-main) 7%, transparent),
+      transparent
+    );
     animation: news-editor-sheen 1.35s ease infinite;
   }
 

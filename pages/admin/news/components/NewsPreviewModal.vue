@@ -36,8 +36,8 @@
           <div class="news-preview__body">
             <div class="news-preview__content">
               <img
-                v-if="article.cover_image_url"
-                :src="article.cover_image_url"
+                v-if="previewCoverImage"
+                :src="previewCoverImage"
                 :alt="article.title || article.slug"
                 class="news-preview__cover" />
 
@@ -47,9 +47,9 @@
                 {{ article.excerpt }}
               </div>
 
-              <div class="news-preview__article">
-                {{ article.content }}
-              </div>
+              <div
+                class="news-preview__article"
+                v-html="renderedContent"></div>
 
               <div
                 v-if="article.gallery_images?.length"
@@ -143,6 +143,9 @@
 
   const { t } = useI18n({ useScope: "global" });
 
+  const previewCoverImage = computed(() => resolveArticleImage(props.article));
+  const renderedContent = computed(() => renderArticleContent(props.article?.content || ""));
+
   const statusLabel = computed(() => {
     const status = props.article?.effective_status || props.article?.status || "draft";
     return (
@@ -169,6 +172,82 @@
       minute: "2-digit",
     }).format(new Date(value));
   });
+
+  function resolveArticleImage(article: AdminNewsArticle | null): string | null {
+    if (!article) return null;
+
+    return (
+      article.cover_image_url ||
+      article.seo?.og_image_url ||
+      article.seo?.twitter_image_url ||
+      article.gallery_images?.find(Boolean) ||
+      extractFirstImage(article.content) ||
+      "/static/newsBg.jpg"
+    );
+  }
+
+  function renderArticleContent(value: string): string {
+    const normalized = decodeHtmlEntities(value).trim();
+    if (!normalized) return "";
+
+    return looksLikeHtml(normalized) ? normalized : renderMarkdownLike(normalized);
+  }
+
+  function looksLikeHtml(value: string): boolean {
+    return /<\/?[a-z][\s\S]*>/i.test(value);
+  }
+
+  function extractFirstImage(content: string | null | undefined): string | null {
+    const decoded = decodeHtmlEntities(content || "");
+    const match = decoded.match(/<img[^>]+(?:src|data-src)=["']([^"']+)["']/i);
+    return match?.[1] || null;
+  }
+
+  function decodeHtmlEntities(value: string): string {
+    return value
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;|&apos;/g, "'")
+      .replace(/&amp;/g, "&");
+  }
+
+  function renderMarkdownLike(value: string): string {
+    const blocks = escapeHtml(value)
+      .split(/\n{2,}/)
+      .map(block => block.trim())
+      .filter(Boolean);
+
+    return blocks
+      .map(block => {
+        const lines = block.split("\n").map(line => line.trim());
+        const firstLine = lines[0] || "";
+
+        if (firstLine.startsWith("### ")) {
+          return `<h3>${firstLine.slice(4)}</h3>`;
+        }
+
+        if (firstLine.startsWith("## ")) {
+          return `<h2>${firstLine.slice(3)}</h2>`;
+        }
+
+        if (lines.every(line => line.startsWith("- "))) {
+          return `<ul>${lines.map(line => `<li>${line.slice(2)}</li>`).join("")}</ul>`;
+        }
+
+        return `<p>${lines.join("<br>")}</p>`;
+      })
+      .join("");
+  }
+
+  function escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 </script>
 
 <style scoped lang="scss">
@@ -304,7 +383,6 @@
   }
 
   .news-preview__article {
-    white-space: pre-wrap;
     padding: 22px;
     border-radius: 22px;
     background: color-mix(in srgb, var(--ui-background-card) 72%, transparent);
@@ -312,6 +390,52 @@
     color: var(--ui-text-main);
     line-height: 1.78;
     font-size: 1rem;
+
+    :deep(h2),
+    :deep(h3) {
+      margin: 26px 0 12px;
+      color: var(--ui-text-main);
+      line-height: 1.22;
+    }
+
+    :deep(h2) {
+      font-size: 1.65rem;
+    }
+
+    :deep(h3) {
+      font-size: 1.25rem;
+    }
+
+    :deep(p) {
+      margin: 0 0 16px;
+      color: var(--ui-text-secondary);
+    }
+
+    :deep(ul),
+    :deep(ol) {
+      margin: 0 0 16px;
+      padding-left: 22px;
+      color: var(--ui-text-secondary);
+    }
+
+    :deep(a) {
+      color: var(--ui-primary-accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    :deep(strong) {
+      color: var(--ui-text-main);
+    }
+
+    :deep(img) {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      margin: 22px 0;
+      border-radius: 16px;
+    }
   }
 
   .news-preview__gallery {

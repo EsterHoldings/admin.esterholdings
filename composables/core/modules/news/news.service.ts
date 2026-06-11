@@ -51,6 +51,10 @@ export class NewsService {
     return await this.useApi.delete(`${this.basePath(articleType)}/${id}`);
   }
 
+  async forceDelete(id: string, articleType?: NewsArticleType): Promise<{ data: { message?: string } }> {
+    return await this.useApi.delete(`${this.basePath(articleType)}/${id}/force`);
+  }
+
   async generateDraft(
     payload: GenerateNewsDraftPayload
   ): Promise<{ data: { data: GeneratedNewsDraft; message?: string } }> {
