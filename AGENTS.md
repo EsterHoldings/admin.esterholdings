@@ -38,6 +38,12 @@ Prefer `yarn` (repo is pinned via `packageManager`); other package managers work
 - Place new tests alongside source (e.g., `components/Button.spec.ts`) using your chosen runner, and document added commands in `package.json`.
 - Until tests exist, provide clear manual QA notes in PRs (pages touched, browsers/devices used).
 
+## Shared Workspace & Git Policy
+- The EsterHoldings workspace has four active sibling repositories: `admin`, `client`, `landing`, and `server`.
+- When a task is completed, include a ready-to-use commit message in the final response so the user can paste it into PHPStorm.
+- Do not run `git commit` or `git push` unless the user explicitly asks for that exact git action.
+- If a task touches multiple sibling repositories, mention which repositories changed and provide commit messages that make sense for those changes.
+
 ## Commit & Pull Request Guidelines
 - Commits: prefer `type(scope): summary` (e.g., `feat(auth): add otp guard`) and keep them small and purposeful. Avoid generic “Updates” messages.
 - PRs: include a concise summary, linked issue/ticket, and screenshots or clips for UI changes (desktop + mobile). Note env or migration steps explicitly.

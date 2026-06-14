@@ -149,33 +149,96 @@
 
     <template v-else>
       <div class="admin-dashboard__summary-grid">
-        <button
+        <div
           v-for="card in summaryCards"
           :key="card.id"
-          type="button"
-          class="admin-dashboard__summary-link"
-          @click="handleNavigate(card.to)">
-          <PrimeCard
-            class="dashboard-summary-card"
-            :class="`dashboard-summary-card--${card.kind}`">
-            <template #content>
-              <div class="dashboard-summary-card__body">
-                <div class="dashboard-summary-card__top">
-                  <div class="dashboard-summary-card__copy">
-                    <span class="dashboard-summary-card__label">{{ card.label }}</span>
-                    <strong class="dashboard-summary-card__value">{{ card.value }}</strong>
-                  </div>
+          class="admin-dashboard__summary-item"
+          :class="{ 'admin-dashboard__summary-item--online': card.id === 'online_now' }">
+          <button
+            type="button"
+            class="admin-dashboard__summary-link"
+            @click="handleNavigate(card.to)">
+            <PrimeCard
+              class="dashboard-summary-card"
+              :class="`dashboard-summary-card--${card.kind}`">
+              <template #content>
+                <div class="dashboard-summary-card__body">
+                  <div class="dashboard-summary-card__top">
+                    <div class="dashboard-summary-card__copy">
+                      <span class="dashboard-summary-card__label">{{ card.label }}</span>
+                      <strong class="dashboard-summary-card__value">{{ card.value }}</strong>
+                    </div>
 
-                  <div class="dashboard-summary-card__icon-wrap">
-                    <component
-                      :is="card.icon"
-                      class="dashboard-summary-card__icon" />
+                    <div class="dashboard-summary-card__icon-wrap">
+                      <component
+                        :is="card.icon"
+                        class="dashboard-summary-card__icon" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </template>
-          </PrimeCard>
-        </button>
+              </template>
+            </PrimeCard>
+          </button>
+
+          <div
+            v-if="card.id === 'online_now'"
+            class="dashboard-online-popover"
+            role="group"
+            :aria-label="resolveText('admin.dashboard.onlinePopover.clientsLabel', 'Online clients')">
+            <div class="dashboard-online-popover__header">
+              <span>{{ resolveText("admin.dashboard.onlinePopover.title", "Online now") }}</span>
+              <strong>{{ formatNumber(currentOnlineCount) }}</strong>
+            </div>
+
+            <div
+              v-if="currentOnlineCount === 0"
+              class="dashboard-online-popover__empty">
+              {{ resolveText("admin.dashboard.onlinePopover.empty", "No clients are online right now.") }}
+            </div>
+
+            <div
+              v-else-if="!canShowCurrentOnlineClients"
+              class="dashboard-online-popover__empty">
+              {{
+                resolveText(
+                  "admin.dashboard.onlinePopover.tooMany",
+                  "Too many clients online. Open the filtered clients list."
+                )
+              }}
+            </div>
+
+            <div
+              v-else
+              class="dashboard-online-popover__list">
+              <button
+                v-for="client in currentOnlineClients"
+                :key="client.id"
+                type="button"
+                class="dashboard-online-popover__client"
+                @click.stop="handleNavigate(`/clients/${client.id}`)">
+                <span class="dashboard-online-popover__avatar">
+                  <img
+                    v-if="client.photo_url"
+                    :src="client.photo_url"
+                    :alt="client.name || client.email || ''"
+                    loading="lazy" />
+                  <span v-else>{{ client.initials || getInitials(client.name || client.email) }}</span>
+                </span>
+                <span class="dashboard-online-popover__main">
+                  <span class="dashboard-online-popover__name">{{ client.name }}</span>
+                  <span class="dashboard-online-popover__email">{{ client.email }}</span>
+                </span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              class="dashboard-online-popover__all"
+              @click.stop="handleNavigate(onlineClientsRoute)">
+              {{ resolveText("admin.dashboard.onlinePopover.openAll", "Open online clients") }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="admin-dashboard__charts">
@@ -552,10 +615,20 @@
     browser: string;
     os: string;
   };
+  type OnlineClientPreview = {
+    id: string;
+    first_name?: string | null;
+    last_name?: string | null;
+    name?: string | null;
+    email?: string | null;
+    photo_url?: string | null;
+    initials?: string | null;
+  };
 
   const AUTO_REFRESH_INTERVAL_MS = 30_000;
   const FILTER_RELOAD_DELAY_MS = 350;
   const REALTIME_REFRESH_DELAY_MS = 900;
+  const ONLINE_POPOVER_CLIENT_LIMIT = 10;
   const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
   const DASHBOARD_NOTIFICATION_TYPES = ["payments.withdrawal.created", "verification.request.created"];
 
@@ -1270,10 +1343,28 @@
       return;
     }
 
-    navigateTo(localePath(to));
+    const [path, queryString = ""] = to.split("?");
+    if (queryString === "") {
+      navigateTo(localePath(path));
+
+      return;
+    }
+
+    navigateTo({
+      path: localePath(path),
+      query: Object.fromEntries(new URLSearchParams(queryString)),
+    });
   }
 
   const onlineSummary = computed(() => dashboard.value?.online?.summary ?? {});
+  const currentOnlineCount = computed(() => Number(onlineSummary.value?.currently_online_users ?? 0));
+  const currentOnlineClients = computed<OnlineClientPreview[]>(() =>
+    Array.isArray(dashboard.value?.online?.current_clients) ? dashboard.value.online.current_clients : []
+  );
+  const canShowCurrentOnlineClients = computed(
+    () => currentOnlineCount.value > 0 && currentOnlineCount.value <= ONLINE_POPOVER_CLIENT_LIMIT
+  );
+  const onlineClientsRoute = computed(() => "/clients?filter_online_status=online");
   const topOnlineClients = computed(() => dashboard.value?.online?.top_clients ?? []);
   const recentUsers = computed(() => dashboard.value?.recent?.users ?? []);
 
@@ -1282,9 +1373,9 @@
       {
         id: "online_now",
         label: resolveText("admin.dashboard.cards.onlineNow", "Online now"),
-        value: formatNumber(onlineSummary.value?.currently_online_users ?? 0),
+        value: formatNumber(currentOnlineCount.value),
         icon: UiIconClients,
-        to: "/clients",
+        to: onlineClientsRoute.value,
         kind: "primary",
       },
       {
@@ -1545,6 +1636,11 @@
     gap: 10px;
   }
 
+  .admin-dashboard__summary-item {
+    position: relative;
+    min-width: 0;
+  }
+
   .admin-dashboard__summary-link {
     min-width: 0;
     width: 100%;
@@ -1554,6 +1650,162 @@
     background: transparent;
     text-align: left;
     cursor: pointer;
+  }
+
+  .dashboard-online-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 20;
+    width: min(360px, calc(100vw - 32px));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 20%, var(--color-stroke-ui-light));
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--ui-background-panel) 96%, transparent);
+    color: var(--ui-text-main);
+    box-shadow: 0 18px 42px color-mix(in srgb, #000 16%, transparent) !important;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .admin-dashboard__summary-item--online:hover .dashboard-online-popover,
+  .admin-dashboard__summary-item--online:focus-within .dashboard-online-popover {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .dashboard-online-popover__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 2px 4px;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-stroke-ui-light) 72%, transparent);
+    font-size: 12px;
+    font-weight: 820;
+  }
+
+  .dashboard-online-popover__header strong {
+    color: var(--color-success);
+  }
+
+  .dashboard-online-popover__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 372px;
+    overflow: auto;
+  }
+
+  .dashboard-online-popover__client {
+    width: 100%;
+    min-height: 46px;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    padding: 7px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    appearance: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 0.16s ease,
+      background-color 0.16s ease;
+  }
+
+  .dashboard-online-popover__client:hover,
+  .dashboard-online-popover__client:focus-visible {
+    outline: none;
+    border-color: color-mix(in srgb, var(--ui-primary-main) 26%, var(--color-stroke-ui-light));
+    background: color-mix(in srgb, var(--ui-primary-main) 7%, transparent);
+  }
+
+  .dashboard-online-popover__avatar {
+    width: 34px;
+    height: 34px;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--ui-text-invert);
+    background: linear-gradient(
+      135deg,
+      var(--ui-primary-main),
+      color-mix(in srgb, var(--ui-primary-main) 45%, var(--ui-primary-accent))
+    );
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 0;
+  }
+
+  .dashboard-online-popover__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dashboard-online-popover__main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dashboard-online-popover__name,
+  .dashboard-online-popover__email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-online-popover__name {
+    font-size: 12px;
+    font-weight: 820;
+    line-height: 1.25;
+  }
+
+  .dashboard-online-popover__email,
+  .dashboard-online-popover__empty {
+    color: var(--ui-text-secondary);
+    font-size: 11px;
+    font-weight: 620;
+    line-height: 1.35;
+  }
+
+  .dashboard-online-popover__empty {
+    padding: 10px 7px;
+  }
+
+  .dashboard-online-popover__all {
+    width: 100%;
+    min-height: 34px;
+    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 24%, var(--color-stroke-ui-light));
+    border-radius: 8px;
+    appearance: none;
+    background: color-mix(in srgb, var(--ui-primary-main) 9%, transparent);
+    color: var(--ui-primary-main);
+    font-size: 12px;
+    font-weight: 820;
+    cursor: pointer;
+  }
+
+  .dashboard-online-popover__all:hover,
+  .dashboard-online-popover__all:focus-visible {
+    outline: none;
+    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
   }
 
   .dashboard-summary-card,
