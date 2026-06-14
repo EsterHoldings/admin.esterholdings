@@ -1400,7 +1400,12 @@
             "roles": "Roles",
             "createdAt": "Created At",
             "options": "Options",
-            "lastSeen": "Last seen"
+            "lastSeen": "Last seen",
+            "status": "Status",
+            "wasOnline": "Last online"
+          },
+          "lastSeen": {
+            "justNow": "just now"
           },
           "actions": {
             "addNewAdmin": "Add new Admin",
@@ -2579,6 +2584,12 @@
         "unprocessedVerifications": "Unprocessed verification requests",
         "processingTransactions": "Transactions in processing",
         "unprocessedTransactions": "Unprocessed transactions"
+      },
+      "onlinePopover": {
+        "clientsLabel": "Online clients",
+        "title": "Online now",
+        "empty": "No clients are online right now.",
+        "loadingClients": "Client list is not available yet. Click the card to open online clients."
       },
       "hints": {
         "activeClientsNow": "Clients currently active in cabinet",

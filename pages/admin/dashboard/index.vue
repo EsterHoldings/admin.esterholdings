@@ -197,12 +197,12 @@
             </div>
 
             <div
-              v-else-if="!canShowCurrentOnlineClients"
+              v-else-if="currentOnlineClients.length === 0"
               class="dashboard-online-popover__empty">
               {{
                 resolveText(
-                  "admin.dashboard.onlinePopover.tooMany",
-                  "Too many clients online. Open the filtered clients list."
+                  "admin.dashboard.onlinePopover.loadingClients",
+                  "Client list is not available yet. Click the card to open online clients."
                 )
               }}
             </div>
@@ -220,23 +220,18 @@
                   <img
                     v-if="client.photo_url"
                     :src="client.photo_url"
-                    :alt="client.name || client.email || ''"
+                    :alt="onlineClientName(client)"
                     loading="lazy" />
-                  <span v-else>{{ client.initials || getInitials(client.name || client.email) }}</span>
+                  <span v-else>{{
+                    client.initials || getInitials(onlineClientName(client) || onlineClientEmail(client))
+                  }}</span>
                 </span>
                 <span class="dashboard-online-popover__main">
-                  <span class="dashboard-online-popover__name">{{ client.name }}</span>
-                  <span class="dashboard-online-popover__email">{{ client.email }}</span>
+                  <span class="dashboard-online-popover__name">{{ onlineClientName(client) }}</span>
+                  <span class="dashboard-online-popover__email">{{ onlineClientEmail(client) }}</span>
                 </span>
               </button>
             </div>
-
-            <button
-              type="button"
-              class="dashboard-online-popover__all"
-              @click.stop="handleNavigate(onlineClientsRoute)">
-              {{ resolveText("admin.dashboard.onlinePopover.openAll", "Open online clients") }}
-            </button>
           </div>
         </div>
       </div>
@@ -628,7 +623,6 @@
   const AUTO_REFRESH_INTERVAL_MS = 30_000;
   const FILTER_RELOAD_DELAY_MS = 350;
   const REALTIME_REFRESH_DELAY_MS = 900;
-  const ONLINE_POPOVER_CLIENT_LIMIT = 10;
   const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
   const DASHBOARD_NOTIFICATION_TYPES = ["payments.withdrawal.created", "verification.request.created"];
 
@@ -1356,13 +1350,23 @@
     });
   }
 
+  function onlineClientName(client: OnlineClientPreview): string {
+    const firstName = String(client.first_name ?? "").trim();
+    const lastName = String(client.last_name ?? "").trim();
+    const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
+    const fallbackName = String(client.name ?? "").trim();
+
+    return fullName || fallbackName || onlineClientEmail(client);
+  }
+
+  function onlineClientEmail(client: OnlineClientPreview): string {
+    return String(client.email ?? "").trim() || "—";
+  }
+
   const onlineSummary = computed(() => dashboard.value?.online?.summary ?? {});
   const currentOnlineCount = computed(() => Number(onlineSummary.value?.currently_online_users ?? 0));
   const currentOnlineClients = computed<OnlineClientPreview[]>(() =>
     Array.isArray(dashboard.value?.online?.current_clients) ? dashboard.value.online.current_clients : []
-  );
-  const canShowCurrentOnlineClients = computed(
-    () => currentOnlineCount.value > 0 && currentOnlineCount.value <= ONLINE_POPOVER_CLIENT_LIMIT
   );
   const onlineClientsRoute = computed(() => "/clients?filter_online_status=online");
   const topOnlineClients = computed(() => dashboard.value?.online?.top_clients ?? []);
@@ -1654,7 +1658,7 @@
 
   .dashboard-online-popover {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     left: 0;
     z-index: 20;
     width: min(360px, calc(100vw - 32px));
@@ -1673,6 +1677,16 @@
     transition:
       opacity 0.16s ease,
       transform 0.16s ease;
+  }
+
+  .admin-dashboard__summary-item--online::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 19;
+    width: min(360px, calc(100vw - 32px));
+    height: 8px;
   }
 
   .admin-dashboard__summary-item--online:hover .dashboard-online-popover,
@@ -1787,25 +1801,6 @@
 
   .dashboard-online-popover__empty {
     padding: 10px 7px;
-  }
-
-  .dashboard-online-popover__all {
-    width: 100%;
-    min-height: 34px;
-    border: 1px solid color-mix(in srgb, var(--ui-primary-main) 24%, var(--color-stroke-ui-light));
-    border-radius: 8px;
-    appearance: none;
-    background: color-mix(in srgb, var(--ui-primary-main) 9%, transparent);
-    color: var(--ui-primary-main);
-    font-size: 12px;
-    font-weight: 820;
-    cursor: pointer;
-  }
-
-  .dashboard-online-popover__all:hover,
-  .dashboard-online-popover__all:focus-visible {
-    outline: none;
-    background: color-mix(in srgb, var(--ui-primary-main) 14%, transparent);
   }
 
   .dashboard-summary-card,

@@ -1404,7 +1404,12 @@
             "roles": "Роли",
             "createdAt": "Дата создания",
             "options": "Действия",
-            "lastSeen": "Последняя активность"
+            "lastSeen": "Последняя активность",
+            "status": "Статус",
+            "wasOnline": "Был в сети"
+          },
+          "lastSeen": {
+            "justNow": "только что"
           },
           "actions": {
             "addNewAdmin": "Добавить администратора",
@@ -2583,6 +2588,12 @@
         "unprocessedVerifications": "Необработанные заявки на верификацию",
         "processingTransactions": "Транзакции в обработке",
         "unprocessedTransactions": "Необработанные транзакции"
+      },
+      "onlinePopover": {
+        "clientsLabel": "Клиенты онлайн",
+        "title": "Сейчас онлайн",
+        "empty": "Сейчас нет клиентов онлайн.",
+        "loadingClients": "Список клиентов пока недоступен. Нажмите на плашку, чтобы открыть клиентов онлайн."
       },
       "hints": {
         "activeClientsNow": "Клиенты, которые сейчас активны в кабинете",

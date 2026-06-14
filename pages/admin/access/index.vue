@@ -1,47 +1,47 @@
 <template>
   <div class="access-page-shell">
-  <PageStructureDefault fluid>
-    <template #header>
-      <div class="flex w-full flex-col gap-1 text-[var(--ui-text-main)]">
-        <UiTextH4>{{ t("admin.access.index.title") }}</UiTextH4>
-        <UiTextParagraph>{{ t("admin.access.index.subtitle") }}</UiTextParagraph>
-      </div>
-    </template>
-
-    <template #content>
-      <div class="access-page">
-        <div
-          v-if="tabsList.length > 0"
-          class="access-page__tabs-grid">
-          <button
-            v-for="(tab, index) in tabsList"
-            :key="tab.label"
-            type="button"
-            class="access-page__tab-card"
-            :class="{ 'is-active': activeTabIndex === index }"
-            @click="handleActiveTab(index)">
-            <div class="access-page__tab-label">{{ tab.label }}</div>
-            <div class="access-page__tab-description">{{ tab.description }}</div>
-          </button>
+    <PageStructureDefault fluid>
+      <template #header>
+        <div class="flex w-full flex-col gap-1 text-[var(--ui-text-main)]">
+          <UiTextH4>{{ t("admin.access.index.title") }}</UiTextH4>
+          <UiTextParagraph>{{ t("admin.access.index.subtitle") }}</UiTextParagraph>
         </div>
+      </template>
 
-        <transition
-          name="slide-short"
-          mode="out-in">
-          <component
-            v-if="activeTabComponent"
-            :is="activeTabComponent"
-            :key="tabsList[activeTabIndex]?.label || activeTabIndex" />
-        </transition>
+      <template #content>
+        <div class="access-page">
+          <div
+            v-if="tabsList.length > 0"
+            class="access-page__tabs-grid">
+            <button
+              v-for="(tab, index) in tabsList"
+              :key="tab.label"
+              type="button"
+              class="access-page__tab-card"
+              :class="{ 'is-active': activeTabIndex === index }"
+              @click="handleActiveTab(index)">
+              <div class="access-page__tab-label">{{ tab.label }}</div>
+              <div class="access-page__tab-description">{{ tab.description }}</div>
+            </button>
+          </div>
 
-        <div
-          v-if="tabsList.length === 0"
-          class="access-page__empty-state">
-          {{ t("admin.access.index.empty", "No access to any section of this page.") }}
+          <transition
+            name="slide-short"
+            mode="out-in">
+            <component
+              v-if="activeTabComponent"
+              :is="activeTabComponent"
+              :key="tabsList[activeTabIndex]?.label || activeTabIndex" />
+          </transition>
+
+          <div
+            v-if="tabsList.length === 0"
+            class="access-page__empty-state">
+            {{ t("admin.access.index.empty", "No access to any section of this page.") }}
+          </div>
         </div>
-      </div>
-    </template>
-  </PageStructureDefault>
+      </template>
+    </PageStructureDefault>
   </div>
 </template>
 
@@ -203,7 +203,7 @@
   :deep(.access-entity-panel) {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
   }
 
   :deep(.access-entity-panel__toolbar) {
@@ -239,17 +239,17 @@
   :deep(.access-entity-list) {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
 
   :deep(.access-entity-card) {
-    border-radius: 18px;
+    border-radius: 8px;
     border: 1px solid var(--color-stroke-ui-light);
     background: var(--ui-background-panel);
-    padding: 18px 20px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
   }
 
   :deep(.access-entity-card__top) {
@@ -275,16 +275,16 @@
   :deep(.access-entity-card__actions) {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   :deep(.access-entity-action) {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid var(--color-stroke-ui-light);
     background: transparent;
     color: var(--ui-text-main);
@@ -306,37 +306,39 @@
 
   :deep(.access-entity-card__grid) {
     display: grid;
-    gap: 14px;
+    gap: 10px;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 
   :deep(.access-entity-card__label) {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
     text-transform: uppercase;
     color: var(--ui-text-secondary);
   }
 
   :deep(.access-entity-card__value) {
-    margin-top: 6px;
+    margin-top: 4px;
+    font-size: 0.8125rem;
     color: var(--ui-text-main);
     word-break: break-word;
   }
 
   :deep(.access-entity-card__chips) {
-    margin-top: 8px;
+    margin-top: 4px;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 5px;
   }
 
   :deep(.access-entity-chip) {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
-    padding: 6px 10px;
-    font-size: 0.8125rem;
+    border-radius: 8px;
+    padding: 4px 7px;
+    font-size: 0.75rem;
+    line-height: 1.2;
     color: var(--ui-text-main);
     background: color-mix(in srgb, var(--color-stroke-ui-light) 75%, transparent);
   }
