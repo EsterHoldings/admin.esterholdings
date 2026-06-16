@@ -26,7 +26,6 @@
             class="admin-boot-loader__logo-mark"
             :class="{ 'admin-boot-loader__logo-mark--invert': isThemeLight }" />
         </div>
-        <div class="admin-boot-loader__brand">ESTER</div>
         <div
           class="admin-boot-loader__bar"
           aria-hidden="true">
@@ -205,23 +204,9 @@
   .admin-boot-loader__logo {
     display: grid;
     place-items: center;
-    width: min(196px, 72vw);
-    height: 104px;
-    border: 1px solid rgba(91, 141, 255, 0.38);
-    border-radius: 24px;
-    background: rgba(8, 25, 65, 0.58);
-    box-shadow:
-      0 22px 70px rgba(0, 0, 0, 0.34),
-      inset 0 0 24px rgba(93, 141, 255, 0.12);
+    width: min(180px, 72vw);
+    height: 72px;
     animation: admin-loader-logo-pulse 1.7s ease-in-out infinite;
-  }
-
-  :root[data-theme="light"] .admin-boot-loader__logo {
-    border-color: rgba(3, 145, 255, 0.2);
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow:
-      0 22px 70px rgba(10, 31, 68, 0.14),
-      inset 0 0 24px rgba(3, 145, 255, 0.08);
   }
 
   .admin-boot-loader__logo-mark {
@@ -232,15 +217,6 @@
 
   .admin-boot-loader__logo-mark--invert {
     filter: invert(1);
-  }
-
-  .admin-boot-loader__brand {
-    color: currentColor;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0;
-    opacity: 0.92;
   }
 
   .admin-boot-loader__bar {
