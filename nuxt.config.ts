@@ -256,8 +256,6 @@ export default defineNuxtConfig({
       skipWaiting: true,
     },
     devOptions: { enabled: false },
-    // ✳️ Головне: примусово знищує старий SW у деві/локалі, щоб він не ламав HMR
-    selfDestroying: true,
   },
 
   vite: {

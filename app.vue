@@ -22,11 +22,9 @@
       aria-label="Loading Ester Admin">
       <div class="admin-boot-loader__content">
         <div class="admin-boot-loader__logo">
-          <img
-            src="/favicon/favicon-192x192.png"
-            alt=""
-            width="72"
-            height="72" />
+          <UiIconLogo
+            class="admin-boot-loader__logo-mark"
+            :class="{ 'admin-boot-loader__logo-mark--invert': isThemeLight }" />
         </div>
         <div class="admin-boot-loader__brand">ESTER</div>
         <div
@@ -44,6 +42,7 @@
   import { useHead, useNuxtApp, useRouter } from "#imports";
 
   import ModalRightSideDefault from "./components/block/modals/ModalRightSideDefault.vue";
+  import UiIconLogo from "./components/ui/UiIconLogo.vue";
   import { useThemeStore } from "./stores/themeStore";
   import { markAdminAppReady, recoverAdminBoot } from "./utils/adminBootRecovery";
 
@@ -57,11 +56,13 @@
   const isRouteLoading = ref(false);
   const nuxtApp = useNuxtApp();
   const router = useRouter();
+  const themeStore = useThemeStore();
   let routeLoaderTimer: ReturnType<typeof setTimeout> | null = null;
   let bootRecoveryTimer: ReturnType<typeof setTimeout> | null = null;
   let bootFrame = 0;
 
   const showBootLoader = computed(() => isAppBooting.value || isRouteLoading.value);
+  const isThemeLight = computed(() => themeStore.currentTheme !== "dark");
 
   const openModal = (component: any, props = {}) => {
     modalContent.value = component;
@@ -154,7 +155,6 @@
   onMounted(() => {
     scheduleBootRecovery();
 
-    const themeStore = useThemeStore();
     themeStore.initTheme();
 
     router.isReady().finally(() => {
@@ -188,6 +188,13 @@
       linear-gradient(180deg, #020a22 0%, #000028 58%, #00001c 100%);
   }
 
+  :root[data-theme="light"] .admin-boot-loader {
+    color: #151515;
+    background:
+      radial-gradient(circle at 50% 42%, rgba(3, 145, 255, 0.14), transparent 34%),
+      linear-gradient(180deg, #ffffff 0%, #f6f8fc 56%, #edf2fa 100%);
+  }
+
   .admin-boot-loader__content {
     display: flex;
     flex-direction: column;
@@ -198,8 +205,8 @@
   .admin-boot-loader__logo {
     display: grid;
     place-items: center;
-    width: 96px;
-    height: 96px;
+    width: min(196px, 72vw);
+    height: 104px;
     border: 1px solid rgba(91, 141, 255, 0.38);
     border-radius: 24px;
     background: rgba(8, 25, 65, 0.58);
@@ -209,18 +216,31 @@
     animation: admin-loader-logo-pulse 1.7s ease-in-out infinite;
   }
 
-  .admin-boot-loader__logo img {
-    width: 72px;
-    height: 72px;
-    object-fit: contain;
+  :root[data-theme="light"] .admin-boot-loader__logo {
+    border-color: rgba(3, 145, 255, 0.2);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow:
+      0 22px 70px rgba(10, 31, 68, 0.14),
+      inset 0 0 24px rgba(3, 145, 255, 0.08);
+  }
+
+  .admin-boot-loader__logo-mark {
+    display: block;
+    width: 132px;
+    height: auto;
+  }
+
+  .admin-boot-loader__logo-mark--invert {
+    filter: invert(1);
   }
 
   .admin-boot-loader__brand {
-    color: rgba(255, 255, 255, 0.92);
+    color: currentColor;
     font-size: 15px;
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0;
+    opacity: 0.92;
   }
 
   .admin-boot-loader__bar {
@@ -230,6 +250,10 @@
     overflow: hidden;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.12);
+  }
+
+  :root[data-theme="light"] .admin-boot-loader__bar {
+    background: rgba(10, 31, 68, 0.12);
   }
 
   .admin-boot-loader__bar span {
