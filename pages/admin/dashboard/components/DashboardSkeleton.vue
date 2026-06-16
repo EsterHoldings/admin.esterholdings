@@ -6,7 +6,7 @@
         :key="`summary-skeleton-${item}`"
         class="h-full rounded-[22px] border border-[color-mix(in_srgb,var(--ui-primary-main)_16%,var(--color-stroke-ui-light))] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--ui-background-card)_74%,transparent),color-mix(in_srgb,var(--ui-background-panel)_86%,transparent))]">
         <template #content>
-          <div class="flex min-h-16 flex-col gap-1.5 p-2.5">
+          <div class="flex min-h-16 flex-col gap-1.5 p-3.5">
             <div class="flex items-start justify-between gap-2">
               <div class="flex min-w-0 flex-1 flex-col gap-2">
                 <PrimeSkeleton
@@ -107,13 +107,10 @@
 </template>
 
 <script setup lang="ts">
-  import type { DashboardPreset } from "../types";
+  import type { DashboardSkeletonProps } from "~/composables/admin/dashboard/components/DashboardSkeleton";
+  import { useDashboardSkeletonSetup } from "~/composables/admin/dashboard/components/DashboardSkeleton/setup";
 
-  defineProps<{
-    summaryCards: number[];
-    chartCards: number[];
-    rows: number[];
-    presets: DashboardPreset[];
-    advancedFiltersVisible: boolean;
-  }>();
+  const props = defineProps<DashboardSkeletonProps>();
+
+  useDashboardSkeletonSetup(props);
 </script>

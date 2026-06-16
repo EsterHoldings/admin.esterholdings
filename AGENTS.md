@@ -1,6 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
+
 - `app.vue` bootstraps layout and global providers; `error.vue` handles Nuxt error boundaries.
 - Pages and routes live in `pages/`; shared shells in `layouts/`; route guards in `middleware/`.
 - Reusable UI is in `components/`; composables in `composables/`; global stores in `stores/` (Pinia).
@@ -12,11 +13,13 @@
 - Backend path from this directory ../server (Backend by Laravel)
 
 ## Project Scope
+
 - This repository is admin frontend only.
 - Keep only admin-facing pages/routes/features in this codebase.
 - Client cabinet/landing functionality should not be added here.
 
 ## Build, Test, and Development Commands
+
 ```bash
 yarn dev        # start local dev server at :3000
 yarn build      # production build
@@ -25,30 +28,48 @@ yarn generate   # generate static build
 yarn format     # format with Prettier
 yarn format:check  # verify formatting only
 ```
+
 Prefer `yarn` (repo is pinned via `packageManager`); other package managers work but are not validated here.
 
 ## Coding Style & Naming Conventions
+
 - Language: Nuxt 3 with TypeScript; prefer `.ts`/`.vue` with `<script setup lang="ts">`.
 - Formatting: 2-space indent, Prettier defaults. Run `yarn format` before pushing.
 - Styling: Tailwind-first; keep component-level styles scoped. Use semantic class groupings and avoid inline styles when utilities suffice.
 - Naming: components in `PascalCase`, composables `useThing`, stores `useThingStore`, helpers in `camelCase`. Constants uppercase snake case.
 
+## Admin Frontend Composition Pattern
+
+- Admin pages should be smart parents: load data, call `useAppCore`, handle route/navigation decisions, prepare labels/options, and pass all required values and callbacks down to components.
+- Feature components live in `pages/admin/<feature>/components/` and should stay as presentational as possible: template-first, no API calls, no route decisions, no business orchestration.
+- Component-specific logic belongs in `composables/admin/<feature>/components/<ComponentName>/`.
+- Each component composable folder should use this layout:
+  - `index.ts` for exported prop/emit types, constants, class maps, defaults, and component-local static values.
+  - `setup.ts` for `use<ComponentName>Setup(props, emit?)`, returning computed values and event handlers consumed by the `.vue` template.
+  - `validation.ts` only when the component owns local form validation rules.
+- Vue compiler macros (`defineProps`, `withDefaults`, `defineEmits`) must remain inside `.vue`; immediately pass their result into the component setup composable.
+- Prefer Tailwind and PrimeVue for styling. Do not add new CSS/SCSS for admin feature components unless there is a documented framework limitation.
+
 ## Testing Guidelines
+
 - No automated test runner is configured yet; add focused unit/integration coverage when modifying critical logic (e.g., services, stores).
 - Place new tests alongside source (e.g., `components/Button.spec.ts`) using your chosen runner, and document added commands in `package.json`.
 - Until tests exist, provide clear manual QA notes in PRs (pages touched, browsers/devices used).
 
 ## Shared Workspace & Git Policy
+
 - The EsterHoldings workspace has four active sibling repositories: `admin`, `client`, `landing`, and `server`.
 - When a task is completed, include a ready-to-use commit message in the final response so the user can paste it into PHPStorm.
 - Do not run `git commit` or `git push` unless the user explicitly asks for that exact git action.
 - If a task touches multiple sibling repositories, mention which repositories changed and provide commit messages that make sense for those changes.
 
 ## Commit & Pull Request Guidelines
+
 - Commits: prefer `type(scope): summary` (e.g., `feat(auth): add otp guard`) and keep them small and purposeful. Avoid generic “Updates” messages.
 - PRs: include a concise summary, linked issue/ticket, and screenshots or clips for UI changes (desktop + mobile). Note env or migration steps explicitly.
 - Keep diffs focused; follow existing folder conventions; add comments where logic is non-obvious.
 
 ## Security & Configuration Tips
+
 - Store secrets in environment variables (e.g., `.env` loaded by Nuxt runtime); never commit keys or tokens.
 - Review `server/` handlers for data exposure before merging; sanitize and validate inputs at the boundary.

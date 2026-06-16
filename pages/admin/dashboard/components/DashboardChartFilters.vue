@@ -6,7 +6,7 @@
         date-format="yy-mm-dd"
         show-icon
         fluid
-        @update:model-value="value => $emit('update-date', 'date_from', value)" />
+        @update:model-value="handleDateFromUpdate" />
     </DashboardFilterField>
 
     <DashboardFilterField :label="toLabel">
@@ -15,7 +15,7 @@
         date-format="yy-mm-dd"
         show-icon
         fluid
-        @update:model-value="value => $emit('update-date', 'date_to', value)" />
+        @update:model-value="handleDateToUpdate" />
     </DashboardFilterField>
 
     <DashboardFilterField :label="stepLabel">
@@ -25,7 +25,7 @@
         option-label="label"
         option-value="value"
         fluid
-        @update:model-value="value => $emit('update-filter', 'bucket', value || 'day')" />
+        @update:model-value="handleBucketUpdate" />
     </DashboardFilterField>
 
     <template v-if="mode === 'online'">
@@ -38,7 +38,7 @@
           show-clear
           fluid
           :placeholder="allDevicesLabel"
-          @update:model-value="value => $emit('update-filter', 'device_type', value || '')" />
+          @update:model-value="handleDeviceUpdate" />
       </DashboardFilterField>
 
       <DashboardFilterField :label="browserLabel">
@@ -50,7 +50,7 @@
           show-clear
           fluid
           :placeholder="allBrowsersLabel"
-          @update:model-value="value => $emit('update-filter', 'browser', value || '')" />
+          @update:model-value="handleBrowserUpdate" />
       </DashboardFilterField>
 
       <DashboardFilterField :label="osLabel">
@@ -62,58 +62,31 @@
           show-clear
           fluid
           :placeholder="allOsLabel"
-          @update:model-value="value => $emit('update-filter', 'os', value || '')" />
+          @update:model-value="handleOsUpdate" />
       </DashboardFilterField>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { computed } from "vue";
   import DashboardFilterField from "./DashboardFilterField.vue";
-  import type { DashboardBucket, DashboardSelectOption } from "../types";
+  import {
+    DASHBOARD_CHART_FILTER_DEFAULTS,
+    type DashboardChartFiltersEmits,
+    type DashboardChartFiltersProps,
+  } from "~/composables/admin/dashboard/components/DashboardChartFilters";
+  import { useDashboardChartFiltersSetup } from "~/composables/admin/dashboard/components/DashboardChartFilters/setup";
 
-  const props = withDefaults(
-    defineProps<{
-      mode: "online" | "registrations";
-      dateFrom: string;
-      dateTo: string;
-      bucket: DashboardBucket;
-      bucketOptions: DashboardSelectOption[];
-      deviceOptions?: DashboardSelectOption[];
-      browserOptions?: DashboardSelectOption[];
-      osOptions?: DashboardSelectOption[];
-      deviceType?: string;
-      browser?: string;
-      os?: string;
-      fromLabel: string;
-      toLabel: string;
-      stepLabel: string;
-      deviceLabel: string;
-      browserLabel: string;
-      osLabel: string;
-      allDevicesLabel: string;
-      allBrowsersLabel: string;
-      allOsLabel: string;
-      toDatePickerValue: (value?: string | null) => Date | null;
-    }>(),
-    {
-      deviceOptions: () => [],
-      browserOptions: () => [],
-      osOptions: () => [],
-      deviceType: "",
-      browser: "",
-      os: "",
-    }
-  );
+  const props = withDefaults(defineProps<DashboardChartFiltersProps>(), DASHBOARD_CHART_FILTER_DEFAULTS);
+  const emit = defineEmits<DashboardChartFiltersEmits>();
 
-  defineEmits<{
-    "update-date": [key: "date_from" | "date_to", value: Date | string | null];
-    "update-filter": [key: string, value: string];
-  }>();
-
-  const gridClass = computed(() => [
-    "grid items-end gap-2 max-[640px]:grid-cols-1",
-    props.mode === "online" ? "grid-cols-6 max-[1180px]:grid-cols-3" : "grid-cols-3",
-  ]);
+  const {
+    gridClass,
+    handleBrowserUpdate,
+    handleBucketUpdate,
+    handleDateFromUpdate,
+    handleDateToUpdate,
+    handleDeviceUpdate,
+    handleOsUpdate,
+  } = useDashboardChartFiltersSetup(props, emit);
 </script>

@@ -33,11 +33,10 @@
 </template>
 
 <script setup lang="ts">
-  defineProps<{
-    title: string;
-    subtitle: string;
-    count: string;
-    empty: boolean;
-    emptyText: string;
-  }>();
+  import type { DashboardListPanelProps } from "~/composables/admin/dashboard/components/DashboardListPanel";
+  import { useDashboardListPanelSetup } from "~/composables/admin/dashboard/components/DashboardListPanel/setup";
+
+  const props = defineProps<DashboardListPanelProps>();
+
+  useDashboardListPanelSetup(props);
 </script>

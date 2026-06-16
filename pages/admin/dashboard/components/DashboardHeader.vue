@@ -24,7 +24,7 @@
         rounded
         :outlined="!advancedFiltersVisible"
         :text="!advancedFiltersVisible"
-        @click="$emit('toggle-advanced')" />
+        @click="handleToggleAdvanced" />
       <PrimeButton
         icon="pi pi-refresh"
         rounded
@@ -32,27 +32,21 @@
         :loading="isLoading"
         :aria-label="refreshLabel"
         :title="refreshLabel"
-        @click="$emit('refresh')" />
+        @click="handleRefresh" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import DashboardInlineStatus from "./DashboardInlineStatus.vue";
+  import type {
+    DashboardHeaderEmits,
+    DashboardHeaderProps,
+  } from "~/composables/admin/dashboard/components/DashboardHeader";
+  import { useDashboardHeaderSetup } from "~/composables/admin/dashboard/components/DashboardHeader/setup";
 
-  defineProps<{
-    title: string;
-    subtitle: string;
-    autoRefreshLabel: string;
-    updatedAt: string;
-    advancedFiltersLabel: string;
-    advancedFiltersVisible: boolean;
-    refreshLabel: string;
-    isLoading: boolean;
-  }>();
+  defineProps<DashboardHeaderProps>();
+  const emit = defineEmits<DashboardHeaderEmits>();
 
-  defineEmits<{
-    refresh: [];
-    "toggle-advanced": [];
-  }>();
+  const { handleRefresh, handleToggleAdvanced } = useDashboardHeaderSetup(emit);
 </script>

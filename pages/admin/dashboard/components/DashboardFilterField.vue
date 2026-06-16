@@ -8,7 +8,10 @@
 </template>
 
 <script setup lang="ts">
-  defineProps<{
-    label: string;
-  }>();
+  import type { DashboardFilterFieldProps } from "~/composables/admin/dashboard/components/DashboardFilterField";
+  import { useDashboardFilterFieldSetup } from "~/composables/admin/dashboard/components/DashboardFilterField/setup";
+
+  const props = defineProps<DashboardFilterFieldProps>();
+
+  useDashboardFilterFieldSetup(props);
 </script>

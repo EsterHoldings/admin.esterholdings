@@ -8,25 +8,12 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from "vue";
-  import type { DashboardStatusTone } from "../types";
+  import type { DashboardInlineStatusProps } from "~/composables/admin/dashboard/components/DashboardInlineStatus";
+  import { useDashboardInlineStatusSetup } from "~/composables/admin/dashboard/components/DashboardInlineStatus/setup";
 
-  const props = withDefaults(
-    defineProps<{
-      label: string;
-      tone?: DashboardStatusTone;
-    }>(),
-    {
-      tone: "muted",
-    }
-  );
-
-  const toneClass = computed(() => {
-    if (props.tone === "success") return "text-[var(--color-success)]";
-    if (props.tone === "danger") return "text-[var(--color-danger)]";
-    if (props.tone === "warning") return "text-[var(--color-warning)]";
-    if (props.tone === "info") return "text-[var(--color-info)]";
-
-    return "text-[var(--ui-text-secondary)]";
+  const props = withDefaults(defineProps<DashboardInlineStatusProps>(), {
+    tone: "muted",
   });
+
+  const { toneClass } = useDashboardInlineStatusSetup(props);
 </script>

@@ -20,7 +20,7 @@
           :outlined="activePreset !== preset.id"
           :text="activePreset !== preset.id"
           :label="preset.label"
-          @click="$emit('select-preset', preset.id)" />
+          @click="handlePresetSelect(preset.id)" />
       </div>
     </div>
 
@@ -33,17 +33,14 @@
 </template>
 
 <script setup lang="ts">
-  import type { DashboardPreset } from "../types";
+  import type {
+    DashboardChartPanelEmits,
+    DashboardChartPanelProps,
+  } from "~/composables/admin/dashboard/components/DashboardChartPanel";
+  import { useDashboardChartPanelSetup } from "~/composables/admin/dashboard/components/DashboardChartPanel/setup";
 
-  defineProps<{
-    name: string;
-    title: string;
-    subtitle: string;
-    presets: DashboardPreset[];
-    activePreset: string;
-  }>();
+  defineProps<DashboardChartPanelProps>();
+  const emit = defineEmits<DashboardChartPanelEmits>();
 
-  defineEmits<{
-    "select-preset": [presetId: string];
-  }>();
+  const { handlePresetSelect } = useDashboardChartPanelSetup(emit);
 </script>

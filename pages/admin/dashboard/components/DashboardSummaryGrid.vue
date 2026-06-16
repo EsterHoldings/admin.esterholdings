@@ -4,12 +4,12 @@
       v-for="card in cards"
       :key="card.id"
       class="relative min-w-0"
-      :class="{ group: card.id === 'online_now' }">
+      :class="{ group: isOnlineCard(card) }">
       <DashboardSummaryCard
         :card="card"
-        @open="$emit('navigate', $event)" />
+        @open="handleNavigate" />
 
-      <template v-if="card.id === 'online_now'">
+      <template v-if="isOnlineCard(card)">
         <div class="absolute left-0 top-full z-[19] h-2 w-[min(360px,calc(100vw-32px))]" />
         <DashboardOnlinePopover
           :clients="onlineClients"
@@ -22,7 +22,7 @@
           :resolve-name="onlineClientName"
           :resolve-email="onlineClientEmail"
           :get-initials="getInitials"
-          @open-client="$emit('navigate', `/clients/${$event}`)" />
+          @open-client="handleClientNavigate" />
       </template>
     </div>
   </div>
@@ -31,23 +31,14 @@
 <script setup lang="ts">
   import DashboardOnlinePopover from "./DashboardOnlinePopover.vue";
   import DashboardSummaryCard from "./DashboardSummaryCard.vue";
-  import type { DashboardOnlineClient, DashboardSummaryCard as SummaryCard } from "../types";
+  import type {
+    DashboardSummaryGridEmits,
+    DashboardSummaryGridProps,
+  } from "~/composables/admin/dashboard/components/DashboardSummaryGrid";
+  import { useDashboardSummaryGridSetup } from "~/composables/admin/dashboard/components/DashboardSummaryGrid/setup";
 
-  defineProps<{
-    cards: SummaryCard[];
-    onlineClients: DashboardOnlineClient[];
-    onlineCount: number;
-    formattedOnlineCount: string;
-    onlineTitle: string;
-    onlineClientsLabel: string;
-    onlineEmptyText: string;
-    onlineLoadingText: string;
-    onlineClientName: (client: DashboardOnlineClient) => string;
-    onlineClientEmail: (client: DashboardOnlineClient) => string;
-    getInitials: (value?: string | null) => string;
-  }>();
+  defineProps<DashboardSummaryGridProps>();
+  const emit = defineEmits<DashboardSummaryGridEmits>();
 
-  defineEmits<{
-    navigate: [to: string];
-  }>();
+  const { handleClientNavigate, handleNavigate, isOnlineCard } = useDashboardSummaryGridSetup(emit);
 </script>
