@@ -1,8 +1,9 @@
 <template>
-  <div class="admin-metric-chart">
+  <div class="w-full">
     <div
       ref="chartRef"
-      class="admin-metric-chart__canvas" />
+      class="w-full"
+      :style="{ minHeight: chartHeight }" />
   </div>
 </template>
 
@@ -99,8 +100,8 @@
         const marker = item.marker ?? "";
 
         return `
-      <div class="admin-chart-tooltip__row">
-        <span class="admin-chart-tooltip__name">${marker}${escapeHtml(String(item.seriesName ?? ""))}</span>
+      <div class="flex items-center justify-between gap-3 text-[#d8dff4]">
+        <span class="inline-flex items-center gap-1.5">${marker}${escapeHtml(String(item.seriesName ?? ""))}</span>
         <strong>${escapeHtml(String(value))}${escapeHtml(String(suffix))}</strong>
       </div>
     `;
@@ -108,8 +109,8 @@
       .join("");
 
     return `
-    <div class="admin-chart-tooltip">
-      <div class="admin-chart-tooltip__title">${escapeHtml(category)}</div>
+    <div class="flex min-w-[220px] flex-col gap-2">
+      <div class="font-bold text-white">${escapeHtml(category)}</div>
       ${rows}
     </div>
   `;
@@ -346,42 +347,3 @@
     { deep: true }
   );
 </script>
-
-<style scoped lang="scss">
-  .admin-metric-chart {
-    width: 100%;
-  }
-
-  .admin-metric-chart__canvas {
-    width: 100%;
-    min-height: v-bind(chartHeight);
-  }
-</style>
-
-<style lang="scss">
-  .admin-chart-tooltip {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 220px;
-  }
-
-  .admin-chart-tooltip__title {
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .admin-chart-tooltip__row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    color: #d8dff4;
-  }
-
-  .admin-chart-tooltip__name {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-</style>
