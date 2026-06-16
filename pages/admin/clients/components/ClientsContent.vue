@@ -111,127 +111,32 @@
 </template>
 
 <script lang="ts" setup>
-  import { onBeforeUnmount, onMounted, ref } from "vue";
-  import { useI18n } from "vue-i18n";
   import UiImageCircle from "~/components/ui/UiImageCircle.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
   import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
+  import type { ClientsContentEmit, ClientsContentProps } from "~/composables/admin/clients/components/ClientsContent";
+  import { useClientsContentSetup } from "~/composables/admin/clients/components/ClientsContent/setup";
 
-  interface AdminClientCardItem {
-    id: string;
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    phone?: string;
-    birthdate?: string;
-    created_at?: string;
-    photo_url?: string;
-    is_online?: boolean;
-    acquisition_source?: string;
-    acquisition_source_label?: string;
-    registration_method?: string;
-    registration_method_label?: string;
-    social_provider?: string | null;
-    referrer_email?: string | null;
-    referrer_name?: string | null;
-  }
-
-  const emit = defineEmits<{
-    (e: "click", id: string): void;
-    (e: "fullDelete", client: AdminClientCardItem): void;
-  }>();
-
-  const props = withDefaults(
-    defineProps<{
-      data: AdminClientCardItem[];
-      viewMode: string;
-    }>(),
-    {
-      data: () => [],
-      viewMode: "cards",
-    }
-  );
-
-  const { t } = useI18n({ useScope: "global" });
-  const activeMenuId = ref<string | null>(null);
-  const handleOpenClientPage = (id: string) => emit("click", id);
-
-  const toggleActionMenu = (id?: string) => {
-    if (!id) return;
-    activeMenuId.value = activeMenuId.value === id ? null : id;
-  };
-
-  const handleFullDelete = (item: AdminClientCardItem) => {
-    activeMenuId.value = null;
-    emit("fullDelete", item);
-  };
-
-  const closeActionMenu = () => {
-    activeMenuId.value = null;
-  };
-
-  const resolveText = (key: string, fallback: string) => {
-    const value = t(key);
-    return value === key ? fallback : value;
-  };
-
-  const getTwoCharsByFullName = (firstName: string, lastName: string): string => {
-    const firstInitial = String(firstName ?? "").charAt(0);
-    const lastInitial = String(lastName ?? "").charAt(0);
-    return `${firstInitial}${lastInitial}`;
-  };
-
-  const formatDate = (date: string) => {
-    if (!date) return "-";
-    const d = new Date(date);
-    return isNaN(d.getTime()) ? date : d.toLocaleString();
-  };
-
-  const normalizeBadgeValue = (value?: string | null): string => {
-    const normalized = String(value ?? "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9_-]+/g, "-");
-
-    return normalized || "unknown";
-  };
-
-  const formatProviderName = (provider?: string | null): string => {
-    const normalized = String(provider ?? "").trim();
-    if (!normalized) return "";
-
-    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-  };
-
-  const acquisitionSourceLabel = (item: AdminClientCardItem): string => {
-    const source = normalizeBadgeValue(item.acquisition_source);
-    if (source === "referral") {
-      return resolveText("admin.clients.origin.referral", "referral");
-    }
-
-    return resolveText("admin.clients.origin.organic", "organic");
-  };
-
-  const registrationMethodLabel = (item: AdminClientCardItem): string => {
-    const method = normalizeBadgeValue(item.registration_method);
-    if (method === "social") {
-      const provider = formatProviderName(item.social_provider);
-      const social = resolveText("admin.clients.registration.social", "social");
-
-      return provider ? `${social}: ${provider}` : social;
-    }
-
-    return resolveText("admin.clients.registration.basic", "basic");
-  };
-
-  onMounted(() => {
-    document.addEventListener("click", closeActionMenu);
+  const props = withDefaults(defineProps<ClientsContentProps>(), {
+    data: () => [],
+    viewMode: "cards",
   });
+  const emit = defineEmits<ClientsContentEmit>();
 
-  onBeforeUnmount(() => {
-    document.removeEventListener("click", closeActionMenu);
-  });
+  const {
+    t,
+    activeMenuId,
+    handleOpenClientPage,
+    toggleActionMenu,
+    handleFullDelete,
+    resolveText,
+    getTwoCharsByFullName,
+    formatDate,
+    normalizeBadgeValue,
+    acquisitionSourceLabel,
+    registrationMethodLabel,
+  } = useClientsContentSetup(props, emit);
 </script>
 
 <style scoped lang="scss">

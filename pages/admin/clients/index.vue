@@ -8,23 +8,25 @@
     </template>
 
     <template #content>
-      <ClientsPanel />
+      <ClientsPanel v-bind="clientsPanelProps" />
     </template>
   </PageStructureDefault>
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue-i18n";
-import {definePageMeta} from "~/.nuxt/imports";
+  import { useI18n } from "vue-i18n";
+  import { definePageMeta } from "~/.nuxt/imports";
 
-import ClientsPanel from "~/pages/admin/clients/components/ClientsPanel.vue";
-import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
-import UiTextH4 from "~/components/ui/UiTextH4.vue";
-import PageStructureDefault from "~/components/block/pages/PageStructureDefault.vue";
+  import ClientsPanel from "~/pages/admin/clients/components/ClientsPanel.vue";
+  import UiTextParagraph from "~/components/ui/UiTextParagraph.vue";
+  import UiTextH4 from "~/components/ui/UiTextH4.vue";
+  import PageStructureDefault from "~/components/block/pages/PageStructureDefault.vue";
+  import { useClientsPage } from "~/composables/admin/clients/useClientsPage";
 
-definePageMeta({
-  middleware: ["admin-middleware"],
-});
+  definePageMeta({
+    middleware: ["admin-middleware"],
+  });
 
-const {t} = useI18n({useScope: "global"});
+  const { t } = useI18n({ useScope: "global" });
+  const { clientsPanelProps } = useClientsPage();
 </script>
