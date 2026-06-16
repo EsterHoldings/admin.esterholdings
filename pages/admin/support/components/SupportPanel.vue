@@ -2,27 +2,27 @@
   <UiContainer>
     <div class="space-y-5">
       <div class="flex items-center justify-between w-full text-[var(--ui-text-main)]">
-        <UiTextH4>{{ t("admin.support.title") }}</UiTextH4>
+        <UiTextH4>{{ titleLabel }}</UiTextH4>
       </div>
 
-      <SupportToolbar v-bind="props" />
+      <SupportToolbar v-bind="supportChildProps" />
 
       <SupportTicketTable
-        v-if="viewMode === 'table'"
-        v-bind="props" />
+        v-if="isTableMode"
+        v-bind="supportChildProps" />
       <SupportTicketCards
         v-else
-        v-bind="props" />
+        v-bind="supportChildProps" />
 
-      <SupportPagination v-bind="props" />
+      <SupportPagination v-bind="supportChildProps" />
 
       <ChatDefault
         :admin-chat="true"
-        v-if="currentTicketIdForChat"
+        v-if="isChatOpen"
         :ticket-id="currentTicketIdForChat"
         :currentUser="currentUser"
         :can-reply="canUpdateSupport"
-        :admin-joined="isCurrentAdminTicketParticipant(currentChatTicket)"
+        :admin-joined="isCurrentAdminJoined"
         @close="handleCloseChat"
         @admin-joined="handleFloatingChatJoined"
         class="fixed inset-0 z-[12000]" />
@@ -43,7 +43,18 @@
 
   const props = defineProps<SupportPanelProps>();
 
-  useSupportPanelSetup(props);
+  const {
+    canUpdateSupport,
+    currentTicketIdForChat,
+    currentUser,
+    handleCloseChat,
+    handleFloatingChatJoined,
+    isChatOpen,
+    isCurrentAdminJoined,
+    isTableMode,
+    supportChildProps,
+    titleLabel,
+  } = useSupportPanelSetup(props);
 </script>
 
 <style>

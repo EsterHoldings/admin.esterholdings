@@ -7,7 +7,7 @@
     </div>
 
     <div
-      v-if="tickets.length === 0"
+      v-if="!hasTickets"
       class="w-full h-[50vh] flex items-center justify-center">
       <UiTextSmall>{{ supportListText.noTickets }}</UiTextSmall>
     </div>
@@ -15,14 +15,11 @@
     <div
       v-else
       class="grid gap-3"
-      :class="viewMode === 'full' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'">
+      :class="ticketGridClass">
       <div
         v-for="ticket in filtered"
         :key="ticket.id"
-        :class="[
-          'ticket-card cursor-pointer rounded-xl border border-[var(--color-stroke-ui-dark)] bg-[var(--ui-background-panel)] p-4 transition hover:bg-[var(--color-stroke-ui-dark)]',
-          viewMode === 'full' ? 'ticket-card--full-row' : '',
-        ]"
+        :class="getTicketCardClass(ticket)"
         @click="handleClickRow(ticket.id)">
         <div class="ticket-card__header">
           <div
@@ -105,7 +102,7 @@
                   <span v-else>{{ getAdminParticipantInitials(admin) }}</span>
                 </button>
                 <div
-                  v-if="activeAdminPopoverKey === getAdminParticipantKey(ticket, admin)"
+                  v-if="isAdminPopoverVisible(ticket, admin)"
                   class="ticket-admin-popover"
                   @click.stop>
                   <div class="ticket-admin-popover__name">{{ getAdminParticipantName(admin) }}</div>
@@ -140,7 +137,7 @@
                 @click.stop="handleChatIconClick(ticket)"
                 :aria-label="supportListText.chat">
                 <span
-                  v-if="ticket.unread_messages_count > 0"
+                  v-if="hasTicketUnreadMessages(ticket)"
                   class="ticket-card__chat-badge">
                   {{ ticket.unread_messages_count }}
                 </span>
@@ -156,10 +153,8 @@
                     getTicketStatusActionClass(action.status),
                     { 'is-active': isTicketStatusActive(ticket, action.status) },
                   ]"
-                  :title="supportListText.setStatusTitle.replace('{status}', action.label)"
-                  :disabled="
-                    !canUpdateSupport || isTicketStatusActive(ticket, action.status) || isTicketActionLoading(ticket)
-                  "
+                  :title="getTicketStatusActionTitle(action)"
+                  :disabled="isTicketStatusActionDisabled(ticket, action.status)"
                   @click.stop="handleChangeTicketStatus(ticket, action.status)">
                   <component
                     :is="action.icon"
@@ -173,7 +168,7 @@
                 <UiIconDotsVertical />
               </button>
               <div
-                v-if="openTicketActionMenuId === String(ticket.id)"
+                v-if="isTicketActionMenuOpen(ticket)"
                 class="ticket-action-menu__dropdown"
                 @click.stop>
                 <button
@@ -206,5 +201,52 @@
 
   const props = defineProps<SupportTicketCardsProps>();
 
-  useSupportTicketCardsSetup(props);
+  const {
+    canDeleteSupport,
+    clearActiveAdminPopoverKey,
+    filtered,
+    getAdminParticipantAvatarUrl,
+    getAdminParticipantEmail,
+    getAdminParticipantId,
+    getAdminParticipantInitials,
+    getAdminParticipantKey,
+    getAdminParticipantName,
+    getTicketAdminParticipants,
+    getTicketCardClass,
+    getTicketChannelBadgeClass,
+    getTicketChannelLabel,
+    getTicketClientAvatarUrl,
+    getTicketClientEmail,
+    getTicketClientInitials,
+    getTicketClientName,
+    getTicketCreatedLabel,
+    getTicketPreview,
+    getTicketSourceBadgeClass,
+    getTicketSourceKey,
+    getTicketSourceLabel,
+    getTicketStatusActionClass,
+    getTicketStatusActionTitle,
+    getTicketStatusDotClass,
+    getTicketStatusLabel,
+    handleArchiveTicket,
+    handleChangeTicketStatus,
+    handleChatIconClick,
+    handleClickRow,
+    hasTicketUnreadMessages,
+    hasTickets,
+    isAdminPopoverVisible,
+    isLoading,
+    isTicketActionLoading,
+    isTicketActionMenuOpen,
+    isTicketStatusActionDisabled,
+    isTicketStatusActive,
+    openAdminProfile,
+    openTicketClient,
+    setActiveAdminPopoverKey,
+    supportListText,
+    ticketGridClass,
+    ticketStatusActions,
+    toggleAdminPopover,
+    toggleTicketActionMenu,
+  } = useSupportTicketCardsSetup(props);
 </script>

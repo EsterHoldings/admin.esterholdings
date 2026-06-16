@@ -35,7 +35,7 @@
       </UiSelect>
 
       <ViewModeToggle
-        v-if="!isMobileViewport"
+        v-if="canShowViewModeToggle"
         class="w-full sm:w-auto"
         bordered
         :modelValue="viewMode"
@@ -48,7 +48,7 @@
         :class="{ 'is-active': showArchived }"
         @click="handleToggleArchived">
         <span class="support-archive-filter__dot" />
-        <span>{{ showArchived ? supportListText.archived : supportListText.active }}</span>
+        <span>{{ archiveFilterLabel }}</span>
       </button>
     </div>
   </div>
@@ -68,5 +68,22 @@
 
   const props = defineProps<SupportToolbarProps>();
 
-  useSupportToolbarSetup(props);
+  const {
+    archiveFilterLabel,
+    canShowViewModeToggle,
+    handleChangeFilterSortBy,
+    handleClickUpdate,
+    handleInputSearch,
+    handleToggleArchived,
+    handleViewModeChange,
+    isLoading,
+    orderBy,
+    orderDirection,
+    search,
+    showArchived,
+    sortByFilterData,
+    supportListText,
+    viewMode,
+    viewOptions,
+  } = useSupportToolbarSetup(props);
 </script>

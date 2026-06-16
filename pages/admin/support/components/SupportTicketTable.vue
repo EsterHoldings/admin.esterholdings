@@ -25,7 +25,7 @@
                 </UiTextSmall>
                 <UiIconSort
                   class="!text-[var(--ui-text-main)]"
-                  :active="orderBy === 'last_message_at'"
+                  :active="isLastMessageSortActive"
                   :direction="orderDirection"
                   @click="handleOrderByAndDirection('last_message_at')" />
               </div>
@@ -44,7 +44,7 @@
                 </UiTextSmall>
                 <UiIconSort
                   class="!text-[var(--ui-text-main)]"
-                  :active="orderBy === 'status'"
+                  :active="isStatusSortActive"
                   :direction="orderDirection"
                   @click="handleOrderByAndDirection('status')" />
               </div>
@@ -145,7 +145,7 @@
                     <span v-else>{{ getAdminParticipantInitials(admin) }}</span>
                   </button>
                   <div
-                    v-if="activeAdminPopoverKey === getAdminParticipantKey(t, admin)"
+                    v-if="isAdminPopoverVisible(t, admin)"
                     class="ticket-admin-popover"
                     @click.stop>
                     <div class="ticket-admin-popover__name">{{ getAdminParticipantName(admin) }}</div>
@@ -182,7 +182,7 @@
                   class="relative h-[42px] w-[42px] flex items-center justify-center active:bg-[var(--color-stroke-ui-dark)] rounded-full hover:bg-[var(--color-stroke-ui-light)]">
                   <div
                     class="absolute top-1 right-1 bg-[--ui-sticker-danger] w-[16px] h-[16px] rounded-full border-none flex items-center justify-center"
-                    v-if="t.unread_messages_count > 0">
+                    v-if="hasTicketUnreadMessages(t)">
                     {{ t.unread_messages_count }}
                   </div>
                   <UiIconChat class="!h-[24px] !w-[24px]" />
@@ -199,8 +199,8 @@
                       getTicketStatusActionClass(action.status),
                       { 'is-active': isTicketStatusActive(t, action.status) },
                     ]"
-                    :title="supportListText.setStatusTitle.replace('{status}', action.label)"
-                    :disabled="!canUpdateSupport || isTicketStatusActive(t, action.status) || isTicketActionLoading(t)"
+                    :title="getTicketStatusActionTitle(action)"
+                    :disabled="isTicketStatusActionDisabled(t, action.status)"
                     @click.stop="handleChangeTicketStatus(t, action.status)">
                     <component
                       :is="action.icon"
@@ -214,7 +214,7 @@
                   <UiIconDotsVertical />
                 </button>
                 <div
-                  v-if="openTicketActionMenuId === String(t.id)"
+                  v-if="isTicketActionMenuOpen(t)"
                   class="ticket-action-menu__dropdown"
                   @click.stop>
                   <button
@@ -250,5 +250,53 @@
 
   const props = defineProps<SupportTicketTableProps>();
 
-  useSupportTicketTableSetup(props);
+  const {
+    canDeleteSupport,
+    clearActiveAdminPopoverKey,
+    filtered,
+    getAdminParticipantAvatarUrl,
+    getAdminParticipantEmail,
+    getAdminParticipantId,
+    getAdminParticipantInitials,
+    getAdminParticipantKey,
+    getAdminParticipantName,
+    getTicketAdminParticipants,
+    getTicketChannelBadgeClass,
+    getTicketChannelLabel,
+    getTicketClientAvatarUrl,
+    getTicketClientEmail,
+    getTicketClientInitials,
+    getTicketClientName,
+    getTicketCreatedLabel,
+    getTicketPreview,
+    getTicketSourceBadgeClass,
+    getTicketSourceKey,
+    getTicketSourceLabel,
+    getTicketStatusActionClass,
+    getTicketStatusActionTitle,
+    getTicketStatusDotClass,
+    getTicketStatusLabel,
+    handleArchiveTicket,
+    handleChangeTicketStatus,
+    handleChatIconClick,
+    handleClickRow,
+    handleOrderByAndDirection,
+    hasTicketUnreadMessages,
+    isAdminPopoverVisible,
+    isLastMessageSortActive,
+    isLoading,
+    isStatusSortActive,
+    isTicketActionLoading,
+    isTicketActionMenuOpen,
+    isTicketStatusActionDisabled,
+    isTicketStatusActive,
+    openAdminProfile,
+    openTicketClient,
+    orderDirection,
+    setActiveAdminPopoverKey,
+    supportListText,
+    ticketStatusActions,
+    toggleAdminPopover,
+    toggleTicketActionMenu,
+  } = useSupportTicketTableSetup(props);
 </script>

@@ -10,24 +10,24 @@
         :withoutNoSelect="true" />
     </div>
 
-    <UiTextSmall>{{ currentPage * perPage - perPage }}-{{ currentPage * perPage }} / {{ total }}</UiTextSmall>
+    <UiTextSmall>{{ rangeLabel }}</UiTextSmall>
 
     <div class="flex items-center justify-center gap-2">
       <UiTextSmall
         class="px-3 py-1.5 h-[32px] border border-[--color-stroke-ui-dark] cursor-pointer text-[14px] rounded text-[var(--ui-text-main)]"
-        v-if="currentPage !== 1 && total > perPage"
+        v-if="canGoPrev"
         @click="goPrev">
-        {{ t("cabinet.accounts.pagination.prev") }}
+        {{ prevLabel }}
       </UiTextSmall>
 
       <UiTextSmall
-        v-if="visiblePages[0] > 1"
+        v-if="showFirstPage"
         class="px-3 py-1.5 h-[32px] border border-[var(--color-stroke-ui-dark)] cursor-pointer text-[14px] rounded text-[var(--ui-text-main)]"
         @click="setPage(1)">
         1
       </UiTextSmall>
 
-      <UiTextSmall v-if="visiblePages[0] > 2">...</UiTextSmall>
+      <UiTextSmall v-if="showStartEllipsis">...</UiTextSmall>
 
       <UiTextSmall
         v-for="page in visiblePages"
@@ -38,10 +38,10 @@
         {{ page }}
       </UiTextSmall>
 
-      <UiTextSmall v-if="visiblePages[visiblePages.length - 1] < totalPages">...</UiTextSmall>
+      <UiTextSmall v-if="showEndEllipsis">...</UiTextSmall>
 
       <UiTextSmall
-        v-if="visiblePages[visiblePages.length - 1] < totalPages"
+        v-if="showLastPage"
         class="px-3 py-1.5 h-[32px] border border-[var(--color-stroke-ui-dark)] cursor-pointer text-[14px] rounded text-[var(--ui-text-main)]"
         @click="setPage(totalPages)"
         >{{ totalPages }}
@@ -49,9 +49,9 @@
 
       <UiTextSmall
         class="px-3 py-1.5 border border-[var(--color-stroke-ui-dark)] cursor-pointer text-[14px] rounded text-[var(--ui-text-main)]"
-        v-if="currentPage !== totalPages && total > perPage"
+        v-if="canGoNext"
         @click="goNext">
-        {{ t("cabinet.accounts.pagination.next") }}
+        {{ nextLabel }}
       </UiTextSmall>
     </div>
   </div>
@@ -65,5 +65,25 @@
 
   const props = defineProps<SupportPaginationProps>();
 
-  useSupportPaginationSetup(props);
+  const {
+    canGoNext,
+    canGoPrev,
+    currentPage,
+    goNext,
+    goPrev,
+    handleChangePerPage,
+    nextLabel,
+    perPage,
+    perPageList,
+    prevLabel,
+    rangeLabel,
+    setPage,
+    showEndEllipsis,
+    showFirstPage,
+    showLastPage,
+    showStartEllipsis,
+    supportListText,
+    totalPages,
+    visiblePages,
+  } = useSupportPaginationSetup(props);
 </script>
