@@ -114,10 +114,6 @@ export function useWithdrawalRequestsPage() {
   );
   const copyValueText = computed(() => resolveText("admin.withdrawalRequests.actions.copyValue", "Copy value"));
   const rejectText = computed(() => resolveText("admin.withdrawalRequests.actions.reject", "Reject"));
-  const statusFilterNoteText = computed(() =>
-    resolveText("admin.withdrawalRequests.filters.currentStatus", "Status filter")
-  );
-  const resetFilterText = computed(() => resolveText("admin.withdrawalRequests.filters.reset", "Reset"));
   const savedText = computed(() =>
     resolveText("admin.withdrawalRequests.messages.saved", "Withdrawal request updated.")
   );
@@ -892,14 +888,11 @@ export function useWithdrawalRequestsPage() {
     perPage,
     refreshAll,
     requests,
-    resetFilterText,
     searchFilter,
     searchPlaceholder,
     shortId,
     statCards,
     statusClass,
-    statusFilter,
-    statusFilterNoteText,
     statusText,
     subtitleText,
     successfulActionTitle,
