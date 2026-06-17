@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pointer-events-none absolute left-0 top-[calc(100%+6px)] z-20 flex w-[min(360px,calc(100vw-32px))] -translate-y-1 flex-col gap-2 rounded-lg border border-[color-mix(in_srgb,var(--ui-primary-main)_20%,var(--color-stroke-ui-light))] bg-[color-mix(in_srgb,var(--ui-background-panel)_96%,transparent)] p-2.5 text-[var(--ui-text-main)] opacity-0 shadow-[0_18px_42px_color-mix(in_srgb,#000_16%,transparent)] transition duration-150 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
+    class="pointer-events-none absolute left-0 top-[calc(100%+6px)] z-20 flex w-[min(360px,calc(100vw-32px))] -translate-y-1 flex-col gap-2 rounded-lg border border-[color-mix(in_srgb,var(--ui-primary-main)_20%,var(--color-stroke-ui-light))] bg-[var(--ui-background-panel)] p-2.5 text-[var(--ui-text-main)] opacity-0 shadow-[0_18px_42px_color-mix(in_srgb,#000_22%,transparent)] transition duration-150 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
     role="group"
     :aria-label="clientsLabel">
     <div
@@ -28,7 +28,7 @@
         v-for="client in clients"
         :key="client.id"
         type="button"
-        class="grid min-h-[46px] w-full grid-cols-[34px_minmax(0,1fr)] items-center gap-2 rounded-lg border border-transparent bg-transparent p-1.5 text-left text-inherit transition hover:border-[color-mix(in_srgb,var(--ui-primary-main)_26%,var(--color-stroke-ui-light))] hover:bg-[color-mix(in_srgb,var(--ui-primary-main)_7%,transparent)] focus-visible:border-[color-mix(in_srgb,var(--ui-primary-main)_26%,var(--color-stroke-ui-light))] focus-visible:bg-[color-mix(in_srgb,var(--ui-primary-main)_7%,transparent)] focus-visible:outline-none"
+        class="grid min-h-[58px] w-full grid-cols-[34px_minmax(0,1fr)] items-center gap-2 rounded-lg border border-transparent bg-transparent p-1.5 text-left text-inherit transition hover:border-[color-mix(in_srgb,var(--ui-primary-main)_26%,var(--color-stroke-ui-light))] hover:bg-[color-mix(in_srgb,var(--ui-primary-main)_7%,transparent)] focus-visible:border-[color-mix(in_srgb,var(--ui-primary-main)_26%,var(--color-stroke-ui-light))] focus-visible:bg-[color-mix(in_srgb,var(--ui-primary-main)_7%,transparent)] focus-visible:outline-none"
         @click.stop="handleClientOpen(client.id)">
         <span
           class="inline-flex h-[34px] w-[34px] items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[var(--ui-primary-main)] to-[var(--ui-primary-accent)] text-[11px] font-[850] tracking-normal text-[var(--ui-text-invert)]">
@@ -47,6 +47,10 @@
           <span
             class="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-semibold leading-snug text-[var(--ui-text-secondary)]">
             {{ resolveEmail(client) }}
+          </span>
+          <span
+            class="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-[760] leading-snug text-[var(--color-success)]">
+            {{ resolveSessionDuration(client) }}
           </span>
         </span>
       </button>

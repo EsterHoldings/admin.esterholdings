@@ -46,6 +46,7 @@
         "
         :online-client-name="onlineClientName"
         :online-client-email="onlineClientEmail"
+        :online-client-session-duration="onlineClientSessionDuration"
         :get-initials="getInitials"
         @navigate="handleNavigate" />
 

@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative isolate flex h-full flex-col gap-2.5 overflow-hidden rounded-[22px] border border-[color-mix(in_srgb,var(--ui-primary-main)_16%,var(--color-stroke-ui-light))] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--ui-background-card)_74%,transparent),color-mix(in_srgb,var(--ui-background-panel)_86%,transparent))] p-2.5 backdrop-blur-[22px]">
+    class="relative isolate flex h-full flex-col gap-2.5 overflow-hidden p-2.5">
     <div
       class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 max-[820px]:flex max-[820px]:flex-col max-[820px]:items-stretch">
       <div class="flex min-w-0 flex-col gap-1">

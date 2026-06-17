@@ -21,6 +21,7 @@
           :loading-text="onlineLoadingText"
           :resolve-name="onlineClientName"
           :resolve-email="onlineClientEmail"
+          :resolve-session-duration="onlineClientSessionDuration"
           :get-initials="getInitials"
           @open-client="handleClientNavigate" />
       </template>

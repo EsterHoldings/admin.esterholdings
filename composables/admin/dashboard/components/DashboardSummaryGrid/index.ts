@@ -13,6 +13,7 @@ export type DashboardSummaryGridProps = {
   onlineLoadingText: string;
   onlineClientName: (client: DashboardOnlineClient) => string;
   onlineClientEmail: (client: DashboardOnlineClient) => string;
+  onlineClientSessionDuration: (client: DashboardOnlineClient) => string;
   getInitials: (value?: string | null) => string;
 };
 

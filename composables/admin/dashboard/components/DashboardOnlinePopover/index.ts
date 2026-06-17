@@ -10,6 +10,7 @@ export type DashboardOnlinePopoverProps = {
   loadingText: string;
   resolveName: (client: DashboardOnlineClient) => string;
   resolveEmail: (client: DashboardOnlineClient) => string;
+  resolveSessionDuration: (client: DashboardOnlineClient) => string;
   getInitials: (value?: string | null) => string;
 };
 

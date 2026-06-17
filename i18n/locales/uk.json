@@ -2583,6 +2583,15 @@
         "processingTransactions": "Транзакції в обробці",
         "unprocessedTransactions": "Необроблені транзакції"
       },
+      "onlinePopover": {
+        "clientsLabel": "Клієнти онлайн",
+        "title": "Зараз онлайн",
+        "empty": "Зараз немає клієнтів онлайн.",
+        "loadingClients": "Список клієнтів поки недоступний. Натисніть на плашку, щоб відкрити клієнтів онлайн.",
+        "onlineFor": "Онлайн {duration}",
+        "lessThanMinute": "менше хвилини",
+        "sessionUnavailable": "Час online недоступний"
+      },
       "hints": {
         "activeClientsNow": "Клієнти, які зараз активні в кабінеті",
         "selectedRange": "За вибраний період",

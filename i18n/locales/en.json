@@ -2589,7 +2589,10 @@
         "clientsLabel": "Online clients",
         "title": "Online now",
         "empty": "No clients are online right now.",
-        "loadingClients": "Client list is not available yet. Click the card to open online clients."
+        "loadingClients": "Client list is not available yet. Click the card to open online clients.",
+        "onlineFor": "Online {duration}",
+        "lessThanMinute": "less than a minute",
+        "sessionUnavailable": "Online time unavailable"
       },
       "hints": {
         "activeClientsNow": "Clients currently active in cabinet",

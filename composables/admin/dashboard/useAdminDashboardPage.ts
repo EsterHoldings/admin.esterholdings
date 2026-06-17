@@ -249,6 +249,73 @@ export function useAdminDashboardPage() {
     return parts.join(" ");
   }
 
+  function durationPluralIndex(value: number): 0 | 1 | 2 {
+    const absolute = Math.abs(value);
+    const mod10 = absolute % 10;
+    const mod100 = absolute % 100;
+
+    if (mod10 === 1 && mod100 !== 11) {
+      return 0;
+    }
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+      return 1;
+    }
+
+    return 2;
+  }
+
+  function formatHumanDurationPart(value: number, unit: "day" | "hour" | "minute"): string {
+    const normalizedLocale = String(locale.value || "en").toLowerCase();
+    const localizedForms: Record<string, Record<typeof unit, [string, string, string]>> = {
+      ru: {
+        day: ["день", "дня", "дней"],
+        hour: ["час", "часа", "часов"],
+        minute: ["минута", "минуты", "минут"],
+      },
+      uk: {
+        day: ["день", "дні", "днів"],
+        hour: ["година", "години", "годин"],
+        minute: ["хвилина", "хвилини", "хвилин"],
+      },
+    };
+
+    const language = normalizedLocale.split("-")[0];
+    const forms = localizedForms[language]?.[unit];
+    if (forms) {
+      return `${formatNumber(value)} ${forms[durationPluralIndex(value)]}`;
+    }
+
+    const englishUnit = value === 1 ? unit : `${unit}s`;
+    return `${formatNumber(value)} ${englishUnit}`;
+  }
+
+  function formatHumanSessionDuration(value: number | string | null | undefined): string {
+    const totalSeconds = Math.max(0, Math.round(Number(value ?? 0)));
+    const daySeconds = 86_400;
+    const hourSeconds = 3_600;
+    const minuteSeconds = 60;
+    const days = Math.floor(totalSeconds / daySeconds);
+    const hours = Math.floor((totalSeconds % daySeconds) / hourSeconds);
+    const minutes = Math.floor((totalSeconds % hourSeconds) / minuteSeconds);
+    const parts: string[] = [];
+
+    if (days > 0) {
+      parts.push(formatHumanDurationPart(days, "day"));
+    }
+    if (hours > 0 && parts.length < 2) {
+      parts.push(formatHumanDurationPart(hours, "hour"));
+    }
+    if (minutes > 0 && parts.length < 2) {
+      parts.push(formatHumanDurationPart(minutes, "minute"));
+    }
+
+    if (parts.length === 0) {
+      return resolveText("admin.dashboard.onlinePopover.lessThanMinute", "less than a minute");
+    }
+
+    return parts.join(" ");
+  }
+
   function formatHours(value: number | string | null | undefined): string {
     return formatSecondsDuration(Number(value ?? 0) * 3_600);
   }
@@ -788,6 +855,18 @@ export function useAdminDashboardPage() {
     return String(client.email ?? "").trim() || "—";
   }
 
+  function onlineClientSessionDuration(client: DashboardOnlineClient): string {
+    const seconds = Number(client.current_session_seconds ?? 0);
+    if (!Number.isFinite(seconds) || seconds < 0) {
+      return resolveText("admin.dashboard.onlinePopover.sessionUnavailable", "Online time unavailable");
+    }
+
+    return resolveText("admin.dashboard.onlinePopover.onlineFor", "Online {duration}").replace(
+      "{duration}",
+      formatHumanSessionDuration(seconds)
+    );
+  }
+
   function formatTopOnlineClientMeta(user: any): string {
     const email = user.email || resolveText("admin.dashboard.labels.noEmail", "No email");
 
@@ -1020,6 +1099,7 @@ export function useAdminDashboardPage() {
     onlineCategoryKeys,
     onlineClientEmail,
     onlineClientName,
+    onlineClientSessionDuration,
     onlineFilters,
     onlineLabels,
     onlineSeries,

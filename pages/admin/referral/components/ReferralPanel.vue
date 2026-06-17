@@ -50,7 +50,7 @@
     </div>
 
     <template v-if="activeTab === 'network'">
-      <div class="grid grid-cols-1 gap-3 rounded-xl border border-[var(--color-stroke-ui-light)] bg-[var(--ui-background-panel)] p-4 lg:grid-cols-12">
+      <div class="grid grid-cols-1 gap-3 lg:grid-cols-12">
         <label class="flex flex-col gap-1 lg:col-span-3">
           <span class="text-xs font-bold uppercase text-[var(--ui-text-secondary)]">{{ labels.search }}</span>
           <input

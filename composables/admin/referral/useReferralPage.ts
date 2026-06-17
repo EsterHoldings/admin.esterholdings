@@ -165,6 +165,9 @@ export function useReferralPage() {
     save: copy("Сохранить настройки", "Save settings", "Зберегти налаштування"),
     search: copy("Поиск по клиенту или агенту", "Search client or agent", "Пошук клієнта або агента"),
     role: copy("Тип", "Type", "Тип"),
+    allLinkedRecords: copy("Все связи", "All linked records", "Усі зв'язки"),
+    agentsWithReferrals: copy("Агенты с рефералами", "Agents with referrals", "Агенти з рефералами"),
+    referredClients: copy("Рефералы с агентом", "Referrals with an agent", "Реферали з агентом"),
     status: copy("Статус", "Status", "Статус"),
     level: copy("Уровень", "Level", "Рівень"),
     agent: copy("Агент", "Agent", "Агент"),
@@ -193,10 +196,19 @@ export function useReferralPage() {
     loadError: copy("Не удалось загрузить реферальную систему", "Failed to load referral system", "Не вдалося завантажити систему"),
   }));
 
-  const normalizedRoleOptions = computed(() => [
-    { label: copy("Все записи", "All records", "Усі записи"), value: "all" },
-    ...roleOptions.value.filter(option => option.value !== "all"),
-  ]);
+  const normalizedRoleOptions = computed(() =>
+    roleOptions.value.map(option => {
+      if (option.value === "agents") {
+        return { ...option, label: labels.value.agentsWithReferrals };
+      }
+
+      if (option.value === "referrals") {
+        return { ...option, label: labels.value.referredClients };
+      }
+
+      return { ...option, label: labels.value.allLinkedRecords };
+    })
+  );
   const normalizedStatusOptions = computed(() => [
     { label: copy("Все статусы", "All statuses", "Усі статуси"), value: "all" },
     ...statusOptions.value.filter(option => option.value !== "all"),
