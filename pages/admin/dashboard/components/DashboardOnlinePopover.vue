@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pointer-events-none absolute left-0 top-[calc(100%+6px)] z-20 flex w-[min(360px,calc(100vw-32px))] -translate-y-1 flex-col gap-2 rounded-lg border border-[color-mix(in_srgb,var(--ui-primary-main)_20%,var(--color-stroke-ui-light))] bg-[var(--ui-background-panel)] p-2.5 text-[var(--ui-text-main)] opacity-0 shadow-[0_18px_42px_color-mix(in_srgb,#000_22%,transparent)] transition duration-150 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
+    class="pointer-events-none absolute left-0 top-[calc(100%+6px)] z-20 flex w-[min(360px,calc(100vw-32px))] -translate-y-1 flex-col gap-2 rounded-lg border border-[color-mix(in_srgb,var(--ui-primary-main)_20%,var(--color-stroke-ui-light))] bg-[var(--ui-background-card)] p-2.5 text-[var(--ui-text-main)] opacity-0 shadow-[0_18px_42px_color-mix(in_srgb,#000_28%,transparent)] transition duration-150 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100"
     role="group"
     :aria-label="clientsLabel">
     <div

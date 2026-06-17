@@ -856,8 +856,17 @@ export function useAdminDashboardPage() {
   }
 
   function onlineClientSessionDuration(client: DashboardOnlineClient): string {
-    const seconds = Number(client.current_session_seconds ?? 0);
-    if (!Number.isFinite(seconds) || seconds < 0) {
+    const rawSeconds = client.current_session_seconds;
+    const explicitSeconds =
+      rawSeconds === null || rawSeconds === undefined || rawSeconds === "" ? null : Number(rawSeconds);
+    const startedAt = client.online_since_at ? new Date(client.online_since_at) : null;
+    const fallbackSeconds =
+      startedAt && !Number.isNaN(startedAt.getTime())
+        ? Math.max(0, Math.round((Date.now() - startedAt.getTime()) / 1000))
+        : null;
+    const seconds = explicitSeconds !== null && Number.isFinite(explicitSeconds) ? explicitSeconds : fallbackSeconds;
+
+    if (seconds === null || !Number.isFinite(seconds) || seconds < 0) {
       return resolveText("admin.dashboard.onlinePopover.sessionUnavailable", "Online time unavailable");
     }
 
