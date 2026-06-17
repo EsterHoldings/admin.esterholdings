@@ -1,6 +1,7 @@
 import type { DashboardOnlineClient } from "~/pages/admin/dashboard/types";
 
 export type DashboardOnlinePopoverProps = {
+  isOpen: boolean;
   clients: DashboardOnlineClient[];
   rawCount: number;
   count: string;

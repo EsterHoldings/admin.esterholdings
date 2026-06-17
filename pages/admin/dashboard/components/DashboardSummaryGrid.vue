@@ -4,14 +4,19 @@
       v-for="card in cards"
       :key="card.id"
       class="relative min-w-0"
-      :class="{ group: isOnlineCard(card) }">
+      :class="{ 'z-40': isOnlineCard(card) && isOnlinePopoverOpen }"
+      @mouseenter="openOnlinePopover(card)"
+      @mouseleave="closeOnlinePopover(card)"
+      @focusin="openOnlinePopover(card)"
+      @focusout="handleCardFocusOut(card, $event)">
       <DashboardSummaryCard
         :card="card"
         @open="handleNavigate" />
 
       <template v-if="isOnlineCard(card)">
-        <div class="absolute left-0 top-full z-[19] h-2 w-[min(360px,calc(100vw-32px))]" />
+        <div class="absolute left-0 top-full z-[49] h-2 w-[min(360px,calc(100vw-32px))]" />
         <DashboardOnlinePopover
+          :is-open="isOnlinePopoverOpen"
           :clients="onlineClients"
           :raw-count="onlineCount"
           :count="formattedOnlineCount"
@@ -41,5 +46,13 @@
   defineProps<DashboardSummaryGridProps>();
   const emit = defineEmits<DashboardSummaryGridEmits>();
 
-  const { handleClientNavigate, handleNavigate, isOnlineCard } = useDashboardSummaryGridSetup(emit);
+  const {
+    closeOnlinePopover,
+    handleCardFocusOut,
+    handleClientNavigate,
+    handleNavigate,
+    isOnlinePopoverOpen,
+    isOnlineCard,
+    openOnlinePopover,
+  } = useDashboardSummaryGridSetup(emit);
 </script>
