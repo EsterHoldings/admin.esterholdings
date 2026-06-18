@@ -49,10 +49,6 @@
             class="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-semibold leading-snug text-[var(--ui-text-secondary)]">
             {{ resolveEmail(client) }}
           </span>
-          <span
-            class="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] font-[760] leading-snug text-[var(--color-success)]">
-            {{ resolveSessionDuration(client) }}
-          </span>
         </span>
       </button>
     </div>

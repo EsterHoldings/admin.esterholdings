@@ -45,8 +45,6 @@ export type DashboardOnlineClient = {
   email?: string | null;
   photo_url?: string | null;
   initials?: string | null;
-  online_since_at?: string | null;
-  current_session_seconds?: number | string | null;
 };
 
 export type DashboardStatusTone = "success" | "danger" | "warning" | "muted" | "info";

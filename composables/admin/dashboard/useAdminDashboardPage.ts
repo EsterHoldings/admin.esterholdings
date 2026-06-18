@@ -249,73 +249,6 @@ export function useAdminDashboardPage() {
     return parts.join(" ");
   }
 
-  function durationPluralIndex(value: number): 0 | 1 | 2 {
-    const absolute = Math.abs(value);
-    const mod10 = absolute % 10;
-    const mod100 = absolute % 100;
-
-    if (mod10 === 1 && mod100 !== 11) {
-      return 0;
-    }
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-      return 1;
-    }
-
-    return 2;
-  }
-
-  function formatHumanDurationPart(value: number, unit: "day" | "hour" | "minute"): string {
-    const normalizedLocale = String(locale.value || "en").toLowerCase();
-    const localizedForms: Record<string, Record<typeof unit, [string, string, string]>> = {
-      ru: {
-        day: ["день", "дня", "дней"],
-        hour: ["час", "часа", "часов"],
-        minute: ["минута", "минуты", "минут"],
-      },
-      uk: {
-        day: ["день", "дні", "днів"],
-        hour: ["година", "години", "годин"],
-        minute: ["хвилина", "хвилини", "хвилин"],
-      },
-    };
-
-    const language = normalizedLocale.split("-")[0];
-    const forms = localizedForms[language]?.[unit];
-    if (forms) {
-      return `${formatNumber(value)} ${forms[durationPluralIndex(value)]}`;
-    }
-
-    const englishUnit = value === 1 ? unit : `${unit}s`;
-    return `${formatNumber(value)} ${englishUnit}`;
-  }
-
-  function formatHumanSessionDuration(value: number | string | null | undefined): string {
-    const totalSeconds = Math.max(0, Math.round(Number(value ?? 0)));
-    const daySeconds = 86_400;
-    const hourSeconds = 3_600;
-    const minuteSeconds = 60;
-    const days = Math.floor(totalSeconds / daySeconds);
-    const hours = Math.floor((totalSeconds % daySeconds) / hourSeconds);
-    const minutes = Math.floor((totalSeconds % hourSeconds) / minuteSeconds);
-    const parts: string[] = [];
-
-    if (days > 0) {
-      parts.push(formatHumanDurationPart(days, "day"));
-    }
-    if (hours > 0 && parts.length < 2) {
-      parts.push(formatHumanDurationPart(hours, "hour"));
-    }
-    if (minutes > 0 && parts.length < 2) {
-      parts.push(formatHumanDurationPart(minutes, "minute"));
-    }
-
-    if (parts.length === 0) {
-      return resolveText("admin.dashboard.onlinePopover.lessThanMinute", "less than a minute");
-    }
-
-    return parts.join(" ");
-  }
-
   function formatHours(value: number | string | null | undefined): string {
     return formatSecondsDuration(Number(value ?? 0) * 3_600);
   }
@@ -412,39 +345,6 @@ export function useAdminDashboardPage() {
 
   function resolveOnlineStatusTone(isOnline: boolean): DashboardStatusTone {
     return isOnline ? "success" : "muted";
-  }
-
-  function normalizeNullableText(value: unknown): string | null {
-    const normalized = String(value ?? "").trim();
-
-    return normalized === "" ? null : normalized;
-  }
-
-  function normalizeOnlineClient(value: unknown): DashboardOnlineClient | null {
-    if (!value || typeof value !== "object") {
-      return null;
-    }
-
-    const source = value as Record<string, unknown>;
-    const id = normalizeNullableText(source.id ?? source.user_id);
-    if (!id) {
-      return null;
-    }
-
-    return {
-      id,
-      first_name: normalizeNullableText(source.first_name),
-      last_name: normalizeNullableText(source.last_name),
-      name: normalizeNullableText(source.name),
-      email: normalizeNullableText(source.email),
-      photo_url: normalizeNullableText(source.photo_url),
-      initials: normalizeNullableText(source.initials),
-      online_since_at: normalizeNullableText(source.online_since_at),
-      current_session_seconds:
-        source.current_session_seconds === null || source.current_session_seconds === undefined
-          ? null
-          : String(source.current_session_seconds),
-    };
   }
 
   function getInitials(value?: string | null): string {
@@ -888,29 +788,8 @@ export function useAdminDashboardPage() {
     return String(client.email ?? "").trim() || "—";
   }
 
-  function onlineClientSessionDuration(client: DashboardOnlineClient): string {
-    try {
-      const rawSeconds = client.current_session_seconds;
-      const explicitSeconds =
-        rawSeconds === null || rawSeconds === undefined || rawSeconds === "" ? null : Number(rawSeconds);
-      const startedAt = client.online_since_at ? new Date(client.online_since_at) : null;
-      const fallbackSeconds =
-        startedAt && !Number.isNaN(startedAt.getTime())
-          ? Math.max(0, Math.round((Date.now() - startedAt.getTime()) / 1000))
-          : null;
-      const seconds = explicitSeconds !== null && Number.isFinite(explicitSeconds) ? explicitSeconds : fallbackSeconds;
-
-      if (seconds === null || !Number.isFinite(seconds) || seconds < 0) {
-        return resolveText("admin.dashboard.onlinePopover.sessionUnavailable", "Online time unavailable");
-      }
-
-      return resolveText("admin.dashboard.onlinePopover.onlineFor", "Online {duration}").replace(
-        "{duration}",
-        formatHumanSessionDuration(seconds)
-      );
-    } catch {
-      return resolveText("admin.dashboard.onlinePopover.sessionUnavailable", "Online time unavailable");
-    }
+  function onlineClientSessionDuration(_client: DashboardOnlineClient): string {
+    return "";
   }
 
   function formatTopOnlineClientMeta(user: any): string {
@@ -930,16 +809,9 @@ export function useAdminDashboardPage() {
 
   const onlineSummary = computed(() => dashboard.value?.online?.summary ?? {});
   const currentOnlineCount = computed(() => Number(onlineSummary.value?.currently_online_users ?? 0));
-  const currentOnlineClients = computed<DashboardOnlineClient[]>(() => {
-    const clients = dashboard.value?.online?.current_clients;
-    if (!Array.isArray(clients)) {
-      return [];
-    }
-
-    return clients
-      .map(normalizeOnlineClient)
-      .filter((client): client is DashboardOnlineClient => client !== null);
-  });
+  const currentOnlineClients = computed<DashboardOnlineClient[]>(() =>
+    Array.isArray(dashboard.value?.online?.current_clients) ? dashboard.value.online.current_clients : []
+  );
   const onlineClientsRoute = computed(() => "/clients?filter_online_status=online");
   const topOnlineClients = computed<any[]>(() => dashboard.value?.online?.top_clients ?? []);
   const recentUsers = computed<any[]>(() => dashboard.value?.recent?.users ?? []);
