@@ -414,6 +414,39 @@ export function useAdminDashboardPage() {
     return isOnline ? "success" : "muted";
   }
 
+  function normalizeNullableText(value: unknown): string | null {
+    const normalized = String(value ?? "").trim();
+
+    return normalized === "" ? null : normalized;
+  }
+
+  function normalizeOnlineClient(value: unknown): DashboardOnlineClient | null {
+    if (!value || typeof value !== "object") {
+      return null;
+    }
+
+    const source = value as Record<string, unknown>;
+    const id = normalizeNullableText(source.id ?? source.user_id);
+    if (!id) {
+      return null;
+    }
+
+    return {
+      id,
+      first_name: normalizeNullableText(source.first_name),
+      last_name: normalizeNullableText(source.last_name),
+      name: normalizeNullableText(source.name),
+      email: normalizeNullableText(source.email),
+      photo_url: normalizeNullableText(source.photo_url),
+      initials: normalizeNullableText(source.initials),
+      online_since_at: normalizeNullableText(source.online_since_at),
+      current_session_seconds:
+        source.current_session_seconds === null || source.current_session_seconds === undefined
+          ? null
+          : String(source.current_session_seconds),
+    };
+  }
+
   function getInitials(value?: string | null): string {
     const parts = String(value || "")
       .trim()
@@ -856,24 +889,28 @@ export function useAdminDashboardPage() {
   }
 
   function onlineClientSessionDuration(client: DashboardOnlineClient): string {
-    const rawSeconds = client.current_session_seconds;
-    const explicitSeconds =
-      rawSeconds === null || rawSeconds === undefined || rawSeconds === "" ? null : Number(rawSeconds);
-    const startedAt = client.online_since_at ? new Date(client.online_since_at) : null;
-    const fallbackSeconds =
-      startedAt && !Number.isNaN(startedAt.getTime())
-        ? Math.max(0, Math.round((Date.now() - startedAt.getTime()) / 1000))
-        : null;
-    const seconds = explicitSeconds !== null && Number.isFinite(explicitSeconds) ? explicitSeconds : fallbackSeconds;
+    try {
+      const rawSeconds = client.current_session_seconds;
+      const explicitSeconds =
+        rawSeconds === null || rawSeconds === undefined || rawSeconds === "" ? null : Number(rawSeconds);
+      const startedAt = client.online_since_at ? new Date(client.online_since_at) : null;
+      const fallbackSeconds =
+        startedAt && !Number.isNaN(startedAt.getTime())
+          ? Math.max(0, Math.round((Date.now() - startedAt.getTime()) / 1000))
+          : null;
+      const seconds = explicitSeconds !== null && Number.isFinite(explicitSeconds) ? explicitSeconds : fallbackSeconds;
 
-    if (seconds === null || !Number.isFinite(seconds) || seconds < 0) {
+      if (seconds === null || !Number.isFinite(seconds) || seconds < 0) {
+        return resolveText("admin.dashboard.onlinePopover.sessionUnavailable", "Online time unavailable");
+      }
+
+      return resolveText("admin.dashboard.onlinePopover.onlineFor", "Online {duration}").replace(
+        "{duration}",
+        formatHumanSessionDuration(seconds)
+      );
+    } catch {
       return resolveText("admin.dashboard.onlinePopover.sessionUnavailable", "Online time unavailable");
     }
-
-    return resolveText("admin.dashboard.onlinePopover.onlineFor", "Online {duration}").replace(
-      "{duration}",
-      formatHumanSessionDuration(seconds)
-    );
   }
 
   function formatTopOnlineClientMeta(user: any): string {
@@ -893,9 +930,16 @@ export function useAdminDashboardPage() {
 
   const onlineSummary = computed(() => dashboard.value?.online?.summary ?? {});
   const currentOnlineCount = computed(() => Number(onlineSummary.value?.currently_online_users ?? 0));
-  const currentOnlineClients = computed<DashboardOnlineClient[]>(() =>
-    Array.isArray(dashboard.value?.online?.current_clients) ? dashboard.value.online.current_clients : []
-  );
+  const currentOnlineClients = computed<DashboardOnlineClient[]>(() => {
+    const clients = dashboard.value?.online?.current_clients;
+    if (!Array.isArray(clients)) {
+      return [];
+    }
+
+    return clients
+      .map(normalizeOnlineClient)
+      .filter((client): client is DashboardOnlineClient => client !== null);
+  });
   const onlineClientsRoute = computed(() => "/clients?filter_online_status=online");
   const topOnlineClients = computed<any[]>(() => dashboard.value?.online?.top_clients ?? []);
   const recentUsers = computed<any[]>(() => dashboard.value?.recent?.users ?? []);
