@@ -168,6 +168,9 @@
     animation: true,
     tooltip: {
       trigger: "axis",
+      renderMode: "html",
+      enterable: true,
+      hideDelay: 180,
       backgroundColor: "rgba(6, 18, 56, 0.96)",
       borderColor: "rgba(113, 158, 223, 0.35)",
       textStyle: {
@@ -175,7 +178,8 @@
       },
       confine: true,
       appendToBody: true,
-      extraCssText: "max-width: 420px; white-space: normal;",
+      extraCssText:
+        "max-width: min(460px, calc(100vw - 32px)); max-height: min(440px, calc(100vh - 48px)); white-space: normal; pointer-events: auto;",
       formatter: (params: any) => buildTooltip(params),
     },
     legend: {

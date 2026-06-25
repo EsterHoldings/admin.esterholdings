@@ -8,12 +8,16 @@ const HEARTBEAT_INTERVAL_MS = 45000;
 const PRESENCE_TTL_SECONDS = 120;
 const MIN_PING_INTERVAL_MS = 30000;
 
-export default defineNuxtPlugin(() => {
-  if (!process.client) return;
+export default defineNuxtPlugin({
+  name: "admin-presence",
+  enforce: "post",
+  setup(nuxtApp) {
+    if (!process.client) return;
 
-  const appCore = useAppCore();
-  const authStore = useAdminAuthStore();
-  const route = useRoute();
+    nuxtApp.hook("app:mounted", () => {
+    const appCore = useAppCore();
+    const authStore = useAdminAuthStore();
+    const route = useRoute();
 
   let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   let isSending = false;
@@ -125,7 +129,9 @@ export default defineNuxtPlugin(() => {
     }
   );
 
-  document.addEventListener("visibilitychange", handleVisibilityChange);
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("pagehide", handlePageHide);
+    });
+  },
 });

@@ -12,6 +12,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   spaLoadingTemplate: "app/spa-loading-template.html",
   experimental: {
+    appManifest: false,
     spaLoadingTemplateLocation: "body",
   },
   devtools: { enabled: true },

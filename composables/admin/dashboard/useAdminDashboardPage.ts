@@ -950,7 +950,7 @@ export function useAdminDashboardPage() {
           <span>${escapeHtml(resolveText("admin.dashboard.tooltip.sessions", "Sessions"))}</span>
           <strong>${formatNumber(point.sessions_count ?? 0)}</strong>
         </div>
-        <div class="mt-1 flex max-h-[220px] flex-col gap-2 overflow-auto">${usersHtml}</div>
+        <div class="mt-1 flex max-h-[240px] flex-col gap-2 overflow-y-auto overscroll-contain pr-1">${usersHtml}</div>
       </div>
     `;
   }
