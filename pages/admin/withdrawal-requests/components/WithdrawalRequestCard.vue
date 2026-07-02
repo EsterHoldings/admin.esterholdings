@@ -255,8 +255,12 @@
       </div>
 
       <template v-else>
-        <div class="grid grid-cols-3 gap-3 max-[767px]:grid-cols-1">
-          <div class="flex flex-col gap-1.5">
+        <div
+          class="grid gap-3 max-[767px]:grid-cols-1"
+          :class="requestItem.is_internal_transfer ? 'grid-cols-1' : 'grid-cols-3'">
+          <div
+            v-if="!requestItem.is_internal_transfer"
+            class="flex flex-col gap-1.5">
             <label class="text-xs text-[var(--ui-text-secondary)]">{{ labels.accountText }}</label>
             <UiSelect
               :without-no-select="true"
@@ -270,7 +274,9 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-1.5">
+          <div
+            v-if="!requestItem.is_internal_transfer"
+            class="flex flex-col gap-1.5">
             <label class="text-xs text-[var(--ui-text-secondary)]">{{ labels.paymentDetailText }}</label>
             <UiSelect
               :without-no-select="true"

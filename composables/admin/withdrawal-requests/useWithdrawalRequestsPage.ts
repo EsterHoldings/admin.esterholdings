@@ -537,9 +537,7 @@ export function useWithdrawalRequestsPage() {
   };
 
   const canEditRequest = (requestItem: WithdrawalRequestItem): boolean =>
-    canManagePayments.value &&
-    !requestItem.is_internal_transfer &&
-    String(requestItem.status).toLowerCase() !== "successful";
+    canManagePayments.value && String(requestItem.status).toLowerCase() !== "successful";
 
   const isStatusActive = (requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction): boolean => {
     const current = String(requestItem.status).toLowerCase();
@@ -702,6 +700,10 @@ export function useWithdrawalRequestsPage() {
   };
 
   const loadEditDependencies = async (requestItem: WithdrawalRequestItem): Promise<void> => {
+    if (requestItem.is_internal_transfer) {
+      return;
+    }
+
     if (accountOptionsByUserId[requestItem.user_id] && paymentDetailOptionsByUserId[requestItem.user_id]) {
       return;
     }
@@ -786,14 +788,14 @@ export function useWithdrawalRequestsPage() {
     notifyClientByRequestId[requestId] = value;
   };
 
-  const validateEditForm = (): boolean => {
+  const validateEditForm = (requestItem: WithdrawalRequestItem): boolean => {
     resetEditErrors();
 
-    if (!editForm.accountId) {
+    if (!requestItem.is_internal_transfer && !editForm.accountId) {
       editErrors.accountId = resolveText("admin.withdrawalRequests.validation.account", "Choose an account.");
     }
 
-    if (!editForm.paymentDetailId) {
+    if (!requestItem.is_internal_transfer && !editForm.paymentDetailId) {
       editErrors.paymentDetailId = resolveText(
         "admin.withdrawalRequests.validation.paymentDetail",
         "Choose approved payment details."
@@ -809,20 +811,25 @@ export function useWithdrawalRequestsPage() {
   };
 
   const handleSaveEdit = async (requestItem: WithdrawalRequestItem): Promise<void> => {
-    if (!validateEditForm()) {
+    if (!validateEditForm(requestItem)) {
       return;
     }
 
     updatingRequestId.value = requestItem.id;
 
     try {
-      await appCore.payments.updateWithdrawalRequest(requestItem.id, {
-        account_id: editForm.accountId,
-        payment_detail_id: editForm.paymentDetailId,
+      const payload: Record<string, unknown> = {
         amount: Number(editForm.amount),
         comment: editForm.comment.trim(),
         admin_comment: editForm.adminComment.trim(),
-      });
+      };
+
+      if (!requestItem.is_internal_transfer) {
+        payload.account_id = editForm.accountId;
+        payload.payment_detail_id = editForm.paymentDetailId;
+      }
+
+      await appCore.payments.updateWithdrawalRequest(requestItem.id, payload);
 
       toast.success(savedText.value);
       editingRequestId.value = "";
