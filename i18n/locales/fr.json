@@ -1688,6 +1688,9 @@
         "emptySubtitle": "Les coordonnées de paiement du client apparaîtront ici après l’envoi.",
         "documentAlt": "Document de coordonnées de paiement",
         "adminComment": "Commentaire admin",
+        "actions": {
+          "changeStatus": "Modifier le statut"
+        },
         "filters": {
           "active": "Actives",
           "archived": "Archivées",

@@ -1,7 +1,9 @@
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "vue-toastification";
 
 import useAppCore from "~/composables/useAppCore";
+import { useAdminAuthStore } from "~/stores/adminAuthStore";
 import {
   PAYMENT_DETAILS_ROWS_PER_PAGE_OPTIONS,
   PAYMENT_DETAILS_SKELETON_ROWS,
@@ -9,6 +11,7 @@ import {
   type AdminPaymentDetailDocument,
   type ArchiveFilter,
   type PaymentDetailField,
+  type PaymentDetailDecisionStatus,
   type PaymentDetailsPaginatorEvent,
   type PaymentDetailStatus,
   type TabPaymentDetailsProps,
@@ -16,6 +19,8 @@ import {
 
 export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
   const appCore = useAppCore();
+  const adminAuthStore = useAdminAuthStore();
+  const toast = useToast();
   const { t, te, locale } = useI18n({ useScope: "global" });
 
   const paymentDetails = ref<AdminPaymentDetail[]>([]);
@@ -23,6 +28,26 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
   const page = ref(1);
   const perPage = ref(10);
   const archiveFilter = ref<ArchiveFilter>("active");
+  const updatingPaymentDetailId = ref("");
+  const statusEditingMap = reactive<Record<string, boolean>>({});
+  const statusDecisionDialog = reactive<{
+    visible: boolean;
+    paymentDetail: AdminPaymentDetail | null;
+    status: PaymentDetailDecisionStatus | null;
+    comment: string;
+  }>({
+    visible: false,
+    paymentDetail: null,
+    status: null,
+    comment: "",
+  });
+
+  const canUpdatePaymentDetails = computed(
+    () =>
+      adminAuthStore.hasRole("super-admin") ||
+      adminAuthStore.hasPermission("update-client-payment-details") ||
+      adminAuthStore.hasPermission("update-clients")
+  );
 
   function text(key: string, fallback: string, params: Record<string, unknown> = {}): string {
     return te(key) ? String(t(key, params)) : fallback.replace(/\{(\w+)}/g, (_, name) => String(params[name] ?? ""));
@@ -87,7 +112,26 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
     updatedAt: text("admin.clients.paymentDetails.columns.updatedAt", "Updated at"),
     documentAlt: text("admin.clients.paymentDetails.documentAlt", "Payment detail document"),
     adminComment: text("admin.clients.paymentDetails.adminComment", "Admin comment"),
+    changeStatus: text("admin.clients.paymentDetails.actions.changeStatus", "Change status"),
+    approve: text("admin.verifications.actions.approve", "Approve"),
+    reject: text("admin.verifications.actions.reject", "Reject"),
+    cancel: text("admin.verifications.actions.cancel", "Cancel"),
+    chooseDecision: text("admin.verifications.actions.chooseDecision", "Choose decision"),
+    comment: text("admin.verifications.comment.label", "Comment"),
+    commentPlaceholder: text("admin.verifications.comment.placeholder", "Enter comment..."),
   }));
+
+  const statusDecisionDialogTitle = computed(() =>
+    statusDecisionDialog.status === "approved"
+      ? text("admin.verifications.confirm.titleApprove", "Confirm approval")
+      : text("admin.verifications.confirm.titleReject", "Confirm rejection")
+  );
+
+  const statusDecisionDialogMessage = computed(() =>
+    statusDecisionDialog.status === "approved"
+      ? text("admin.verifications.confirm.payoutApprove", "Approve this payment detail?")
+      : text("admin.verifications.confirm.payoutReject", "Reject this payment detail?")
+  );
 
   function normalizeStatus(value: unknown): PaymentDetailStatus {
     const normalized = String(value ?? "")
@@ -125,6 +169,7 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
       ),
       updatedAt: String(row?.updated_at ?? ""),
       adminComment: String(row?.admin_comment ?? ""),
+      isArchived: Boolean(row?.is_archived ?? row?.deleted_at),
       data: row?.data && typeof row.data === "object" && !Array.isArray(row.data) ? row.data : {},
       documents: normalizeDocuments(row?.documents),
     };
@@ -237,6 +282,86 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
     }
   }
 
+  function canModeratePaymentDetail(paymentDetail: AdminPaymentDetail): boolean {
+    return canUpdatePaymentDetails.value && !paymentDetail.isArchived;
+  }
+
+  function isStatusEditing(paymentDetail: AdminPaymentDetail): boolean {
+    return paymentDetail.status === "pending" || Boolean(statusEditingMap[paymentDetail.id]);
+  }
+
+  function startStatusEditing(paymentDetailId: string): void {
+    statusEditingMap[paymentDetailId] = true;
+  }
+
+  function cancelStatusEditing(paymentDetailId: string): void {
+    delete statusEditingMap[paymentDetailId];
+  }
+
+  function openStatusDecisionDialog(paymentDetail: AdminPaymentDetail, status: PaymentDetailDecisionStatus): void {
+    if (!canModeratePaymentDetail(paymentDetail) || updatingPaymentDetailId.value !== "") {
+      return;
+    }
+
+    statusDecisionDialog.paymentDetail = paymentDetail;
+    statusDecisionDialog.status = status;
+    statusDecisionDialog.comment = status === "rejected" ? paymentDetail.adminComment : "";
+    statusDecisionDialog.visible = true;
+  }
+
+  function closeStatusDecisionDialog(): void {
+    if (updatingPaymentDetailId.value !== "") {
+      return;
+    }
+
+    statusDecisionDialog.visible = false;
+    statusDecisionDialog.paymentDetail = null;
+    statusDecisionDialog.status = null;
+    statusDecisionDialog.comment = "";
+  }
+
+  function isPaymentDetailStatusUpdating(paymentDetailId: string): boolean {
+    return updatingPaymentDetailId.value === paymentDetailId;
+  }
+
+  function clearStatusEditingState(): void {
+    Object.keys(statusEditingMap).forEach(paymentDetailId => {
+      delete statusEditingMap[paymentDetailId];
+    });
+  }
+
+  async function confirmStatusDecision(): Promise<void> {
+    const paymentDetail = statusDecisionDialog.paymentDetail;
+    const status = statusDecisionDialog.status;
+
+    if (!paymentDetail || !status || updatingPaymentDetailId.value !== "") {
+      return;
+    }
+
+    updatingPaymentDetailId.value = paymentDetail.id;
+
+    try {
+      await appCore.adminModules.clients.patchPaymentDetailStatus(props.clientId, paymentDetail.id, {
+        status,
+        comment: status === "rejected" ? statusDecisionDialog.comment.trim() : "",
+      });
+
+      toast.success(text("admin.verifications.messages.payoutUpdated", "Payment details status updated."));
+      statusDecisionDialog.visible = false;
+      statusDecisionDialog.paymentDetail = null;
+      statusDecisionDialog.status = null;
+      statusDecisionDialog.comment = "";
+      delete statusEditingMap[paymentDetail.id];
+      await loadPaymentDetails();
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || text("admin.verifications.errors.update", "Failed to update request status.")
+      );
+    } finally {
+      updatingPaymentDetailId.value = "";
+    }
+  }
+
   async function loadPaymentDetails(): Promise<void> {
     isLoading.value = true;
 
@@ -247,6 +372,7 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
 
       const rows = Array.isArray(response?.data?.data) ? response.data.data : [];
       paymentDetails.value = rows.map(normalizePaymentDetail);
+      clearStatusEditingState();
       page.value = 1;
     } finally {
       isLoading.value = false;
@@ -267,13 +393,20 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
   return {
     archiveFilter,
     archiveFilterOptions,
+    canModeratePaymentDetail,
+    cancelStatusEditing,
+    closeStatusDecisionDialog,
+    confirmStatusDecision,
     documentLabel,
     formatDateTime,
     handlePaginatorPage,
     isLoading,
+    isPaymentDetailStatusUpdating,
+    isStatusEditing,
     labels,
     loadPaymentDetails,
     openDocument,
+    openStatusDecisionDialog,
     page,
     pagedPaymentDetails,
     paginatorFirst,
@@ -286,6 +419,10 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
     showSkeleton,
     skeletonRows: PAYMENT_DETAILS_SKELETON_ROWS,
     statusClass,
+    statusDecisionDialog,
+    statusDecisionDialogMessage,
+    statusDecisionDialogTitle,
+    startStatusEditing,
     statusText,
     summaryCards,
   };

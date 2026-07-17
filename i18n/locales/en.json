@@ -2116,6 +2116,9 @@
         "emptySubtitle": "Client payment details will appear here after submission.",
         "documentAlt": "Payment detail document",
         "adminComment": "Admin comment",
+        "actions": {
+          "changeStatus": "Change status"
+        },
         "filters": {
           "active": "Active",
           "archived": "Archived",

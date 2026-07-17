@@ -1684,6 +1684,9 @@
         "emptySubtitle": "Müşterinin ödeme bilgileri gönderildikten sonra burada görünür.",
         "documentAlt": "Ödeme bilgisi belgesi",
         "adminComment": "Admin yorumu",
+        "actions": {
+          "changeStatus": "Durumu değiştir"
+        },
         "filters": {
           "active": "Aktif",
           "archived": "Arşivli",

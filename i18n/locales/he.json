@@ -1680,6 +1680,9 @@
         "emptySubtitle": "פרטי התשלום של הלקוח יופיעו כאן לאחר שליחה.",
         "documentAlt": "מסמך פרטי תשלום",
         "adminComment": "הערת מנהל",
+        "actions": {
+          "changeStatus": "שינוי סטטוס"
+        },
         "filters": {
           "active": "פעילים",
           "archived": "בארכיון",

@@ -64,6 +64,48 @@
         <span class="text-[11px] font-bold text-[var(--ui-text-secondary)]">{{ adminCommentLabel }}</span>
         <strong class="text-[13px] font-bold text-[var(--ui-text-main)]">{{ paymentDetail.adminComment }}</strong>
       </div>
+
+      <div
+        v-if="showChangeStatus || showStatusActions"
+        class="flex flex-wrap items-center justify-end gap-2 border-t border-[color-mix(in_srgb,var(--ui-primary-main)_10%,var(--color-stroke-ui-light))] pt-3">
+        <PrimeButton
+          v-if="showChangeStatus"
+          type="button"
+          size="small"
+          icon="pi pi-pencil"
+          :label="changeStatusLabel"
+          :disabled="isUpdatingStatus"
+          @click="emit('start-status-edit')" />
+
+        <template v-else>
+          <PrimeButton
+            type="button"
+            size="small"
+            icon="pi pi-check"
+            severity="success"
+            :label="approveLabel"
+            :loading="isUpdatingStatus"
+            :disabled="isUpdatingStatus"
+            @click="emit('change-status', 'approved')" />
+          <PrimeButton
+            type="button"
+            size="small"
+            icon="pi pi-times"
+            severity="danger"
+            :label="rejectLabel"
+            :disabled="isUpdatingStatus"
+            @click="emit('change-status', 'rejected')" />
+          <PrimeButton
+            v-if="showCancelStatusEdit"
+            type="button"
+            size="small"
+            severity="secondary"
+            text
+            :label="cancelLabel"
+            :disabled="isUpdatingStatus"
+            @click="emit('cancel-status-edit')" />
+        </template>
+      </div>
     </div>
   </article>
 </template>
@@ -73,6 +115,7 @@
     AdminPaymentDetail,
     AdminPaymentDetailDocument,
     PaymentDetailField,
+    PaymentDetailDecisionStatus,
     PaymentDetailStatus,
   } from "~/composables/admin/clients/components/TabPaymentDetails";
 
@@ -81,11 +124,25 @@
     updatedAtLabel: string;
     documentAltLabel: string;
     adminCommentLabel: string;
+    changeStatusLabel: string;
+    approveLabel: string;
+    rejectLabel: string;
+    cancelLabel: string;
+    showChangeStatus: boolean;
+    showStatusActions: boolean;
+    showCancelStatusEdit: boolean;
+    isUpdatingStatus: boolean;
     paymentPrimaryFields: (paymentDetail: AdminPaymentDetail) => PaymentDetailField[];
     formatDateTime: (value: string) => string;
     statusText: (status: PaymentDetailStatus) => string;
     statusClass: (status: PaymentDetailStatus) => string;
     documentLabel: (document: AdminPaymentDetailDocument, index: number) => string;
     openDocument: (document: AdminPaymentDetailDocument) => void;
+  }>();
+
+  const emit = defineEmits<{
+    (event: "start-status-edit"): void;
+    (event: "cancel-status-edit"): void;
+    (event: "change-status", status: PaymentDetailDecisionStatus): void;
   }>();
 </script>

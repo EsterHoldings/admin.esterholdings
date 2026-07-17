@@ -1675,6 +1675,9 @@
         "emptySubtitle": "客户提交付款详情后会显示在这里。",
         "documentAlt": "付款详情文件",
         "adminComment": "管理员备注",
+        "actions": {
+          "changeStatus": "更改状态"
+        },
         "filters": {
           "active": "启用",
           "archived": "已归档",

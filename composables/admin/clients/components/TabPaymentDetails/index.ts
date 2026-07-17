@@ -1,4 +1,5 @@
 export type PaymentDetailStatus = "approved" | "pending" | "rejected";
+export type PaymentDetailDecisionStatus = Exclude<PaymentDetailStatus, "pending">;
 export type ArchiveFilter = "active" | "archived" | "all";
 
 export interface AdminPaymentDetailDocument {
@@ -15,6 +16,7 @@ export interface AdminPaymentDetail {
   paymentSystemName: string;
   updatedAt: string;
   adminComment: string;
+  isArchived: boolean;
   data: Record<string, unknown>;
   documents: AdminPaymentDetailDocument[];
 }

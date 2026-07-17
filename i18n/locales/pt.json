@@ -1692,6 +1692,9 @@
         "emptySubtitle": "Os dados de pagamento do cliente aparecerão aqui após o envio.",
         "documentAlt": "Documento de dados de pagamento",
         "adminComment": "Comentário do admin",
+        "actions": {
+          "changeStatus": "Alterar status"
+        },
         "filters": {
           "active": "Ativos",
           "archived": "Arquivados",

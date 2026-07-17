@@ -1684,6 +1684,9 @@
         "emptySubtitle": "Zahlungsdaten des Kunden erscheinen hier nach dem Absenden.",
         "documentAlt": "Dokument zu Zahlungsdaten",
         "adminComment": "Admin-Kommentar",
+        "actions": {
+          "changeStatus": "Status ändern"
+        },
         "filters": {
           "active": "Aktiv",
           "archived": "Archiviert",

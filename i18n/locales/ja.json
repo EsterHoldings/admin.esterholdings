@@ -1684,6 +1684,9 @@
         "emptySubtitle": "送信後、クライアントの支払い詳細がここに表示されます。",
         "documentAlt": "支払い詳細の書類",
         "adminComment": "管理者コメント",
+        "actions": {
+          "changeStatus": "ステータスを変更"
+        },
         "filters": {
           "active": "有効",
           "archived": "アーカイブ済み",

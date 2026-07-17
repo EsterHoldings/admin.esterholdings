@@ -1684,6 +1684,9 @@
         "emptySubtitle": "भेजे जाने के बाद ग्राहक के भुगतान विवरण यहां दिखेंगे.",
         "documentAlt": "भुगतान विवरण दस्तावेज़",
         "adminComment": "एडमिन टिप्पणी",
+        "actions": {
+          "changeStatus": "स्थिति बदलें"
+        },
         "filters": {
           "active": "सक्रिय",
           "archived": "आर्काइव",

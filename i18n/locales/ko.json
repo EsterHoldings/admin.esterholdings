@@ -1684,6 +1684,9 @@
         "emptySubtitle": "제출 후 고객 결제 정보가 여기에 표시됩니다.",
         "documentAlt": "결제 정보 문서",
         "adminComment": "관리자 댓글",
+        "actions": {
+          "changeStatus": "상태 변경"
+        },
         "filters": {
           "active": "활성",
           "archived": "보관됨",
