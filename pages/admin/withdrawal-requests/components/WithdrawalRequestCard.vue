@@ -190,21 +190,27 @@
         <div
           v-if="paymentEntries.length"
           class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2.5">
-          <div
+          <template
             v-for="entry in paymentEntries"
-            :key="entry.key"
-            class="flex flex-col gap-1">
-            <div class="text-[11px] leading-snug text-[var(--ui-text-secondary)]">{{ entry.label }}</div>
-            <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
-              <UiIconCopy
-                class="text-[var(--ui-text-secondary)] transition hover:text-[var(--ui-primary-main)]"
-                :text="entry.value"
-                :title="labels.copyValueText" />
-              <div class="break-words text-[13px] font-semibold leading-snug text-[var(--ui-text-main)]">
-                {{ entry.value }}
+            :key="entry.key">
+            <div
+              v-if="entry.groupLabel"
+              class="col-span-full text-[11px] leading-snug text-[var(--ui-text-secondary)]">
+              {{ entry.groupLabel }}
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-[11px] leading-snug text-[var(--ui-text-secondary)]">{{ entry.label }}</div>
+              <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+                <UiIconCopy
+                  class="text-[var(--ui-text-secondary)] transition hover:text-[var(--ui-primary-main)]"
+                  :text="entry.value"
+                  :title="labels.copyValueText" />
+                <div class="break-words text-[13px] font-semibold leading-snug text-[var(--ui-text-main)]">
+                  {{ entry.value }}
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
 
         <div

@@ -116,7 +116,6 @@ export function useTabPaymentDetailsSetup(props: TabPaymentDetailsProps) {
     approve: text("admin.verifications.actions.approve", "Approve"),
     reject: text("admin.verifications.actions.reject", "Reject"),
     cancel: text("admin.verifications.actions.cancel", "Cancel"),
-    chooseDecision: text("admin.verifications.actions.chooseDecision", "Choose decision"),
     comment: text("admin.verifications.comment.label", "Comment"),
     commentPlaceholder: text("admin.verifications.comment.placeholder", "Enter comment..."),
   }));

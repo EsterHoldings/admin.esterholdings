@@ -318,19 +318,76 @@ export function useWithdrawalRequestsPage() {
     return String(value ?? "").trim();
   };
 
+  const paymentDetailFieldEntries = (
+    value: unknown,
+    path: string[] = [],
+    groupLabel = ""
+  ): WithdrawalPaymentDetailEntry[] => {
+    if (Array.isArray(value)) {
+      return value.flatMap((item, index) => paymentDetailFieldEntries(item, [...path, String(index + 1)], groupLabel));
+    }
+
+    if (value && typeof value === "object") {
+      return Object.entries(value as Record<string, unknown>).flatMap(([nestedKey, nestedValue]) =>
+        paymentDetailFieldEntries(nestedValue, [...path, nestedKey], groupLabel)
+      );
+    }
+
+    const fieldValue = formatPaymentDetailValue(value);
+    if (fieldValue === "") {
+      return [];
+    }
+
+    const fieldPath = path.length ? path : ["value"];
+
+    return [
+      {
+        key: `fields.${fieldPath.join(".")}`,
+        groupLabel,
+        label: fieldPath
+          .map((fieldKey, index) => {
+            if (/^\d+$/.test(fieldKey)) {
+              return `${index > 0 ? paymentDetailFieldLabel(fieldPath[index - 1]) : paymentDetailFieldLabel("value")} ${fieldKey}`;
+            }
+
+            return paymentDetailFieldLabel(fieldKey);
+          })
+          .filter((label, index, labels) => index === labels.length - 1 || label !== labels[index + 1])
+          .join(" · "),
+        value: fieldValue,
+      },
+    ];
+  };
+
   const paymentDetailEntries = (requestItem: WithdrawalRequestItem): WithdrawalPaymentDetailEntry[] => {
     const detail = requestItem.payment_detail;
     if (!detail || !detail.data || typeof detail.data !== "object") {
       return [];
     }
 
-    return Object.entries(detail.data)
-      .map(([key, value]) => ({
-        key,
-        label: paymentDetailFieldLabel(key),
-        value: formatPaymentDetailValue(value),
-      }))
-      .filter(entry => entry.value !== "");
+    return Object.entries(detail.data).flatMap(([key, value]) => {
+      if (key === "fields" && value && typeof value === "object") {
+        const fieldEntries = paymentDetailFieldEntries(value, [], paymentDetailFieldLabel(key));
+
+        return fieldEntries.map((entry, index) => ({
+          ...entry,
+          groupLabel: index === 0 ? entry.groupLabel : undefined,
+        }));
+      }
+
+      const entryValue = formatPaymentDetailValue(value);
+      if (entryValue === "") {
+        return [];
+      }
+
+      return [
+        {
+          key,
+          label: paymentDetailFieldLabel(key),
+          value: entryValue,
+        },
+      ];
+    });
   };
 
   const hasPaymentDetailData = (requestItem: WithdrawalRequestItem): boolean => {

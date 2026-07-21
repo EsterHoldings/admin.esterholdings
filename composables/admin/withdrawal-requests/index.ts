@@ -78,6 +78,7 @@ export type WithdrawalEditErrors = Record<string, string>;
 
 export type WithdrawalPaymentDetailEntry = {
   key: string;
+  groupLabel?: string;
   label: string;
   value: string;
 };
