@@ -359,6 +359,35 @@ export function useWithdrawalRequestsPage() {
     ];
   };
 
+  const legacyPaymentDetailEntries = (value: unknown): WithdrawalPaymentDetailEntry[] => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return [];
+    }
+
+    const legacy = value as Record<string, unknown>;
+    const paymentSystem =
+      legacy.paysystem && typeof legacy.paysystem === "object" && !Array.isArray(legacy.paysystem)
+        ? (legacy.paysystem as Record<string, unknown>)
+        : {};
+    const entries = [
+      {
+        key: "legacy.type",
+        label: paymentDetailFieldLabel("type"),
+        value: formatPaymentDetailValue(legacy.type),
+      },
+      {
+        key: "legacy.name",
+        label: paymentDetailFieldLabel("name"),
+        value: formatPaymentDetailValue(legacy.name ?? paymentSystem.name),
+      },
+    ].filter(entry => entry.value !== "");
+
+    return entries.map((entry, index) => ({
+      ...entry,
+      groupLabel: index === 0 ? paymentDetailFieldLabel("legacy") : undefined,
+    }));
+  };
+
   const paymentDetailEntries = (requestItem: WithdrawalRequestItem): WithdrawalPaymentDetailEntry[] => {
     const detail = requestItem.payment_detail;
     if (!detail || !detail.data || typeof detail.data !== "object") {
@@ -373,6 +402,10 @@ export function useWithdrawalRequestsPage() {
           ...entry,
           groupLabel: index === 0 ? entry.groupLabel : undefined,
         }));
+      }
+
+      if (key === "legacy") {
+        return legacyPaymentDetailEntries(value);
       }
 
       const entryValue = formatPaymentDetailValue(value);
