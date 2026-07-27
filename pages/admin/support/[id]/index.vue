@@ -489,7 +489,14 @@
                 <div class="support-email__title">{{ supportText.emailRequestTitle }}</div>
                 <div class="support-email__reply-to">
                   {{ supportText.replyToLabel }}:
-                  <strong>{{ ticketReplyEmail || supportText.notProvided }}</strong>
+                  <NuxtLink
+                    v-if="ticketClientKycRoute"
+                    :to="ticketClientKycRoute"
+                    class="support-email__client-link"
+                    :title="ticketReplyEmail">
+                    {{ ticketReplyEmail }}
+                  </NuxtLink>
+                  <strong v-else>{{ ticketReplyEmail || supportText.notProvided }}</strong>
                 </div>
                 <div
                   v-if="ticketSourceLabel"
@@ -849,6 +856,7 @@
 
   const route = useRoute();
   const router = useRouter();
+  const localePath = useLocalePath();
   const { $echo } = useNuxtApp() as { $echo?: any };
 
   const appCore = useAppCore();
@@ -887,6 +895,7 @@
   const subject = ref("");
   const ticketChannel = ref<"chat" | "email">("chat");
   const ticketReplyEmail = ref("");
+  const ticketCreatorId = ref("");
   const ticketSourceLabel = ref("");
   const isEmailThreadLoading = ref(false);
   const isEmailReplySending = ref(false);
@@ -919,6 +928,15 @@
   };
   const emailThreadItems = ref<EmailThreadItem[]>([]);
   const isEmailTicket = computed(() => ticketChannel.value === "email");
+  const ticketClientKycRoute = computed(() => {
+    const clientId = ticketCreatorId.value.trim();
+    if (!clientId || !ticketReplyEmail.value) return "";
+
+    return localePath({
+      path: `/clients/${clientId}`,
+      query: { tab: "0" },
+    });
+  });
   type SupportTab = "media" | "documents" | "links";
   type SupportLinkItem = {
     id: string;
@@ -2395,6 +2413,7 @@
     const creatorFirstName = creator?.first_name ?? null;
     const creatorLastName = creator?.last_name ?? null;
     const creatorEmail = creator?.email ?? null;
+    ticketCreatorId.value = normalizeText(ticket?.creator_id ?? creator?.id);
     ticketReplyEmail.value = normalizeText(ticket?.reply_email ?? creatorEmail);
     const creatorPhotoUrl = normalizeText(creator?.photo_url);
     const creatorFullName = buildFullName(creatorFirstName, creatorLastName);
@@ -2785,6 +2804,23 @@
     line-height: 1.4;
     color: var(--ui-text-secondary);
     word-break: break-word;
+  }
+
+  .support-email__client-link {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--ui-primary-main) 55%, transparent);
+    text-underline-offset: 3px;
+    transition:
+      color 0.2s ease,
+      text-decoration-color 0.2s ease;
+  }
+
+  .support-email__client-link:hover,
+  .support-email__client-link:focus-visible {
+    color: var(--ui-primary-main);
+    text-decoration-color: currentColor;
   }
 
   .support-email__refresh {
