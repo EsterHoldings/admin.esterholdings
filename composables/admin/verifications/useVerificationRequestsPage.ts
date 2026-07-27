@@ -326,7 +326,7 @@ export function useVerificationRequestsPage(requestScope: RequestScope = "identi
         page: page.value,
         perPage: perPage.value,
         searchFilter: searchFilter.value,
-        requestState: requestStateFilter.value === "history" ? "" : requestStateFilter.value,
+        requestState: requestStateFilter.value,
         requestScope: normalizedRequestScope.value,
         orderBy: requestStateFilter.value === "pending" ? "updated_at" : "request_reviewed_at",
         orderDirection: "desc",
