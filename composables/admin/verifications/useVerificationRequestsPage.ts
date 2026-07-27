@@ -297,6 +297,10 @@ export function useVerificationRequestsPage(requestScope: RequestScope = "identi
   }
 
   function formatUpdatedAt(requestItem: VerificationRequestItem): string {
+    if (requestItem.request_state !== "pending" && requestItem.request_reviewed_at) {
+      return formatDateTime(requestItem.request_reviewed_at);
+    }
+
     return requestItem.updated_at ? formatDateTime(requestItem.updated_at) : requestItem.updated_at_human || "-";
   }
 
@@ -324,7 +328,7 @@ export function useVerificationRequestsPage(requestScope: RequestScope = "identi
         searchFilter: searchFilter.value,
         requestState: requestStateFilter.value === "history" ? "" : requestStateFilter.value,
         requestScope: normalizedRequestScope.value,
-        orderBy: "updated_at",
+        orderBy: requestStateFilter.value === "pending" ? "updated_at" : "request_reviewed_at",
         orderDirection: "desc",
       });
 
