@@ -127,8 +127,8 @@
             <span class="ticket-card__status">
               <span
                 class="ticket-card__status-dot"
-                :class="getTicketStatusDotClass(ticket.status)" />
-              {{ getTicketStatusLabel(ticket.status) }}
+                :class="getTicketStatusDotClass(ticket)" />
+              {{ getTicketStatusLabel(ticket) }}
             </span>
 
             <div class="ticket-card__actions">
@@ -143,44 +143,25 @@
                 </span>
                 <UiIconChat class="!h-[20px] !w-[20px]" />
               </button>
-              <div class="ticket-status-actions">
-                <button
-                  v-for="action in ticketStatusActions"
-                  :key="`${ticket.id}-${action.status}`"
-                  type="button"
-                  class="ticket-status-action"
-                  :class="[
-                    getTicketStatusActionClass(action.status),
-                    { 'is-active': isTicketStatusActive(ticket, action.status) },
-                  ]"
-                  :title="getTicketStatusActionTitle(action)"
-                  :disabled="isTicketStatusActionDisabled(ticket, action.status)"
-                  @click.stop="handleChangeTicketStatus(ticket, action.status)">
-                  <component
-                    :is="action.icon"
-                    class="ticket-status-action__icon" />
-                </button>
-              </div>
               <button
-                class="ticket-card__icon-btn"
-                :aria-label="supportListText.more"
-                @click.stop="toggleTicketActionMenu(ticket.id)">
-                <UiIconDotsVertical />
+                type="button"
+                class="ticket-complete-action"
+                :title="supportListText.complete"
+                :disabled="isCompleteActionDisabled(ticket)"
+                @click.stop="handleCompleteTicket(ticket)">
+                <UiIconCheck class="ticket-complete-action__icon" />
+                <span>{{ supportListText.complete }}</span>
               </button>
-              <div
-                v-if="isTicketActionMenuOpen(ticket)"
-                class="ticket-action-menu__dropdown"
-                @click.stop>
-                <button
-                  v-if="canDeleteSupport"
-                  type="button"
-                  class="ticket-action-menu__item ticket-action-menu__item--danger"
-                  :disabled="isTicketActionLoading(ticket)"
-                  @click.stop="handleArchiveTicket(ticket)">
-                  <UiIconTrash />
-                  <span>{{ supportListText.archive }}</span>
-                </button>
-              </div>
+              <button
+                v-if="canDeleteSupport && !showArchived"
+                type="button"
+                class="ticket-card__icon-btn ticket-card__archive-btn"
+                :aria-label="supportListText.archive"
+                :title="supportListText.archive"
+                :disabled="isTicketActionLoading(ticket)"
+                @click.stop="handleArchiveTicket(ticket)">
+                <UiIconTrash />
+              </button>
             </div>
           </div>
         </div>
@@ -190,9 +171,9 @@
 </template>
 
 <script lang="ts" setup>
+  import UiIconCheck from "~/components/ui/UiIconCheck.vue";
   import UiIconChat from "~/components/ui/UiIconChat.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
-  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
   import UiIconTrash from "~/components/ui/UiIconTrash.vue";
   import UiTextSmall from "~/components/ui/UiTextSmall.vue";
@@ -224,29 +205,24 @@
     getTicketSourceBadgeClass,
     getTicketSourceKey,
     getTicketSourceLabel,
-    getTicketStatusActionClass,
-    getTicketStatusActionTitle,
     getTicketStatusDotClass,
     getTicketStatusLabel,
     handleArchiveTicket,
-    handleChangeTicketStatus,
+    handleCompleteTicket,
     handleChatIconClick,
     handleClickRow,
     hasTicketUnreadMessages,
     hasTickets,
     isAdminPopoverVisible,
+    isCompleteActionDisabled,
     isLoading,
     isTicketActionLoading,
-    isTicketActionMenuOpen,
-    isTicketStatusActionDisabled,
-    isTicketStatusActive,
     openAdminProfile,
     openTicketClient,
     setActiveAdminPopoverKey,
+    showArchived,
     supportListText,
     ticketGridClass,
-    ticketStatusActions,
     toggleAdminPopover,
-    toggleTicketActionMenu,
   } = useSupportTicketCardsSetup(props);
 </script>

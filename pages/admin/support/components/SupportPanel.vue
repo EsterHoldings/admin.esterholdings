@@ -392,6 +392,21 @@
     background: color-mix(in srgb, var(--color-stroke-ui-light) 40%, transparent);
   }
 
+  .ticket-card__icon-btn:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+
+  .ticket-card__archive-btn {
+    color: var(--ui-sticker-danger);
+  }
+
+  .ticket-card__archive-btn:not(:disabled):hover {
+    color: var(--ui-sticker-danger);
+    border-color: color-mix(in srgb, var(--ui-sticker-danger) 50%, transparent);
+    background: color-mix(in srgb, var(--ui-sticker-danger) 12%, transparent);
+  }
+
   .ticket-card__chat-badge {
     position: absolute;
     top: 1px;
@@ -409,26 +424,21 @@
     justify-content: center;
   }
 
-  .ticket-status-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px;
-    border: 1px solid var(--color-stroke-ui-light);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--ui-background) 74%, transparent);
-  }
-
-  .ticket-status-action {
+  .ticket-complete-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
-    border: 1px solid transparent;
+    gap: 7px;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--color-stroke-ui-light);
     border-radius: 8px;
-    color: var(--ui-text-secondary);
-    background: transparent;
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
     transition:
       color 0.2s ease,
       border-color 0.2s ease,
@@ -436,78 +446,19 @@
       opacity 0.2s ease;
   }
 
-  .ticket-status-action:not(:disabled):hover {
-    color: var(--ui-text-main);
-    border-color: var(--color-stroke-ui-light);
-    background: color-mix(in srgb, var(--color-stroke-ui-light) 42%, transparent);
+  .ticket-complete-action:not(:disabled):hover {
+    border-color: color-mix(in srgb, var(--ui-sticker-success) 58%, transparent);
+    background: color-mix(in srgb, var(--ui-sticker-success) 16%, transparent);
   }
 
-  .ticket-status-action:disabled {
+  .ticket-complete-action:disabled {
     cursor: default;
     opacity: 0.48;
   }
 
-  .ticket-status-action.is-active {
-    opacity: 1;
-    color: var(--ui-text-main);
-    border-color: color-mix(in srgb, var(--ui-primary-main) 56%, transparent);
-    background: color-mix(in srgb, var(--ui-primary-main) 16%, transparent);
-  }
-
-  .ticket-status-action--pending.is-active {
-    border-color: color-mix(in srgb, var(--ui-sticker-warning) 60%, transparent);
-    background: color-mix(in srgb, var(--ui-sticker-warning) 18%, transparent);
-  }
-
-  .ticket-status-action--closed.is-active {
-    border-color: color-mix(in srgb, var(--ui-sticker-success) 60%, transparent);
-    background: color-mix(in srgb, var(--ui-sticker-success) 18%, transparent);
-  }
-
-  .ticket-status-action__icon {
+  .ticket-complete-action__icon {
     width: 16px;
     height: 16px;
-  }
-
-  .ticket-action-menu__dropdown {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 6px);
-    z-index: 60;
-    min-width: 150px;
-    padding: 6px;
-    border: 1px solid var(--color-stroke-ui-dark);
-    border-radius: 10px;
-    background: var(--ui-background-panel);
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
-  }
-
-  .ticket-action-menu__item {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    color: var(--ui-text-main);
-    font-size: 13px;
-    line-height: 1.2;
-    text-align: left;
-    transition:
-      color 0.2s ease,
-      background-color 0.2s ease;
-  }
-
-  .ticket-action-menu__item:not(:disabled):hover {
-    background: color-mix(in srgb, var(--color-stroke-ui-light) 42%, transparent);
-  }
-
-  .ticket-action-menu__item:disabled {
-    opacity: 0.5;
-  }
-
-  .ticket-action-menu__item--danger {
-    color: var(--ui-sticker-danger);
   }
 
   .ticket-admins {

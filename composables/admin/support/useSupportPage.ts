@@ -5,9 +5,6 @@ import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useLocalePath } from "~/.nuxt/imports";
 
-import UiIconCheck from "~/components/ui/UiIconCheck.vue";
-import UiIconClock from "~/components/ui/UiIconClock.vue";
-import UiIconSupport from "~/components/ui/UiIconSupport.vue";
 import useAppCore from "~/composables/useAppCore";
 import useEventBus from "~/composables/useEventBus";
 import type { SupportPanelProps, SupportViewMode } from "~/composables/admin/support/components/SupportPanel";
@@ -32,6 +29,7 @@ export function useSupportPage() {
     lastUpdate: resolveText("admin.support.lastUpdate", "Last update"),
     admins: resolveText("admin.support.admins", "Admins"),
     status: resolveText("admin.support.status", "Status"),
+    actions: resolveText("admin.support.actions", "Actions"),
     active: resolveText("admin.support.active", "Active"),
     archived: resolveText("admin.support.archived", "Archived"),
     noMessages: resolveText("admin.support.noMessages", "No messages yet"),
@@ -54,12 +52,9 @@ export function useSupportPage() {
     statusPending: resolveText("admin.support.statusPending", "Pending"),
     statusCompleted: resolveText("admin.support.statusCompleted", "Completed"),
     statusInProgress: resolveText("admin.support.statusInProgress", "In progress"),
-    setStatusTitle: resolveText("admin.support.setStatusTitle", "Set {status}"),
-    confirmStatusChange: resolveText("admin.support.confirmStatusChange", "Change ticket status to {status}?"),
-    confirmStatusNotify: resolveText(
-      "admin.support.confirmStatusNotify",
-      "Send a notification to the client about this status change?"
-    ),
+    statusWaiting: resolveText("admin.support.statusWaiting", "Waiting"),
+    complete: resolveText("admin.support.complete", "Complete"),
+    completeConfirm: resolveText("admin.support.completeConfirm", "Complete this ticket?"),
     statusUpdated: resolveText("admin.support.statusUpdated", "Ticket status updated."),
     statusUpdateFailed: resolveText("admin.support.statusUpdateFailed", "Failed to update ticket status."),
     email: resolveText("admin.support.email", "Email"),
@@ -121,7 +116,6 @@ export function useSupportPage() {
   const orderBy = ref("last_message_at");
   const orderDirection = ref(ORDER_DIRECTION_DESC);
   const currentRowActiveOptions = ref<number | null>(null);
-  const openTicketActionMenuId = ref("");
   const ticketActionLoadingId = ref("");
   const activeAdminPopoverKey = ref("");
   const showArchived = ref(false);
@@ -207,24 +201,6 @@ export function useSupportPage() {
       },
     },
   ];
-  const ticketStatusActions = computed(() => [
-    {
-      status: "open",
-      label: supportListText.value.statusOpen,
-      icon: UiIconSupport,
-    },
-    {
-      status: "pending",
-      label: supportListText.value.statusPending,
-      icon: UiIconClock,
-    },
-    {
-      status: "closed",
-      label: supportListText.value.statusCompleted,
-      icon: UiIconCheck,
-    },
-  ]);
-
   const perPageList = reactive([
     { id: 1, value: 1, text: "1" },
     { id: 2, value: 2, text: "2" },
@@ -357,20 +333,55 @@ export function useSupportPage() {
     return normalizedStatus || "open";
   };
 
-  const getTicketStatusLabel = (status: unknown): string => {
-    const normalizedStatus = normalizeTicketStatus(status);
+  const getTicketRawStatus = (ticketOrStatus: unknown): unknown =>
+    typeof ticketOrStatus === "object" && ticketOrStatus !== null
+      ? (ticketOrStatus as { status?: unknown }).status
+      : ticketOrStatus;
+
+  const isTicketCompleted = (ticketOrStatus: unknown): boolean => {
+    const normalizedStatus = normalizeTicketStatus(getTicketRawStatus(ticketOrStatus));
+    return ["closed", "resolved"].includes(normalizedStatus);
+  };
+
+  const hasAssignedAdmin = (ticket: any): boolean => {
+    if (!ticket || typeof ticket !== "object") return false;
+
+    if (Number(ticket.agent_participants_count ?? 0) > 0) {
+      return true;
+    }
+
+    return Array.isArray(ticket.participants)
+      ? ticket.participants.some((participant: any) => {
+          const role = String(participant?.role_key ?? participant?.role ?? "")
+            .trim()
+            .toLowerCase();
+          return role === "agent" || role === "admin";
+        })
+      : false;
+  };
+
+  const getTicketStatusLabel = (ticketOrStatus: unknown): string => {
+    const normalizedStatus = normalizeTicketStatus(getTicketRawStatus(ticketOrStatus));
     if (normalizedStatus === "closed") return supportListText.value.statusCompleted;
-    if (normalizedStatus === "pending") return supportListText.value.statusPending;
-    if (normalizedStatus === "in_progress") return supportListText.value.statusInProgress;
-    if (normalizedStatus === "open") return supportListText.value.statusOpen;
+    if (normalizedStatus === "archived") return supportListText.value.archived;
+    if (typeof ticketOrStatus === "object" && ticketOrStatus !== null && !hasAssignedAdmin(ticketOrStatus)) {
+      return supportListText.value.statusWaiting;
+    }
+    if (["open", "pending", "in_progress", "new", "missed"].includes(normalizedStatus)) {
+      return supportListText.value.statusInProgress;
+    }
 
     return normalizedStatus.replace(/_/g, " ");
   };
 
-  const getTicketStatusDotClass = (status: unknown) => {
-    const normalizedStatus = normalizeTicketStatus(status);
-
-    if (normalizedStatus === "pending") {
+  const getTicketStatusDotClass = (ticketOrStatus: unknown) => {
+    const normalizedStatus = normalizeTicketStatus(getTicketRawStatus(ticketOrStatus));
+    if (
+      !isTicketCompleted(ticketOrStatus) &&
+      typeof ticketOrStatus === "object" &&
+      ticketOrStatus !== null &&
+      !hasAssignedAdmin(ticketOrStatus)
+    ) {
       return "bg-[var(--ui-sticker-warning)]";
     }
 
@@ -384,12 +395,6 @@ export function useSupportPage() {
 
     return "bg-[var(--ui-text-secondary)]";
   };
-
-  const getTicketStatusActionClass = (status: string): string =>
-    `ticket-status-action--${normalizeTicketStatus(status)}`;
-
-  const isTicketStatusActive = (ticket: any, status: string): boolean =>
-    normalizeTicketStatus(ticket?.status) === normalizeTicketStatus(status);
 
   const getTicketClientAvatarUrl = (ticket: any): string => {
     const rawUrl = ticket?.creator?.photo_url ?? ticket?.creator_photo_url ?? "";
@@ -850,13 +855,6 @@ export function useSupportPage() {
   };
 
   const closeFloatingTicketControls = () => {
-    openTicketActionMenuId.value = "";
-    activeAdminPopoverKey.value = "";
-  };
-
-  const toggleTicketActionMenu = (ticketId: unknown) => {
-    const normalizedTicketId = String(ticketId ?? "");
-    openTicketActionMenuId.value = openTicketActionMenuId.value === normalizedTicketId ? "" : normalizedTicketId;
     activeAdminPopoverKey.value = "";
   };
 
@@ -871,7 +869,6 @@ export function useSupportPage() {
   const toggleAdminPopover = (ticket: any, admin: any) => {
     const key = getAdminParticipantKey(ticket, admin);
     activeAdminPopoverKey.value = activeAdminPopoverKey.value === key ? "" : key;
-    openTicketActionMenuId.value = "";
   };
 
   const isTicketActionLoading = (ticket: any): boolean =>
@@ -892,37 +889,30 @@ export function useSupportPage() {
 
   const extractTicketPayload = (response: any): any => response?.data?.data ?? response?.data ?? response ?? null;
 
-  const handleChangeTicketStatus = async (ticket: any, status: string) => {
-    if (!canUpdateSupport.value || isTicketStatusActive(ticket, status)) return;
+  const handleCompleteTicket = async (ticket: any) => {
+    if (!canUpdateSupport.value || isTicketCompleted(ticket)) return;
 
     const ticketId = String(ticket?.id ?? "");
     if (!ticketId) return;
 
-    const nextLabel = getTicketStatusLabel(status);
-    let notifyClient = false;
-    if (typeof window !== "undefined") {
-      const confirmChangeText = supportListText.value.confirmStatusChange.replace("{status}", nextLabel);
-      if (!window.confirm(confirmChangeText)) {
-        return;
-      }
-
-      notifyClient = window.confirm(supportListText.value.confirmStatusNotify);
+    if (typeof window !== "undefined" && !window.confirm(supportListText.value.completeConfirm)) {
+      return;
     }
 
     ticketActionLoadingId.value = `${ticketId}:status`;
-    openTicketActionMenuId.value = "";
 
     try {
       const response = await appCore.adminModules.tickets.updateStatus(ticketId, {
-        status,
-        notify_client: notifyClient,
+        status: "closed",
+        notify_client: false,
       });
       const nextTicket = extractTicketPayload(response);
       if (nextTicket?.id) {
         replaceTicketInList(nextTicket);
       } else {
-        ticket.status = status;
+        ticket.status = "closed";
       }
+      await loadData();
       toast.success(supportListText.value.statusUpdated);
       useEventBus.emit(SUPPORT_UNREAD_UPDATED_EVENT);
     } catch (error) {
@@ -959,7 +949,6 @@ export function useSupportPage() {
       toast.error(supportListText.value.archiveFailed);
     } finally {
       ticketActionLoadingId.value = "";
-      openTicketActionMenuId.value = "";
     }
   };
 
@@ -1095,13 +1084,11 @@ export function useSupportPage() {
     currentPage: currentPage.value,
     orderBy: orderBy.value,
     orderDirection: orderDirection.value,
-    openTicketActionMenuId: openTicketActionMenuId.value,
     activeAdminPopoverKey: activeAdminPopoverKey.value,
     showArchived: showArchived.value,
     viewMode: viewMode.value,
     isMobileViewport: isMobileViewport.value,
     viewOptions,
-    ticketStatusActions: ticketStatusActions.value,
     perPageList,
     totalPages: totalPages.value,
     visiblePages: visiblePages.value,
@@ -1118,8 +1105,7 @@ export function useSupportPage() {
     getTicketSourceBadgeClass,
     getTicketStatusLabel,
     getTicketStatusDotClass,
-    getTicketStatusActionClass,
-    isTicketStatusActive,
+    isTicketCompleted,
     getTicketClientAvatarUrl,
     getTicketClientInitials,
     getTicketClientName,
@@ -1139,12 +1125,11 @@ export function useSupportPage() {
     handleToggleArchived,
     handleInputSearch,
     handleClickUpdate,
-    toggleTicketActionMenu,
     setActiveAdminPopoverKey,
     clearActiveAdminPopoverKey,
     toggleAdminPopover,
     isTicketActionLoading,
-    handleChangeTicketStatus,
+    handleCompleteTicket,
     handleArchiveTicket,
     openAdminProfile,
     handleChangeFilterSortBy,

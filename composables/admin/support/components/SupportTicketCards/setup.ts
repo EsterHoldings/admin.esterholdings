@@ -14,22 +14,20 @@ export function useSupportTicketCardsSetup(props: SupportTicketCardsProps) {
   ];
   const isAdminPopoverVisible = (ticket: any, admin: any): boolean =>
     props.activeAdminPopoverKey === props.getAdminParticipantKey(ticket, admin);
-  const isTicketActionMenuOpen = (ticket: any): boolean => props.openTicketActionMenuId === String(ticket?.id ?? "");
   const hasTicketUnreadMessages = (ticket: any): boolean => Number(ticket?.unread_messages_count ?? 0) > 0;
-  const getTicketStatusActionTitle = (action: any): string =>
-    props.supportListText.setStatusTitle.replace("{status}", String(action?.label ?? ""));
-  const isTicketStatusActionDisabled = (ticket: any, status: string): boolean =>
-    !props.canUpdateSupport || props.isTicketStatusActive(ticket, status) || props.isTicketActionLoading(ticket);
+  const isCompleteActionDisabled = (ticket: any): boolean =>
+    !props.canUpdateSupport ||
+    props.showArchived ||
+    props.isTicketCompleted(ticket) ||
+    props.isTicketActionLoading(ticket);
 
   return {
     ...refs,
     getTicketCardClass,
-    getTicketStatusActionTitle,
     hasTicketUnreadMessages,
     hasTickets,
     isAdminPopoverVisible,
-    isTicketActionMenuOpen,
-    isTicketStatusActionDisabled,
+    isCompleteActionDisabled,
     ticketGridClass,
   };
 }

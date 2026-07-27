@@ -49,7 +49,9 @@
                   @click="handleOrderByAndDirection('status')" />
               </div>
             </th>
-            <th class="px-2 font-semibold !text-[var(--ui-text-main)]">...</th>
+            <th class="px-2 font-semibold !text-[var(--ui-text-main)]">
+              {{ supportListText.actions }}
+            </th>
           </tr>
         </thead>
         <tbody class="divide-y divide-[var(--color-stroke-ui-dark)]">
@@ -170,8 +172,8 @@
               <span class="inline-flex items-center gap-1.5 text-xs text-[var(--ui-text-secondary)] whitespace-nowrap">
                 <span
                   class="h-1.5 w-1.5 rounded-full"
-                  :class="getTicketStatusDotClass(t.status)" />
-                {{ getTicketStatusLabel(t.status) }}
+                  :class="getTicketStatusDotClass(t)" />
+                {{ getTicketStatusLabel(t) }}
               </span>
             </td>
 
@@ -187,46 +189,25 @@
                   </div>
                   <UiIconChat class="!h-[24px] !w-[24px]" />
                 </span>
-                <div
-                  class="ticket-status-actions"
-                  @click.stop>
-                  <button
-                    v-for="action in ticketStatusActions"
-                    :key="`${t.id}-${action.status}`"
-                    type="button"
-                    class="ticket-status-action"
-                    :class="[
-                      getTicketStatusActionClass(action.status),
-                      { 'is-active': isTicketStatusActive(t, action.status) },
-                    ]"
-                    :title="getTicketStatusActionTitle(action)"
-                    :disabled="isTicketStatusActionDisabled(t, action.status)"
-                    @click.stop="handleChangeTicketStatus(t, action.status)">
-                    <component
-                      :is="action.icon"
-                      class="ticket-status-action__icon" />
-                  </button>
-                </div>
                 <button
-                  class="ticket-card__icon-btn"
-                  :aria-label="supportListText.more"
-                  @click.stop="toggleTicketActionMenu(t.id)">
-                  <UiIconDotsVertical />
+                  type="button"
+                  class="ticket-complete-action"
+                  :title="supportListText.complete"
+                  :disabled="isCompleteActionDisabled(t)"
+                  @click.stop="handleCompleteTicket(t)">
+                  <UiIconCheck class="ticket-complete-action__icon" />
+                  <span>{{ supportListText.complete }}</span>
                 </button>
-                <div
-                  v-if="isTicketActionMenuOpen(t)"
-                  class="ticket-action-menu__dropdown"
-                  @click.stop>
-                  <button
-                    v-if="canDeleteSupport"
-                    type="button"
-                    class="ticket-action-menu__item ticket-action-menu__item--danger"
-                    :disabled="isTicketActionLoading(t)"
-                    @click.stop="handleArchiveTicket(t)">
-                    <UiIconTrash />
-                    <span>{{ supportListText.archive }}</span>
-                  </button>
-                </div>
+                <button
+                  v-if="canDeleteSupport && !showArchived"
+                  type="button"
+                  class="ticket-card__icon-btn ticket-card__archive-btn"
+                  :aria-label="supportListText.archive"
+                  :title="supportListText.archive"
+                  :disabled="isTicketActionLoading(t)"
+                  @click.stop="handleArchiveTicket(t)">
+                  <UiIconTrash />
+                </button>
               </div>
             </td>
           </tr>
@@ -238,9 +219,9 @@
 
 <script lang="ts" setup>
   import PanelDefault from "~/components/block/panels/PanelDefault.vue";
+  import UiIconCheck from "~/components/ui/UiIconCheck.vue";
   import UiIconChat from "~/components/ui/UiIconChat.vue";
   import UiIconCopy from "~/components/ui/UiIconCopy.vue";
-  import UiIconDotsVertical from "~/components/ui/UiIconDotsVertical.vue";
   import UiIconSort from "~/components/ui/UiIconSort.vue";
   import UiIconSpinnerDefault from "~/components/ui/UiIconSpinnerDefault.vue";
   import UiIconTrash from "~/components/ui/UiIconTrash.vue";
@@ -272,31 +253,26 @@
     getTicketSourceBadgeClass,
     getTicketSourceKey,
     getTicketSourceLabel,
-    getTicketStatusActionClass,
-    getTicketStatusActionTitle,
     getTicketStatusDotClass,
     getTicketStatusLabel,
     handleArchiveTicket,
-    handleChangeTicketStatus,
+    handleCompleteTicket,
     handleChatIconClick,
     handleClickRow,
     handleOrderByAndDirection,
     hasTicketUnreadMessages,
     isAdminPopoverVisible,
+    isCompleteActionDisabled,
     isLastMessageSortActive,
     isLoading,
     isStatusSortActive,
     isTicketActionLoading,
-    isTicketActionMenuOpen,
-    isTicketStatusActionDisabled,
-    isTicketStatusActive,
     openAdminProfile,
     openTicketClient,
     orderDirection,
     setActiveAdminPopoverKey,
+    showArchived,
     supportListText,
-    ticketStatusActions,
     toggleAdminPopover,
-    toggleTicketActionMenu,
   } = useSupportTicketTableSetup(props);
 </script>
