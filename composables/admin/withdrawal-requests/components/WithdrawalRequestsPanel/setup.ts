@@ -53,6 +53,10 @@ export function useWithdrawalRequestsPanelSetup(
     emit("quick-status-update", requestItem, nextStatus);
   };
 
+  const handleRequestStatusChange = (requestItem: WithdrawalRequestItem): void => {
+    emit("request-status-change", requestItem);
+  };
+
   const handleEditSelectChange = (key: "accountId" | "paymentDetailId", value: string | null): void => {
     emit("edit-select-change", key, value);
   };
@@ -86,6 +90,7 @@ export function useWithdrawalRequestsPanelSetup(
     handleNotifyClientChange,
     handlePaginatorPage,
     handleQuickStatusUpdate,
+    handleRequestStatusChange,
     handleRefresh,
     handleSaveEdit,
     handleSearch,

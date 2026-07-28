@@ -34,6 +34,7 @@ export type WithdrawalRequestsPanelProps = {
   accountOptionsByUserId: Record<string, WithdrawalSelectOption[]>;
   paymentDetailOptionsByUserId: Record<string, WithdrawalSelectOption[]>;
   canEditRequest: (requestItem: WithdrawalRequestItem) => boolean;
+  canRequestStatusChange: (requestItem: WithdrawalRequestItem) => boolean;
   clientLink: (userId: string) => string;
   formatDateTime: (value: string) => string;
   formatMoney: (value: number, currency: string) => string;
@@ -61,6 +62,7 @@ export type WithdrawalRequestsPanelEmits = {
   page: [event: WithdrawalPaginatorEvent];
   "toggle-edit": [requestItem: WithdrawalRequestItem];
   "quick-status-update": [requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction];
+  "request-status-change": [requestItem: WithdrawalRequestItem];
   "edit-select-change": [key: "accountId" | "paymentDetailId", value: string | null];
   "edit-input": [key: "amount", value: string];
   "edit-textarea": [key: "comment" | "adminComment", event: Event];
@@ -76,6 +78,7 @@ export type WithdrawalRequestsPanelEmit = {
   (event: "page", value: WithdrawalPaginatorEvent): void;
   (event: "toggle-edit", requestItem: WithdrawalRequestItem): void;
   (event: "quick-status-update", requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction): void;
+  (event: "request-status-change", requestItem: WithdrawalRequestItem): void;
   (event: "edit-select-change", key: "accountId" | "paymentDetailId", value: string | null): void;
   (event: "edit-input", key: "amount", value: string): void;
   (event: "edit-textarea", key: "comment" | "adminComment", eventValue: Event): void;

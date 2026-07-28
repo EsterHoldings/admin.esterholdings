@@ -98,6 +98,7 @@ export type WithdrawalRequestLabels = {
   adminCommentText: string;
   amountText: string;
   cancelEditText: string;
+  changeStatusText: string;
   clientCommentText: string;
   copyValueText: string;
   createdAtText: string;

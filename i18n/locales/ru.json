@@ -3012,7 +3012,8 @@
         "successfulManual": "Подтвердить без перевода",
         "successfulAutoTransfer": "Подтвердить и выполнить MT4-перевод",
         "copyValue": "Скопировать значение",
-        "notifyClient": "Отправлять уведомление клиенту"
+        "notifyClient": "Отправлять уведомление клиенту",
+        "changeStatus": "Изменить статус"
       },
       "messages": {
         "saved": "Заявка на вывод обновлена.",
@@ -3022,7 +3023,8 @@
         "saveError": "Не удалось обновить заявку на вывод.",
         "confirmAutoTransfer": "Подтвердить заявку и выполнить MT4-перевод",
         "confirmStatusChange": "Изменить заявку",
-        "confirmStatusChangeTo": "на статус"
+        "confirmStatusChangeTo": "на статус",
+        "confirmProcessedStatusChange": "Вы точно уверены, что хотите изменить статус?"
       },
       "filters": {
         "allStatuses": "Все статусы",

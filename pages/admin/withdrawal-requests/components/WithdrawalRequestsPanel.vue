@@ -49,6 +49,7 @@
           :account-options="accountOptionsFor(requestItem)"
           :payment-detail-options="paymentDetailOptionsFor(requestItem)"
           :can-edit-request="canEditRequest"
+          :can-request-status-change="canRequestStatusChange"
           :client-link="clientLink"
           :format-date-time="formatDateTime"
           :format-money="formatMoney"
@@ -69,6 +70,7 @@
           :transfer-route-value="transferRouteValue"
           @toggle-edit="handleToggleEdit"
           @quick-status-update="handleQuickStatusUpdate"
+          @request-status-change="handleRequestStatusChange"
           @edit-select-change="handleEditSelectChange"
           @edit-input="handleEditInput"
           @edit-textarea="handleEditTextarea"
@@ -113,6 +115,7 @@
     handleNotifyClientChange,
     handlePaginatorPage,
     handleQuickStatusUpdate,
+    handleRequestStatusChange,
     handleRefresh,
     handleSaveEdit,
     handleSearch,

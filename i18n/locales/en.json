@@ -3008,7 +3008,8 @@
         "successfulManual": "Confirm without transfer",
         "successfulAutoTransfer": "Approve and execute MT4 transfer",
         "copyValue": "Copy value",
-        "notifyClient": "Notify client"
+        "notifyClient": "Notify client",
+        "changeStatus": "Change status"
       },
       "messages": {
         "saved": "Withdrawal request updated.",
@@ -3018,7 +3019,8 @@
         "saveError": "Failed to update withdrawal request.",
         "confirmAutoTransfer": "Approve request and execute MT4 transfer",
         "confirmStatusChange": "Change request",
-        "confirmStatusChangeTo": "to status"
+        "confirmStatusChangeTo": "to status",
+        "confirmProcessedStatusChange": "Are you sure you want to change the status?"
       },
       "filters": {
         "allStatuses": "All statuses",

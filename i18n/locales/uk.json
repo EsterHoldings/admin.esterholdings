@@ -3006,7 +3006,8 @@
         "successfulManual": "Підтвердити без переказу",
         "successfulAutoTransfer": "Підтвердити та виконати MT4-переказ",
         "copyValue": "Скопіювати значення",
-        "notifyClient": "Надсилати сповіщення клієнту"
+        "notifyClient": "Надсилати сповіщення клієнту",
+        "changeStatus": "Змінити статус"
       },
       "messages": {
         "saved": "Заявку на виведення оновлено.",
@@ -3016,7 +3017,8 @@
         "saveError": "Не вдалося оновити заявку на виведення.",
         "confirmAutoTransfer": "Підтвердити заявку та виконати MT4-переказ",
         "confirmStatusChange": "Змінити заявку",
-        "confirmStatusChangeTo": "на статус"
+        "confirmStatusChangeTo": "на статус",
+        "confirmProcessedStatusChange": "Ви точно впевнені, що хочете змінити статус?"
       },
       "filters": {
         "allStatuses": "Усі статуси",

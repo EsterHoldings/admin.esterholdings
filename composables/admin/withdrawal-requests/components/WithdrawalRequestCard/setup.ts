@@ -29,6 +29,8 @@ export function useWithdrawalRequestCardSetup(props: WithdrawalRequestCardProps,
 
   const canEdit = computed(() => props.canEditRequest(props.requestItem));
 
+  const canChangeStatus = computed(() => props.canRequestStatusChange(props.requestItem));
+
   const hasDetails = computed(
     () => !props.requestItem.is_internal_transfer && props.hasPaymentDetailData(props.requestItem)
   );
@@ -104,6 +106,10 @@ export function useWithdrawalRequestCardSetup(props: WithdrawalRequestCardProps,
     emit("quick-status-update", props.requestItem, "rejected");
   };
 
+  const handleRequestStatusChange = (): void => {
+    emit("request-status-change", props.requestItem);
+  };
+
   const handleTogglePaymentDetail = (): void => {
     emit("toggle-payment-detail", props.requestItem.id);
   };
@@ -135,6 +141,7 @@ export function useWithdrawalRequestCardSetup(props: WithdrawalRequestCardProps,
     accountText,
     amountText,
     avatarClass,
+    canChangeStatus,
     canEdit,
     cardClass,
     clientUrl,
@@ -145,6 +152,7 @@ export function useWithdrawalRequestCardSetup(props: WithdrawalRequestCardProps,
     handleEditTextarea,
     handleNotifyChange,
     handleRejectedStatus,
+    handleRequestStatusChange,
     handleSaveEdit,
     handleSuccessfulStatus,
     handleToggleEdit,

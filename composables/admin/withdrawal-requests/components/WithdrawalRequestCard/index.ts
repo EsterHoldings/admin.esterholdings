@@ -22,6 +22,7 @@ export type WithdrawalRequestCardProps = {
   accountOptions: WithdrawalSelectOption[];
   paymentDetailOptions: WithdrawalSelectOption[];
   canEditRequest: (requestItem: WithdrawalRequestItem) => boolean;
+  canRequestStatusChange: (requestItem: WithdrawalRequestItem) => boolean;
   clientLink: (userId: string) => string;
   formatDateTime: (value: string) => string;
   formatMoney: (value: number, currency: string) => string;
@@ -48,6 +49,7 @@ export type WithdrawalRequestCardEmits = {
   "edit-textarea": [key: "comment" | "adminComment", event: Event];
   "notify-client-change": [requestId: string, value: boolean];
   "quick-status-update": [requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction];
+  "request-status-change": [requestItem: WithdrawalRequestItem];
   "save-edit": [requestItem: WithdrawalRequestItem];
   "toggle-edit": [requestItem: WithdrawalRequestItem];
   "toggle-payment-detail": [requestId: string];
@@ -59,6 +61,7 @@ export type WithdrawalRequestCardEmit = {
   (event: "edit-textarea", key: "comment" | "adminComment", eventValue: Event): void;
   (event: "notify-client-change", requestId: string, value: boolean): void;
   (event: "quick-status-update", requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction): void;
+  (event: "request-status-change", requestItem: WithdrawalRequestItem): void;
   (event: "save-edit", requestItem: WithdrawalRequestItem): void;
   (event: "toggle-edit", requestItem: WithdrawalRequestItem): void;
   (event: "toggle-payment-detail", requestId: string): void;

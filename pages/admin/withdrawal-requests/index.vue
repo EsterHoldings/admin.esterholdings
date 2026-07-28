@@ -33,6 +33,7 @@
             :account-options-by-user-id="accountOptionsByUserId"
             :payment-detail-options-by-user-id="paymentDetailOptionsByUserId"
             :can-edit-request="canEditRequest"
+            :can-request-status-change="canRequestStatusChange"
             :client-link="clientLink"
             :format-date-time="formatDateTime"
             :format-money="formatMoney"
@@ -57,6 +58,7 @@
             @page="handlePaginatorPage"
             @toggle-edit="handleToggleEdit"
             @quick-status-update="handleQuickStatusUpdate"
+            @request-status-change="handleRequestStatusChange"
             @edit-select-change="handleEditSelectChange"
             @edit-input="handleEditInput"
             @edit-textarea="handleEditTextarea"
@@ -88,6 +90,7 @@
     auxiliaryLoadingUserId,
     canEditRequest,
     canManagePayments,
+    canRequestStatusChange,
     clientLink,
     editErrors,
     editForm,
@@ -102,6 +105,7 @@
     handleNotifyClientChange,
     handlePaginatorPage,
     handleQuickStatusUpdate,
+    handleRequestStatusChange,
     handleSaveEdit,
     handleSearchInput,
     handleStatCardClick,

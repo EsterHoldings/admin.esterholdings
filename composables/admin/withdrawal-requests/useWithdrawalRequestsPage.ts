@@ -21,6 +21,7 @@ import {
 } from "./index";
 
 const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
+const PROCESSED_WITHDRAWAL_STATUSES = ["successful", "failed", "cancelled", "rejected"];
 
 export function useWithdrawalRequestsPage() {
   const { t } = useI18n({ useScope: "global" });
@@ -63,6 +64,7 @@ export function useWithdrawalRequestsPage() {
   });
   const editErrors = reactive<Record<string, string>>({});
   const expandedPaymentDetailIds = ref<string[]>([]);
+  const statusChangeUnlockedRequestIds = ref<string[]>([]);
   const notifyClientByRequestId = reactive<Record<string, boolean>>({});
 
   const resolveText = (key: string, fallback: string): string => {
@@ -107,6 +109,9 @@ export function useWithdrawalRequestsPage() {
   );
   const editText = computed(() => resolveText("admin.withdrawalRequests.actions.edit", "Edit"));
   const cancelEditText = computed(() => resolveText("admin.withdrawalRequests.actions.cancelEdit", "Cancel"));
+  const changeStatusText = computed(() =>
+    resolveText("admin.withdrawalRequests.actions.changeStatus", "Change status")
+  );
   const saveText = computed(() => resolveText("admin.withdrawalRequests.actions.save", "Save"));
   const markSuccessfulText = computed(() => resolveText("admin.withdrawalRequests.actions.successful", "Successful"));
   const markSuccessfulAndTransferText = computed(() =>
@@ -127,6 +132,7 @@ export function useWithdrawalRequestsPage() {
     adminCommentText: adminCommentText.value,
     amountText: amountText.value,
     cancelEditText: cancelEditText.value,
+    changeStatusText: changeStatusText.value,
     clientCommentText: clientCommentText.value,
     copyValueText: copyValueText.value,
     createdAtText: createdAtText.value,
@@ -639,11 +645,57 @@ export function useWithdrawalRequestsPage() {
     return current === nextStatus;
   };
 
+  const isProcessedRequest = (requestItem: WithdrawalRequestItem): boolean =>
+    PROCESSED_WITHDRAWAL_STATUSES.includes(String(requestItem.status ?? "").toLowerCase());
+
+  const isStatusChangeUnlocked = (requestItem: WithdrawalRequestItem): boolean =>
+    statusChangeUnlockedRequestIds.value.includes(requestItem.id);
+
+  const canRequestStatusChange = (requestItem: WithdrawalRequestItem): boolean =>
+    canManagePayments.value &&
+    isProcessedRequest(requestItem) &&
+    !isStatusChangeUnlocked(requestItem) &&
+    updatingRequestId.value !== requestItem.id;
+
+  const handleRequestStatusChange = (requestItem: WithdrawalRequestItem): void => {
+    if (!canRequestStatusChange(requestItem)) {
+      return;
+    }
+
+    const isConfirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        resolveText(
+          "admin.withdrawalRequests.messages.confirmProcessedStatusChange",
+          "Are you sure you want to change the status?"
+        )
+      );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    statusChangeUnlockedRequestIds.value = [
+      ...statusChangeUnlockedRequestIds.value.filter(requestId => requestId !== requestItem.id),
+      requestItem.id,
+    ];
+  };
+
+  const lockStatusChange = (requestId: string): void => {
+    statusChangeUnlockedRequestIds.value = statusChangeUnlockedRequestIds.value.filter(
+      unlockedRequestId => unlockedRequestId !== requestId
+    );
+  };
+
   const canMoveToStatus = (requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction): boolean => {
     const current = String(requestItem.status ?? "").toLowerCase();
 
-    if (current === "successful" && nextStatus !== "successful") {
-      return false;
+    if (isProcessedRequest(requestItem)) {
+      return (
+        isStatusChangeUnlocked(requestItem) &&
+        !isStatusActive(requestItem, nextStatus) &&
+        PROCESSED_WITHDRAWAL_STATUSES.includes(nextStatus)
+      );
     }
 
     switch (nextStatus) {
@@ -662,11 +714,21 @@ export function useWithdrawalRequestsPage() {
   const isTransferExecuted = (requestItem: WithdrawalRequestItem): boolean =>
     String(requestItem.meta?.transfer_execution?.status ?? "").toLowerCase() === "completed";
 
-  const isStatusDisabled = (requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction): boolean =>
-    updatingRequestId.value === requestItem.id ||
-    (isStatusActive(requestItem, nextStatus) &&
-      !(requestItem.is_internal_transfer && nextStatus === "successful" && !isTransferExecuted(requestItem))) ||
-    !canMoveToStatus(requestItem, nextStatus);
+  const isStatusDisabled = (requestItem: WithdrawalRequestItem, nextStatus: WithdrawalStatusAction): boolean => {
+    if (updatingRequestId.value === requestItem.id) {
+      return true;
+    }
+
+    if (isProcessedRequest(requestItem)) {
+      return !canMoveToStatus(requestItem, nextStatus);
+    }
+
+    return (
+      (isStatusActive(requestItem, nextStatus) &&
+        !(requestItem.is_internal_transfer && nextStatus === "successful" && !isTransferExecuted(requestItem))) ||
+      !canMoveToStatus(requestItem, nextStatus)
+    );
+  };
 
   const successfulActionTitle = (requestItem: WithdrawalRequestItem): string =>
     requestItem.is_internal_transfer ? markSuccessfulAndTransferText.value : markSuccessfulText.value;
@@ -716,13 +778,17 @@ export function useWithdrawalRequestsPage() {
 
   const resolveStatusUpdateComment = (
     requestItem: WithdrawalRequestItem,
-    nextStatus: WithdrawalStatusAction
+    nextStatus: WithdrawalStatusAction,
+    skipConfirmation = false
   ): string | null => {
     if (!isRejectionStatus(nextStatus)) {
       return editingRequestId.value === requestItem.id ? editForm.adminComment.trim() : requestItem.admin_comment;
     }
 
-    const confirmed = typeof window === "undefined" || window.confirm(buildStatusConfirmText(requestItem, nextStatus));
+    const confirmed =
+      skipConfirmation ||
+      typeof window === "undefined" ||
+      window.confirm(buildStatusConfirmText(requestItem, nextStatus));
     if (!confirmed) {
       return null;
     }
@@ -749,17 +815,21 @@ export function useWithdrawalRequestsPage() {
   ): Promise<void> => {
     const executeTransfer =
       options.executeTransfer || (requestItem.is_internal_transfer && nextStatus === "successful");
+    const isProcessedStatusChange =
+      isProcessedRequest(requestItem) &&
+      isStatusChangeUnlocked(requestItem) &&
+      !isStatusActive(requestItem, nextStatus);
 
     if (!canManagePayments.value || isStatusDisabled(requestItem, nextStatus)) {
       return;
     }
 
-    const nextAdminComment = resolveStatusUpdateComment(requestItem, nextStatus);
+    const nextAdminComment = resolveStatusUpdateComment(requestItem, nextStatus, isProcessedStatusChange);
     if (nextAdminComment === null) {
       return;
     }
 
-    if (!isRejectionStatus(nextStatus)) {
+    if (!isProcessedStatusChange && !isRejectionStatus(nextStatus)) {
       const isConfirmed =
         typeof window === "undefined" || window.confirm(buildStatusConfirmText(requestItem, nextStatus));
       if (!isConfirmed) {
@@ -774,9 +844,11 @@ export function useWithdrawalRequestsPage() {
         status: nextStatus,
         admin_comment: nextAdminComment,
         notify_client: notifyClientByRequestId[requestItem.id] !== false,
+        ...(isProcessedStatusChange ? { allow_processed_status_change: true } : {}),
         ...(executeTransfer ? { execute_transfer: true } : {}),
       });
 
+      lockStatusChange(requestItem.id);
       toast.success(statusUpdatedText.value);
       await refreshAll();
     } catch (error: any) {
@@ -949,6 +1021,7 @@ export function useWithdrawalRequestsPage() {
     auxiliaryLoadingUserId,
     canEditRequest,
     canManagePayments,
+    canRequestStatusChange,
     clientLink,
     editErrors,
     editForm,
@@ -962,6 +1035,7 @@ export function useWithdrawalRequestsPage() {
     handleNotifyClientChange,
     handlePaginatorPage,
     handleQuickStatusUpdate,
+    handleRequestStatusChange,
     handleSaveEdit,
     handleSearchInput,
     handleStatCardClick,

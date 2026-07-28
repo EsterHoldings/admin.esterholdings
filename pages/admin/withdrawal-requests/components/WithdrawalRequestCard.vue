@@ -86,27 +86,37 @@
             <span>{{ labels.notifyClientText }}</span>
           </label>
 
-          <div
-            class="flex items-center justify-end gap-1 rounded-[11px] border border-[var(--color-stroke-ui-light)] bg-[color-mix(in_srgb,var(--ui-background)_74%,transparent)] p-[3px] max-[767px]:w-full"
-            role="group"
-            :aria-label="labels.actionsStatusSelector">
+          <div class="flex items-center justify-end gap-2 max-[767px]:w-full max-[767px]:justify-start">
             <button
+              v-if="canChangeStatus"
               type="button"
-              :class="successfulActionClass"
-              :disabled="statusDisabled('successful')"
-              :title="successfulActionTitle(requestItem)"
-              @click="handleSuccessfulStatus">
-              <UiIconSuccessFull class="h-4 w-4" />
+              class="inline-flex min-h-[38px] items-center justify-center rounded-[11px] border border-[color-mix(in_srgb,var(--ui-primary-main)_35%,transparent)] bg-[color-mix(in_srgb,var(--ui-primary-main)_10%,transparent)] px-3 text-xs font-bold text-[var(--ui-primary-main)] transition duration-200 hover:-translate-y-px hover:border-[color-mix(in_srgb,var(--ui-primary-main)_55%,transparent)] hover:bg-[color-mix(in_srgb,var(--ui-primary-main)_16%,transparent)]"
+              @click="handleRequestStatusChange">
+              {{ labels.changeStatusText }}
             </button>
 
-            <button
-              type="button"
-              :class="rejectedActionClass"
-              :disabled="statusDisabled('rejected')"
-              :title="labels.rejectText"
-              @click="handleRejectedStatus">
-              <UiIconDangerFull class="h-4 w-4" />
-            </button>
+            <div
+              class="flex items-center justify-end gap-1 rounded-[11px] border border-[var(--color-stroke-ui-light)] bg-[color-mix(in_srgb,var(--ui-background)_74%,transparent)] p-[3px]"
+              role="group"
+              :aria-label="labels.actionsStatusSelector">
+              <button
+                type="button"
+                :class="successfulActionClass"
+                :disabled="statusDisabled('successful')"
+                :title="successfulActionTitle(requestItem)"
+                @click="handleSuccessfulStatus">
+                <UiIconSuccessFull class="h-4 w-4" />
+              </button>
+
+              <button
+                type="button"
+                :class="rejectedActionClass"
+                :disabled="statusDisabled('rejected')"
+                :title="labels.rejectText"
+                @click="handleRejectedStatus">
+                <UiIconDangerFull class="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -363,6 +373,7 @@
     accountText,
     amountText,
     avatarClass,
+    canChangeStatus,
     canEdit,
     cardClass,
     clientUrl,
@@ -373,6 +384,7 @@
     handleEditTextarea,
     handleNotifyChange,
     handleRejectedStatus,
+    handleRequestStatusChange,
     handleSaveEdit,
     handleSuccessfulStatus,
     handleToggleEdit,
