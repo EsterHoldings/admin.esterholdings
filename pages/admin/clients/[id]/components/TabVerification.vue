@@ -285,7 +285,26 @@
                 :key="`${item.id}:field:${field.key}`"
                 class="verification-field-card">
                 <span>{{ field.label }}</span>
-                <strong>{{ field.value || "-" }}</strong>
+                <div class="verification-field-card__value">
+                  <button
+                    v-if="isRecipientAddressField(field.key) && field.value"
+                    type="button"
+                    class="verification-field-card__copy"
+                    :title="text('admin.verifications.payout.actions.copyRecipientAddress', 'Copy recipient address')"
+                    :aria-label="text('admin.verifications.payout.actions.copyRecipientAddress', 'Copy recipient address')"
+                    @click="
+                      copyVerificationValue(
+                        field.value,
+                        text(
+                          'admin.verifications.payout.messages.recipientAddressCopied',
+                          'Recipient address copied'
+                        )
+                      )
+                    ">
+                    <i class="pi pi-copy" />
+                  </button>
+                  <strong>{{ field.value || "-" }}</strong>
+                </div>
               </div>
             </div>
 
@@ -2759,6 +2778,9 @@
   const paymentFieldLabel = (value: string): string =>
     text(`admin.verifications.payout.fields.${value}`, normalizePaymentLabel(value));
 
+  const isRecipientAddressField = (value: string): boolean =>
+    value.replace(/[_-]/g, "").toLowerCase() === "recipientaddress";
+
   const formatPaymentValue = (value: unknown): string => {
     if (Array.isArray(value)) {
       return value
@@ -4100,7 +4122,50 @@
     font-weight: 720;
   }
 
-  .verification-field-card strong {
+  .verification-field-card__value {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .verification-field-card__copy {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-top: -2px;
+    padding: 0;
+    color: var(--ui-text-secondary);
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+    transition: color 140ms ease, background-color 140ms ease, transform 140ms ease;
+  }
+
+  .verification-field-card__copy:hover {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+  }
+
+  .verification-field-card__copy:active {
+    transform: scale(0.92);
+  }
+
+  .verification-field-card__copy:focus-visible {
+    outline: 2px solid var(--ui-primary-main);
+    outline-offset: 1px;
+  }
+
+  .verification-field-card__copy .pi {
+    font-size: 12px;
+  }
+
+  .verification-field-card__value strong {
+    min-width: 0;
     color: var(--ui-text-main);
     font-size: 12px;
     font-weight: 800;
