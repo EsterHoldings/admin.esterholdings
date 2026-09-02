@@ -1112,8 +1112,7 @@ export function useClientsPage() {
     try {
       isLoadingSearch.value = true;
       searchFilter.value = value.trim();
-      await loadData({ resetPage: true });
-      await syncStateToUrl();
+      await loadData({ resetPage: true, silent: true });
     } finally {
       isLoadingSearch.value = false;
     }

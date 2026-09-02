@@ -918,10 +918,10 @@ export function useAccountsPanelState() {
     return payload;
   };
 
-  const loadData = async ({ resetPage = false }: { resetPage?: boolean } = {}) => {
+  const loadData = async ({ resetPage = false, silent = false }: { resetPage?: boolean; silent?: boolean } = {}) => {
     if (resetPage) page.value = 1;
     const requestId = ++latestLoadRequestId;
-    isLoading.value = true;
+    if (!silent) isLoading.value = true;
 
     try {
       const filtersPayload = getFiltersPayload(appliedFilters.value);
@@ -949,13 +949,15 @@ export function useAccountsPanelState() {
     } catch (error: any) {
       if (requestId !== latestLoadRequestId) return;
 
-      totalRows.value = 0;
-      accountsData.value = [];
+      if (!silent) {
+        totalRows.value = 0;
+        accountsData.value = [];
+      }
       toast.error(
         error?.response?.data?.message || resolveText("admin.accounts.messages.loadError", "Failed to load accounts.")
       );
     } finally {
-      if (requestId === latestLoadRequestId) {
+      if (!silent && requestId === latestLoadRequestId) {
         isLoading.value = false;
       }
     }
@@ -1176,8 +1178,7 @@ export function useAccountsPanelState() {
 
   const runSearch = async (token: number) => {
     searchFilter.value = searchDraft.value;
-    await loadData({ resetPage: true });
-    await syncStateToUrl();
+    await loadData({ resetPage: true, silent: true });
 
     if (token === latestSearchToken) {
       isLoadingSearch.value = false;

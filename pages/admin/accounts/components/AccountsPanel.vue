@@ -54,12 +54,8 @@
               resolveText('admin.accounts.components.accounts-panel-search.placeholder', 'Search accounts...')
             "
             @update:model-value="handleSearchInput" />
-          <i
-            v-if="isLoadingSearch"
-            class="pi pi-spin pi-spinner accounts-search__spinner"
-            aria-hidden="true" />
           <button
-            v-else-if="searchDraft"
+            v-if="searchDraft"
             type="button"
             class="accounts-search__clear"
             aria-label="Clear"
@@ -670,12 +666,6 @@
     min-height: 36px;
     padding-left: 38px;
     padding-right: 38px;
-  }
-
-  .accounts-search__spinner {
-    position: absolute;
-    right: 13px;
-    color: var(--ui-text-secondary);
   }
 
   .accounts-search__clear {

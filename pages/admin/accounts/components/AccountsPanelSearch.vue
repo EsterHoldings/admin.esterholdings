@@ -6,7 +6,6 @@
       @input="handleInputSearch"
       :borderNone="true"
       :paddingNone="true"
-      :isLoading="isLoadingSearch"
       clearable
       :value="searchFilter">
       <template #icon-left>

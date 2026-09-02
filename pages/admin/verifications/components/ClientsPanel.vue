@@ -2,7 +2,6 @@
   <PanelDefault class="clients-panel">
     <ClientsPanelSearch
       @input="handleInputSearch"
-      :isLoading="isLoadingSearch"
       :value="searchDraft" />
 
     <ClientsContent

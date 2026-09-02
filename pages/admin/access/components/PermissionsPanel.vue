@@ -5,7 +5,6 @@
         <UiInput
           class="w-full"
           :placeholder="resolveText('admin.access.components.permissions-panel.searchPlaceholder', 'Search')"
-          :isLoading="isLoadingSearch"
           clearable
           :value="searchDraft"
           @input="handleInputSearch">
@@ -20,7 +19,7 @@
           state="info--small"
           class="!w-[44px]"
           @click="handleClickRefresh">
-          <UiIconUpdate :spinning="isLoading || isLoadingSearch" />
+          <UiIconUpdate :spinning="isLoading" />
         </UiButtonDefault>
       </div>
     </div>
