@@ -3,6 +3,7 @@
     <div class="flex items-center justify-between gap-1 w-full max-w-60">
       <UiInput
         class="w-full max-w-[240px]"
+        clearable
         @input="handleInputSearch"
         :value="search"
         :placeholder="supportListText.searchPlaceholder">

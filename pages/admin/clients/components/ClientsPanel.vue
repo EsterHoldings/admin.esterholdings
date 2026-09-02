@@ -20,6 +20,7 @@
             <div class="flex w-full flex-1 min-w-[260px] items-center gap-2">
               <UiInput
                 class="w-full"
+                clearable
                 :placeholder="t('admin.clients.components.clients-panel-search.placeholder', 'Search clients...')"
                 @input="handleInputSearch"
                 :value="searchDraft">

@@ -77,7 +77,18 @@
                 <i class="pi pi-search"></i>
                 <PrimeInputText
                   v-model="search"
+                  class="pr-10"
                   :placeholder="t('admin.news.fields.search', 'Search by title, slug or excerpt')" />
+                <button
+                  v-if="search"
+                  type="button"
+                  class="absolute right-2 inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ui-text-secondary)] transition hover:bg-[color-mix(in_srgb,var(--ui-primary-main)_12%,transparent)] hover:text-[var(--ui-text-main)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ui-primary-main)]"
+                  aria-label="Clear"
+                  @click="search = ''">
+                  <i
+                    class="pi pi-times text-xs"
+                    aria-hidden="true" />
+                </button>
               </span>
 
               <PrimeSelect
@@ -1701,6 +1712,7 @@
   }
 
   .news-prime__search {
+    position: relative;
     min-width: min(100%, 360px);
     flex: 1;
     display: flex;

@@ -58,6 +58,16 @@
             v-if="isLoadingSearch"
             class="pi pi-spin pi-spinner accounts-search__spinner"
             aria-hidden="true" />
+          <button
+            v-else-if="searchDraft"
+            type="button"
+            class="accounts-search__clear"
+            aria-label="Clear"
+            @click="handleSearchInput('')">
+            <i
+              class="pi pi-times"
+              aria-hidden="true" />
+          </button>
         </label>
 
         <PrimeButton
@@ -666,6 +676,29 @@
     position: absolute;
     right: 13px;
     color: var(--ui-text-secondary);
+  }
+
+  .accounts-search__clear {
+    position: absolute;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: var(--ui-text-secondary);
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .accounts-search__clear:hover,
+  .accounts-search__clear:focus-visible {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+    outline: none;
   }
 
   .accounts-sort-select {

@@ -3,6 +3,7 @@
     <div class="flex w-full items-center gap-2.5 lg:max-w-[520px]">
       <UiInput
         class="w-full"
+        clearable
         :value="searchFilter"
         :placeholder="searchPlaceholder"
         @input="handleSearch">

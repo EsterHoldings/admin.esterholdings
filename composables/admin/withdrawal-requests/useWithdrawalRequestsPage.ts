@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "vue-toastification";
 import { useLocalePath } from "~/.nuxt/imports";
@@ -22,6 +22,7 @@ import {
 
 const ADMIN_NOTIFICATIONS_MARKED_BY_TYPES_EVENT = "admin-notifications-marked-by-types";
 const PROCESSED_WITHDRAWAL_STATUSES = ["successful", "failed", "cancelled", "rejected"];
+const SEARCH_DELAY_MS = 450;
 
 export function useWithdrawalRequestsPage() {
   const { t } = useI18n({ useScope: "global" });
@@ -36,6 +37,7 @@ export function useWithdrawalRequestsPage() {
   const isStatsLoading = ref(false);
   const errorMessage = ref("");
   const searchFilter = ref("");
+  let searchTimer: ReturnType<typeof setTimeout> | null = null;
   const statusFilter = ref("pending");
   const page = ref(1);
   const perPage = ref(5);
@@ -614,11 +616,24 @@ export function useWithdrawalRequestsPage() {
     }
   };
 
-  const handleSearchInput = async (value: string): Promise<void> => {
+  const handleSearchInput = (value: string): void => {
     searchFilter.value = value;
-    page.value = 1;
-    await loadRequests();
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
+
+    searchTimer = setTimeout(() => {
+      searchTimer = null;
+      page.value = 1;
+      void loadRequests();
+    }, SEARCH_DELAY_MS);
   };
+
+  onBeforeUnmount(() => {
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
+  });
 
   const handleStatCardClick = async (value: string): Promise<void> => {
     statusFilter.value = String(value ?? "");

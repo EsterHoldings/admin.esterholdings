@@ -95,16 +95,20 @@
     await loadData();
   };
 
-  const handleInputSearch = debounce(async (value: any) => {
+  const applySearch = debounce(async (value: string) => {
     try {
       isLoadingSearch.value = true;
-      searchDraft.value = String(value ?? "");
-      searchFilter.value = searchDraft.value;
+      searchFilter.value = value.trim();
       await loadData(true);
     } finally {
       isLoadingSearch.value = false;
     }
   }, 300);
+
+  const handleInputSearch = (value: unknown) => {
+    searchDraft.value = String(value ?? "");
+    applySearch(searchDraft.value);
+  };
 
   onMounted(async () => {
     isLoading.value = true;

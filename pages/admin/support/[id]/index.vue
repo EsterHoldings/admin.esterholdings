@@ -172,12 +172,27 @@
                       v-if="isParticipantsAddPanelOpen"
                       class="support-side__participants-add-panel"
                       @click.stop>
-                      <input
-                        v-model="participantsAdminSearch"
-                        type="text"
-                        class="support-side__participants-add-search"
-                        :placeholder="supportText.searchAdminPlaceholder"
-                        @input="handleParticipantsAdminSearchInput" />
+                      <div class="support-side__participants-add-search-wrap">
+                        <input
+                          v-model="participantsAdminSearch"
+                          type="text"
+                          class="support-side__participants-add-search"
+                          :placeholder="supportText.searchAdminPlaceholder"
+                          @input="handleParticipantsAdminSearchInput" />
+                        <button
+                          v-if="participantsAdminSearch"
+                          type="button"
+                          class="support-side__participants-add-search-clear"
+                          aria-label="Clear"
+                          @click="
+                            participantsAdminSearch = '';
+                            handleParticipantsAdminSearchInput();
+                          ">
+                          <i
+                            class="pi pi-times"
+                            aria-hidden="true" />
+                        </button>
+                      </div>
 
                       <div class="support-side__participants-add-list">
                         <button
@@ -3679,9 +3694,38 @@
     background: transparent;
     color: var(--ui-text-main);
     border-radius: 8px;
-    padding: 7px 9px;
+    padding: 7px 36px 7px 9px;
     font-size: 13px;
     line-height: 1.3;
+    outline: none;
+  }
+
+  .support-side__participants-add-search-wrap {
+    position: relative;
+  }
+
+  .support-side__participants-add-search-clear {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    color: var(--ui-text-secondary);
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .support-side__participants-add-search-clear:hover,
+  .support-side__participants-add-search-clear:focus-visible {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
     outline: none;
   }
 

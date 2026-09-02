@@ -1108,17 +1108,21 @@ export function useClientsPage() {
     await syncStateToUrl();
   };
 
-  const handleInputSearch = debounce(async (value: string) => {
+  const applySearch = debounce(async (value: string) => {
     try {
       isLoadingSearch.value = true;
-      searchDraft.value = String(value ?? "");
-      searchFilter.value = searchDraft.value;
+      searchFilter.value = value.trim();
       await loadData({ resetPage: true });
       await syncStateToUrl();
     } finally {
       isLoadingSearch.value = false;
     }
   }, 500);
+
+  const handleInputSearch = (value: string) => {
+    searchDraft.value = String(value ?? "");
+    applySearch(searchDraft.value);
+  };
 
   const handleOrderBy = async (value: string) => {
     orderBy.value = value;

@@ -15,6 +15,7 @@ export function useSupportPage() {
   const ORDER_DIRECTION_DESC = "desc";
   const SUPPORT_UNREAD_UPDATED_EVENT = "support-unread-updated";
   const SUPPORT_PRESENCE_UPDATED_EVENT = "support-presence-updated";
+  const SEARCH_DELAY_MS = 450;
   const { $echo } = useNuxtApp() as { $echo?: any };
   const { t } = useI18n({ useScope: "global" });
   const resolveText = (key: string, fallback: string): string => {
@@ -110,6 +111,7 @@ export function useSupportPage() {
 
   const isLoading = ref(false);
   const search = ref("");
+  let searchTimer: ReturnType<typeof setTimeout> | null = null;
   const total = ref(0);
   const perPage = ref(7);
   const currentPage = ref(1);
@@ -844,10 +846,17 @@ export function useSupportPage() {
     await loadData();
   };
 
-  const handleInputSearch = async (value: string) => {
+  const handleInputSearch = (value: string) => {
     search.value = value;
-    currentPage.value = 1;
-    await loadData();
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
+
+    searchTimer = setTimeout(() => {
+      searchTimer = null;
+      currentPage.value = 1;
+      void loadData();
+    }, SEARCH_DELAY_MS);
   };
 
   const handleClickUpdate = async () => {
@@ -1056,6 +1065,9 @@ export function useSupportPage() {
   });
 
   onBeforeUnmount(() => {
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
     useEventBus.off(SUPPORT_UNREAD_UPDATED_EVENT, handleSupportUnreadUpdated);
     useEventBus.off(SUPPORT_PRESENCE_UPDATED_EVENT, handleSupportPresenceUpdated);
     disconnectSupportRealtime();

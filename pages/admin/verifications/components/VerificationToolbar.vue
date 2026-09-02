@@ -6,9 +6,19 @@
         aria-hidden="true" />
       <PrimeInputText
         v-model="searchValue"
-        class="w-full pl-10"
+        class="w-full pl-10 pr-10"
         :placeholder="placeholder"
         fluid />
+      <button
+        v-if="searchValue"
+        type="button"
+        class="absolute right-2 z-[1] inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ui-text-secondary)] transition hover:bg-[color-mix(in_srgb,var(--ui-primary-main)_12%,transparent)] hover:text-[var(--ui-text-main)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ui-primary-main)]"
+        aria-label="Clear"
+        @click="searchValue = ''">
+        <i
+          class="pi pi-times text-xs"
+          aria-hidden="true" />
+      </button>
     </span>
 
     <PrimeButton

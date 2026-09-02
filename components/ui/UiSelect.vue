@@ -55,6 +55,16 @@
           @input="onSearchInput"
           @click.stop
           @keydown.stop />
+        <button
+          v-if="searchQuery"
+          type="button"
+          class="select__search-clear"
+          aria-label="Clear"
+          @click.stop="clearSearch">
+          <i
+            class="pi pi-times"
+            aria-hidden="true" />
+        </button>
       </div>
 
       <UiTextSmall
@@ -265,6 +275,12 @@
     emit("search", value);
   }
 
+  function clearSearch() {
+    searchQuery.value = "";
+    emit("search", "");
+    searchInputRef.value?.focus();
+  }
+
   function onClickOutside(e: MouseEvent) {
     const el = wrapper.value;
     if (!el) return;
@@ -378,7 +394,7 @@
     border: 1px solid var(--ui-control-border);
     background: var(--ui-control-bg);
     color: var(--ui-text-main);
-    padding: 0 10px;
+    padding: 0 36px 0 10px;
     outline: none;
     font-size: 13px;
     caret-color: var(--ui-primary-main);
@@ -391,5 +407,34 @@
   .select__search-input:focus {
     border-color: var(--ui-primary-main);
     box-shadow: 0 0 0 2px var(--ui-control-focus-ring);
+  }
+
+  .select__search-wrap {
+    position: relative;
+  }
+
+  .select__search-clear {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    color: var(--ui-text-secondary);
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .select__search-clear:hover,
+  .select__search-clear:focus-visible {
+    color: var(--ui-text-main);
+    background: color-mix(in srgb, var(--ui-primary-main) 12%, transparent);
+    outline: none;
   }
 </style>
