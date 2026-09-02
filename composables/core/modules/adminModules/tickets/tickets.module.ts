@@ -31,6 +31,10 @@ export class TicketsModule implements BasicModuleInterface {
     return await this.ticketsService.storeTicketMessage(id, payload, config);
   }
 
+  async updateTicketMessage(ticketId: string, messageId: string, payload: any = {}): Promise<any> {
+    return await this.ticketsService.updateTicketMessage(ticketId, messageId, payload);
+  }
+
   async markRead(id: string, payload: any = {}): Promise<any> {
     return await this.ticketsService.markRead(id, payload);
   }

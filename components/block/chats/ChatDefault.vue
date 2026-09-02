@@ -334,6 +334,13 @@
                     v-if="isMessagePending(item.msg)"
                     class="!h-3 !w-3" />
                   <span>{{ formatDateTime(item.msg.createdAt) }}</span>
+                  <button
+                    v-if="canEditMessage(item.msg)"
+                    type="button"
+                    class="ml-1 underline hover:no-underline"
+                    @click="editMessage(item.msg)">
+                    {{ chatText.edit }}
+                  </button>
                 </div>
               </div>
               <div
@@ -886,6 +893,13 @@
                           v-if="isMessagePending(item.msg)"
                           class="!h-3 !w-3" />
                         <span>{{ formatDateTime(item.msg.createdAt) }}</span>
+                        <button
+                          v-if="canEditMessage(item.msg)"
+                          type="button"
+                          class="ml-1 underline hover:no-underline"
+                          @click="editMessage(item.msg)">
+                          {{ chatText.edit }}
+                        </button>
                       </div>
                     </div>
                     <div
@@ -1257,6 +1271,9 @@
     uploadedSuffix: resolveText("support.chat.uploadedSuffix", "uploaded"),
     failedSuffix: resolveText("support.chat.failedSuffix", "failed"),
     sendFailed: resolveText("support.chat.sendFailed", "Failed to send message."),
+    edit: resolveText("support.chat.edit", "Edit"),
+    editPrompt: resolveText("support.chat.editPrompt", "Edit message"),
+    editFailed: resolveText("support.chat.editFailed", "Failed to update message."),
     uploadTooLarge413: resolveText("support.chat.uploadTooLarge413", "Upload is too large for the server limit (413)."),
     uploadTimedOut: resolveText("support.chat.uploadTimedOut", "Upload timed out. Try sending fewer or smaller files."),
     uploadNetworkError: resolveText(
@@ -1316,6 +1333,7 @@
     authorLastName?: string;
     authorEmail?: string;
     authorInitials?: string;
+    canEdit?: boolean;
   };
   type ApiMsg = {
     id: string;
@@ -1331,6 +1349,7 @@
     author_last_name?: string | null;
     author_email?: string | null;
     author_initials?: string | null;
+    can_edit?: boolean;
   };
   type RenderSep = { kind: "sep"; key: string; label: "today" | "yesterday" };
   type RenderMsg = { kind: "msg"; key: string; msg: ChatMessage };
@@ -2864,7 +2883,29 @@
       authorLastName: normalizeOptionalText(m.author_last_name),
       authorEmail: normalizeOptionalText(m.author_email),
       authorInitials: normalizeOptionalText(m.author_initials),
+      canEdit: Boolean(m.can_edit),
     };
+  }
+
+  function canEditMessage(message: ChatMessage): boolean {
+    return props.adminChat && Boolean(message.canEdit) && message.type !== "system" && !isMessagePending(message);
+  }
+
+  async function editMessage(message: ChatMessage) {
+    if (!canEditMessage(message)) return;
+    const nextBody = window.prompt(chatText.value.editPrompt, message.body)?.trim();
+    if (!nextBody || nextBody === message.body) return;
+
+    try {
+      const response = await appCore.adminModules.tickets.updateTicketMessage(props.ticketId, message.id, {
+        body: nextBody,
+      });
+      const updated = mapApi((response?.data ?? response) as ApiMsg);
+      upsertMessage(updated);
+      emitSupportMessageUpdated(updated);
+    } catch {
+      toast.error(chatText.value.editFailed);
+    }
   }
   function isSameMessage(a: ChatMessage, b: ChatMessage): boolean {
     const aMeta = JSON.stringify(a.meta ?? null);
@@ -2883,7 +2924,8 @@
       a.authorFirstName === b.authorFirstName &&
       a.authorLastName === b.authorLastName &&
       a.authorEmail === b.authorEmail &&
-      a.authorInitials === b.authorInitials
+      a.authorInitials === b.authorInitials &&
+      a.canEdit === b.canEdit
     );
   }
   const hasMessageText = (value: unknown): boolean => normalizeText(value).length > 0;
@@ -3237,6 +3279,7 @@
         author_last_name: e.author_last_name,
         author_email: e.author_email,
         author_initials: e.author_initials,
+        can_edit: e.can_edit,
       });
       upsertMessage(incomingMessage);
       ensureAscOrder();
@@ -3253,6 +3296,11 @@
       if (messageNeedsAttachmentHydration(incomingMessage)) {
         void syncLatestMessagesFromServer();
       }
+    });
+    ch.listen(".MessageUpdated", (e: ApiMsg) => {
+      const updatedMessage = mapApi(e);
+      upsertMessage(updatedMessage);
+      emitSupportMessageUpdated(updatedMessage);
     });
     ch.listen(".Typing", (e: { user_id: string; is_typing: boolean }) => {
       applyRemoteTypingState(e?.user_id, Boolean(e?.is_typing));

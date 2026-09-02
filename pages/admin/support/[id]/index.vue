@@ -611,6 +611,13 @@
                   <div class="support-email__entry-head">
                     <strong class="truncate">{{ entry.authorName }}</strong>
                     <span class="support-email__entry-date">{{ entry.createdAtLabel }}</span>
+                    <button
+                      v-if="entry.canEdit"
+                      type="button"
+                      class="underline hover:no-underline"
+                      @click="editEmailThreadMessage(entry)">
+                      {{ supportText.editMessage }}
+                    </button>
                   </div>
 
                   <p
@@ -775,6 +782,9 @@
     sendingReply: "",
     emailReplySent: "",
     emailReplyFailed: "",
+    editMessage: "",
+    editMessagePrompt: "",
+    editMessageFailed: "",
     emailAttachFiles: "",
     emailRemoveAttachment: "",
     emailAttachmentTooLarge: "",
@@ -838,6 +848,9 @@
     supportText.sendingReply = resolveText("support.chat.sendingReply", "Sending...");
     supportText.emailReplySent = resolveText("support.chat.emailReplySent", "Reply sent.");
     supportText.emailReplyFailed = resolveText("support.chat.emailReplyFailed", "Failed to send reply.");
+    supportText.editMessage = resolveText("support.chat.edit", "Edit");
+    supportText.editMessagePrompt = resolveText("support.chat.editPrompt", "Edit message");
+    supportText.editMessageFailed = resolveText("support.chat.editFailed", "Failed to update message.");
     supportText.emailAttachFiles = resolveText("support.chat.emailAttachFiles", "Attach files");
     supportText.emailRemoveAttachment = resolveText("support.chat.emailRemoveAttachment", "Remove attachment");
     supportText.emailAttachmentTooLarge = resolveText(
@@ -925,6 +938,7 @@
     createdAtLabel: string;
     bodyText: string;
     attachments: EmailThreadAttachment[];
+    canEdit: boolean;
   };
   const emailThreadItems = ref<EmailThreadItem[]>([]);
   const isEmailTicket = computed(() => ticketChannel.value === "email");
@@ -1952,6 +1966,7 @@
           createdAtLabel,
           bodyText,
           attachments,
+          canEdit: Boolean(message.can_edit),
           createdAt,
         };
       })
@@ -1999,6 +2014,19 @@
 
   const reloadEmailThread = async () => {
     await loadEmailThread();
+  };
+
+  const editEmailThreadMessage = async (entry: EmailThreadItem) => {
+    if (!entry.canEdit) return;
+    const nextBody = window.prompt(supportText.editMessagePrompt, entry.bodyText)?.trim();
+    if (!nextBody || nextBody === entry.bodyText) return;
+
+    try {
+      await appCore.adminModules.tickets.updateTicketMessage(id.value, entry.id, { body: nextBody });
+      await loadEmailThread();
+    } catch {
+      toast.error(supportText.editMessageFailed);
+    }
   };
 
   const clearEmailReplyAttachments = () => {

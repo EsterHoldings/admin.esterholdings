@@ -24,6 +24,10 @@ export class TicketsService {
     return await this.useApi.post(`/admin/tickets/${ticketId}/messages`, payload, config);
   }
 
+  async updateTicketMessage(ticketId: string, messageId: string, payload: any = {}): Promise<any> {
+    return await this.useApi.patch(`/admin/tickets/${ticketId}/messages/${messageId}`, payload);
+  }
+
   async markRead(ticketId: string, payload: any = {}): Promise<any> {
     return await this.useApi.post(`/admin/tickets/${ticketId}/read`, payload);
   }
