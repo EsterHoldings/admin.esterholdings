@@ -254,7 +254,11 @@
     tone: NotificationTone;
   };
 
-  const NOTIFICATIONS_POLL_MS = 120000;
+  // A healthy private channel delivers events immediately.  This small
+  // fallback only runs when that channel itself is not subscribed (not merely
+  // when the underlying WebSocket is disconnected), so a stale bearer token
+  // can never leave sidebar/header counters frozen until a browser reload.
+  const NOTIFICATIONS_POLL_MS = 15_000;
   const NOTIFICATIONS_REALTIME_RETRY_MS = 30000;
   const NOTIFICATIONS_RESUME_SYNC_MIN_INTERVAL_MS = 60000;
   const ADMIN_NOTIFICATION_RECEIVED_EVENT = "admin-notification-received";
@@ -264,6 +268,8 @@
     "AdminNotificationCreated",
     ".App\\Events\\AdminNotificationCreated",
     "App\\Events\\AdminNotificationCreated",
+    ".Modules\\Notifications\\Events\\AdminNotificationCreated",
+    "Modules\\Notifications\\Events\\AdminNotificationCreated",
   ];
   const VERIFICATION_ADMIN_NOTIFICATION_TYPES = ["verification.request.created"];
   const SUPPORT_ADMIN_NOTIFICATION_TYPES = ["support.ticket.created", "support.message.created"];
@@ -814,6 +820,15 @@
     return state === "connected";
   };
 
+  const isNotificationsChannelSubscribed = () => Boolean(activeNotificationsChannel.value?.subscription?.subscribed);
+
+  const isAdminNotificationEvent = (eventName: unknown): boolean => {
+    const normalized = String(eventName ?? "").trim();
+    if (NOTIFICATION_EVENT_NAMES.includes(normalized)) return true;
+
+    return normalized.replace(/^\./, "").endsWith("AdminNotificationCreated");
+  };
+
   const handleRealtimeNotification = async (payload: any) => {
     const normalized = normalizeNotification(payload?.notification ?? null);
     if (!normalized) return;
@@ -884,7 +899,11 @@
     if (normalizedAdminId === "") return;
 
     const channelName = `notifications.admin.${normalizedAdminId}`;
-    if (currentNotificationsChannelName.value === channelName && activeNotificationsChannel.value) {
+    if (
+      currentNotificationsChannelName.value === channelName &&
+      activeNotificationsChannel.value &&
+      isNotificationsChannelSubscribed()
+    ) {
       return;
     }
 
@@ -898,6 +917,26 @@
     NOTIFICATION_EVENT_NAMES.forEach(eventName => {
       activeNotificationsChannel.value.stopListening(eventName, handleRealtimeNotification);
       activeNotificationsChannel.value.listen(eventName, handleRealtimeNotification);
+    });
+    // The exact wire name differs between broadcastAs() and legacy class-name
+    // events.  Keeping a single guarded global listener makes the browser
+    // resilient to either server form without double-counting a notification.
+    activeNotificationsChannel.value.listenToAll((eventName: string, payload: any) => {
+      if (isAdminNotificationEvent(eventName)) {
+        void handleRealtimeNotification(payload);
+      }
+    });
+    activeNotificationsChannel.value.subscribed(() => {
+      // Recover a counter that might have changed while the subscription was
+      // being authorized, without reloading the whole application.
+      void loadUnreadSummary();
+    });
+    activeNotificationsChannel.value.error(() => {
+      if (currentNotificationsChannelName.value !== channelName) return;
+      // Drop the failed private-channel object as well. Echo otherwise returns
+      // its cached, unauthorised channel on the next retry.
+      unsubscribeFromNotifications();
+      void loadUnreadSummary();
     });
   };
 
@@ -981,7 +1020,7 @@
     notificationsPollTimer = setInterval(async () => {
       if (!hasAccessToken()) return;
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
-      if (isNotificationsSocketConnected()) return;
+      if (isNotificationsSocketConnected() && isNotificationsChannelSubscribed()) return;
 
       const canToastNewItems = notificationsLoaded.value;
       const newUnreadItems = await loadNotifications({ showToastsForNew: canToastNewItems });
@@ -1122,7 +1161,7 @@
 
     lastNotificationsResumeSyncAt = now;
 
-    if (isOpen.value || !isNotificationsSocketConnected()) {
+    if (isOpen.value || !isNotificationsSocketConnected() || !isNotificationsChannelSubscribed()) {
       await loadNotifications({ showToastsForNew: showToastsForNew && notificationsLoaded.value });
     } else {
       await loadUnreadSummary();
