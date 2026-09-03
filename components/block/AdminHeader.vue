@@ -254,10 +254,10 @@
     tone: NotificationTone;
   };
 
-  // A healthy private channel delivers events immediately.  This small
-  // fallback only runs when that channel itself is not subscribed (not merely
-  // when the underlying WebSocket is disconnected), so a stale bearer token
-  // can never leave sidebar/header counters frozen until a browser reload.
+  // Reconcile independently from the socket. A transport may report a healthy
+  // subscription while an event was lost during reconnect/authentication; the
+  // HTTP sync then restores the bell, toast and sidebar counters without a
+  // full page reload.
   const NOTIFICATIONS_POLL_MS = 15_000;
   const NOTIFICATIONS_REALTIME_RETRY_MS = 30000;
   const NOTIFICATIONS_RESUME_SYNC_MIN_INTERVAL_MS = 60000;
@@ -652,7 +652,9 @@
 
       return newUnreadItems;
     } catch {
-      notificationsLoaded.value = false;
+      // Keep the already established ID baseline after a transient request
+      // failure. Otherwise the next successful sync would silently absorb a
+      // new notification instead of showing its toast.
       return [];
     } finally {
       isLoading.value = false;
@@ -927,9 +929,9 @@
       }
     });
     activeNotificationsChannel.value.subscribed(() => {
-      // Recover a counter that might have changed while the subscription was
-      // being authorized, without reloading the whole application.
-      void loadUnreadSummary();
+      // Recover notifications created while the private channel was being
+      // authorized or reconnected, including their toast/sidebar event.
+      void loadNotifications({ showToastsForNew: notificationsLoaded.value });
     });
     activeNotificationsChannel.value.error(() => {
       if (currentNotificationsChannelName.value !== channelName) return;
@@ -1020,7 +1022,7 @@
     notificationsPollTimer = setInterval(async () => {
       if (!hasAccessToken()) return;
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
-      if (isNotificationsSocketConnected() && isNotificationsChannelSubscribed()) return;
+      if (isLoading.value) return;
 
       const canToastNewItems = notificationsLoaded.value;
       const newUnreadItems = await loadNotifications({ showToastsForNew: canToastNewItems });
@@ -1161,11 +1163,7 @@
 
     lastNotificationsResumeSyncAt = now;
 
-    if (isOpen.value || !isNotificationsSocketConnected() || !isNotificationsChannelSubscribed()) {
-      await loadNotifications({ showToastsForNew: showToastsForNew && notificationsLoaded.value });
-    } else {
-      await loadUnreadSummary();
-    }
+    await loadNotifications({ showToastsForNew: showToastsForNew && notificationsLoaded.value });
 
     if (isOpen.value && unreadCount.value > 0) {
       await markAllRead();
@@ -1240,7 +1238,9 @@
         return;
       }
 
-      await loadUnreadSummary();
+      // Establish the notification ID baseline before realtime delivery starts,
+      // so later HTTP reconciliations can identify genuinely new items.
+      await loadNotifications();
       await markCurrentSectionNotificationsSeen();
       const adminId = String(adminAuthStore.user?.id ?? "").trim();
       if (adminId !== "") {
